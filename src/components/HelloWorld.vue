@@ -8,7 +8,7 @@ const count = ref(0)
 
 <template>
   <h1>{{ msg }}</h1>
-  组件
+  组件测试
 </template>
 
 <style scoped>
