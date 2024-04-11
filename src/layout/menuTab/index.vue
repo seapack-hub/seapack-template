@@ -4,7 +4,7 @@
     <el-header>
       <nav-bar></nav-bar>
     </el-header>
-    <el-main>主体</el-main>
+    <el-main >主体</el-main>
     <el-footer>尾部</el-footer>
   </el-container>
 </template>
@@ -18,8 +18,13 @@ import navBar from "@/layout/menuTab/components/navBar.vue";
   width: 100vw;
   height: 100vh;
 
+  //头部虚线
   .el-header{
     height: auto;
+    box-shadow: 0 2px 4px 0 rgba(0, 21, 67, 0.04), inset 0px -1px 0px 0px #e7eaf0;
+    overflow: hidden;
+    min-width: 950px;
+    z-index: 4;
   }
 }
 </style>

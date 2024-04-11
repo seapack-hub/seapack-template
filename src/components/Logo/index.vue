@@ -8,7 +8,7 @@ import seaPack from "@/assets/images/logo/sea-pack.png";
 import {computed} from 'vue'
 
 //获取 props
-const props = defineProps({
+defineProps({
   height:{
     type:Number,
     default: 60
