@@ -16,7 +16,7 @@ import {createSvgIconsPlugin} from "vite-plugin-svg-icons";
 export default defineConfig({
   plugins: [
       vue(),
-      //配置ElementPlus
+      //配置ElementPlus,自动引入
       ElementPlus({}),
       AutoImport({
           resolvers:[ElementPlusResolver()]
