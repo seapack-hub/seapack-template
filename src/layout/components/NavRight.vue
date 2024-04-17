@@ -8,6 +8,8 @@
       <div class="setting-item" @click="toggle">
         <SPIcon :name="isFullscreen?'fullscreen-shrink':'fullscreen-expand'" size="20px"></SPIcon>
       </div>
+      <!--语言设置-->
+      <changeLanguage></changeLanguage>
     </div>
   </div>
 </template>
