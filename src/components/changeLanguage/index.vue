@@ -26,6 +26,7 @@
 import i18n from "@/locales";
 import {useAppStore} from "@/store/modules/app.ts";
 
+//引入状态管理器
 const appStore = useAppStore();
 
 function handleCommand(command:any){

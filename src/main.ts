@@ -10,6 +10,9 @@ import 'virtual:svg-icons-register'
 //引入pinia
 import pinia from "./store";
 
+//引入i18n
+import i18n from "./locales";
+
 //导入路由
 import router from "./router";
-createApp(App).use(router).use(pinia).mount('#app');
+createApp(App).use(router).use(i18n).use(pinia).mount('#app');

@@ -1,5 +1,8 @@
 import {defineStore} from 'pinia';
 
+/**
+ * useStorage 将数据存储到 localStorage 中
+ */
 import {useStorage,useToggle} from "@vueuse/core";
 
 //引入语言包
@@ -16,7 +19,7 @@ import zhTw from 'element-plus/es/locale/lang/zh-tw';
 import appConfig from "@/config/app.ts";
 
 /**
- * 定义 storageLanguage 变量，使用 useStorage 方法来存储和获取 'storageLanguage' 的值和 appConfig.language 的值
+ * 定义 storageLanguage 变量，将值存储在localStorage 中
  */
 const storageLanguage = useStorage("storageLanguage",appConfig.language);
 
@@ -38,7 +41,8 @@ export const useAppStore = defineStore('app',{
          * return 语言包对象
          */
         locale:(state)=>{
-            return state.language === "en-US"?en:state.language === "en-CN"?zhCn:zhTw;
+            console.log('state',state)
+            return state.language === "en-US"?en:state.language === "zh-CN"?zhCn:zhTw;
         }
     },
 
@@ -48,7 +52,6 @@ export const useAppStore = defineStore('app',{
          * @param language 语言
          */
         changeLanguage(language:string){
-            console.log('--调用--',language);
             storageLanguage.value = language;
             this.language = language;
         }

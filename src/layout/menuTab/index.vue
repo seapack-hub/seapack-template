@@ -4,8 +4,8 @@
     <el-header>
       <nav-bar></nav-bar>
     </el-header>
-    <el-main >主体</el-main>
-    <el-footer>尾部</el-footer>
+    <el-main>{{$t('mainBody')}}</el-main>
+    <el-footer>{{$t('footer')}}</el-footer>
   </el-container>
 </template>
 
