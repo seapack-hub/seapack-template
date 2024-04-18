@@ -36,9 +36,9 @@ function handleCommand(command:any){
 </script>
 
 <style scoped lang="scss">
-.svg-icon{
-  margin-right: 8px;
-}
+//.svg-icon{
+//  margin-right: 8px;
+//}
 
 .el-dropdown{
   .el-tooltip__trigger:focus-visible{

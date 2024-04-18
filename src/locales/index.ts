@@ -26,8 +26,8 @@ const messages = {
 const storageLanguage = useStorage("storageLanguage",appConfig.language)
 const i18n = createI18n({
     legacy:false, // 设置为 false，启用 composition API 模式
-    messages,
-    locale:storageLanguage.value,
+    messages,   //本地化的语言环境信息
+    locale:storageLanguage.value,  //设置地区，语言环境
     globalInjection: true
 });
 

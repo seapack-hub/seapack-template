@@ -3,15 +3,15 @@ import {defineStore} from 'pinia';
 /**
  * useStorage 将数据存储到 localStorage 中
  */
-import {useStorage,useToggle} from "@vueuse/core";
+import {useStorage} from "@vueuse/core";
 
 //引入语言包
 //英文包
-import en from 'element-plus/es/locale/lang/en';
-//中文简体
-import zhCn from 'element-plus/es/locale/lang/zh-cn';
-//中文繁体
-import zhTw from 'element-plus/es/locale/lang/zh-tw';
+// import en from 'element-plus/es/locale/lang/en';
+// //中文简体
+// import zhCn from 'element-plus/es/locale/lang/zh-cn';
+// //中文繁体
+// import zhTw from 'element-plus/es/locale/lang/zh-tw';
 
 /**
  * 导入全局设置文件
@@ -40,10 +40,9 @@ export const useAppStore = defineStore('app',{
          * @param state 存储状态
          * return 语言包对象
          */
-        locale:(state)=>{
-            console.log('state',state)
-            return state.language === "en-US"?en:state.language === "zh-CN"?zhCn:zhTw;
-        }
+        // locale:(state)=>{
+        //     return state.language === "en-US"?en:state.language === "zh-CN"?zhCn:zhTw;
+        // }
     },
 
     actions:{
