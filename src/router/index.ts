@@ -10,6 +10,16 @@ const routerRecordRow:RouteRecordRaw[] = [
     {
         path:"/menuTab",
         component:layout,
+        redirect:"/menuTab/index",
+        meta:{},
+        children:[
+            {
+                path:"index",
+                name:"menuTabIndex",
+                component:()=>import("@/views/common/menuTab/index.vue"),
+                meta:{}
+            }
+        ]
     }
 ];
 const base:string = ""
