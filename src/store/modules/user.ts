@@ -8,7 +8,7 @@ export const useUserStore = defineStore("user",{
         userInfo:<User>{}
     }),
     actions:{
-        getUserInfo(userInfo){
+        getUserInfo(userInfo:object){
             this.userInfo = userInfo;
         }
     }

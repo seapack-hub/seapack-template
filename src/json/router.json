@@ -1,0 +1,56 @@
+[
+  {
+    "path": "/systemManagement",
+    "name": "systemManagement",
+    "component": "layout",
+    "redirect": "/systemManagement/workbench",
+    "show": true,
+    "meta": {
+      "title": "home",
+      "description": "系统管理"
+    },
+    "children": [
+      {
+        "path": "workbench",
+        "name": "workbench",
+        "component": "common/workbench/index",
+        "meta": {
+          "title": "workbench",
+          "description": "工作台"
+        }
+      }
+    ]
+  },
+  {
+    "path": "/funGame",
+    "name": "funGame",
+    "component": "layout",
+    "redirect": "/funGame",
+    "show": true,
+    "meta": {
+      "title": "game",
+      "description": "趣味游戏"
+    }
+  },
+  {
+    "path": "/technologyWorld",
+    "name": "technologyWorld",
+    "component": "layout",
+    "redirect": "/technologyWorld",
+    "show": true,
+    "meta": {
+      "title": "home",
+      "description": "技术天地"
+    },
+    "children": [
+      {
+        "path": "workbench",
+        "name": "workbench",
+        "meta": {
+          "title": "workbench",
+          "description": "工作台"
+        }
+      }
+    ]
+  }
+]
