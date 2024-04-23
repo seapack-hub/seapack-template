@@ -5,12 +5,12 @@ import {RouteRecordRaw} from "vue-router"
 //引入基础路由
 import {routerRecordRow} from "@/router";
 //引入views下所有文件
-const modules = import.meta.glob("@/views/**/**.vue");
+const modules = import.meta.glob("../../views/**/**.vue");
 //引入布局
 //主布局
-const Layout = import("@/layout/main/index.vue");
+const Layout = ()=> import("../../layout/main/index.vue");
 //页眉页脚布局
-const menuTab = import("@/layout/menuTab/index.vue")
+const menuTab =()=> import("../../layout/menuTab/index.vue");
 export const usePermissionStore = defineStore("permission",{
     state:()=>({
         basePath:<string>"", //当前模块路由的基础路径

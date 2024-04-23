@@ -49,28 +49,7 @@ const routerRecordRow:RouteRecordRaw[] = [
                 }
             }
         ]
-    },
-    {
-        "path": "/systemManagement",
-        "name": "systemManagement",
-        "component": layout,
-        "redirect": "/systemManagement/workbench",
-        "meta": {
-            "title": "home",
-            "description": "系统管理"
-        },
-        "children": [
-            {
-                "path": "workbench",
-                "name": "workbench",
-                "component": ()=> import("@/views/common/workbench/index.vue"),
-                "meta": {
-                    "title": "workbench",
-                    "description": "工作台"
-                }
-            }
-        ]
-    },
+    }
 ];
 const base:string = ""
 const router = createRouter({

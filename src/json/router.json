@@ -2,8 +2,8 @@
   {
     "path": "/systemManagement",
     "name": "systemManagement",
-    "component": "layout",
-    "redirect": "/systemManagement/workbench",
+    "component": "Layout",
+    "redirect": "/systemManagement/systemManagementWorkbench",
     "show": true,
     "meta": {
       "title": "home",
@@ -11,8 +11,8 @@
     },
     "children": [
       {
-        "path": "workbench",
-        "name": "workbench",
+        "path": "systemManagementWorkbench",
+        "name": "systemManagementWorkbench",
         "component": "common/workbench/index",
         "meta": {
           "title": "workbench",
@@ -22,21 +22,32 @@
     ]
   },
   {
-    "path": "/funGame",
-    "name": "funGame",
-    "component": "layout",
-    "redirect": "/funGame",
+    "path": "/funGamePage",
+    "name": "funGamePage",
+    "component": "Layout",
+    "redirect": "/funGame/funGameIndex",
     "show": true,
     "meta": {
       "title": "game",
       "description": "趣味游戏"
-    }
+    },
+    "children": [
+      {
+        "path": "funGameIndex",
+        "name": "funGameIndex",
+        "component": "common/workbench/index",
+        "meta": {
+          "title": "workbench",
+          "description": "工作台"
+        }
+      }
+    ]
   },
   {
     "path": "/technologyWorld",
     "name": "technologyWorld",
-    "component": "layout",
-    "redirect": "/technologyWorld",
+    "component": "Layout",
+    "redirect": "/technologyWorld/workbench",
     "show": true,
     "meta": {
       "title": "home",
@@ -46,6 +57,7 @@
       {
         "path": "workbench",
         "name": "workbench",
+        "component": "common/workbench/index",
         "meta": {
           "title": "workbench",
           "description": "工作台"

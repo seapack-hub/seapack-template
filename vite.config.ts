@@ -8,6 +8,9 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 
+//引入工具插件
+import VueDevTools from 'vite-plugin-vue-devtools'
+
 //配置UnoCSS
 import UnoCSS from 'unocss/vite';
 //配置SVG
@@ -31,7 +34,8 @@ export default defineConfig({
           iconDirs:[resolve(process.cwd(),'src/assets/icons')],
           // 指定symbolId格式
           symbolId: 'icon-[dir]-[name]'
-      })
+      }),
+      VueDevTools()
   ],
   resolve:{
     alias:{

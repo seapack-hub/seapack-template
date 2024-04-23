@@ -6,12 +6,11 @@ import 'element-plus/dist/index.css';
 import 'virtual:uno.css';
 // 本地SVG图标
 import 'virtual:svg-icons-register'
-
 //引入pinia
 import pinia from "./store";
-
 //引入i18n
 import i18n from "./locales";
+import './permission.ts';
 
 //导入路由
 import router from "./router";

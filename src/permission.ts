@@ -7,13 +7,33 @@ import {usePermissionStore} from "@/store/modules/permission.ts";
 import router from "./router";
 
 //创建路由前置守卫
-router.beforeEach((to,from)=>{
+router.beforeEach((to,from,next)=>{
+    //使用权限存储对象
     const permissionStore = usePermissionStore();
 
     //判断是否添加动态路由
     const dynamicRoutes = permissionStore?.dynamicRoutes??[];
     if(dynamicRoutes.length>0){
         //todo 动态路由处理
+
+        // 判断是否根据模块匹配模块路由
+        const currentModules = permissionStore.currentModules;
+        const hasRoutes = permissionStore?.routes?.length > 0;
+        const currentRouteModules = to?.matched?.[0]?.name;
+        console.log('--||--',currentModules,hasRoutes,currentRouteModules);
+        if(hasRoutes && currentModules === currentRouteModules){
+            // 如果当前路由没有匹配到任何模块，则重定向到404页面；否则继续导航
+            if (to.matched.length === 0) {
+                from.name ? next({ name: from.name }) : next('/errorPage/404')
+            } else {
+                next()
+            }
+        }else{
+
+        }
+        console.log('--动态--',to);
+        console.log(router.getRoutes())
+        next();
     }else{
         //将静态路由添加至路由表中
         const asyncRouter = permissionStore.formatDynamicRoutes(routerJson);
