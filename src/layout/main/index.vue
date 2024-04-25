@@ -3,7 +3,9 @@
     <el-header>头部</el-header>
     <el-container>
       <el-aside>侧边栏</el-aside>
-      <el-container>主体</el-container>
+      <el-container>
+        <router-view></router-view>
+      </el-container>
     </el-container>
   </el-container>
 </template>

@@ -20,7 +20,6 @@ router.beforeEach((to,from,next)=>{
         const currentModules = permissionStore.currentModules;
         const hasRoutes = permissionStore?.routes?.length > 0;
         const currentRouteModules = to?.matched?.[0]?.name;
-        console.log('--||--',currentModules,hasRoutes,currentRouteModules);
         if(hasRoutes && currentModules === currentRouteModules){
             // 如果当前路由没有匹配到任何模块，则重定向到404页面；否则继续导航
             if (to.matched.length === 0) {
@@ -31,8 +30,6 @@ router.beforeEach((to,from,next)=>{
         }else{
 
         }
-        console.log('--动态--',to);
-        console.log(router.getRoutes())
         next();
     }else{
         //将静态路由添加至路由表中

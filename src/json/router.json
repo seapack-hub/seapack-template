@@ -22,8 +22,8 @@
     ]
   },
   {
-    "path": "/funGamePage",
-    "name": "funGamePage",
+    "path": "/funGame",
+    "name": "funGame",
     "component": "Layout",
     "redirect": "/funGame/funGameIndex",
     "show": true,
@@ -57,7 +57,7 @@
       {
         "path": "workbench",
         "name": "workbench",
-        "component": "common/workbench/index",
+        "component": "map/openLayers/index",
         "meta": {
           "title": "workbench",
           "description": "工作台"
