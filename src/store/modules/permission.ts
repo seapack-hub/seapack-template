@@ -1,9 +1,17 @@
+/*
+ * @Author: 曾海峰 zenghf@tsingyun.net
+ * @Date: 2024-04-24 09:27:48
+ * @LastEditors: 曾海峰 zenghf@tsingyun.net
+ * @LastEditTime: 2024-04-26 18:06:03
+ * @FilePath: \seapack-template\src\store\modules\permission.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import {defineStore} from "pinia";
 import {ref} from "vue";
 import {RouteRecordRaw} from "vue-router"
 
 //引入基础路由
-import {routerRecordRow} from "@/router";
+import router from "@/router/index.ts";
 //引入views下所有文件
 const modules = import.meta.glob("../../views/**/**.vue");
 //引入布局
@@ -38,7 +46,7 @@ export const usePermissionStore = defineStore("permission",{
     }
 });
 
-function formatDynamicRoutes(routes:RouteRecordRaw){
+function formatDynamicRoutes(routes:Array<RouteRecordRaw>){
     const asyncRoute:RouteRecordRaw[] = [];
     routes.forEach(route=>{
         const tmpRoute = {...route};
@@ -52,7 +60,7 @@ function formatDynamicRoutes(routes:RouteRecordRaw){
         const layoutName = tmpRoute.component?.toString()??'';
         if(Object.keys(layoutObj).includes(layoutName)){
             //如果是布局路由，则给布局路由的component赋值
-            tmpRoute.component = layoutObj[layoutName];
+            tmpRoute.component = layoutObj[layoutName as keyof typeof layoutObj];
         }else{
             //普通路由
             //先获取views下对应的组件

@@ -1,10 +1,19 @@
 <template>
-  <h3>OpenLayer地图</h3>
-  <div>
-    <el-button @click="toggleLayer">显示与隐藏</el-button>
-  </div>
-  <div id="map" class="map-x">
+  <div class="open-layers">
+    <!--头部-->
+    <div class="title">
+      <h3>OpenLayer地图</h3>
+    </div>
+    <!--按钮-->
+    <div class="button-group">
+      <el-button @click="toggleLayer" >显示与隐藏</el-button>
+      <el-button @click="startLine" :disabled="isDraw">开始绘制</el-button>
+      <el-button >清除绘制</el-button>
+    </div>
+    <!--地图-->
+    <div id="map" class="map-x">
 
+    </div>
   </div>
 </template>
 
@@ -19,8 +28,8 @@ import 'ol/obj'
  * 图斑-Feature
  */
 import {Map,View,Feature,} from 'ol';
-import {Tile,Vector} from 'ol/layer';
-import {OSM,XYZ,TileWMS,Vector as VectorS} from "ol/source";
+import {Tile,Vector as VectorLayer} from 'ol/layer';
+import {OSM,XYZ,TileWMS,Vector as VectorSource} from "ol/source";
 /**
  * 点-Point,
  * 线-LineString
@@ -43,13 +52,81 @@ import {Style,Fill,Stroke,Circle} from 'ol/style'
  */
 import {ScaleLine,FullScreen,OverviewMap,ZoomToExtent,ZoomSlider} from 'ol/control';
 import {defaults} from 'ol/control/defaults'
+import {Draw} from 'ol/interaction'
 
 //初始化一个地图对象
 let map = ref(null);
-// 需要一个vector的layer来放置点
-let layer = new Vector({
-  source:new VectorS()
-});
+//创建一个绘制实例
+let draw = ref(null);
+//初始化一个绘制变量
+let isDraw = ref(false);
+//定义绘制的线条数据
+let lineData = ref([])
+
+/**
+ * 初始化地图
+ */
+function initMap(){
+  //设置配置
+  const options = {
+    //绑定html元素
+    target:"map",
+    //图层
+    layers:[
+      new Tile({
+        source:new XYZ({
+          url:'https://webst0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+        }), // 图层数据源（OSM可以在练习时使用，千万别用在真实项目！！！）
+        visible:true,  //初始化是否展示图层
+        opacity: 1 // 设置图层不透明度
+      }),
+      new Tile({
+        source:new XYZ({
+          url:'https://webst0{1-4}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}'
+        }), // 图层数据源（OSM可以在练习时使用，千万别用在真实项目！！！）
+        visible:true,
+        opacity: 1 // 设置图层不透明度
+      }),
+      // new Tile({
+      //   source:new XYZ({
+      //     url:'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+      //   }), // 图层数据源（OSM可以在练习时使用，千万别用在真实项目！！！）
+      //   visible:false,
+      // }),
+    ],
+    //地图视图
+    view:new View({
+      projection:"EPSG:4326", // 坐标系，有EPSG:4326和EPSG:3857
+      center:[114.064839, 22.548857], //深圳坐标
+      zoom:10, //// 地图缩放级别（打开页面时默认级别）
+      maxZoom: 18, // 最大缩放等级
+      minZoom: 1, // 最小缩放等级
+      // rotation: Math.PI/ 180*45, //地图旋转45度
+    }),
+    //控制器
+    controls:defaults().extend([
+      new ScaleLine(),
+      new FullScreen(),
+      new OverviewMap({
+        layers:[
+          new Tile({
+            source:new XYZ({
+              url:'https://webst0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
+            })
+          })
+        ],
+        //默认小地图打开
+        collapsed: false
+      }),
+      new ZoomToExtent({
+        //定义要展示区域的4个角的坐标
+        extent:[114,25,156,40]
+      }),
+      new ZoomSlider()
+    ])
+  }
+  map.value = new Map(options)
+}
 /**
  * 显示与隐藏
  */
@@ -61,26 +138,20 @@ function toggleLayer(){
     item.setVisible(!item.getVisible());
   });
 }
-
 /**
  * 创建点
  */
 function createPoint(){
+  // 创建一个点的图层，需要一个layer来放置点
+  let pointLayer = new VectorLayer({
+    source:new VectorSource()
+  });
   const point = new Feature({
     //点的位置
     geometry:new Point([114.064839, 22.548857])
   });
   //设置点的样式信息
   const styleConfig = {
-    //填充色
-    // fill:new Fill({
-    //   color: 'rgb(180,1,1)'
-    // }),
-    // //边线颜色
-    // stroke:new Stroke({
-    //   color: '#b40110',
-    //   width: 2,
-    // }),
     //形状
     image:new Circle({
       radius:10,
@@ -91,85 +162,84 @@ function createPoint(){
   }
   point.setStyle(new Style(styleConfig));
   //将点添加至layer中
-  layer.getSource()?.addFeature(point)
+  pointLayer.getSource()?.addFeature(point);
+  map.value.addLayer(pointLayer)
 }
 
-function createLine(){
-  const line = new Feature({
-    geometry:new LineString([[117.2, 35.8], [117.48, 36.8]])
+/**
+ * 创建线
+ */
+function startLine(){
+  isDraw.value = true;
+  //创建矢量图层
+  const source = new VectorSource({
+    wrapX:false
+  });
+  const lineLayer = new VectorLayer({
+    source:source,
+    style: new Style({
+      stroke: new Stroke({
+        color: '#14ec0e',
+        width: 2,
+      }),
+    }),
   })
+  map.value.addLayer(lineLayer)
+  //创建绘制交互实例
+  draw.value = new Draw({
+    source:source,
+    type: 'LineString', // 默认绘制类型为点
+    style: new Style({
+      stroke: new Stroke({
+        color: '#14ec0e',
+        width: 2,
+      }),
+    }),
+  });
+
+  //drawstart-绘制开始时调用，单击鼠标触发
+  //drawend-绘制结束时调用，双击鼠标触发
+  draw.value.on("drawend",function(event){
+    console.log('--结束--',event);
+    //将线条端点位置数据存储到数组中
+    if(event.target.sketchCoords_.length>0){
+      lineData.value.push(event.target.sketchCoords_)
+    }
+    //停止绘制
+    removeInteraction()
+  })
+  map.value.addInteraction(draw.value);
 }
 
-//设置配置
-const options = {
-  //绑定html元素
-  target:"map",
-  //图层
-  layers:[
-    new Tile({
-      source:new XYZ({
-        url:'https://webst0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
-      }), // 图层数据源（OSM可以在练习时使用，千万别用在真实项目！！！）
-      visible:true,  //初始化是否展示图层
-      opacity: 1 // 设置图层不透明度
-    }),
-    new Tile({
-      source:new XYZ({
-        url:'https://webst0{1-4}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}'
-      }), // 图层数据源（OSM可以在练习时使用，千万别用在真实项目！！！）
-      visible:true,
-      opacity: 1 // 设置图层不透明度
-    }),
-      layer
-    // new Tile({
-    //   source:new XYZ({
-    //     url:'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
-    //   }), // 图层数据源（OSM可以在练习时使用，千万别用在真实项目！！！）
-    //   visible:false,
-    // }),
-  ],
-  //地图视图
-  view:new View({
-    projection:"EPSG:4326", // 坐标系，有EPSG:4326和EPSG:3857
-    center:[114.064839, 22.548857], //深圳坐标
-    zoom:10, //// 地图缩放级别（打开页面时默认级别）
-    maxZoom: 18, // 最大缩放等级
-    minZoom: 1, // 最小缩放等级
-    // rotation: Math.PI/ 180*45, //地图旋转45度
-  }),
-  //控制器
-  controls:defaults().extend([
-    new ScaleLine(),
-    new FullScreen(),
-    new OverviewMap({
-      layers:[
-        new Tile({
-          source:new XYZ({
-            url:'https://webst0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
-          })
-        })
-      ],
-      //默认小地图打开
-      collapsed: false
-    }),
-    new ZoomToExtent({
-      //定义要展示区域的4个角的坐标
-      extent:[114,25,156,40]
-    }),
-    new ZoomSlider()
-  ])
+/**
+ * 停止绘画
+ */
+function removeInteraction(){
+  map.value.removeInteraction(draw.value);
+  //绘制结束
+  isDraw.value = false;
 }
 
 onMounted(()=>{
-  createPoint()
-  map.value = new Map(options)
+  initMap();
+  createPoint();
 })
 </script>
 
 <style scoped lang="scss">
+.open-layers{
+  width: 100%;
+  height: 100%;
+  .title{
+    text-align: center;
+  }
+  .button-group{
+    display: flex;
+  }
+}
 .map-x{
   height: 600px;
-  width: 600px;
-  margin-left: 10px;
+  width: calc(100% - 50px);
+  margin-top: 15px;
 }
 </style>

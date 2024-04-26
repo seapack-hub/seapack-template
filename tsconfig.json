@@ -21,8 +21,12 @@
     "noFallthroughCasesInSwitch": true,
 
     /*element-plus全局组件类型，Volar支持 */
-    "types": ["element-plus/global"]
+    "types": ["element-plus/global"],
+    "baseUrl":"./",   
+    "paths":{
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [{ "path": "./tsconfig.node.json" }],
 }
