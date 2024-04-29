@@ -22,7 +22,6 @@ const getMeanList = ()=>{
  * @param item
  */
 const handToPage = (item:object)=>{
-  console.log('item',item,'meanList',menuList,'router',router.getRoutes());
   router.push({path:item?.path});
 }
 onMounted(()=>{

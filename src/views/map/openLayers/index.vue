@@ -8,7 +8,7 @@
     <div class="button-group">
       <el-button @click="toggleLayer" >显示与隐藏</el-button>
       <el-button @click="startLine" :disabled="isDraw">开始绘制</el-button>
-      <el-button >清除绘制</el-button>
+      <el-button @click="clearLine">清除绘制</el-button>
     </div>
     <!--地图-->
     <div id="map" class="map-x">
@@ -141,30 +141,30 @@ function toggleLayer(){
 /**
  * 创建点
  */
-function createPoint(){
-  // 创建一个点的图层，需要一个layer来放置点
-  let pointLayer = new VectorLayer({
-    source:new VectorSource()
-  });
-  const point = new Feature({
-    //点的位置
-    geometry:new Point([114.064839, 22.548857])
-  });
-  //设置点的样式信息
-  const styleConfig = {
-    //形状
-    image:new Circle({
-      radius:10,
-      fill:new Fill({
-        color: '#b40101'
-      })
-    })
-  }
-  point.setStyle(new Style(styleConfig));
-  //将点添加至layer中
-  pointLayer.getSource()?.addFeature(point);
-  map.value.addLayer(pointLayer)
-}
+// function createPoint(){
+//   // 创建一个点的图层，需要一个layer来放置点
+//   let pointLayer = new VectorLayer({
+//     source:new VectorSource()
+//   });
+//   const point = new Feature({
+//     //点的位置
+//     geometry:new Point([114.064839, 22.548857])
+//   });
+//   //设置点的样式信息
+//   const styleConfig = {
+//     //形状
+//     image:new Circle({
+//       radius:10,
+//       fill:new Fill({
+//         color: '#b40101'
+//       })
+//     })
+//   }
+//   point.setStyle(new Style(styleConfig));
+//   //将点添加至layer中
+//   pointLayer.getSource()?.addFeature(point);
+//   map.value.addLayer(pointLayer)
+// }
 
 /**
  * 创建线
@@ -200,7 +200,6 @@ function startLine(){
   //drawstart-绘制开始时调用，单击鼠标触发
   //drawend-绘制结束时调用，双击鼠标触发
   draw.value.on("drawend",function(event){
-    console.log('--结束--',event);
     //将线条端点位置数据存储到数组中
     if(event.target.sketchCoords_.length>0){
       lineData.value.push(event.target.sketchCoords_)
@@ -209,6 +208,13 @@ function startLine(){
     removeInteraction()
   })
   map.value.addInteraction(draw.value);
+}
+
+/**
+ * 清楚线
+ */
+function clearLine(){
+
 }
 
 /**
@@ -222,7 +228,6 @@ function removeInteraction(){
 
 onMounted(()=>{
   initMap();
-  createPoint();
 })
 </script>
 
