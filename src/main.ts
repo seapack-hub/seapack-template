@@ -11,7 +11,13 @@ import pinia from "./store";
 //引入i18n
 import i18n from "./locales";
 import './permission.ts';
-
+// 如果您正在使用CDN引入，请删除下面一行。
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 //导入路由
 import router from "./router";
-createApp(App).use(router).use(i18n).use(pinia).mount('#app');
+const app = createApp(App);
+//注册所有图标
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
+app.use(router).use(i18n).use(pinia).mount('#app');
