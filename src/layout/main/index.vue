@@ -21,5 +21,4 @@ import LeftMenu from "@/layout/components/sideBar/LeftMenu.vue";
 </script>
 
 <style scoped lang="scss">
-
 </style>

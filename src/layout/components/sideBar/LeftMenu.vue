@@ -1,6 +1,6 @@
 <template>
   <el-menu class="el-menu">
-    <side-bar-item item="{}"></side-bar-item>
+    <side-bar-item v-for="(item,index) in itemList" :key="index" :item="item"></side-bar-item>
   </el-menu>
 </template>
 
@@ -12,9 +12,10 @@ import {usePermissionStore} from "@/store/modules/permission.ts";
 
 const permissionStore = usePermissionStore();
 console.log('--||--',permissionStore);
-const {routes} = storeToRefs(permissionStore);
-console.log('--routes--',routes);
+const {dynamicRoutes} = storeToRefs(permissionStore);
+console.log('--routes--',dynamicRoutes);
 
+const itemList = dynamicRoutes.value;
 </script>
 
 <style scoped lang="scss">

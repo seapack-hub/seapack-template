@@ -38,7 +38,7 @@
         "component": "common/workbench/index",
         "meta": {
           "title": "workbench",
-          "description": "工作台"
+          "description": "贪吃蛇"
         }
       }
     ]
@@ -60,7 +60,7 @@
         "component": "map/openLayers/index",
         "meta": {
           "title": "workbench",
-          "description": "工作台"
+          "description": "地图"
         }
       }
     ]

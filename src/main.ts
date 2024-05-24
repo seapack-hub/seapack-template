@@ -1,7 +1,8 @@
 import { createApp } from 'vue'
-import './style.css'
 import App from './App.vue'
 import 'element-plus/dist/index.css';
+//引入全局样式
+import './styles/index.scss'
 //引入uno.css
 import 'virtual:uno.css';
 // 本地SVG图标
@@ -16,6 +17,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 //导入路由
 import router from "./router";
 const app = createApp(App);
+//import "./test.ts"
 //注册所有图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
