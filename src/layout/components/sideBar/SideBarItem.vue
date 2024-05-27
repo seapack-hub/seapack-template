@@ -1,12 +1,15 @@
 <template>
   <!--无子路由-->
   <template v-if="!item.children">
-    <el-menu-item>
-      <el-icon><Edit /></el-icon>
-      <template #title>{{item?.meta.description ||'未知'}}</template>
-    </el-menu-item>
+    <Link :to="item.path">
+      <el-menu-item>
+        <el-icon><Edit /></el-icon>
+        <template #title>{{item?.meta.description ||'未知'}}</template>
+      </el-menu-item>
+    </Link>
   </template>
   <template v-else>
+
     <el-sub-menu :index="item.path">
       <template #title>
         <el-icon><Edit /></el-icon>
@@ -19,13 +22,20 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue"
+import {ref} from "vue";
+
+import Link from "./Link.vue";
+
 const isChild = ref(true);
 
 const props = defineProps({
   item:{
     type:Object,
     required:true,
+  },
+  basePath:{
+    type:String,
+    required:true
   }
 });
 
