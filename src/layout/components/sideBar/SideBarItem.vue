@@ -15,7 +15,7 @@
         <el-icon><Edit /></el-icon>
         <span>{{item?.meta.description ||'未知'}}</span>
       </template>
-      <side-bar-item v-for="item in item.children" :item="item"></side-bar-item>
+      <side-bar-item v-for="item in item.children" :item="item" :base-path="basePath"></side-bar-item>
     </el-sub-menu>
   </template>
 
@@ -23,10 +23,7 @@
 
 <script setup lang="ts">
 import {ref} from "vue";
-
 import Link from "./Link.vue";
-
-const isChild = ref(true);
 
 const props = defineProps({
   item:{
