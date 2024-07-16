@@ -14,11 +14,15 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 //配置UnoCSS
 import UnoCSS from 'unocss/vite';
 //配置SVG
-import {createSvgIconsPlugin} from "vite-plugin-svg-icons";
+import {createSvgIconsPlugin} from "vite-plugin-svg-icons"
+
+//引入地图组件
+import cesium from 'vite-plugin-cesium'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
       vue(),
+      cesium(),
       //配置ElementPlus,自动引入
       ElementPlus({}),
       AutoImport({
@@ -35,7 +39,7 @@ export default defineConfig({
           // 指定symbolId格式
           symbolId: 'icon-[dir]-[name]'
       }),
-      VueDevTools()
+      VueDevTools(),
   ],
   resolve:{
     alias:{

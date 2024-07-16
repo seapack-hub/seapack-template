@@ -23,7 +23,6 @@ const props = defineProps({
     required:true,
   },
 })
-console.log('--itemList--',props.menuList);
 </script>
 
 <style scoped lang="scss">

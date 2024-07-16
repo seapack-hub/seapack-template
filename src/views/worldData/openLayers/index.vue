@@ -235,6 +235,7 @@ onMounted(()=>{
 .open-layers{
   width: 100%;
   height: 100%;
+  padding: 20px;
   .title{
     text-align: center;
   }
@@ -244,7 +245,7 @@ onMounted(()=>{
 }
 .map-x{
   height: 600px;
-  width: calc(100% - 50px);
-  margin-top: 15px;
+  //width: calc(100% - 50px);
+  width: 100%;
 }
 </style>

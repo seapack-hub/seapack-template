@@ -85,7 +85,7 @@
   },
   {
     "path": "/worldData",
-    "name": "wordData",
+    "name": "worldData",
     "component": "worldData",
     "redirect": "/worldData/openLayers",
     "show": true,
@@ -100,7 +100,16 @@
         "component": "worldData/openLayers/index",
         "meta": {
           "title": "openLayers",
-          "description": "地图"
+          "description": "天地图"
+        }
+      },
+      {
+        "path": "newWorld",
+        "name": "newWorld",
+        "component": "worldData/cesium/newWorld",
+        "meta": {
+          "title": "newWorld",
+          "description": "地图全览"
         }
       }
     ]

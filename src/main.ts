@@ -13,7 +13,7 @@ import pinia from "./store";
 import i18n from "./locales";
 import './permission.ts';
 // 如果您正在使用CDN引入，请删除下面一行。
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 //导入路由
 import router from "./router";
 const app = createApp(App);
