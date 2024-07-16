@@ -11,6 +11,12 @@ const modules = import.meta.glob("../../views/**/**.vue");
 const Layout = ()=> import("../../layout/main/index.vue");
 //页眉页脚布局
 const menuTab =()=> import("../../layout/menuTab/index.vue");
+//趣味游戏布局
+const funGame = ()=> import("../../layout/funGame/index.vue");
+//技术天地布局
+const technologyWorld = ()=> import("../../layout/technologyWorld/index.vue");
+//数据世界布局
+const worldData = ()=> import("@/layout/worldData/index.vue")
 export const usePermissionStore = defineStore("permission",{
     state:()=>({
         basePath:<string>"", //当前模块路由的基础路径
@@ -47,7 +53,10 @@ function formatDynamicRoutes(routes:Array<RouteRecordRaw>){
         }
         const layoutObj = {
             Layout,
-            menuTab
+            menuTab,
+            funGame,
+            technologyWorld,
+            worldData,
         };
         const layoutName = tmpRoute.component?.toString()??'';
         if(Object.keys(layoutObj).includes(layoutName)){

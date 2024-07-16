@@ -18,13 +18,53 @@
           "title": "workbench",
           "description": "工作台"
         }
+      },
+      {
+        "path": "tableComponent",
+        "name": "tableComponent",
+        "component": "systemManagement/components/SPTable",
+        "meta": {
+          "title": "tableComponent",
+          "description": "表格组件"
+        }
+      },
+      {
+        "path": "fileUpload",
+        "name": "fileUpload",
+        "component": "systemManagement/components/SPFileUpload",
+        "meta": {
+          "title": "fileUpload",
+          "description": "文件上传"
+        }
+      }
+    ]
+  },
+  {
+    "path": "/technologyWorld",
+    "name": "technologyWorld",
+    "component": "technologyWorld",
+    "redirect": "/technologyWorld/main",
+    "show": true,
+    "meta": {
+      "title": "home",
+      "description": "技术天地"
+    },
+    "children": [
+      {
+        "path": "main",
+        "name": "main",
+        "component": "technologyWorld/index",
+        "meta": {
+          "title": "workbench",
+          "description": "博客"
+        }
       }
     ]
   },
   {
     "path": "/funGame",
     "name": "funGame",
-    "component": "Layout",
+    "component": "funGame",
     "redirect": "/funGame/funGameIndex",
     "show": true,
     "meta": {
@@ -35,7 +75,7 @@
       {
         "path": "funGameIndex",
         "name": "funGameIndex",
-        "component": "common/workbench/index",
+        "component": "funGame/index",
         "meta": {
           "title": "workbench",
           "description": "贪吃蛇"
@@ -44,22 +84,22 @@
     ]
   },
   {
-    "path": "/technologyWorld",
-    "name": "technologyWorld",
-    "component": "Layout",
-    "redirect": "/technologyWorld/workbench",
+    "path": "/worldData",
+    "name": "wordData",
+    "component": "worldData",
+    "redirect": "/worldData/openLayers",
     "show": true,
     "meta": {
       "title": "home",
-      "description": "技术天地"
+      "description": "数据世界"
     },
     "children": [
       {
-        "path": "workbench",
-        "name": "workbench",
-        "component": "map/openLayers/index",
+        "path": "openLayers",
+        "name": "openLayers",
+        "component": "worldData/openLayers/index",
         "meta": {
-          "title": "workbench",
+          "title": "openLayers",
           "description": "地图"
         }
       }

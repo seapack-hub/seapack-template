@@ -4,7 +4,7 @@
         v-for="(item,index) in menuList"
         :key="index"
         :item="item"
-
+        :base-path="basePath"
     ></side-bar-item>
   </el-menu>
 </template>
@@ -23,7 +23,7 @@ const props = defineProps({
     required:true,
   },
 })
-
+console.log('--itemList--',props.menuList);
 </script>
 
 <style scoped lang="scss">

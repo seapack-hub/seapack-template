@@ -25,8 +25,13 @@ import {usePermissionStore} from "@/store/modules/permission.ts";
 const permissionStore = usePermissionStore();
 const {dynamicRoutes} = storeToRefs(permissionStore);
 
+console.log('--基础路由--',permissionStore,dynamicRoutes)
+
 //获取菜单列表
-const menuList = computed(()=>dynamicRoutes.value);
+const menuList = computed(()=>{
+  const list = dynamicRoutes.value.find(item=>item.name === "systemManagement");
+  return list.children;
+});
 
 //获取基础路径
 const basePath = computed(()=>permissionStore.basePath)
