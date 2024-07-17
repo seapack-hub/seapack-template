@@ -3,17 +3,17 @@
   <template v-if="!item.children">
     <Link :to="item.path">
       <el-menu-item>
-        <el-icon><Edit /></el-icon>
-        <template #title>{{item?.meta.description ||'未知'}}</template>
+        <template #title>
+          <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
+          <span class="menu-text">{{item?.meta.description ||'未知'}}</span></template>
       </el-menu-item>
     </Link>
   </template>
   <template v-else>
-
     <el-sub-menu :index="item.path">
       <template #title>
-        <el-icon><Edit /></el-icon>
-        <span>{{item?.meta.description ||'未知'}}</span>
+        <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
+        <span class="menu-text">{{item?.meta.description ||'未知'}}</span>
       </template>
       <side-bar-item v-for="item in item.children" :item="item" :base-path="basePath"></side-bar-item>
     </el-sub-menu>
@@ -36,9 +36,11 @@ const props = defineProps({
   }
 });
 
-
+console.log('---item--',props.item);
 </script>
 
 <style scoped lang="scss">
-
+.menu-text{
+  margin-left:10px;
+}
 </style>

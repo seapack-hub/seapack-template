@@ -16,7 +16,8 @@
         "component": "common/workbench/index",
         "meta": {
           "title": "workbench",
-          "description": "工作台"
+          "description": "工作台",
+          "icon":"home"
         }
       },
       {
@@ -25,7 +26,8 @@
         "component": "systemManagement/components/SPTable",
         "meta": {
           "title": "tableComponent",
-          "description": "表格组件"
+          "description": "表格组件",
+          "icon":"table"
         }
       },
       {
@@ -34,7 +36,8 @@
         "component": "systemManagement/components/SPFileUpload",
         "meta": {
           "title": "fileUpload",
-          "description": "文件上传"
+          "description": "文件上传",
+          "icon":"fileupload"
         }
       }
     ]
@@ -56,7 +59,8 @@
         "component": "technologyWorld/index",
         "meta": {
           "title": "workbench",
-          "description": "博客"
+          "description": "博客",
+          "icon":"home"
         }
       }
     ]
@@ -78,7 +82,8 @@
         "component": "funGame/index",
         "meta": {
           "title": "workbench",
-          "description": "贪吃蛇"
+          "description": "贪吃蛇",
+          "icon":"home"
         }
       }
     ]
@@ -100,7 +105,8 @@
         "component": "worldData/openLayers/index",
         "meta": {
           "title": "openLayers",
-          "description": "天地图"
+          "description": "天地图",
+          "icon":"home"
         }
       },
       {
@@ -109,7 +115,8 @@
         "component": "worldData/cesium/newWorld",
         "meta": {
           "title": "newWorld",
-          "description": "地图全览"
+          "description": "地图全览",
+          "icon":"home"
         }
       }
     ]

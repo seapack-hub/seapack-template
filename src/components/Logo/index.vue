@@ -1,5 +1,9 @@
 <template>
-  <el-image :src="imgUrl" :style="{height:height+'px'}"></el-image>
+  <div class="layout-logo-container">
+    <transition name="layout-logo-fade">
+      <el-image :src="imgUrl" :style="{height:height+'px'}"></el-image>
+    </transition>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -26,5 +30,10 @@ const imgUrl = computed(()=>{
 </script>
 
 <style scoped lang="scss">
-
+.layout-logo-container{
+  position: relative;
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+}
 </style>

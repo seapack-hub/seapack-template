@@ -1,7 +1,6 @@
 <template>
   <div class="menuTab-nav-bar-wrapper">
     <div class="menuTab-nav-bar-left">
-      <Logo></Logo>
     </div>
     <NavRight></NavRight>
   </div>
@@ -15,6 +14,7 @@ import NavRight from "@/layout/components/NavRight.vue";
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  height: 50px;
 
   .menuTab-nav-bar-left{
     display: flex;

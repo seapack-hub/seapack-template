@@ -27,6 +27,21 @@ const props = defineProps({
 
 <style scoped lang="scss">
 .el-menu{
-  width: 100%;
+  border: none;
+  width: 100% !important;
+  min-height: calc(100% - 65px);
+  background-color: var(--sidebar-menu-bg-color);
+}
+
+:deep(.el-menu-item),
+:deep(.el-sub-menu__title),
+:deep(.el-sub-menu .el-menu-item),
+:deep(.el-menu--horizontal .el-menu-item){
+  height:var(--sidebar-menu-item-height);
+  line-height: var(--sidebar-menu-item-height);
+  &.is-active,
+  &.hover{
+    background-color:var(--sidebar-menu-hover-bg-color);
+  }
 }
 </style>

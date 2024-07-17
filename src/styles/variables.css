@@ -1,0 +1,14 @@
+:root{
+    /** Body **/
+    --body-text-color:#303133FF;
+    --body-bg-color:#F2F3F5FF;
+
+    /** Sidebar 组件（左侧模式全部生效、顶部模式全部不生效、混合模式非颜色部分生效） */
+    --sidebar-width:220px;
+    --sidebar-hide-width:58px;
+    --sidebar-menu-item-height:60px;
+    --sidebar-menu-bg-color: #001428;
+    --sidebar-menu-hover-bg-color: #409eff10;
+    --sidebar-menu-text-color: #cfd3dc;
+    --sidebar-menu-active-text-color: #ffffff;
+}
