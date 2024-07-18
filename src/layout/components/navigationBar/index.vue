@@ -6,6 +6,7 @@
           :is-active="appStore.opened"
           @toggle-click="toggleClick"
       ></Hamburger>
+      <SPBreadcrumb/>
     </div>
     <NavRight/>
   </div>
@@ -13,6 +14,7 @@
 <script setup lang="ts">
 import NavRight from "@/layout/components/navigationBar/NavRight.vue";
 import Hamburger from "@/layout/components/navigationBar/Hamburger.vue";
+import SPBreadcrumb from "@/components/baseComponents/Breadcrumb/index.vue"
 import {useAppStore} from "@/store/modules/app.ts";
 
 const appStore = useAppStore();

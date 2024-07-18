@@ -5,7 +5,7 @@
 
     /** Sidebar 组件（左侧模式全部生效、顶部模式全部不生效、混合模式非颜色部分生效） */
     --sidebar-width:220px;
-    --sidebar-hide-width:58px;
+    --sidebar-hide-width:68px;
     --sidebar-menu-item-height:60px;
     --sidebar-menu-bg-color: #001428;
     --sidebar-menu-hover-bg-color: #409eff10;

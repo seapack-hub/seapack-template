@@ -66,8 +66,6 @@ function formatDynamicRoutes(routes:Array<RouteRecordRaw>){
             //普通路由
             //先获取views下对应的组件
             const component = modules[`../../views/${tmpRoute.component}.vue`];
-            console.log('--路由--',tmpRoute.component);
-            console.log('--c-',component);
             if(component){
                 //组件存在则赋值，
                 tmpRoute.component = component;
