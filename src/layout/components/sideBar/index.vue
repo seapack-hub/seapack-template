@@ -2,7 +2,8 @@
   <div class="side-bar">
     <!--顶部图标-->
 <!--    <Logo></Logo>-->
-    <div class="logo-title">seapack</div>
+    <div class="logo-title" v-if="appStore.opened">SeaPack</div>
+    <div class="logo-title" v-else>SP</div>
     <!--左侧菜单-->
     <left-menu :base-path="basePath" :menu-list="menuList"></left-menu>
   </div>
@@ -14,9 +15,11 @@ import { storeToRefs } from 'pinia';
 import {computed} from 'vue';
 //引入路由
 import {usePermissionStore} from "@/store/modules/permission.ts";
+import {useAppStore} from "@/store/modules/app.ts";
 
 const permissionStore = usePermissionStore();
 const {dynamicRoutes} = storeToRefs(permissionStore);
+const appStore = useAppStore();
 
 //获取菜单列表
 const menuList = computed(()=>{

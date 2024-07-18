@@ -5,7 +5,10 @@
       <el-menu-item :index="item.path">
         <template #title>
           <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
-          <span class="menu-text">{{item?.meta.description ||'未知'}}</span></template>
+          <transition name="fade">
+            <span class="menu-text" v-if="appStore.opened">{{item?.meta.description ||'未知'}}</span>
+          </transition>
+        </template>
       </el-menu-item>
     </Link>
   </template>
@@ -13,9 +16,11 @@
     <el-sub-menu :index="item.path">
       <template #title>
         <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
-        <span class="menu-text">{{item?.meta.description ||'未知'}}</span>
+        <transition name="fade">
+          <span class="menu-text" v-if="appStore.opened">{{item?.meta.description ||'未知'}}</span>
+        </transition>
       </template>
-      <side-bar-item v-for="item in item.children" :item="item" :base-path="basePath"></side-bar-item>
+      <side-bar-item v-for="(item,index) in item.children" :item="item" :base-path="basePath"></side-bar-item>
     </el-sub-menu>
   </template>
 
@@ -24,8 +29,11 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import Link from "./Link.vue";
+import {useAppStore} from "@/store/modules/app.ts";
 
-const props = defineProps({
+const appStore = useAppStore();
+
+defineProps({
   item:{
     type:Object,
     required:true,
@@ -35,11 +43,19 @@ const props = defineProps({
     required:true
   }
 });
-
-console.log('---item--',props.item);
 </script>
 
 <style scoped lang="scss">
+/*设置动画*/
+.fade-enter{
+  transform: translateX(-100%);
+}
+.fade-enter-active{
+  transition: 0.5s;
+}
+.fade-enter-to {
+  transform: translateX(0)
+}
 .menu-text{
   margin-left:10px;
 }

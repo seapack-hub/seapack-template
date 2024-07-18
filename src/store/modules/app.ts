@@ -31,7 +31,8 @@ export const useAppStore = defineStore('app',{
     persist: true,
 
     state:()=>({
-        ...appConfig
+        ...appConfig,
+        opened:true,  //默认情况下，左边栏为展开状态
     }),
 
     getters:{
@@ -53,6 +54,14 @@ export const useAppStore = defineStore('app',{
         changeLanguage(language:string){
             storageLanguage.value = language;
             this.language = language;
+        },
+
+        /**
+         * 控制侧边栏的状态
+         * @param value
+         */
+        toggleSidebar(value:boolean){
+            this.opened = value;
         }
     }
 

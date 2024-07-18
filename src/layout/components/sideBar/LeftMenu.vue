@@ -3,6 +3,7 @@
       :default-active="activeMenu"
       class="el-menu"
       :active-text-color="activeTextColor"
+      :unique-opened="true"
   >
     <side-bar-item
         v-for="(item,index) in menuList"
@@ -19,8 +20,8 @@ import { useRoute } from "vue-router";
 import SideBarItem from "@/layout/components/sideBar/SideBarItem.vue";
 // 获取CSS 全局变量
 import {getCssVariableValue} from "@/utils/index.ts";
-
-
+import {useAppStore} from "@/store/modules/app.ts";
+const appStore = useAppStore();
 const route = useRoute();
 const activeMenu = computed(()=>{
   const {
@@ -37,7 +38,7 @@ const activeTextColor = computed(()=>{
 })
 
 const tipLineWidth = computed(() => {
-  return  "2px";
+  return  appStore.opened?"2px":"0px";
 })
 defineProps({
   menuList:{
