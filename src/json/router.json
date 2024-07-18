@@ -17,7 +17,7 @@
         "meta": {
           "title": "workbench",
           "description": "工作台",
-          "icon":"home"
+          "icon":"home-dark"
         }
       },
       {
@@ -27,7 +27,7 @@
         "meta": {
           "title": "tableComponent",
           "description": "表格组件",
-          "icon":"table"
+          "icon":"table-dark"
         }
       },
       {
@@ -37,7 +37,7 @@
         "meta": {
           "title": "fileUpload",
           "description": "文件上传",
-          "icon":"fileupload"
+          "icon":"file-upload-dark"
         }
       }
     ]

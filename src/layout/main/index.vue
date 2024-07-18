@@ -15,9 +15,12 @@
 </template>
 
 <script setup lang="ts">
-import NavBar from "@/layout/menuTab/components/navBar.vue";
+import NavBar from "@/layout/components/navigationBar/index.vue";
 import SideBar from "@/layout/components/sideBar/index.vue";
 </script>
 
 <style scoped lang="scss">
+.el-aside{
+  width: var(--sidebar-width);
+}
 </style>

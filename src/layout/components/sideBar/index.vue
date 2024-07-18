@@ -1,7 +1,8 @@
 <template>
   <div class="side-bar">
     <!--顶部图标-->
-    <Logo></Logo>
+<!--    <Logo></Logo>-->
+    <div class="logo-title">seapack</div>
     <!--左侧菜单-->
     <left-menu :base-path="basePath" :menu-list="menuList"></left-menu>
   </div>
@@ -30,5 +31,16 @@ const basePath = computed(()=>permissionStore.basePath)
 <style scoped lang="scss">
 .side-bar{
   height: 100%;
+  background-color: var(--sidebar-menu-bg-color);
+  width: 100%;
+  .logo-title{
+    color:var(--sidebar-menu-text-color);
+    width: 100%;
+    text-align: center;
+    margin:0 auto;
+    height: 60px;
+    font-size: 30px;
+    line-height: 60px;
+  }
 }
 </style>

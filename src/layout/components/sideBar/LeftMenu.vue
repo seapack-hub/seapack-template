@@ -1,5 +1,9 @@
 <template>
-  <el-menu class="el-menu">
+  <el-menu
+      :default-active="activeMenu"
+      class="el-menu"
+      :active-text-color="activeTextColor"
+  >
     <side-bar-item
         v-for="(item,index) in menuList"
         :key="index"
@@ -10,9 +14,32 @@
 </template>
 
 <script setup lang="ts">
+import {computed} from "vue";
+import { useRoute } from "vue-router";
 import SideBarItem from "@/layout/components/sideBar/SideBarItem.vue";
+// 获取CSS 全局变量
+import {getCssVariableValue} from "@/utils/index.ts";
 
-const props = defineProps({
+
+const route = useRoute();
+const activeMenu = computed(()=>{
+  const {
+    meta:{activeMenu},
+    path
+  } = route;
+  //构建正则表达式，去除模块前缀
+  const reg = new RegExp("\/[a-zA-Z0-9]*\/",)
+  return activeMenu? activeMenu:path.replace(reg,"");
+})
+
+const activeTextColor = computed(()=>{
+  return getCssVariableValue("--sidebar-menu-active-text-color")
+})
+
+const tipLineWidth = computed(() => {
+  return  "2px";
+})
+defineProps({
   menuList:{
     required:true,
     default:()=>[],
@@ -39,9 +66,29 @@ const props = defineProps({
 :deep(.el-menu--horizontal .el-menu-item){
   height:var(--sidebar-menu-item-height);
   line-height: var(--sidebar-menu-item-height);
+  color:var(--sidebar-menu-text-color);
   &.is-active,
-  &.hover{
+  &:hover{
     background-color:var(--sidebar-menu-hover-bg-color);
+    color:var(--sidebar-menu-active-text-color)
   }
 }
+
+%tip-line {
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: v-bind(tipLineWidth);
+    height: 100%;
+    background-color: var(--sidebar-menu-tip-line-bg-color);
+  }
+}
+
+//同时具备 el-menu-item 和 is-active 两个类名才生效
+:deep(.el-menu-item.is-active) {
+  @extend %tip-line;
+}
+
 </style>

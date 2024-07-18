@@ -1,12 +1,15 @@
 <template>
   <div class="menuTab-nav-bar-wrapper">
     <div class="menuTab-nav-bar-left">
+      <!--推进按钮-->
+      <Hamburger></Hamburger>
     </div>
-    <NavRight></NavRight>
+    <NavRight/>
   </div>
 </template>
 <script setup lang="ts">
 import NavRight from "@/layout/components/navigationBar/NavRight.vue";
+import Hamburger from "@/layout/components/navigationBar/Hamburger.vue";
 </script>
 <style scoped lang="scss">
 .menuTab-nav-bar-wrapper{

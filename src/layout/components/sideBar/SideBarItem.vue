@@ -2,7 +2,7 @@
   <!--无子路由-->
   <template v-if="!item.children">
     <Link :to="item.path">
-      <el-menu-item>
+      <el-menu-item :index="item.path">
         <template #title>
           <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
           <span class="menu-text">{{item?.meta.description ||'未知'}}</span></template>
