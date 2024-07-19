@@ -1,5 +1,5 @@
 /** 路由监听钩子函数 **/
-import { onBeforeMount } from "vue";
+import { onBeforeUnmount } from "vue";
 import mitt,{type Handler} from "mitt";
 import { type RouteLocationNormalized } from "vue-router";
 
@@ -12,7 +12,7 @@ const key = Symbol("ROUTE_CHANGE");
 let latestRoute:RouteLocationNormalized;
 
 export const setRouteChange= (to:RouteLocationNormalized)=>{
-    //触发事件
+    //路由变化时，触发事件
     emitter.emit(key,to);
     //缓存最新的路由信息
     latestRoute = to;
@@ -46,9 +46,9 @@ export function useRouteListener(){
     }
 
     /**
-     *
+     * 组件销毁前移除监听器
      */
-    onBeforeMount(()=>{
+    onBeforeUnmount(()=>{
         for(let i=0;i<callBackList.length;i++){
             removeRouteListener(callBackList[i]);
         }

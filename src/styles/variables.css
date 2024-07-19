@@ -11,5 +11,13 @@
     --sidebar-menu-hover-bg-color: #409eff10;
     --sidebar-menu-text-color: #cfd3dc;
     --sidebar-menu-active-text-color: #ffffff;
-    --sidebar-menu-tip-line-bg-color:#409EFFFF
+    --sidebar-menu-tip-line-bg-color:#409EFFFF;
+
+    /**TagsView 组件**/
+    --tags-view-height:34px;
+    --tags-view-text-color:#606266FF;
+    --tags-view-tag-border-color:#EBEEF5FF;
+    --tags-view-tag-bg-color:#FFFFFFFF;
+    --tags-view-tag-active-bg-color:#409EFFFF;
+
 }

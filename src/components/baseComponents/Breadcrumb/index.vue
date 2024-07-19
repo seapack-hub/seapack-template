@@ -1,14 +1,19 @@
 <template>
   <el-breadcrumb separator="/">
-    <el-breadcrumb-item> 123 </el-breadcrumb-item>
+    <el-breadcrumb-item v-for="(item,index) in breadcrumbs" :key="index">
+      {{item.meta.description}}
+    </el-breadcrumb-item>
   </el-breadcrumb>
 </template>
 
 <script setup lang="ts">
 import {ref} from "vue";
 import {type RouteLocationMatched,useRoute} from "vue-router";
-const route = useRoute();
+import {useRouteListener} from "@/hooks/useRouteListener.ts";
 
+
+const route = useRoute();
+const {listenerRouteChange} = useRouteListener();
 // 定义响应式数据，获取面包屑路由
 const breadcrumbs = ref<RouteLocationMatched[]>([]);
 
@@ -17,9 +22,12 @@ const breadcrumbs = ref<RouteLocationMatched[]>([]);
  */
 const getBreadcrumb = ()=>{
   breadcrumbs.value = route.matched.filter(item=>item.meta?.description && item.meta?.breadcrumb !== false);
-  console.log(breadcrumbs)
 }
-getBreadcrumb();
+
+listenerRouteChange((route)=>{
+  getBreadcrumb();
+},true)
+
 </script>
 
 <style scoped lang="scss">

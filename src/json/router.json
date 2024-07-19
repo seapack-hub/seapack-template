@@ -17,7 +17,8 @@
         "meta": {
           "title": "workbench",
           "description": "工作台",
-          "icon":"home-dark"
+          "icon":"home-dark",
+          "affix": true
         }
       },
       {
