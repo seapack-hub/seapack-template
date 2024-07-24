@@ -2,11 +2,15 @@
   <div class="tags-view-container">
     <ScrollPane class="tags-view-wrapper">
       <RouterLink
-          class="tags-view-item"
           v-for="tag in tagsViewStore.visitedViews"
           :to="tag.path"
+          class="tags-view-item"
+          :class="{active:isActive(tag)}"
       >
         {{tag.meta?.description}}
+        <el-icon v-if="!isAffix(tag)" size="12" @click.prevent.stop="closeSelectedTag(tag)">
+          <Close/>
+        </el-icon>
       </RouterLink>
     </ScrollPane>
   </div>
@@ -25,6 +29,7 @@ import {type TagsView,useTagsViewStore} from "@/store/modules/tags-view.ts";
 import {usePermissionStore} from "@/store/modules/permission.ts";
 import {useRouteListener} from "@/hooks/useRouteListener.ts"
 import ScrollPane from "@/layout/components/tagsView/ScrollPane.vue";
+import { Close } from "@element-plus/icons-vue"
 import path from "path-browserify";
 const route = useRoute();
 const router = useRouter();
@@ -35,7 +40,7 @@ const {listenerRouteChange} = useRouteListener();
 /**
  * 判断标签页是否固定
  */
-const isAffix = (tag: TagView) => {
+const isAffix = (tag: TagsView) => {
   return tag.meta?.affix
 }
 /**
@@ -69,7 +74,7 @@ const filterAffixTags = (routes:RouteRecordRaw[],basePath="/")=>{
 const initTags = ()=>{
   const affixTags = filterAffixTags(permissionStore.routes);
   for(const tag of affixTags){
-    tag.name&& tagsViewStore.addVisitedView(tag);
+    tag.name && tagsViewStore.addVisitedView(tag);
   }
 }
 
@@ -83,6 +88,35 @@ const addTags = (route:RouteLocationNormalized)=>{
   }
 }
 
+const toLastView = (visitedViews:TagsView[],view:TagsView)=>{
+  //获取最后一个标签页,slice 返回一个索引和另一个索引之间的数据(不改变原数组)
+  const lastView = visitedViews.slice(-1)[0];
+  const fullPath = lastView?.fullPath;
+  //路径存在则，跳转
+  if(fullPath !== undefined){
+    router.push(fullPath)
+  }else{
+    // 如果路径全部都关闭了，重定向到主页
+    // 重新加载主页
+    router.push({ path: "/redirect" + view.path, query: view.query })
+  }
+}
+/**
+ * 关闭当前点击的标签页
+ * @param view
+ */
+const closeSelectedTag = (view:TagsView)=>{
+  tagsViewStore.delVisitedView(view);
+  isActive(view) && toLastView(tagsViewStore.visitedViews,view);
+}
+
+/**
+ * 判断标签页是否激活
+ * @param view
+ */
+const isActive = (view:TagsView) =>{
+  return view.path === route.path;
+}
 onMounted(()=>{
   initTags();
   listenerRouteChange(async (route)=>{
@@ -106,13 +140,30 @@ onMounted(()=>{
       border: 1px solid var(--tags-view-tag-border-color);
       border-radius: 2px;
       background-color: var(--tags-view-tag-bg-color);
-      padding: 0 8px;
+      padding: 0 8px 0 4px;
       font-size: 12px;
+      Text-decoration: none;
+      margin-left: 5px;
+      margin-top: 4px;
       &:first-of-type {
         margin-left: 5px;
       }
       &:last-of-type {
         margin-right: 5px;
+      }
+      &.active {
+        background-color: var(--tags-view-tag-active-bg-color);
+        color: var(--tags-view-tag-active-text-color);
+        border-color: var(--tags-view-tag-active-border-color);
+      }
+      .el-icon{
+        border-radius: 50%;
+        margin-top: -2px;
+        vertical-align:middle;
+        &:hover {
+          background-color: var(--tags-view-tag-icon-hover-bg-color);
+          color: var(--tags-view-tag-icon-hover-color);
+        }
       }
     }
   }

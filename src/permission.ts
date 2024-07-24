@@ -2,7 +2,7 @@
 import routerJson from "@/json/router.json";
 
 import {usePermissionStore} from "@/store/modules/permission.ts";
-
+import {setRouteChange} from "@/hooks/useRouteListener.ts"
 //引入路由
 import router from "./router";
 
@@ -38,8 +38,14 @@ router.beforeEach((to,from,next)=>{
             router.addRoute(route);
         });
         permissionStore.dynamicRoutes = asyncRouter;
+        permissionStore.setRoutes(asyncRouter);
         //重定向并替换当前路径
         next({...to,replace:true});
     }
 
+})
+
+router.afterEach((to)=>{
+    //路由变化时，设置最新的路由
+    setRouteChange(to);
 })

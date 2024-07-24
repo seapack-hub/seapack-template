@@ -2,7 +2,7 @@ import {createRouter,createWebHistory,RouteRecordRaw} from "vue-router";
 
 import layout from "@/layout/menuTab/index.vue"
 
-const routerRecordRow:RouteRecordRaw[] = [
+export const routerRecordRow:RouteRecordRaw[] = [
     {
         path:"/",
         redirect:"/menuTab"

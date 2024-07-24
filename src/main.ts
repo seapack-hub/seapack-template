@@ -16,9 +16,7 @@ import './permission.ts';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 //导入路由
 import router from "./router";
-import "@/router/permission.ts"
 const app = createApp(App);
-//import "./test.ts"
 //注册所有图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)

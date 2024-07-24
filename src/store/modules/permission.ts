@@ -6,6 +6,8 @@ import {RouteRecordRaw} from "vue-router"
 import router from "@/router/index.ts";
 //引入views下所有文件
 const modules = import.meta.glob("../../views/**/**.vue");
+//引入静态路由
+import {routerRecordRow} from "@/router/index.ts"
 //引入布局
 //主布局
 const Layout = ()=> import("../../layout/main/index.vue");
@@ -41,7 +43,25 @@ export const usePermissionStore = defineStore("permission",{
          * @param routes
          */
         formatDynamicRoutes,
+
+        /**
+         * 将新路由与静态路由合并
+         * @param newRoutes
+         */
+        setRoutes(newRoutes:RouteRecordRaw[]){
+            this.routes = routerRecordRow.concat(newRoutes);
+        }
+
     }
+    // const basePath:string = "";//当前模块路由的基础路径
+    // const currentModules:string | any ="";
+    // const dynamicRoutes: RouteRecordRaw[] = [];
+    //
+    // return {
+    //     basePath,
+    //     currentModules
+    // }
+
 });
 
 function formatDynamicRoutes(routes:Array<RouteRecordRaw>){

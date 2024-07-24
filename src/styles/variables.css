@@ -10,7 +10,7 @@
     --sidebar-menu-bg-color: #001428;
     --sidebar-menu-hover-bg-color: #409eff10;
     --sidebar-menu-text-color: #cfd3dc;
-    --sidebar-menu-active-text-color: #ffffff;
+    --sidebar-menu-active-text-color: #FFFFFFFF;
     --sidebar-menu-tip-line-bg-color:#409EFFFF;
 
     /**TagsView 组件**/
@@ -19,5 +19,9 @@
     --tags-view-tag-border-color:#EBEEF5FF;
     --tags-view-tag-bg-color:#FFFFFFFF;
     --tags-view-tag-active-bg-color:#409EFFFF;
+    --tags-view-tag-active-text-color:#FFFFFFFF;
+    --tags-view-tag-active-border-color:#409EFFFF;
+    --tags-view-tag-icon-hover-bg-color:#00000030;
+    --tags-view-tag-icon-hover-color:#FFFFFF;
 
 }

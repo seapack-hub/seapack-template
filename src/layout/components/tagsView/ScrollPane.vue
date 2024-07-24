@@ -4,7 +4,7 @@
       <ArrowLeft/>
     </el-icon>
     <el-scrollbar ref="scrollbarRef">
-      <div>
+      <div class="scrollbar-content">
         <slot></slot>
       </div>
     </el-scrollbar>
@@ -34,6 +34,14 @@ import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue";
     }
     &.right {
       box-shadow: -5px 0 5px -6px var(--el-border-color-darker);
+    }
+  }
+  .el-scrollbar {
+    flex: 1;
+    // 防止换行（超出宽度时，显示滚动条）
+    white-space: nowrap;
+    .scrollbar-content {
+      display: inline-block;
     }
   }
 }
