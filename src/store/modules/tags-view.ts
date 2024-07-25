@@ -60,7 +60,27 @@ export const useTagsViewStore = defineStore("tags-view",()=>{
     }
 
     /**
-     * 删除标签页路由(保留固定的路由)
+     * 删除其他标签页
+     * @param view
+     */
+    const delOtherVisitedViews = (view:TagsView)=>{
+        visitedViews.value = visitedViews.value.filter(item=>{
+            return item.meta?.affix || view.path === item.path;
+        })
+    }
+
+    const delOtherCachedViews = (view:TagsView)=>{
+        if(typeof view.name !== "string") return;
+        const index = cachedViews.value.indexOf(view.name);
+        if(index !== -1){
+            cachedViews.value = cachedViews.value.slice(index,index+1);
+        }else{
+            cachedViews.value = [];
+        }
+    }
+
+    /**
+     * 删除所有标签页路由(保留固定的路由)
      */
     const delAllVisitedView = ()=>{
         visitedViews.value = visitedViews.value.filter(tag=>tag.meta?.affix);
@@ -77,6 +97,8 @@ export const useTagsViewStore = defineStore("tags-view",()=>{
         addCacheView,
         delVisitedView,
         delCachedView,
+        delOtherVisitedViews,
+        delOtherCachedViews,
         delAllVisitedView,
         delAllCachedView
     }
