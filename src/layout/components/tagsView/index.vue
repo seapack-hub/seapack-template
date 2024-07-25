@@ -85,6 +85,7 @@ const initTags = ()=>{
 const addTags = (route:RouteLocationNormalized)=>{
   if(route.name){
     tagsViewStore.addVisitedView(route)
+    tagsViewStore.addCacheView(route)
   }
 }
 
@@ -107,6 +108,7 @@ const toLastView = (visitedViews:TagsView[],view:TagsView)=>{
  */
 const closeSelectedTag = (view:TagsView)=>{
   tagsViewStore.delVisitedView(view);
+  tagsViewStore.delCachedView(view);
   isActive(view) && toLastView(tagsViewStore.visitedViews,view);
 }
 
