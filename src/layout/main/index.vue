@@ -1,22 +1,26 @@
 <template>
   <el-container style="width: 100vw;height:100vh">
     <el-aside>
-      <side-bar/>
+      <SideBar/>
     </el-aside>
     <el-container>
       <el-header>
-        <nav-bar/>
+        <NavigationBar/>
       </el-header>
       <el-main>
         <router-view/>
       </el-main>
     </el-container>
   </el-container>
+  <!--系统配置-->
+  <right-panel>
+    <Settings/>
+  </right-panel>
 </template>
 
 <script setup lang="ts">
-import NavBar from "@/layout/components/navigationBar/index.vue";
-import SideBar from "@/layout/components/sideBar/index.vue";
+import RightPanel from "@/layout/rightPanel/index.vue"
+import {NavigationBar,SideBar,Settings} from "@/layout/components/index.ts"
 import {useAppStore} from "@/store/modules/app.ts";
 import {computed} from "vue";
 

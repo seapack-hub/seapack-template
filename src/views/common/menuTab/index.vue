@@ -6,10 +6,10 @@
 
 <script setup lang="ts">
 import {ref,onMounted} from "vue"
-import {useRouter} from "vue-router"
+import {type RouteRecordRaw, useRouter} from "vue-router"
 import routerInfo from "@/json/router.json";
 //初始化菜单
-const menuList = ref<{meta?:{title?:string},name:string}[]>([]);
+const menuList = ref<RouteRecordRaw[]>([]);
 const router = useRouter();
 /**
  * 获取菜单信息
@@ -21,7 +21,7 @@ const getMeanList = ()=>{
  * 路由跳转
  * @param item
  */
-const handToPage = (item:object)=>{
+const handToPage = (item:RouteRecordRaw)=>{
   router.push({path:item?.path});
 }
 onMounted(()=>{

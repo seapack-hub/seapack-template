@@ -29,4 +29,7 @@
     --tags-view-contextmenu-hover-bg-color:#F0F2F5FF;
     --tags-view-contextmenu-box-shadow:0px 12px 32px 4px rgba(0,0,0,0.04),0px 8px 20px rgba(0,0,0,0.08);
 
+    /** RightPanel 组件  */
+    --right-panel-button-bg-color: #001428;
+
 }
