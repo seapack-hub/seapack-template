@@ -18,7 +18,8 @@
           "title": "workbench",
           "description": "工作台",
           "icon":"home-dark",
-          "affix": true
+          "affix": true,
+          "elIcon": "Grid"
         }
       },
       {
@@ -28,7 +29,8 @@
         "meta": {
           "title": "tableComponent",
           "description": "表格组件",
-          "icon":"table-dark"
+          "icon":"table-dark",
+          "elIcon": "Grid"
         }
       },
       {
@@ -38,7 +40,8 @@
         "meta": {
           "title": "fileUpload",
           "description": "文件上传",
-          "icon":"file-upload-dark"
+          "icon":"file-upload-dark",
+          "elIcon": "Grid"
         }
       }
     ]

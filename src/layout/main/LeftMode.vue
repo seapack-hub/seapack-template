@@ -1,6 +1,6 @@
 <template>
   <el-container style="width: 100vw;height:100vh">
-    <el-aside>
+    <el-aside width="collapse">
       <SideBar/>
     </el-aside>
     <el-container>

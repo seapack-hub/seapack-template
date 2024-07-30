@@ -1,27 +1,27 @@
 <template>
-  <el-menu
-      :default-active="activeMenu"
-      class="el-menu"
-      :active-text-color="activeTextColor"
-      :unique-opened="true"
-  >
-    <side-bar-item
-        v-for="(item,index) in menuList"
-        :key="index"
-        :item="item"
-        :base-path="basePath"
-    ></side-bar-item>
-  </el-menu>
+    <el-menu
+        :default-active="activeMenu"
+        class="el-menu"
+        :active-text-color="activeTextColor"
+        :unique-opened="true"
+        :collapse-transition="false"
+        :collapse="collapse"
+    >
+      <side-bar-item
+          v-for="(item,index) in menuList"
+          :key="index"
+          :item="item"
+          :base-path="basePath"
+      ></side-bar-item>
+    </el-menu>
 </template>
 
 <script setup lang="ts">
 import {computed} from "vue";
-import { useRoute } from "vue-router";
+import { type RouteRecordRaw,useRoute } from "vue-router";
 import SideBarItem from "@/layout/components/sideBar/SideBarItem.vue";
 // 获取CSS 全局变量
 import {getCssVariableValue} from "@/utils/index.ts";
-import {useAppStore} from "@/store/modules/app.ts";
-const appStore = useAppStore();
 const route = useRoute();
 const activeMenu = computed(()=>{
   const {
@@ -38,18 +38,22 @@ const activeTextColor = computed(()=>{
 })
 
 const tipLineWidth = computed(() => {
-  return  appStore.opened?"2px":"0px";
+  return  "2px";
 })
 defineProps({
   menuList:{
     required:true,
     default:()=>[],
-    type:Array<any>
+    type:Array<RouteRecordRaw>
   },
   basePath:{
     type:String,
     required:true,
   },
+  collapse:{
+    type:Boolean,
+    required:true
+  }
 })
 </script>
 
@@ -90,6 +94,13 @@ defineProps({
 //同时具备 el-menu-item 和 is-active 两个类名才生效
 :deep(.el-menu-item.is-active) {
   @extend %tip-line;
+}
+.el-menu--collapse {
+  :deep(.el-sub-menu.is-active) {
+    .el-sub-menu__title {
+      @extend %tip-line;
+    }
+  }
 }
 
 </style>

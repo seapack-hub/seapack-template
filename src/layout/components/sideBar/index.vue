@@ -1,32 +1,32 @@
 <template>
   <div class="side-bar">
     <!--顶部图标-->
-<!--    <Logo></Logo>-->
-    <div class="logo-title" v-if="appStore.opened">SeaPack</div>
-    <div class="logo-title" v-else>SP</div>
+    <Logo :collapse="isCollapse"></Logo>
     <!--左侧菜单-->
-    <left-menu :base-path="basePath" :menu-list="menuList"></left-menu>
+    <left-menu :base-path="basePath" :menu-list="menuList" :collapse="isCollapse"></left-menu>
   </div>
 </template>
 
 <script setup lang="ts">
 import LeftMenu from "@/layout/components/sideBar/LeftMenu.vue";
+import Logo from "@/layout/components/logo/index.vue"
+import {type RouteRecordRaw} from "vue-router"
 import { storeToRefs } from 'pinia';
 import {computed} from 'vue';
 //引入路由
 import {usePermissionStore} from "@/store/modules/permission.ts";
 import {useAppStore} from "@/store/modules/app.ts";
+const appStore = useAppStore();
 
 const permissionStore = usePermissionStore();
 const {dynamicRoutes} = storeToRefs(permissionStore);
-const appStore = useAppStore();
 
 //获取菜单列表
 const menuList = computed(()=>{
-  const list = dynamicRoutes.value.find(item=>item.name === "systemManagement")||{children:[]};
+  const list = dynamicRoutes.value.find((item:RouteRecordRaw)=>item.name === "systemManagement");
   return list.children;
 });
-
+const isCollapse = computed(()=>!appStore.opened);
 //获取基础路径
 const basePath = computed(()=>permissionStore.basePath)
 </script>
