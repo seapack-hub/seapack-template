@@ -27,7 +27,8 @@ const props = withDefaults(defineProps<Props>(), {
     text-align: center;
     margin:0 auto;
     height: 60px;
-    font-size: 30px;
+    padding: 0 10px;
+    font-size: 28px;
     line-height: 60px;
   }
 }

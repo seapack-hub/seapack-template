@@ -3,9 +3,12 @@
         :default-active="activeMenu"
         class="el-menu"
         :active-text-color="activeTextColor"
+        :text-color="textColor"
+        :background-color="backgroundColor"
         :unique-opened="true"
         :collapse-transition="false"
         :collapse="collapse"
+        :mode="isTop?'horizontal':'vertical'"
     >
       <side-bar-item
           v-for="(item,index) in menuList"
@@ -20,9 +23,12 @@
 import {computed} from "vue";
 import { type RouteRecordRaw,useRoute } from "vue-router";
 import SideBarItem from "@/layout/components/sideBar/SideBarItem.vue";
+import {useLayoutMode} from "@/hooks/useLayoutMode.ts"
 // 获取CSS 全局变量
 import {getCssVariableValue} from "@/utils/index.ts";
 const route = useRoute();
+const {isTop,isLeftTop,isLeft} = useLayoutMode();
+
 const activeMenu = computed(()=>{
   const {
     meta:{activeMenu},
@@ -34,11 +40,19 @@ const activeMenu = computed(()=>{
 })
 
 const activeTextColor = computed(()=>{
-  return getCssVariableValue("--sidebar-menu-active-text-color")
+  return isLeft.value?getCssVariableValue("--sidebar-menu-active-text-color"):undefined
 })
-
+const textColor = computed(()=>{
+  return isLeft.value?getCssVariableValue("--sidebar-menu-text-color"):undefined
+})
+const backgroundColor = computed(()=>{
+  return isLeft.value?getCssVariableValue("--sidebar-menu-bg-color"):undefined
+})
+const hoverMenuActiveTextColor = computed(()=>{
+  return !isTop.value?getCssVariableValue("--sidebar-menu-hover-bg-color"):"transparent"
+})
 const tipLineWidth = computed(() => {
-  return  "2px";
+  return  isLeft.value?"2px":"0px";
 })
 defineProps({
   menuList:{
@@ -62,7 +76,8 @@ defineProps({
   border: none;
   width: 100% !important;
   min-height: calc(100% - 65px);
-  background-color: var(--sidebar-menu-bg-color);
+  //background-color: var(--sidebar-menu-bg-color);
+  background-color: v-bind(backgroundColor);
 }
 
 :deep(.el-menu-item),
@@ -71,11 +86,14 @@ defineProps({
 :deep(.el-menu--horizontal .el-menu-item){
   height:var(--sidebar-menu-item-height);
   line-height: var(--sidebar-menu-item-height);
-  color:var(--sidebar-menu-text-color);
+  //color:var(--sidebar-menu-text-color);
+  color:v-bind(textColor);
   &.is-active,
   &:hover{
-    background-color:var(--sidebar-menu-hover-bg-color);
-    color:var(--sidebar-menu-active-text-color)
+    //background-color:var(--sidebar-menu-hover-bg-color);
+    background-color:v-bind(hoverMenuActiveTextColor);
+    //color:var(--sidebar-menu-active-text-color)
+    color:v-bind(activeTextColor);
   }
 }
 

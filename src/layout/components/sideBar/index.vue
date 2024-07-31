@@ -24,7 +24,7 @@ const {dynamicRoutes} = storeToRefs(permissionStore);
 //获取菜单列表
 const menuList = computed(()=>{
   const list = dynamicRoutes.value.find((item:RouteRecordRaw)=>item.name === "systemManagement");
-  return list.children;
+  return list?.children;
 });
 const isCollapse = computed(()=>!appStore.opened);
 //获取基础路径
