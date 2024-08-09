@@ -9,6 +9,7 @@
             :menu-list="menuList"
             :collapse="isCollapse"
         ></left-menu>
+        <NavRight/>
       </div>
     </el-header>
     <el-main>
@@ -20,6 +21,7 @@
 <script setup lang="ts">
 import LeftMenu from "@/layout/components/sideBar/LeftMenu.vue";
 import Logo from "@/layout/components/logo/index.vue"
+import NavRight from "@/layout/components/navigationBar/NavRight.vue";
 import {usePermissionStore} from "@/store/modules/permission.ts";
 import {useAppStore} from "@/store/modules/app.ts";
 import {type RouteRecordRaw} from "vue-router"
