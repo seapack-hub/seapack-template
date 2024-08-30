@@ -3,7 +3,7 @@
     <el-header>
       <div class="header-container">
         <div class="logo">
-          <Logo/>
+          <Logo :collapse="false"/>
         </div>
         <div class="navigation-right">
           <NavigationBar/>
@@ -60,7 +60,7 @@ const sidebarWidth = computed(()=>{
   justify-content: space-between;
   .logo{
     height: 100%;
-    width: v-bind(sidebarWidth);
+    width: var(--sidebar-width);
   }
   .navigation-right{
     flex:1;
