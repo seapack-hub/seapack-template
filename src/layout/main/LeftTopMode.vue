@@ -29,7 +29,6 @@
 <script setup lang="ts">
 import {NavigationBar, SideBar} from "@/layout/components";
 import Logo from "@/layout/components/logo/index.vue"
-import NavRight from "@/layout/components/navigationBar/NavRight.vue";
 import {useAppStore} from "@/store/modules/app.ts";
 import {usePermissionStore} from "@/store/modules/permission.ts";
 import {computed} from "vue";

@@ -10,7 +10,9 @@ export interface LayoutSetting{
     /** 是否显示logo*/
     showLogo:boolean,
     /** 是否缓存标签栏 */
-    cacheTagsView: boolean
+    cacheTagsView: boolean,
+    /** 是否开启系统水印*/
+    showWatermark: boolean,
 }
 
 /** 默认配置 **/
@@ -19,7 +21,8 @@ const defaultSetting:LayoutSetting = {
     layoutMode:LayoutModeEnum.Left,
     showTagsView:true,
     showLogo:true,
-    cacheTagsView:false
+    cacheTagsView:false,
+    showWatermark:false
 }
 
 /** 项目配置 **/
