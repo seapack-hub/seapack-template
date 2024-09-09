@@ -43,6 +43,17 @@
           "icon":"file-upload-dark",
           "elIcon": "Grid"
         }
+      },
+      {
+        "path": "echarts",
+        "name": "echarts",
+        "component": "systemManagement/components/SPEcharts",
+        "meta": {
+          "title": "fileUpload",
+          "description": "echarts图表",
+          "icon":"pie-chart",
+          "elIcon": "Grid"
+        }
       }
     ]
   },

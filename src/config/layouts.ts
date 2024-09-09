@@ -22,7 +22,7 @@ const defaultSetting:LayoutSetting = {
     showTagsView:true,
     showLogo:true,
     cacheTagsView:false,
-    showWatermark:false
+    showWatermark:true
 }
 
 /** 项目配置 **/

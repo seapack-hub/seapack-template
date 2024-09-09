@@ -98,11 +98,11 @@ export function useWatermark(parentEl:Ref<HTMLElement|null> = bodyEl){
      * @param options
      */
     const updateWatermarkEl = (options:Partial<{width:number,height:number}> = {})=>{
-        if(!parentEl) return;
-        backupText && (watermarkEl?.style.background = `url(${createBase64()}) left top repeat`);
+        if(!watermarkEl) return;
+        backupText && (watermarkEl.style.background = `url(${createBase64()}) left top repeat`);
         // 更新宽度高度
-        options.width && (watermarkEl?.style.width = `${options.width}px`);
-        options.height && (watermarkEl?.style.height = `${options.height}px`);
+        options.width && (watermarkEl.style.width = `${options.width}px`);
+        options.height && (watermarkEl.style.height = `${options.height}px`);
     }
 
     /**
@@ -135,12 +135,12 @@ export function useWatermark(parentEl:Ref<HTMLElement|null> = bodyEl){
      * 清除水印
      */
     const clearWatermark = ()=>{
-        if(!parentEl.value && !watermarkEl) return;
+        if(!parentEl.value || !watermarkEl) return;
         //移除监听器
         removeListener();
         try{
             //移除水印元素
-            parentEl.value?.removeChild(watermarkEl);
+            parentEl.value.removeChild(watermarkEl);
         }catch{
             //比如在无防御情况下，用户打开控制台删除了这个元素
             console.warn("水印元素已不存在，请重新创建")
@@ -237,7 +237,7 @@ export function useWatermark(parentEl:Ref<HTMLElement|null> = bodyEl){
             subtree:false
         })
 
-        observer.parentElMutationObserver.observe(parentEl,{
+        observer.parentElMutationObserver.observe(targetNode,{
             attributes:true,
             childList:false,
             subtree:false
@@ -269,5 +269,4 @@ export function useWatermark(parentEl:Ref<HTMLElement|null> = bodyEl){
     })
 
     return { setWatermark, clearWatermark }
-
 }
