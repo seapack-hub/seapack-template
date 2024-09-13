@@ -6,8 +6,8 @@
     </div>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item @click="logout">用户信息</el-dropdown-item>
-        <router-link to="/">
+        <el-dropdown-item>用户信息</el-dropdown-item>
+        <router-link to="/menuTab">
           <el-dropdown-item>返回首页</el-dropdown-item>
         </router-link>
         <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
@@ -19,23 +19,29 @@
 <script setup lang="ts">
 //获取用户信息
 import {useUserStore} from "@/store/modules/user.ts";
-const userStore = useUserStore();
-const userInfo = userStore.userInfo;
-
+import {useRouter} from "vue-router"
 //信息提示
 import { h } from 'vue'
 import { ElMessage } from 'element-plus'
+
+const userStore = useUserStore();
+const router = useRouter();
+
+const userInfo = userStore.userInfo;
 
 /**
  * 退出登录
  */
 function logout(){
-  ElMessage({
-    message:h('p', { style: 'line-height: 1; font-size: 14px' }, [
-      h('span', null, '暂未开发，'),
-      h('i', { style: 'color: teal' }, '敬请期待！'),
-    ]),
+  router.push({
+    path:"/login"
   })
+  // ElMessage({
+  //   message:h('p', { style: 'line-height: 1; font-size: 14px' }, [
+  //     h('span', null, '暂未开发，'),
+  //     h('i', { style: 'color: teal' }, '敬请期待！'),
+  //   ]),
+  // })
 }
 
 </script>

@@ -11,9 +11,11 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@vueuse/core": "^10.9.0",
+    "axios": "^1.7.7",
     "cesium": "^1.119.0",
     "echarts": "^5.5.1",
     "element-plus": "^2.6.1",
+    "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
     "mitt": "^3.0.1",
     "ol": "^9.1.0",

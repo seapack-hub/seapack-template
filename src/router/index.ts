@@ -5,7 +5,14 @@ import layout from "@/layout/menuTab/index.vue"
 export const routerRecordRow:RouteRecordRaw[] = [
     {
         path:"/",
-        redirect:"/menuTab"
+        redirect:"/login"
+    },
+    {
+        path:"/login",
+        component:()=> import("@/views/login/index.vue"),
+        meta:{
+            hidden:true
+        }
     },
     {
         path:"/menuTab",
