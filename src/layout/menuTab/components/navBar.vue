@@ -32,10 +32,10 @@ import { House } from '@element-plus/icons-vue'
 /** 列表*/
 const itemList = ref([])
 itemList.value = [
-  { name: '首页', color: '#000000', iconName: 'homeMain' },
-  { name: '归档', color: '#000000', iconName: 'pigeonhole' },
-  { name: '分类', color: '#000000', iconName: 'classify' },
-  { name: '系统', color: '#000000', iconName: 'backOffice' },
+  { name: '首页', color: '#FFFFFF', iconName: 'homeMain' },
+  { name: '归档', color: '#FFFFFF', iconName: 'pigeonhole' },
+  { name: '分类', color: '#FFFFFF', iconName: 'classify' },
+  { name: '系统', color: '#FFFFFF', iconName: 'backOffice' },
 ]
 /** 当前活跃页*/
 const activeValue = ref(0)
@@ -55,7 +55,7 @@ const tabClick = (item, index) => {
   justify-content: space-between;
   width: 100%;
   height: 50px;
-
+  //background-color: rgb(253, 251, 251);
   .menuTab-nav-bar-left {
     display: flex;
     align-items: center;
@@ -85,6 +85,7 @@ const tabClick = (item, index) => {
           margin-left: 5px;
           line-height: 24px;
           font-family: cursive;
+          color:#FFFFFF
         }
       }
       .isActive {
