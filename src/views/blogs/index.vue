@@ -4,13 +4,16 @@
     <div class="blogs-main-left">
       <Left/>
     </div>
-    <div class="blogs-main-middle">博客主页2</div>
-    <div class="blogs-main-right">博客主页3</div>
+    <div class="blogs-main-middle"></div>
+    <div class="blogs-main-right">
+      <Right/>
+    </div>
   </div>
 </template>
 
 <script setup>
 import Left from "./left/index.vue"
+import Right from "./right/index.vue"
 </script>
 
 <style lang="scss" scoped>

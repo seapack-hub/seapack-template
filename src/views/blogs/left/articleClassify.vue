@@ -50,7 +50,6 @@ const classifyList = ref([
     padding: 20px;
     display: flex;
     justify-content: space-between;
-    font-family: cursive;
     border-bottom: 1px solid gray;
     .classification{
       display: flex;

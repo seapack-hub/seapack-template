@@ -21,5 +21,6 @@ import CurrentAffairsHot from './currentAffairsHot.vue'
   flex-direction: column;
   gap: 30px;
   padding: 20px;
+  font-family: cursive;
 }
 </style>

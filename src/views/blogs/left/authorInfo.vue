@@ -95,7 +95,6 @@ function jumpToLink(str){
       margin-top: 15px;
       font-size: 20px;
       font-weight: 700;
-      font-family: cursive;
     }
     .author-motto {
       font-size: 15px;
