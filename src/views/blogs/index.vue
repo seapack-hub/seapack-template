@@ -25,12 +25,12 @@ import Right from "./right/index.vue"
   display: flex;
 
   &-left,&-right{
-    padding: 20px 20px 10px 30px;
+    padding: 10px;
     width: 350px;
   }
   &-middle{
     flex:1;
-    padding: 20px 15px;
+    padding: 10px;
   }
 }
 </style>

@@ -33,6 +33,7 @@
       margin-left: 5px;
       font-size: 16px;
       line-height: 20px;
+      font-weight: 600;
     }
   }
   &-main{

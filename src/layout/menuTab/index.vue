@@ -25,7 +25,7 @@ import navBar from "@/layout/menuTab/components/navBar.vue";
     box-shadow: 0 1px 1px 0 rgba(0, 21, 67, 0.04), inset 0px -1px 0px 0px #888889;
   }
 }
-//.el-main,.el-header{
-//  padding:0;
-//}
+.el-main,.el-header{
+  padding:0;
+}
 </style>

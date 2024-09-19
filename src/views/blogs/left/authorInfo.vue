@@ -33,14 +33,21 @@
       <div class="jump-icon" @click="jumpToLink('juejin')">
         <SPIcon name="juejin" size="20px"></SPIcon>
       </div>
+      <div class="jump-icon" @click="jumpToLink('houtai')">
+        <SPIcon name="houtai" size="20px"></SPIcon>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import {useRouter} from "vue-router"
 
+const router = useRouter();
 const blogsInfoList = ref([]);
+
+
 blogsInfoList.value = [
   { name: '文章', number: '30' },
   { name: '分类', number: '16' },
@@ -50,8 +57,12 @@ blogsInfoList.value = [
 function jumpToLink(str){
   if(str === "gitHub"){
     window.open("https://github.com/seapack-hub",'_blank')
-  }else{
+  }else if(str === "juejin"){
     window.open("https://juejin.cn/user/2071912223613783",'_blank')
+  }else{
+    router.push({
+      path:"/systemManagement"
+    })
   }
 }
 </script>

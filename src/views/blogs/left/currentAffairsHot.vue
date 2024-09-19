@@ -58,6 +58,7 @@ hotList.value = [
       align-items: center;
       &-text {
         margin-left: 5px;
+        font-weight: 600;
       }
     }
     .swap-it-out {
