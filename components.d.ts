@@ -33,6 +33,7 @@ declare module 'vue' {
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    ElTree: typeof import('element-plus/es')['ElTree']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     LoginUser: typeof import('./src/components/loginUser/index.vue')['default']
     Logo: typeof import('./src/components/Logo/index.vue')['default']
