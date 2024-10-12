@@ -3,12 +3,32 @@
     <!--导航栏设置-->
     <div class="setting-navigation">
       <!--返回主屏幕-->
-      <SPIcon class="setting-item" name="to-home" size="20px" @click="toHome"></SPIcon>
+      <SPIcon
+        class="setting-item"
+        name="to-home"
+        size="20px"
+        @click="jumpToLink('/menuTab')"
+      ></SPIcon>
+      <SPIcon
+        class="setting-item"
+        name="2D-layers"
+        size="20px"
+        @click="jumpToLink('/worldData')"
+      ></SPIcon>
+      <SPIcon
+        class="setting-item"
+        name="3D-layers"
+        size="20px"
+        @click="jumpToLink('/worldData')"
+      ></SPIcon>
       <!--消息通知-->
       <SPIcon class="setting-item" name="message-notify" size="20px"></SPIcon>
       <!--全屏设置-->
       <div @click="toggle">
-        <SPIcon :name="isFullscreen?'fullscreen-shrink':'fullscreen-expand'" size="20px"></SPIcon>
+        <SPIcon
+          :name="isFullscreen ? 'fullscreen-shrink' : 'fullscreen-expand'"
+          size="20px"
+        ></SPIcon>
       </div>
       <!--语言设置-->
       <changeLanguage></changeLanguage>
@@ -20,33 +40,37 @@
 </template>
 
 <script setup lang="ts">
-import {useFullscreen} from '@vueuse/core';
-import {useRouter} from "vue-router";
+import { useFullscreen } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
+const router = useRouter()
 /**
  * VueUse全屏
  */
-const {isFullscreen,toggle} = useFullscreen()
-
+const { isFullscreen, toggle } = useFullscreen()
 /**
- * 返回主界面
+ * 路由跳转
+ * @param path
  */
-function toHome(){
-  router.push({path:"/menuTab"})
+function jumpToLink(path: string) {
+  if (path) {
+    router.push({
+      path: path,
+    })
+  }
 }
 </script>
 
 <style scoped lang="scss">
-.nav-right{
+.nav-right {
   display: flex;
   flex-direction: row;
   align-items: center;
-  .setting-navigation{
+  .setting-navigation {
     display: flex;
     gap: 10px;
     align-items: center;
-    .setting-item{
+    .setting-item {
       margin-bottom: 5px;
     }
   }

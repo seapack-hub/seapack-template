@@ -21,21 +21,33 @@
       </div>
     </div>
     <div class="menuTab-nav-bar-right">
-      <SPIcon name="search" size="30px" color="#ffffff"></SPIcon>
+      <!-- <SPIcon name="search" size="30px" color="#ffffff"></SPIcon> -->
+      <SPIcon name="houtai" size="20px" @click="jumpToLink('/systemManagement')"></SPIcon>
+      <SPIcon name="2D-layers" size="20px" @click="jumpToLink('/worldData')"></SPIcon>
+      <SPIcon name="3D-layers" size="20px" @click="jumpToLink('/worldData')"></SPIcon>
+
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { House } from '@element-plus/icons-vue'
+import {useRouter} from "vue-router"
 
+const router = useRouter();
+
+//定义类型
+type itemType = {
+  name?: string
+  color?: string
+  iconName?: string
+}
 /** 列表*/
-const itemList = ref([])
+const itemList = ref<itemType[]>([])
 itemList.value = [
-  { name: '首页', color: '#FFFFFF', iconName: 'homeMain' },
-  { name: '归档', color: '#FFFFFF', iconName: 'pigeonhole' },
-  { name: '分类', color: '#FFFFFF', iconName: 'classify' },
-  { name: '系统', color: '#FFFFFF', iconName: 'backOffice' },
+  { name: '首页', color: '#000000', iconName: 'homeMain' },
+  { name: '归档', color: '#000000', iconName: 'pigeonhole' },
+  { name: '分类', color: '#000000', iconName: 'classify' },
+  { name: '系统', color: '#000000', iconName: 'backOffice' },
 ]
 /** 当前活跃页*/
 const activeValue = ref(0)
@@ -44,8 +56,21 @@ const activeValue = ref(0)
 const isFocus = ref(false)
 
 /** tab点击事件*/
-const tabClick = (item, index) => {
+const tabClick = (item: itemType, index: number) => {
   activeValue.value = index
+}
+
+/**
+ * 路由跳转
+ * @param path 
+ */
+function jumpToLink(path: string) {
+  if (path) {
+    // changeSystemType(path)
+    router.push({
+      path:path
+    })
+  }
 }
 </script>
 <style scoped lang="scss">
@@ -85,7 +110,7 @@ const tabClick = (item, index) => {
           margin-left: 5px;
           line-height: 24px;
           font-family: cursive;
-          color:#FFFFFF
+          color: #000000;
         }
       }
       .isActive {
@@ -98,11 +123,10 @@ const tabClick = (item, index) => {
   }
 
   .menuTab-nav-bar-right {
-    width: 80px;
-    height: 34px;
-    background-color: aqua;
-    text-align: center;
-    border-radius: 17px;
+    padding: 0 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: space-around;
   }
 }
 </style>

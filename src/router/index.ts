@@ -1,6 +1,8 @@
-import {createRouter,createWebHistory,RouteRecordRaw} from "vue-router";
+import {createRouter,createWebHistory,RouteRecordRaw,onBeforeRouteUpdate } from "vue-router";
 
 import layout from "@/layout/menuTab/index.vue"
+import {useLayoutMode} from "@/hooks/useLayoutMode.ts";
+import {SystemTypeEnum} from "@/constants/app-key.ts";
 
 export const routerRecordRow:RouteRecordRaw[] = [
     {
@@ -63,5 +65,4 @@ const router = createRouter({
     history:createWebHistory(base),
     routes:routerRecordRow as RouteRecordRaw[]
 });
-
 export default router;

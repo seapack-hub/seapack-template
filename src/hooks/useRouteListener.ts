@@ -5,7 +5,6 @@ import { type RouteLocationNormalized } from "vue-router";
 
 /** 定义回调函数的类型 */
 type Callback = (route:RouteLocationNormalized)=>void;
-
 const emitter = mitt();
 // 声明唯一键
 const key = Symbol("ROUTE_CHANGE");

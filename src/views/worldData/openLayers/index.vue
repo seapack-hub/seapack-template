@@ -1,9 +1,5 @@
 <template>
   <div class="open-layers">
-    <!--头部-->
-    <div class="title">
-      <h3>OpenLayer地图</h3>
-    </div>
     <!--按钮-->
     <div class="button-group">
       <el-button @click="toggleLayer" >显示与隐藏</el-button>
@@ -235,16 +231,18 @@ onMounted(()=>{
 .open-layers{
   width: 100%;
   height: 100%;
-  padding: 20px;
+  //padding: 20px;
   .title{
     text-align: center;
   }
   .button-group{
+    height: 50px;
     display: flex;
+    align-items: center;
   }
 }
 .map-x{
-  height: 600px;
+  height: calc(100% - 50px);
   //width: calc(100% - 50px);
   width: 100%;
 }

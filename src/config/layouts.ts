@@ -1,4 +1,4 @@
-import {LayoutModeEnum} from "@/constants/app-key.ts";
+import {LayoutModeEnum, SystemTypeEnum} from "@/constants/app-key.ts";
 
 export interface LayoutSetting{
     /**是否显示setting Pane*/
@@ -13,6 +13,8 @@ export interface LayoutSetting{
     cacheTagsView: boolean,
     /** 是否开启系统水印*/
     showWatermark: boolean,
+    /** 系统类型 */
+    systemType:SystemTypeEnum
 }
 
 /** 默认配置 **/
@@ -22,7 +24,8 @@ const defaultSetting:LayoutSetting = {
     showTagsView:true,
     showLogo:true,
     cacheTagsView:false,
-    showWatermark:true
+    showWatermark:true,
+    systemType:SystemTypeEnum.BlogSystem
 }
 
 /** 项目配置 **/

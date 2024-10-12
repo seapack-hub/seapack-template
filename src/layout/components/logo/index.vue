@@ -8,8 +8,6 @@
 </template>
 
 <script setup lang="ts">
-import {useAppStore} from "@/store/modules/app.ts";
-const appStore = useAppStore();
 import {useLayoutMode} from "@/hooks/useLayoutMode.ts";
 import {computed} from "vue";
 
@@ -17,6 +15,7 @@ interface Props {
   collapse?: boolean
 }
 const {isLeft,isTop,isLeftTop}  = useLayoutMode();
+
 const props = withDefaults(defineProps<Props>(), {
   collapse: true
 })
@@ -36,11 +35,11 @@ const logoHeight = computed(()=>{
     color:v-bind(fontColor);
     width: 100%;
     text-align: left;
-    margin:0 auto;
     height: v-bind(logoHeight);
-    padding: 0 20px;
     font-size: 28px;
     line-height: v-bind(logoHeight);
+    box-sizing: border-box;
+    padding: 0 20px;
   }
 }
 .collapse {
