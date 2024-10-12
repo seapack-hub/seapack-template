@@ -107,7 +107,7 @@
     "path": "/worldData",
     "name": "worldData",
     "component": "worldData",
-    "redirect": "/worldData/openLayers",
+    "redirect": "/worldData/openLayers/index",
     "show": true,
     "meta": {
       "title": "home",
@@ -118,11 +118,34 @@
         "path": "openLayers",
         "name": "openLayers",
         "component": "worldData/openLayers/index",
+        "redirect": "/worldData/openLayers/index",
         "meta": {
           "title": "openLayers",
-          "description": "天地图",
-          "icon":"home"
-        }
+          "description": "二维地图",
+          "icon":"openlayers"
+        },
+        "children":[
+          {
+            "path":"index",
+            "name":"index",
+            "component": "worldData/openLayers/index",
+            "meta": {
+              "title": "openLayers",
+              "description": "天地图",
+              "icon":"openlayers"
+            }
+          },
+          {
+            "path":"ceshi",
+            "name":"ceshi",
+            "component":"worldData/openLayers/ceshi",
+            "meta": {
+              "title": "openLayers",
+              "description": "测试",
+              "icon":"openlayers"
+            }
+          }
+        ]
       },
       {
         "path": "newWorld",
