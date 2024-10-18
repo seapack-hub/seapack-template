@@ -12,8 +12,8 @@
   </template>
   <template v-else>
     <el-sub-menu :index="item.path">
-      <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
       <template #title>
+        <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
         <span class="menu-text">{{item.meta.description ||'未知'}}</span>
       </template>
       <side-bar-item v-for="(item,index) in item.children" :item="item" :base-path="basePath"></side-bar-item>
@@ -29,7 +29,9 @@ import {useAppStore} from "@/store/modules/app.ts";
 
 const appStore = useAppStore();
 
-defineProps(["basePath","item"]);
+const props = defineProps(["basePath","item"]);
+
+console.log('--||--',props.item)
 </script>
 
 <style scoped lang="scss">

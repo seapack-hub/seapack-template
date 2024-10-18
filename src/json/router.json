@@ -107,7 +107,7 @@
     "path": "/worldData",
     "name": "worldData",
     "component": "worldData",
-    "redirect": "/worldData/openLayers/index",
+    "redirect":"/worldData/openLayers",
     "show": true,
     "meta": {
       "title": "home",
@@ -115,30 +115,51 @@
     },
     "children": [
       {
-        "path": "openLayers",
+        "path": "/worldData/openLayers",
         "name": "openLayers",
         "component": "worldData/openLayers/index",
-        "redirect": "/worldData/openLayers/index",
         "meta": {
           "title": "openLayers",
-          "description": "二维地图",
+          "description": "openLayers地图",
           "icon":"openlayers"
         },
         "children":[
           {
-            "path":"index",
-            "name":"index",
-            "component": "worldData/openLayers/index",
+            "path":"/worldData/openLayers/baseMap",
+            "name":"baseMap",
+            "component": "worldData/openLayers/baseMap/baseMap",
             "meta": {
-              "title": "openLayers",
-              "description": "天地图",
-              "icon":"openlayers"
+              "title": "baseMap",
+              "description": "基础地图",
+              "icon":"base-map"
             }
           },
           {
-            "path":"ceshi",
+            "path":"/worldData/openLayers/layerType/heatMap",
+            "name":"layerType",
+            "component":"worldData/openLayers/layerType/index",
+            "meta": {
+              "title": "layerType",
+              "description": "图层类型",
+              "icon":"layer-type"
+            },
+            "children":[
+              {
+                "path":"/worldData/openLayers/layerType/components/HeatMap",
+                "name":"heatMap",
+                "component":"worldData/openLayers/layerType/components/HeatMap",
+                "meta":{
+                  "title": "heatMap",
+                  "description": "热力图层",
+                  "icon":"layer-type"
+                }
+              }
+            ]
+          },
+          {
+            "path":"/worldData/openLayers/components/ceshi",
             "name":"ceshi",
-            "component":"worldData/openLayers/ceshi",
+            "component":"worldData/openLayers/components/ceshi",
             "meta": {
               "title": "openLayers",
               "description": "测试",

@@ -1,15 +1,16 @@
 <template>
-  <div class="open-layers-main">
+  <div class="layer-type">
+    <!-- -->
     <router-view />
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 
 </script>
 
-<style scoped lang="scss">
-.open-layers-main{
+<style lang="scss" scoped>
+.layer-type{
   width: 100%;
   height: 100%;
 }
