@@ -26,6 +26,7 @@ import VectorSource from 'ol/source/Vector.js'
 //引入 XYZ方法 加载瓦片地图资源数据
 import XYZ from 'ol/source/XYZ'
 import View from 'ol/View.js'
+import {Geometry, Point} from "ol/geom"
 //引入地图-Map，视图-View
 import { Heatmap as HeatmapLayer, Tile as TileLayer } from 'ol/layer.js'
 
@@ -35,7 +36,7 @@ const vector = new HeatmapLayer({
   source: new VectorSource({
     url: 'data/kml/2012_Earthquakes_Mag5.kml',
     format: new KML({
-      extractStyles: false,
+      extractStyles: true,
     }),
   }),
   blur: parseInt('' + blur.value, 10),
@@ -45,7 +46,7 @@ const vector = new HeatmapLayer({
     const magnitude = parseFloat(name.substr(2))
     return magnitude - 5
   },
-  gradient: ["#2200FF","#16D9CC","#4DEE12","#E8D225","#EF1616"]
+  gradient: ['#2200FF', '#16D9CC', '#4DEE12', '#E8D225', '#EF1616'],
 })
 const raster = new TileLayer({
   source: new StadiaMaps({
@@ -53,16 +54,36 @@ const raster = new TileLayer({
   }),
 })
 
+let features = [];
+function setFeatures() {
+  for (let i = 0; i < 1100; i++) {
+    let point = [
+      130 + 30 * Math.random() - 40 * Math.random(),
+      262 * Math.random() - 2 * Math.random(),
+    ]
+    features.push({
+      geometry:new Point(point)
+    })
+  }
+}
+
 /** 初始化地图 */
 function initMap() {
+  // setFeatures();
+  // const heatMapSource = new VectorSource({features:features});
+  // const heatMap = new HeatmapLayer({
+  //   source:heatMapSource
+  // })
   new Map({
-    layers: [raster, vector],
+    layers: [raster,vector],
     target: 'heat-map',
     view: new View({
       center: [0, 0],
       zoom: 2,
     }),
   })
+
+
 }
 
 onMounted(() => {

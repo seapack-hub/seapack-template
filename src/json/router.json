@@ -130,7 +130,7 @@
             "component": "worldData/openLayers/baseMap/baseMap",
             "meta": {
               "title": "baseMap",
-              "description": "基础地图",
+              "description": "基础控件",
               "icon":"base-map"
             }
           },
@@ -151,10 +151,40 @@
                 "meta":{
                   "title": "heatMap",
                   "description": "热力图层",
-                  "icon":"layer-type"
+                  "icon":"hot-map"
+                }
+              },
+              {
+                "path":"/worldData/openLayers/layerType/components/VectorMap",
+                "name":"vectorMap",
+                "component":"worldData/openLayers/layerType/components/VectorMap",
+                "meta":{
+                  "title": "vectorMap",
+                  "description": "矢量图层",
+                  "icon":"vector-map"
+                }
+              },
+              {
+                "path":"/worldData/openLayers/layerType/components/SliceMap",
+                "name":"sliceMap",
+                "component":"worldData/openLayers/layerType/components/SliceMap",
+                "meta":{
+                  "title": "sliceMap",
+                  "description": "切片图层",
+                  "icon":"slice-map"
                 }
               }
             ]
+          },
+          {
+            "path":"/worldData/openLayers/basicOperation",
+            "name":"marking",
+            "component":"worldData/openLayers/basicOperations/marking",
+            "meta":{
+              "title":"marking",
+              "description":"标注",
+              "icon":"openlayers"
+            }
           },
           {
             "path":"/worldData/openLayers/components/ceshi",
