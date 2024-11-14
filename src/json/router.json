@@ -199,14 +199,26 @@
         ]
       },
       {
-        "path": "newWorld",
-        "name": "newWorld",
-        "component": "worldData/cesium/newWorld",
+        "path": "/worldData/cesium",
+        "name": "cesium",
+        "component": "worldData/cesium/index",
         "meta": {
-          "title": "newWorld",
-          "description": "地图全览",
-          "icon":"home"
-        }
+          "title": "cesium",
+          "description": "3D地图",
+          "icon":"cesium"
+        },
+        "children":[
+          {
+            "path":"/worldData/cesium/baseCesium",
+            "name":"baseCesium",
+            "component": "worldData/cesium/components/baseCesium",
+            "meta": {
+              "title": "baseCesium",
+              "description": "基础地图",
+              "icon":"cesium"
+            }
+          }
+        ]
       }
     ]
   }
