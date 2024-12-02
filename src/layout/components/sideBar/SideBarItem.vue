@@ -30,8 +30,6 @@ import {useAppStore} from "@/store/modules/app.ts";
 const appStore = useAppStore();
 
 const props = defineProps(["basePath","item"]);
-
-console.log('--||--',props.item)
 </script>
 
 <style scoped lang="scss">

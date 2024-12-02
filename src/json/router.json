@@ -217,6 +217,60 @@
               "description": "基础地图",
               "icon":"cesium"
             }
+          },
+          {
+            "path": "/worldData/cesium/camera",
+            "name": "camera",
+            "component": "worldData/cesium/camera/index",
+            "meta": {
+              "title": "camera",
+              "description": "相机",
+              "icon":"camera"
+            },
+            "children":[
+              {
+                "path":"/worldData/cesium/camera/fly",
+                "name":"cameraFly",
+                "component":"worldData/cesium/camera/components/cameraFly",
+                "meta":{
+                  "title": "cameraFly",
+                  "description": "飞行",
+                  "icon":"fly"
+                }
+              },
+              {
+                "path":"/worldData/cesium/camera/move",
+                "name":"cameraMove",
+                "component":"worldData/cesium/camera/components/cameraMove",
+                "meta":{
+                  "title": "cameraMove",
+                  "description": "移动",
+                  "icon":"move"
+                }
+              }
+            ]
+          },
+          {
+            "path": "/worldData/cesium/entities",
+            "name": "entities",
+            "component": "worldData/cesium/entities/index",
+            "meta": {
+              "title": "entities",
+              "description": "实体",
+              "icon":"entities"
+            },
+            "children":[
+              {
+                "path":"/worldData/cesium/entities/airModel",
+                "name":"airModel",
+                "component":"worldData/cesium/entities/components/airModel",
+                "meta":{
+                  "title": "airModel",
+                  "description": "飞机模型",
+                  "icon":"air"
+                }
+              }
+            ]
           }
         ]
       }

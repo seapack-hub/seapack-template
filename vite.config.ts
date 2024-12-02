@@ -75,6 +75,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
     resolve: {
       alias: {
         '@': path.resolve('./src'),
+        '@p':path.resolve('./public')
       },
     },
   }

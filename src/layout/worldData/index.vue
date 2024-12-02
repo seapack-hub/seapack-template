@@ -32,8 +32,6 @@ const {dynamicRoutes} = storeToRefs(permissionStore);
 
 const appStore = useAppStore();
 const isCollapse = computed(()=>!appStore.opened);
-
-console.log('--列表--',dynamicRoutes);
 //获取菜单列表
 const menuList = computed(()=>{
   const list = dynamicRoutes.value.find(item=>item.name === "worldData");
