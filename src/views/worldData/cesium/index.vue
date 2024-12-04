@@ -5,7 +5,10 @@
 </template>
 
 <script setup lang="ts">
-
+import { onMounted,markRaw } from "vue";
+onMounted(() => {
+  console.log('--二级路由--')
+});
 </script>
 
 <style scoped lang="scss">

@@ -269,6 +269,38 @@
                   "description": "飞机模型",
                   "icon":"air"
                 }
+              },
+              {
+                "path":"/worldData/cesium/entities/scan",
+                "name":"scan",
+                "component":"worldData/cesium/entities/components/scan",
+                "meta":{
+                  "title": "scan",
+                  "description": "扫描",
+                  "icon":"scan"
+                }
+              }
+            ]
+          },
+          {
+            "path": "/worldData/cesium/particleEffect",
+            "name": "particleEffect",
+            "component": "worldData/cesium/particleEffects/index",
+            "meta": {
+              "title": "particleEffect",
+              "description": "粒子特效",
+              "icon":"particle-effects"
+            },
+            "children":[
+              {
+                "path":"/worldData/cesium/particleEffect/snow",
+                "name":"snow",
+                "component":"worldData/cesium/particleEffects/components/snow",
+                "meta":{
+                  "title": "snow",
+                  "description": "雪花",
+                  "icon":"snow"
+                }
               }
             ]
           }

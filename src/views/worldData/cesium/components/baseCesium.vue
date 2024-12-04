@@ -38,75 +38,63 @@ function initCesium() {
     selectionIndicator: false,
   })
 
-  // let material = new Cesium.ColorMaterialProperty(
-  //   new Cesium.Color(1.0, 1.0, 1.0, 1.0)
-  // );
-  // 棋盘纹理
-  // let material = new Cesium.CheckerboardMaterialProperty({
-  //   evenColor: Cesium.Color.GRAY,
-  //   oddColor: Cesium.Color.YELLOW,
-  //   repeat: new Cesium.Cartesian2(8, 8),
-  // });
-  //条纹纹理
-  // let material = new Cesium.StripeMaterialProperty({
-  //   evenColor: Cesium.Color.WHITE,
-  //   oddColor: Cesium.Color.BLACK,
-  //   repeat: 8,
-  // });
-  // 网格纹理
-  // let material = new Cesium.GridMaterialProperty({
-  //   color: Cesium.Color.YELLOW,
-  //   cellAlpha: 0.1,
+  //1.创建几何体
+  let rectGeometry = new Cesium.RectangleGeometry({
+    rectangle:Cesium.Rectangle.fromDegrees(115,20,135,30),
+    height:0,
+    vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+  });
+
+  //2.创建几何实例
+  let instance = new Cesium.GeometryInstance({
+    id:"rect001",
+    geometry:rectGeometry,
+    attributes:{
+      color:Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.RED.withAlpha(0.5))
+    }
+  });
+
+  //设置材质
+  //颜色
+  // let materail = new Cesium.Material.fromType("Color",{
+  //   color: Cesium.Color.AQUA.withAlpha(0.5),
+  // })
+  //图片
+  // let material = new Cesium.Material.fromType("Image",{
+  //   image:new URL("@/views/worldData/cesium/images/cattle.png",import.meta.url).href,
+  //   repeat:new Cesium.Cartesian2(2.0,1.0)
+  // })
+  // let material = new Cesium.Material.fromType("DiffuseMap",{
+  //   image:new URL("@/views/worldData/cesium/images/cattle.png",import.meta.url).href,
+  // })
+  // let material = new Cesium.Material.fromType("Grid", {
+  //   color: Cesium.Color.AQUA.withAlpha(0.5),
+  //   cellAlpha: 0.2,
   //   lineCount: new Cesium.Cartesian2(4, 4),
   //   lineThickness: new Cesium.Cartesian2(2.0, 2.0),
   // });
-  let material = new Cesium.Material({
-    fabric: {
-      type: 'Color',
-      uniforms: {
-        color: new Cesium.Color(1.0, 0.0, 0.0, 1.0),
-      },
-    },
-  })
-  //创建一个实体
-  // const rectangle = new Cesium.Entity({
-  //   id:"rectangleId002",
-  //   rectangle: {
-  //      coordinates: Cesium.Rectangle.fromDegrees(90,20,110,30),
-  //    },
+  let material = new Cesium.Material.fromType("Water", {
+    baseWaterColor: Cesium.Color.AQUA.withAlpha(0.5),
+    distortion: 0.25,
+    normalMap: new URL("@/views/worldData/cesium/images/waterNormals.jpg",import.meta.url).href
+  });
+  //3设置外观
+  // let appearance = new Cesium.MaterialAppearance({
+  //   material:materail
   // });
-
-  // rectangle.material = material
-  // viewer.entities.add(rectangle)
-
-  //创建一个多边形几何体
-  let polygon = new Cesium.PolygonGeometry({
-    polygonHierarchy: new Cesium.PolygonHierarchy(
-      Cesium.Cartesian3.fromDegreesArray([
-        -72.0, 40.0, -70.0, 35.0, -75.0, 30.0, -70.0, 30.0, -68.0, 40.0,
-      ])
-    ),
-    height: 1000,
+  let appearance = new Cesium.EllipsoidSurfaceAppearance({
+    material: material,
+    aboveGround: false,
+    translucent: true,
   })
+  //4 图元
+  let primitive = new Cesium.Primitive({
+    geometryInstances:instance,
+    appearance:appearance
+  });
 
-  //创建实体entity
-  let entity = new Cesium.Entity({
-    polygon: polygon,
-    // material:material
-  })
-
-  //添加实体
-  viewer.entities.add(entity)
-  // viewer.camera.zoomIn(polygon)
-
-  // 使用entity创建矩形
-  // let rectangle = viewer.entities.add({
-  //   id:"rectangleId001",
-  //    rectangle: {
-  //      coordinates: Cesium.Rectangle.fromDegrees(90,20,110,30),
-  //      material: material,
-  //    },
-  //   });
+  //5 将图元添加到viewer
+  viewer.scene.primitives.add(primitive);
 }
 
 onMounted(() => {

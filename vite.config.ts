@@ -75,7 +75,8 @@ export default defineConfig(({mode}:ConfigEnv) => {
     resolve: {
       alias: {
         '@': path.resolve('./src'),
-        '@p':path.resolve('./public')
+        '@p':path.resolve('./public'),
+        '@ces':path.resolve('./src/views/worldData/cesium')
       },
     },
   }
