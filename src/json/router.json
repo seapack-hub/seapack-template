@@ -301,6 +301,16 @@
                   "description": "雪花",
                   "icon":"snow"
                 }
+              },
+              {
+                "path":"/worldData/cesium/particleEffect/rain",
+                "name":"rain",
+                "component":"worldData/cesium/particleEffects/components/rain",
+                "meta":{
+                  "title": "rain",
+                  "description": "雨水",
+                  "icon":"rain"
+                }
               }
             ]
           }

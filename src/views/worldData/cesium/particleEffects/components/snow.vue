@@ -7,12 +7,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {onMounted,ref,onUnmounted,nextTick } from "vue";
-import SnowEffect from "@ces/utils/snow.js";
+//@ts-ignore
+import SnowEffect from "@/views/worldData/cesium/utils/snow.ts";
 import {useCesiumStore} from "@/store/modules/cesium";
 const cesiumStore = useCesiumStore();
-let snow = null;
+let snow:any = null;
 const hide = () => {
   snow.show(false)
 }

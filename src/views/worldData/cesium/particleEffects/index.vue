@@ -8,7 +8,7 @@
 
 <script setup>
 import { onMounted,markRaw} from "vue";
-import InitView from "@ces/utils/map3d/initView.js";
+import InitView from "@/views/worldData/cesium/utils/map3d/initView.ts";
 import {useCesiumStore} from "@/store/modules/cesium";
 
 const cesiumStore = useCesiumStore();
@@ -17,24 +17,12 @@ const init = ()=>{
   // 显示帧率
   viewer.scene.debugShowFramesPerSecond = true;
   viewer.scene.globe.depthTestAgainstTerrain = true;
-  // 外天空盒
-  // viewer.scene.skyBox = new Cesium.SkyBox({
-  //   sources: {
-  //     positiveX: "/images/Standard-Cube-Map/px1.png",
-  //     negativeX: "/images/Standard-Cube-Map/nx1.png",
-  //     positiveY: "/images/Standard-Cube-Map/pz.png",
-  //     negativeY: "/images/Standard-Cube-Map/nz1.png",
-  //     positiveZ: "/images/Standard-Cube-Map/py.png",
-  //     negativeZ: "/images/Standard-Cube-Map/ny1.png",
-  //   },
-  // });
   //将 viewer 标记为非响应式
   const rawViewer = markRaw(viewer);
   //将 rawViewer 存入store
   cesiumStore.setCesiumViewer(rawViewer);
 }
 onMounted(() => {
-  console.log('--三级路由--')
   init();
 });
 

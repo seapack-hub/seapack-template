@@ -24,9 +24,21 @@
     "types": ["element-plus/global"],
     "baseUrl":"./",   
     "paths":{
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@p/*":["public/*"],
+      "@ces/*":["src/views/worldData/cesium/*"],
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts", 
+    "src/**/*.tsx", 
+    "src/**/*.vue",
+    "public/**/*.ts", 
+    "public/**/*.tsx", 
+    "public/**/*.vue",
+    "src/views/worldData/cesium/**/*.ts", 
+    "src/views/worldData/cesium/**/*.tsx", 
+    "src/views/worldData/cesium/**/*.vue",
+  ],
   "references": [{ "path": "./tsconfig.node.json" }],
 }

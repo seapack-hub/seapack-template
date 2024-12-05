@@ -1,15 +1,27 @@
 import * as Cesium from "cesium";
+import {Viewer} from "cesium"
+
+// 下雨特效参数类型
+export interface SnowOption{
+  snowSize?:number,
+  snowSpeed?:number
+}
 
 /**
  * 雪花类
  */
 export default class SnowEffect{
+  snowSize?: number;
+  snowSpeed?: number;
+  viewer: Cesium.Viewer;
+  // @ts-ignore
+  snowStage: Cesium.PostProcessStage;
   /**
    * 构造器
    * @param {*} viewer 视图
    * @param {*} options 配置项
    */
-  constructor(viewer,options){
+  constructor(viewer:Viewer,options:SnowOption){
     //视图为空，抛出异常
     if(!viewer) throw new Error("new viewer object");
     options = options || {};
@@ -51,7 +63,7 @@ export default class SnowEffect{
   }
 
   /**控制展示与隐藏 */
-  show(visible){
+  show(visible:boolean){
     this.snowStage.enabled = visible;
   }
 

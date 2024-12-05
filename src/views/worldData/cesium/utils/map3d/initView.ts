@@ -16,8 +16,10 @@ const defaultConfig = {
   selectionIndicator: false,
 }
 export default class InitView{
+  // @ts-ignore
+  viewer: Cesium.Viewer;
   //构造器
-  constructor(id,paramsOpts){
+  constructor(id:string,paramsOpts:object){
     paramsOpts = paramsOpts||{};
     this.initMap3d(id,paramsOpts)
   };
@@ -27,7 +29,7 @@ export default class InitView{
    * @param {*} id 容器ID
    * @param {*} paramsOpts 配置参数
    */
-  initMap3d(id,paramsOpts){
+  initMap3d(id:string,paramsOpts:object){
     if(typeof id === "string"){
       if(!id) throw new Error("容器id 不能为空！");
       // 设置cesium默认视角
@@ -47,6 +49,17 @@ export default class InitView{
           credit: 'Tianditu'
       });
       this.viewer.imageryLayers.addImageryProvider(tdtImageryProvider);
+        // 外天空盒
+      this.viewer.scene.skyBox = new Cesium.SkyBox({
+        sources: {
+          positiveX: "/images/Standard-Cube-Map/px1.png",
+          negativeX: "/images/Standard-Cube-Map/nx1.png",
+          positiveY: "/images/Standard-Cube-Map/pz.png",
+          negativeY: "/images/Standard-Cube-Map/nz1.png",
+          positiveZ: "/images/Standard-Cube-Map/py.png",
+          negativeZ: "/images/Standard-Cube-Map/ny1.png",
+        },
+      });
     }
   }
 }
