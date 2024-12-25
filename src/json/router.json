@@ -313,6 +313,28 @@
                 }
               }
             ]
+          },
+          {
+            "path": "/worldData/cesium/loadData",
+            "name": "loadData",
+            "component": "worldData/cesium/loadData/index",
+            "meta": {
+              "title": "loadData",
+              "description": "数据加载",
+              "icon":"load"
+            },
+            "children":[
+              {
+                "path":"/worldData/cesium/loadData/loadGeoJSON",
+                "name":"loadGeoJSON",
+                "component":"worldData/cesium/loadData/components/loadGeoJSON",
+                "meta":{
+                  "title": "loadGeoJSON",
+                  "description": "GeoJSON数据",
+                  "icon":"geojson"
+                }
+              }
+            ]
           }
         ]
       }

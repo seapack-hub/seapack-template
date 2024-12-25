@@ -14,6 +14,7 @@ const defaultConfig = {
   fullscreenButton: false, //全屏按钮
   infoBox: false, //是否显示信息窗口
   selectionIndicator: false,
+  shouldAnimate: true, //展示动画
 }
 export default class InitView{
   // @ts-ignore
@@ -41,14 +42,14 @@ export default class InitView{
       let config = {...defaultConfig,...paramsOpts}
       //绑定容器
       this.viewer = new Cesium.Viewer(id, config)
-      let tdtImageryProvider = new Cesium.UrlTemplateImageryProvider({
-          url: 'http://{s}.tianditu.com/DataServer?T=img_w&X={x}&Y={y}&L={z}&tk=d845a99528ce08b31543c602207e873f',
-          subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
-          maximumLevel: 18,
-          minimumLevel: 1,
-          credit: 'Tianditu'
-      });
-      this.viewer.imageryLayers.addImageryProvider(tdtImageryProvider);
+      // let tdtImageryProvider = new Cesium.UrlTemplateImageryProvider({
+      //     url: 'http://{s}.tianditu.com/DataServer?T=img_w&X={x}&Y={y}&L={z}&tk=d845a99528ce08b31543c602207e873f',
+      //     subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
+      //     maximumLevel: 18,
+      //     minimumLevel: 1,
+      //     credit: 'Tianditu'
+      // });
+      // this.viewer.imageryLayers.addImageryProvider(tdtImageryProvider);
         // 外天空盒
       this.viewer.scene.skyBox = new Cesium.SkyBox({
         sources: {
