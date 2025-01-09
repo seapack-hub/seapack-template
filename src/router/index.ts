@@ -59,51 +59,6 @@ export const routerRecordRow:RouteRecordRaw[] = [
             }
         ]
     },
-    // {
-    //     path: "/worldData",
-    //     name: "worldData",
-    //     component: ()=>import("@/layout/worldData/index.vue"),
-    //     redirect: "/worldData/openLayers/index",
-    //     meta: {
-    //       "title": "home",
-    //       "description": "数据世界"
-    //     },
-    //     children: [
-    //       {
-    //         path: "openLayers",
-    //         name: "openLayers",
-    //         component: ()=>import("@/views/worldData/openLayers/index.vue"),
-    //         redirect: "/worldData/openLayers/index",
-    //         meta: {
-    //           title: "openLayers",
-    //           description: "二维地图",
-    //           icon:"openlayers"
-    //         },
-    //         children:[
-    //           {
-    //             path:"index",
-    //             name:"index",
-    //             component: ()=>import("@/views/worldData/openLayers/index.vue"),
-    //             meta: {
-    //               title: "openLayers",
-    //               description: "天地图",
-    //               icon:"openlayers"
-    //             }
-    //           },
-    //           {
-    //             path:"ceshi",
-    //             name:"ceshi",
-    //             component: ()=>import("@/views/worldData/openLayers/components/ceshi.vue"),
-    //             meta: {
-    //               title: "openLayers",
-    //               description: "测试",
-    //               icon:"openlayers"
-    //             }
-    //           },
-    //         ]
-    //       }
-    //     ]
-    //   }
 ];
 const base:string = ""
 const router = createRouter({

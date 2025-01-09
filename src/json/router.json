@@ -330,8 +330,18 @@
                 "component":"worldData/cesium/loadData/components/loadGeoJSON",
                 "meta":{
                   "title": "loadGeoJSON",
-                  "description": "GeoJSON数据",
+                  "description": "JSON数据",
                   "icon":"geojson"
+                }
+              },
+              {
+                "path":"/worldData/cesium/loadData/flightTrajectory",
+                "name":"flightTrajectory",
+                "component":"worldData/cesium/loadData/components/flightTrajectory",
+                "meta":{
+                  "title": "flightTrajectory",
+                  "description": "飞机轨迹",
+                  "icon":"flightTrajectory"
                 }
               }
             ]

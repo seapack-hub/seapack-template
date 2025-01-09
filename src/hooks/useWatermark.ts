@@ -210,9 +210,11 @@ export function useWatermark(parentEl:Ref<HTMLElement|null> = bodyEl){
             mutationList.forEach(
                 debounce((mutation:MutationRecord)=>{
                     switch (mutation.type) {
+                        //监听 属性是否被更改
                         case "attributes":
                             mutation.target === watermarkEl && updateWatermark();
                             break;
+                        //监听 新增节点或删除节点
                         case "childList":
                             mutation.removedNodes.forEach((item)=>{
                                 item === watermarkEl && targetNode.appendChild(watermarkEl);

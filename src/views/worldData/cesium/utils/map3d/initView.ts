@@ -4,8 +4,8 @@ const Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhMTA5YzcyZC03OTdl
 
 //基础配置
 const defaultConfig = {
-  timeline: false, //时间轴控件
-  animation: false, //动画控件
+  timeline: true, //时间轴控件
+  animation: true, //动画控件
   geocoder: false, //搜索按钮
   homeButton:false, //主页按钮
   sceneModePicker: false, //投影方式按钮
@@ -34,7 +34,7 @@ export default class InitView{
     if(typeof id === "string"){
       if(!id) throw new Error("容器id 不能为空！");
       // 设置cesium默认视角
-      Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(89.5,20.4,110.4,61.2);
+      // Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(89.5,20.4,110.4,61.2);
       Cesium.Camera.DEFAULT_VIEW_FACTOR = 0
       //设置token
       Cesium.Ion.defaultAccessToken = Token;
