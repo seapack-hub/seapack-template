@@ -24,7 +24,7 @@ import {onMounted,ref} from "vue";
 
 const list = ref(labelList)
 
-let ringEcharts;
+let ringEcharts:any;
 function setOption(){
   ringEcharts.setOption(ringEchartsOptions)
 }

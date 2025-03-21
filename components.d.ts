@@ -44,5 +44,6 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SPIcon: typeof import('./src/components/baseComponents/SPIcon/index.vue')['default']
+    SpInput: typeof import('./src/components/Form/SpInput.vue')['default']
   }
 }
