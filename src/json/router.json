@@ -45,7 +45,7 @@
         ]
       },
       {
-        "path": "fileUpload",
+        "path": "/systemManagement/components/SPFileUpload",
         "name": "fileUpload",
         "component": "systemManagement/components/SPFileUpload",
         "meta": {
@@ -56,7 +56,7 @@
         }
       },
       {
-        "path": "echarts",
+        "path": "/systemManagement/components/SPEcharts",
         "name": "echarts",
         "component": "systemManagement/components/SPEcharts",
         "meta": {
