@@ -22,8 +22,12 @@ import { onMounted, ref } from 'vue'
 
 //类型定义
 type RGBColor = `#${string}` | `rgb(${number},${number},${number})`
-type Point = { x: number; y: number }
+type Point = { x: number; y: number; pressure?: number }
 type CanvasContext = CanvasRenderingContext2D | null
+type DrawingState = {
+  points: Point[]
+  lastRenderTime: number
+}
 
 // 配置
 const exportBgColor: RGBColor = '#ffffff' // 设置为需要的背景色
@@ -34,22 +38,40 @@ const ctx = ref<CanvasContext>()
 
 //绘制状态
 const isDrawing = ref(false)
-const lastPosition = ref<Point>({ x: 0, y: 0 })
+const state = ref<DrawingState>({
+  points: [],
+  lastRenderTime: 0,
+})
+
+// 配置参数
+const config = {
+  SMOOTHING_INTERVAL: 16, // 平滑渲染间隔(ms)
+  PRESSURE_SENSITIVITY: 0.5, // 压感灵敏度
+  LINE_SMOOTHING: 0.3, // 线条平滑系数
+  MAX_POINTS: 100, // 保留的最大点数
+}
 
 //初始化画布
 onMounted(() => {
   if (!canvasRef.value) return
+
+  // 高清屏适配,设备像素比（devicePixelRatio）是当前显示设备的物理像素分辨率与CSS像素分辨率之比
+  const dpr = window.devicePixelRatio || 1
+  //方法返回一个 DOMRect 对象，其提供了元素的大小及其相对于视口的位置。
+  const rect = canvasRef.value.getBoundingClientRect()
   //设置画布大小
-  canvasRef.value.width = 800
-  canvasRef.value.height = 400
+  canvasRef.value.width = rect.width * dpr
+  canvasRef.value.height = rect.height * dpr
 
   //获取2d上下文
   ctx.value = canvasRef.value.getContext('2d')
   if (!ctx.value) return
 
   //初始化 画笔样式
+  ctx.value.scale(dpr, dpr)
   ctx.value.lineWidth = 2
   ctx.value.lineCap = 'round'
+  ctx.value.lineJoin = 'round'
   ctx.value.strokeStyle = '#000' //线条颜色
   // 初始填充背景
   fillBackground(exportBgColor)
@@ -65,46 +87,115 @@ const fillBackground = (color: RGBColor) => {
 }
 
 //获取坐标点
-const getCanvasPosition = (clientX: number, clientY: number): Point => {
+const getCanvasPosition = (e: MouseEvent | Touch): Point => {
   if (!canvasRef.value) return { x: 0, y: 0 }
 
   //获取元素在视口（viewport）中位置
   const rect = canvasRef.value.getBoundingClientRect()
   return {
-    x: clientX - rect.left,
-    y: clientY - rect.top,
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top,
+    pressure: (e as Touch).force | 0.5, //压感支持
   }
 }
 
-// 获取事件坐标
-const getEventPosition = (e: MouseEvent | TouchEvent): Point => {
-  //TouchEvent 是在支持触摸操作的设备（如智能手机、平板电脑）上，用于处理触摸相关交互的事件对象
-  if ('touches' in e) {
-    return getCanvasPosition(e.touches[0].clientX, e.touches[0].clientY)
+//轨迹平滑算法（二次贝塞尔曲线优化）
+const smoothPoints = (points: Point[]): Point[] => {
+  if (points.length < 3) return points
+
+  const smoothed: Point[] = []
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[Math.max(0, i - 1)]
+    const p1 = points[i]
+    const p2 = points[i + 1]
+    const p3 = points[Math.min(points.length - 1, i + 2)]
+
+    // Catmull-Rom插值
+    for (let t = 0; t <= 1; t += 0.2) {
+      const x =
+        0.5 *
+        (2 * p1.x +
+          (-p0.x + p2.x) * t +
+          (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t * t +
+          (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * t * t * t)
+      const y =
+        0.5 *
+        (2 * p1.y +
+          (-p0.y + p2.y) * t +
+          (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t * t +
+          (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * t * t * t)
+      smoothed.push({ x, y })
+    }
   }
-  return getCanvasPosition(e.clientX, e.clientY)
+  return smoothed
+}
+
+// 动态线宽计算（基于速度）
+const calculateLineWidth = (points: Point[]): number => {
+  if (points.length < 2) return 2
+
+  const lastTwo = points.slice(-2)
+  const dx = lastTwo[1].x - lastTwo[0].x
+  const dy = lastTwo[1].y - lastTwo[0].y
+  const distance = Math.sqrt(dx * dx + dy * dy)
+  const speed = distance / (Date.now() - state.value.lastRenderTime)
+
+  // 速度越大线宽越小
+  return Math.max(1, 4 - speed * 0.5)
 }
 
 //开始绘制
 const startDrawing = (e: MouseEvent | TouchEvent) => {
   isDrawing.value = true
-  const { x, y } = getEventPosition(e)
-  lastPosition.value = { x, y }
+  const point = getCanvasPosition(e instanceof MouseEvent ? e : e.touches[0])
+  state.value.points = [point]
+}
+
+//绘制路径
+const drawPath = () => {
+  if (!ctx.value || state.value.points.length < 2) return
+  // 应用平滑算法
+  const smoothed = smoothPoints(state.value.points)
+
+  ctx.value.beginPath()
+  ctx.value.moveTo(smoothed[0].x, smoothed[0].y)
+
+  // 绘制贝塞尔曲线
+  for (let i = 1; i < smoothed.length - 2; i++) {
+    const p1 = smoothed[i]
+    const p2 = smoothed[i + 1]
+    const cp = {
+      x: (p1.x + p2.x) / 2,
+      y: (p1.y + p2.y) / 2,
+    }
+    ctx.value.quadraticCurveTo(p1.x, p1.y, cp.x, cp.y)
+  }
+
+  // 处理压感效果
+  const pressure = smoothed[smoothed.length - 1].pressure || 0.5
+  ctx.value.globalAlpha = 0.5 + pressure * 0.5
+  ctx.value.lineWidth = calculateLineWidth(smoothed)
+
+  ctx.value.stroke()
+  state.value.lastRenderTime = Date.now()
 }
 
 //绘制中
 const draw = (e: MouseEvent | TouchEvent) => {
   if (!isDrawing.value || !ctx.value) return
-  const { x, y } = getEventPosition(e)
-  //开始新路径
-  ctx.value.beginPath()
-  //移动画笔到上一个点
-  ctx.value.moveTo(lastPosition.value.x, lastPosition.value.y)
-  //绘制线条到当前点
-  ctx.value.lineTo(x, y)
-  ctx.value.stroke()
-  //更新最后的位置
-  lastPosition.value = { x, y }
+
+  const point = getCanvasPosition(e instanceof MouseEvent ? e : e.touches[0])
+  // 限制最大点数
+  if (state.value.points.length > config.MAX_POINTS) {
+    state.value.points.shift()
+  }
+
+  state.value.points.push(point)
+
+  // 使用 requestAnimationFrame 节流
+  requestAnimationFrame(() => {
+    drawPath()
+  })
 }
 
 //结束绘制
