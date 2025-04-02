@@ -1,6 +1,6 @@
 <template>
     <el-menu
-        :default-active="activeMenu"
+        :default-active="activeMenuObj"
         class="el-menu"
         :active-text-color="activeTextColor"
         :text-color="textColor"
@@ -29,14 +29,13 @@ import {getCssVariableValue} from "@/utils/index.ts";
 const route = useRoute();
 const {isTop,isLeftTop,isLeft} = useLayoutMode();
 
-const activeMenu = computed(()=>{
+const activeMenuObj = computed(()=>{
   const {
-    meta:{activeMenu},
     path
   } = route;
   //构建正则表达式，去除模块前缀
   const reg = new RegExp("\/[a-zA-Z0-9]*\/",)
-  return activeMenu? activeMenu:path.replace(reg,"");
+  return path.replace(reg,"");
 })
 
 const activeTextColor = computed(()=>{

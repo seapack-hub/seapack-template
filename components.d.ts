@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     Breadcrumb: typeof import('./src/components/baseComponents/Breadcrumb/index.vue')['default']
     ChangeLanguage: typeof import('./src/components/changeLanguage/index.vue')['default']
-    ElAmin: typeof import('element-plus/es')['ElAmin']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
     ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
@@ -31,7 +30,6 @@ declare module 'vue' {
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElOption: typeof import('element-plus/es')['ElOption']
-    ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSlider: typeof import('element-plus/es')['ElSlider']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']

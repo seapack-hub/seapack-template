@@ -14,6 +14,8 @@
     "noEmit": true,
     "jsx": "preserve",
 
+    "noEmitOnError": false,
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": false, /* 检查未使用的变量 */

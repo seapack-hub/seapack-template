@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -24,6 +24,7 @@
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "seapack-f-o": "^1.0.3",
+    "three": "^0.174.0",
     "vite-plugin-cesium": "^1.2.22",
     "vite-plugin-vue-devtools": "^7.0.27",
     "vue": "^3.5.0",

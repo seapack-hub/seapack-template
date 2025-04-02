@@ -3,7 +3,7 @@
     "path": "/systemManagement",
     "name": "systemManagement",
     "component": "Layout",
-    "redirect": "/systemManagement/systemManagementWorkbench",
+    "redirect": "/common/workbench/index",
     "show": true,
     "meta": {
       "title": "home",
@@ -11,7 +11,7 @@
     },
     "children": [
       {
-        "path": "systemManagementWorkbench",
+        "path": "/common/workbench/index",
         "name": "systemManagementWorkbench",
         "component": "common/workbench/index",
         "meta": {
