@@ -6,7 +6,9 @@ import { getToken } from "./cache/cookies"
 /**创建请求实例 */
 function createAxios(){
   // 创建一个axios实例
-  const Axios = axios.create();
+  const Axios = axios.create({
+    baseURL:import.meta.env.VITE_BASE_API,
+  });
   
   // 请求拦截
   Axios.interceptors.request.use(
