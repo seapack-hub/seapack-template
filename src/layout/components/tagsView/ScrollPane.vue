@@ -1,7 +1,7 @@
 <template>
   <div class="scroll-container">
     <el-icon class="arrow left">
-      <ArrowLeft/>
+      <ArrowLeft />
     </el-icon>
     <el-scrollbar ref="scrollbarRef">
       <div class="scrollbar-content">
@@ -9,27 +9,27 @@
       </div>
     </el-scrollbar>
     <el-icon class="arrow right">
-      <ArrowRight/>
+      <ArrowRight />
     </el-icon>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ElScrollbar } from "element-plus";
-import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue";
+import { ElScrollbar } from 'element-plus';
+import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 </script>
 
 <style scoped lang="scss">
-.scroll-container{
+.scroll-container {
   height: 100%;
   user-select: none;
   display: flex;
   justify-content: space-between;
-  .arrow{
+  .arrow {
     width: 40px;
     height: 100%;
     font-size: 18px;
-    &.left{
+    &.left {
       box-shadow: 5px 0 5px -6px var(--el-border-color-darker);
     }
     &.right {

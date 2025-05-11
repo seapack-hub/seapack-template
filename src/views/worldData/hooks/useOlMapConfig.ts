@@ -1,15 +1,11 @@
 /** 设置地图的基础配置 */
 // 引入图层
-import TileLayer from 'ol/layer/Tile'
-import TileArcGISRest from 'ol/source/TileArcGISRest'
-// 引入openlayers 的内置的一个开源地图OSM
-import OSM from 'ol/source/OSM'
+import TileLayer from 'ol/layer/Tile';
 //引入 XYZ方法 加载瓦片地图资源数据
-import XYZ from 'ol/source/XYZ'
-import TileGrid from 'ol/tilegrid/TileGrid'
+import XYZ from 'ol/source/XYZ';
 
 //0表示部署的离线瓦片地图，1表示OSM,2表示使用Arcgis在线午夜蓝地图服务
-let maptype: number = 2
+//let maptype: number = 2;
 
 /**
  * 可暂时使用的地图地址
@@ -24,15 +20,15 @@ let maptype: number = 2
 export function useOlMapConfig() {
   const tileMap = new TileLayer({
     source: new XYZ({
-      url: `http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}`,
-
-    }),
-  })
+      url: `http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}`
+    })
+  });
 
   //中心点经度和纬度
-  const x = 108.40, y=35.75;
+  const x = 108.4,
+    y = 35.75;
   //缩放级别
-  const zoom:number = 12;
+  const zoom: number = 12;
 
-  return {x,y,zoom,tileMap}
+  return { x, y, zoom, tileMap };
 }

@@ -6,5 +6,5 @@ export const getLoginCodeApi = ()=>{
   return request<Login.LoginRequestData>({
     url:"login/code",
     method:"get"
-  })
-}
+  });
+};

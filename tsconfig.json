@@ -18,12 +18,12 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": false, /* 检查未使用的变量 */
-    "noUnusedParameters": false, /* 检查未使用的函数参数 */
+    "noUnusedLocals": true, /* 检查未使用的变量 */
+    "noUnusedParameters": true, /* 检查未使用的函数参数 */
     "noFallthroughCasesInSwitch": true,
 
     /*element-plus全局组件类型，Volar支持 */
-    "types": ["element-plus/global"],
+    "types": ["element-plus/global","vue"],
     "baseUrl":"./",   
     "paths":{
       "@/*": ["src/*"],
@@ -41,6 +41,7 @@
     "src/views/worldData/cesium/**/*.ts", 
     "src/views/worldData/cesium/**/*.tsx", 
     "src/views/worldData/cesium/**/*.vue",
+    "./auto-imports.d.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }],
 }

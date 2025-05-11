@@ -23,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import i18n from "@/locales";
-import {useAppStore} from "@/store/modules/app.ts";
+import i18n from '@/locales';
+import { useAppStore } from '@/store/modules/app.ts';
 
 //引入状态管理器
 const appStore = useAppStore();
 
-function handleCommand(command:any){
+function handleCommand(command: any) {
   i18n.global.locale.value = command;
   appStore.changeLanguage(command);
 }
@@ -40,8 +40,8 @@ function handleCommand(command:any){
 //  margin-right: 8px;
 //}
 
-.el-dropdown{
-  .el-tooltip__trigger:focus-visible{
+.el-dropdown {
+  .el-tooltip__trigger:focus-visible {
     outline: unset;
   }
 }

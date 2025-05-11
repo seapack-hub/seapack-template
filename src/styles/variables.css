@@ -1,35 +1,34 @@
-:root{
-    /** Body **/
-    --body-text-color:#303133FF;
-    --body-bg-color:#F2F3F5FF;
+:root {
+  /** Body **/
+  --body-text-color: #303133ff;
+  --body-bg-color: #f2f3f5ff;
 
-    /** Sidebar 组件（左侧模式全部生效、顶部模式全部不生效、混合模式非颜色部分生效） */
-    --sidebar-width:220px;
-    --sidebar-hide-width:65px;
-    --sidebar-menu-item-height:60px;
-    --sidebar-menu-bg-color: #001428;
-    --sidebar-menu-hover-bg-color: #409eff10;
-    --sidebar-menu-text-color: #cfd3dc;
-    --sidebar-menu-active-text-color: #FFFFFFFF;
-    --sidebar-menu-tip-line-bg-color:#409EFFFF;
+  /** Sidebar 组件（左侧模式全部生效、顶部模式全部不生效、混合模式非颜色部分生效） */
+  --sidebar-width: 220px;
+  --sidebar-hide-width: 65px;
+  --sidebar-menu-item-height: 60px;
+  --sidebar-menu-bg-color: #001428;
+  --sidebar-menu-hover-bg-color: #409eff10;
+  --sidebar-menu-text-color: #cfd3dc;
+  --sidebar-menu-active-text-color: #ffffffff;
+  --sidebar-menu-tip-line-bg-color: #409effff;
 
-    /**TagsView 组件**/
-    --tags-view-height:34px;
-    --tags-view-text-color:#606266FF;
-    --tags-view-tag-border-color:#EBEEF5FF;
-    --tags-view-tag-bg-color:#FFFFFFFF;
-    --tags-view-tag-active-bg-color:#409EFFFF;
-    --tags-view-tag-active-text-color:#FFFFFFFF;
-    --tags-view-tag-active-border-color:#409EFFFF;
-    --tags-view-tag-icon-hover-bg-color:#00000030;
-    --tags-view-tag-icon-hover-color:#FFFFFF;
-    --tags-view-contextmenu-text-color:#606266FF;
-    --tags-view-contextmenu-hover-text-color:#303133FF;
-    --tags-view-contextmenu-bg-color:#FFFFFFFF;
-    --tags-view-contextmenu-hover-bg-color:#F0F2F5FF;
-    --tags-view-contextmenu-box-shadow:0px 12px 32px 4px rgba(0,0,0,0.04),0px 8px 20px rgba(0,0,0,0.08);
+  /**TagsView 组件**/
+  --tags-view-height: 34px;
+  --tags-view-text-color: #606266ff;
+  --tags-view-tag-border-color: #ebeef5ff;
+  --tags-view-tag-bg-color: #ffffffff;
+  --tags-view-tag-active-bg-color: #409effff;
+  --tags-view-tag-active-text-color: #ffffffff;
+  --tags-view-tag-active-border-color: #409effff;
+  --tags-view-tag-icon-hover-bg-color: #00000030;
+  --tags-view-tag-icon-hover-color: #ffffff;
+  --tags-view-contextmenu-text-color: #606266ff;
+  --tags-view-contextmenu-hover-text-color: #303133ff;
+  --tags-view-contextmenu-bg-color: #ffffffff;
+  --tags-view-contextmenu-hover-bg-color: #f0f2f5ff;
+  --tags-view-contextmenu-box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04), 0px 8px 20px rgba(0, 0, 0, 0.08);
 
-    /** RightPanel 组件  */
-    --right-panel-button-bg-color: #001428;
-
+  /** RightPanel 组件  */
+  --right-panel-button-bg-color: #001428;
 }

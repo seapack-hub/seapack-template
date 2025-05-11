@@ -1,22 +1,22 @@
 <template>
   <div class="blogs-right">
     <!--公告 -->
-    <Announcement/>
+    <Announcement />
     <!--目录-->
-    <DirectoryPlate/>
+    <DirectoryPlate />
     <!--最新文章-->
-    <LatestArticles/>
+    <LatestArticles />
   </div>
 </template>
 
 <script setup>
 import Announcement from './components/announcement.vue';
-import LatestArticles from "./components/latestArticles.vue";
+import LatestArticles from './components/latestArticles.vue';
 import DirectoryPlate from './components/directoryPlate.vue';
 </script>
 
 <style lang="scss" scoped>
-.blogs-right{
+.blogs-right {
   display: flex;
   flex-direction: column;
   gap: 30px;

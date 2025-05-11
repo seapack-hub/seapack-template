@@ -7,20 +7,20 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted} from 'vue';
 //引入地图样式
-import 'ol/ol.css'
+import 'ol/ol.css';
 //引入地图-Map，视图-View . 特征-Feature
-import { Map, View, Feature } from 'ol'
-import { Point } from 'ol/geom'
-import { Style, Text, Icon, Fill, Stroke, Circle } from 'ol/style'
+import { Map, View, Feature } from 'ol';
+import { Point } from 'ol/geom';
+import { Style,Fill, Stroke, Circle } from 'ol/style';
 //引入图层
-import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
+import {  Vector as VectorLayer } from 'ol/layer';
 //引入 XYZ方法 加载瓦片地图资源数据
-import { XYZ, Vector as VectorSource } from 'ol/source'
+import { Vector as VectorSource } from 'ol/source';
 // 获取地图基本配置
-import { useOlMapConfig } from '@/views/worldData/hooks/useOlMapConfig.ts'
-const { tileMap, x, y, zoom } = useOlMapConfig()
+import { useOlMapConfig } from '@/views/worldData/hooks/useOlMapConfig.ts';
+const { tileMap, x, y} = useOlMapConfig();
 /** 初始化地图 */
 function initMap() {
   //创建一个视图
@@ -30,29 +30,29 @@ function initMap() {
     // 设置中心点
     center: [x, y],
     // 设置缩放级别
-    zoom: 8,
-  })
+    zoom: 8
+  });
 
   //实例化矢量点要素
   const iconFeature = new Feature({
     //形状元素：点
     geometry: new Point([108.4, 35.75]),
     name: '北京市',
-    population: 2115,
-  })
+    population: 2115
+  });
 
   //设置样式
   const style = new Style({
     image: new Circle({
       radius: 10,
       fill: new Fill({
-        color: '#ff2d52',
+        color: '#ff2d52'
       }),
       stroke: new Stroke({
         color: '#333',
-        width: 2,
-      }),
-    }),
+        width: 2
+      })
+    })
     // image: new Icon({
     //   anchor: [0.5, 60], //锚点
     //   anchorOrigin: 'top-right', //锚点源
@@ -78,18 +78,18 @@ function initMap() {
     //     width: 2,
     //   }),
     // }),
-  })
+  });
   //矢量标注 添加样式
-  iconFeature.setStyle(style)
+  iconFeature.setStyle(style);
 
   //矢量数据源
   const vectorSource = new VectorSource({
-    features: [iconFeature],
-  })
+    features: [iconFeature]
+  });
   //将数据源添加到矢量图层
   const vectorLayer = new VectorLayer({
-    source: vectorSource,
-  })
+    source: vectorSource
+  });
   //map.addLayer(vectorLayer);
 
   //创建一个地图并初始化
@@ -97,14 +97,14 @@ function initMap() {
     //地图挂载目标元素
     target: 'marking',
     layers: [tileMap],
-    view: view,
-  })
-  map.addLayer(vectorLayer)
+    view: view
+  });
+  map.addLayer(vectorLayer);
 }
 
 onMounted(() => {
-  initMap()
-})
+  initMap();
+});
 </script>
 
 <style lang="scss" scoped>

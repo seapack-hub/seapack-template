@@ -41,28 +41,27 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import {useRouter} from "vue-router"
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const blogsInfoList = ref([]);
 
-
 blogsInfoList.value = [
   { name: '文章', number: '30' },
   { name: '分类', number: '16' },
-  { name: '标签', number: '10' },
-]
+  { name: '标签', number: '10' }
+];
 
-function jumpToLink(str){
-  if(str === "gitHub"){
-    window.open("https://github.com/seapack-hub",'_blank')
-  }else if(str === "juejin"){
-    window.open("https://juejin.cn/user/2071912223613783",'_blank')
-  }else{
+function jumpToLink(str) {
+  if (str === 'gitHub') {
+    window.open('https://github.com/seapack-hub', '_blank');
+  } else if (str === 'juejin') {
+    window.open('https://juejin.cn/user/2071912223613783', '_blank');
+  } else {
     router.push({
-      path:"/systemManagement"
-    })
+      path: '/systemManagement'
+    });
   }
 }
 </script>

@@ -2,25 +2,29 @@
   <div class="select-layout-mode">
     <el-tooltip content="左侧模式">
       <el-container class="layout-mode left" :class="{ active: isLeft }" @click="setLayoutMode(LayoutModeEnum.Left)">
-        <el-aside/>
+        <el-aside />
         <el-container>
-          <el-header/>
-          <el-main/>
+          <el-header />
+          <el-main />
         </el-container>
       </el-container>
     </el-tooltip>
     <el-tooltip content="顶部模式">
       <el-container class="layout-mode top" :class="{ active: isTop }" @click="setLayoutMode(LayoutModeEnum.Top)">
-        <el-header/>
-        <el-main/>
+        <el-header />
+        <el-main />
       </el-container>
     </el-tooltip>
     <el-tooltip content="混合模式">
-      <el-container class="layout-mode left-top" :class="{ active: isLeftTop }" @click="setLayoutMode(LayoutModeEnum.LeftTop)">
-        <el-header/>
+      <el-container
+        class="layout-mode left-top"
+        :class="{ active: isLeftTop }"
+        @click="setLayoutMode(LayoutModeEnum.LeftTop)"
+      >
+        <el-header />
         <el-container>
-          <el-aside/>
-          <el-main/>
+          <el-aside />
+          <el-main />
         </el-container>
       </el-container>
     </el-tooltip>
@@ -28,20 +32,20 @@
 </template>
 
 <script setup lang="ts">
-import {useLayoutMode} from "@/hooks/useLayoutMode.ts";
-import {LayoutModeEnum} from "@/constants/app-key.ts";
+import { useLayoutMode } from '@/hooks/useLayoutMode.ts';
+import { LayoutModeEnum } from '@/constants/app-key.ts';
 
-const { isLeft, isTop, isLeftTop, setLayoutMode } = useLayoutMode()
+const { isLeft, isTop, isLeftTop, setLayoutMode } = useLayoutMode();
 </script>
 
 <style scoped lang="scss">
-.select-layout-mode{
+.select-layout-mode {
   display: flex;
   justify-content: space-between;
   gap: 10px;
 }
 
-.layout-mode{
+.layout-mode {
   width: 60px;
   overflow: hidden;
   cursor: pointer;
@@ -51,7 +55,6 @@ const { isLeft, isTop, isLeftTop, setLayoutMode } = useLayoutMode()
     border: 2px solid var(--el-color-primary);
   }
 }
-
 
 .active {
   border: 2px solid var(--el-color-primary);

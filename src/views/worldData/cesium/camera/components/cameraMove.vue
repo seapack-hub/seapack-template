@@ -2,24 +2,20 @@
   <div class="camera-move">
     <!-- -->
     <div class="button-group">
-      <el-button
-        type="primary"
-        v-for="(item, index) in operateGroup"
-        :key="index"
-        @click="buttonClick(item.value)"
-        >{{ item.label }}</el-button
-      >
+      <el-button type="primary" v-for="(item, index) in operateGroup" :key="index" @click="buttonClick(item.value)">{{
+        item.label
+      }}</el-button>
     </div>
     <div id="cesium-camera-move"></div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import * as Cesium from 'cesium'
+import { onMounted, ref } from 'vue';
+import * as Cesium from 'cesium';
 
-let operateGroup = ref([])
-let viewer
+let operateGroup = ref([]);
+let viewer;
 operateGroup.value = [
   { label: '前', value: '01' },
   { label: '后', value: '02' },
@@ -30,8 +26,8 @@ operateGroup.value = [
   { label: '上旋转', value: '07' },
   { label: '下旋转', value: '08' },
   { label: '左翻滚', value: '09' },
-  { label: '右翻滚', value: '10' },
-]
+  { label: '右翻滚', value: '10' }
+];
 // 设置cesium默认视角
 Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(
   // 西边的经度
@@ -42,13 +38,13 @@ Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(
   110.4,
   // 北边维度
   61.2
-)
+);
 
 function initCesium() {
   //viewer是所有Api的开始,
   //设置token
   Cesium.Ion.defaultAccessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhMTA5YzcyZC03OTdlLTRjYTMtYjJhZC1lYzQwODhlODliNTIiLCJpZCI6MjUyOTU2LCJpYXQiOjE3MzA3OTMzNjd9.NSkZaVBGMb4WwS0jz0_zTq1ivn-5MYee_gmGDChsNys'
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhMTA5YzcyZC03OTdlLTRjYTMtYjJhZC1lYzQwODhlODliNTIiLCJpZCI6MjUyOTU2LCJpYXQiOjE3MzA3OTMzNjd9.NSkZaVBGMb4WwS0jz0_zTq1ivn-5MYee_gmGDChsNys';
 
   //绑定容器
   viewer = new Cesium.Viewer('cesium-camera-move', {
@@ -61,10 +57,10 @@ function initCesium() {
     navigationHelpButton: false, //帮助手势按钮
     fullscreenButton: false, //全屏按钮
     infoBox: false, //是否显示信息窗口
-    selectionIndicator: false,
-  })
+    selectionIndicator: false
+  });
   //设置相机位置
-  const position = Cesium.Cartesian3.fromDegrees(110, 30, 20000)
+  const position = Cesium.Cartesian3.fromDegrees(110, 30, 20000);
   viewer.camera.setView({
     //目的地
     destination: position,
@@ -75,65 +71,65 @@ function initCesium() {
       // 指定相机的俯仰角,0度是竖直向上,-90度是向下
       pitch: Cesium.Math.toRadians(-10),
       // 指定相机的滚转角,翻滚角
-      roll: Cesium.Math.toRadians(0),
-    },
-  })
+      roll: Cesium.Math.toRadians(0)
+    }
+  });
 }
 
 function buttonClick(value) {
   // 获取相机离地面的高度
-  let height = viewer.camera.positionCartographic.height
-  let moveRate = height / 100
+  let height = viewer.camera.positionCartographic.height;
+  let moveRate = height / 100;
 
   switch (value) {
     case '01':
       // 设置相机向前移动
-      viewer.camera.moveForward(moveRate)
-      break
+      viewer.camera.moveForward(moveRate);
+      break;
     case '02':
       // 设置相机向后移动
-      viewer.camera.moveBackward(moveRate)
-      break
+      viewer.camera.moveBackward(moveRate);
+      break;
     case '03':
       // 设置相机向左移动
-      viewer.camera.moveLeft(moveRate)
-      break
+      viewer.camera.moveLeft(moveRate);
+      break;
     case '04':
       // 设置相机向右移动
-      viewer.camera.moveRight(moveRate)
-      break
+      viewer.camera.moveRight(moveRate);
+      break;
     case '05':
       // 设置相机向左旋转相机
-      viewer.camera.lookLeft(Cesium.Math.toRadians(1))
-      break
+      viewer.camera.lookLeft(Cesium.Math.toRadians(1));
+      break;
     case '06':
       // 设置相机向右旋转相机
-      viewer.camera.lookRight(Cesium.Math.toRadians(1))
-      break
+      viewer.camera.lookRight(Cesium.Math.toRadians(1));
+      break;
     case '07':
       // 设置相机向上旋转相机
-      viewer.camera.lookUp(Cesium.Math.toRadians(1))
-      break
+      viewer.camera.lookUp(Cesium.Math.toRadians(1));
+      break;
     case '08':
       // 设置相机向下旋转相机
-      viewer.camera.lookDown(Cesium.Math.toRadians(1))
-      break
+      viewer.camera.lookDown(Cesium.Math.toRadians(1));
+      break;
     case '09':
       // 向左逆时针翻滚
-      viewer.camera.twistLeft(Cesium.Math.toRadians(1))
-      break
+      viewer.camera.twistLeft(Cesium.Math.toRadians(1));
+      break;
     case '10':
       // 向右顺时针翻滚
-      viewer.camera.twistRight(Cesium.Math.toRadians(1))
-      break
+      viewer.camera.twistRight(Cesium.Math.toRadians(1));
+      break;
     default:
-      break
+      break;
   }
 }
 
 onMounted(() => {
-  initCesium()
-})
+  initCesium();
+});
 </script>
 
 <style lang="scss" scoped>

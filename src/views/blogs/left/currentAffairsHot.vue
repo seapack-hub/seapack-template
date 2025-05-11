@@ -20,9 +20,7 @@
     </div>
     <!--底部-->
     <div class="current-affairs-hot-footer">
-      <div class="footer-title">
-        查看更多
-      </div>
+      <div class="footer-title">查看更多</div>
       <div class="footer-icon">
         <SPIcon name="more-two" size="20px" color="#bfbfbf"></SPIcon>
       </div>
@@ -31,16 +29,16 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const hotList = ref([])
+const hotList = ref([]);
 hotList.value = [
   { label: '短信接口被爆破了，一晚上都不停收到信息', url: '' },
   { label: '一个简单的案例，带你看懂GC日的舞动', url: '' },
   { label: '鸿蒙版 React Native 正式开放，可在...', url: '' },
   { label: '新项目oneCoupon牛卷来啦！', url: '' },
-  { label: '告别繁琐的 try-catch:javaScript', url: '' },
-]
+  { label: '告别繁琐的 try-catch:javaScript', url: '' }
+];
 </script>
 
 <style lang="scss" scoped>
@@ -74,26 +72,26 @@ hotList.value = [
   &-main {
     padding: 10px;
     border-bottom: 1px solid gainsboro;
-    .article-item{
+    .article-item {
       margin-top: 15px;
       display: flex;
       align-items: center;
-      .item-label{
+      .item-label {
         margin-left: 10px;
-        white-space:nowrap;
-        overflow:hidden;
-        text-overflow:ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }
-  &-footer{
+  &-footer {
     margin: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    .footer-title{
+    .footer-title {
       font-size: 20px;
-      color:#bfbfbf
+      color: #bfbfbf;
     }
   }
 }

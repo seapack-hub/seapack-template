@@ -1,11 +1,5 @@
-<template>
-文件上传，敬请期待
-</template>
+<template>文件上传，敬请期待</template>
 
-<script setup lang="ts">
+<script setup lang="ts"></script>
 
-</script>
-
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

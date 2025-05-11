@@ -16,76 +16,75 @@
 
     <!--列表-->
     <div class="article-classify-main">
-      <div class="item" v-for="(item,index) in classifyList" :key="index">
-        <div class="item-name">{{item.name}}</div>
-        <div class="item-number">{{item.number}}</div>
+      <div class="item" v-for="(item, index) in classifyList" :key="index">
+        <div class="item-name">{{ item.name }}</div>
+        <div class="item-number">{{ item.number }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import {ref} from "vue";
+import { ref } from 'vue';
 
 const classifyList = ref([
-  {name:"Html",number:"5"},
-  {name:"Css",number:"2"},
-  {name:"JavaScript",number:"15"},
-  {name:"Vue",number:"25"},
-  {name:"Vite",number:"4"},
-  {name:"Node.js",number:"8"},
-  {name:"Webpack",number:"3"},
-  {name:"Git",number:"3"},
-  {name:"浏览器",number:"2"},
-  {name:"其他",number:"5"},
-])
-
+  { name: 'Html', number: '5' },
+  { name: 'Css', number: '2' },
+  { name: 'JavaScript', number: '15' },
+  { name: 'Vue', number: '25' },
+  { name: 'Vite', number: '4' },
+  { name: 'Node.js', number: '8' },
+  { name: 'Webpack', number: '3' },
+  { name: 'Git', number: '3' },
+  { name: '浏览器', number: '2' },
+  { name: '其他', number: '5' }
+]);
 </script>
 
 <style lang="scss" scoped>
-.article-classify{
+.article-classify {
   background-color: #ffffff;
   border-radius: 10px;
-  &-top{
+  &-top {
     padding: 20px;
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid gray;
-    .classification{
+    .classification {
       display: flex;
       align-items: center;
-      &-text{
+      &-text {
         margin-left: 5px;
         font-weight: 600;
       }
     }
-    .more{
+    .more {
       display: flex;
       align-items: center;
-      &-text{
+      &-text {
         font-size: 16px;
         color: #8a8a8a;
       }
     }
   }
-  &-main{
+  &-main {
     padding: 10px;
     display: flex;
     flex-direction: column;
-    .item{
+    .item {
       display: flex;
       font-family: cursive;
       padding: 10px;
       border-radius: 4px;
-      &-name{
+      &-name {
         width: 100%;
       }
-      &-number{
+      &-number {
         width: 100%;
         text-align: right;
         padding-right: 15px;
       }
-      &:hover{
+      &:hover {
         background-color: #ccc;
       }
     }

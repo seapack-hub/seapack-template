@@ -1,8 +1,10 @@
-.el-container{
+.el-container {
   //头部虚线
-  .el-header{
+  .el-header {
     height: auto;
-    box-shadow: 0 2px 4px 0 rgba(0, 21, 67, 0.04), inset 0px -1px 0px 0px #e7eaf0;
+    box-shadow:
+      0 2px 4px 0 rgba(0, 21, 67, 0.04),
+      inset 0px -1px 0px 0px #e7eaf0;
     overflow: hidden;
     min-width: 950px;
     z-index: 4;

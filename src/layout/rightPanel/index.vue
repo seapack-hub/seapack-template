@@ -5,13 +5,13 @@
     </el-icon>
   </div>
   <el-drawer v-model="show" size="300px" :with-header="false">
-    <slot/>
+    <slot />
   </el-drawer>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
-import { Setting } from "@element-plus/icons-vue"
+import { ref } from 'vue';
+import { Setting } from '@element-plus/icons-vue';
 
 let show = ref(false);
 </script>

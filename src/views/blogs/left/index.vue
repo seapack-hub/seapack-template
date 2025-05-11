@@ -10,9 +10,9 @@
 </template>
 
 <script setup>
-import AuthorInfo from './authorInfo.vue'
-import ArticleClassify from './articleClassify.vue'
-import CurrentAffairsHot from './currentAffairsHot.vue'
+import AuthorInfo from './authorInfo.vue';
+import ArticleClassify from './articleClassify.vue';
+import CurrentAffairsHot from './currentAffairsHot.vue';
 </script>
 
 <style lang="scss" scoped>

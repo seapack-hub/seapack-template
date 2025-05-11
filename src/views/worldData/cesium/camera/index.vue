@@ -5,12 +5,10 @@
   </div>
 </template>
 
-<script setup>
-
-</script>
+<script setup></script>
 
 <style lang="scss" scoped>
-.camera{
+.camera {
   width: 100%;
   height: 100%;
 }

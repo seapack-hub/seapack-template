@@ -8,33 +8,32 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted,ref,onUnmounted} from "vue"
-import RainEffect from "../../utils/rain";
-import {useCesiumStore} from "@/store/modules/cesium"
+import {onUnmounted } from 'vue';
+import RainEffect from '../../utils/rain';
+import { useCesiumStore } from '@/store/modules/cesium';
 
 const cesiumStore = useCesiumStore();
 
-const rain = new RainEffect(cesiumStore.$state.cesiumViewer,{
+const rain = new RainEffect(cesiumStore.$state.cesiumViewer, {
   tiltAngle: -0.2, //倾斜角度
   rainSize: 1.0, // 雨大小
   rainSpeed: 120.0 // 雨速
 });
 
 const hide = () => {
-  rain.show(false)
-}
+  rain.show(false);
+};
 const start = () => {
-  rain.show(true)
-}
+  rain.show(true);
+};
 onUnmounted(() => {
-  rain.destroy()
-})
-
+  rain.destroy();
+});
 </script>
 
 <style lang="scss" scoped>
-.rain{
-  padding:20px;
+.rain {
+  padding: 20px;
   position: absolute;
   z-index: 100;
 }

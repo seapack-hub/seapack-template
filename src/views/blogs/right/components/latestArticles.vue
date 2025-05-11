@@ -13,8 +13,8 @@
         class="item"
         v-for="(item, index) in articlesList"
         :key="index"
-        @mouseover="mouseChangeEvent(true,index)"
-        @mouseleave="mouseChangeEvent(false,-1)"
+        @mouseover="mouseChangeEvent(true, index)"
+        @mouseleave="mouseChangeEvent(false, -1)"
       >
         <div class="item-title">{{ item.title }}</div>
         <div class="item-icon">
@@ -26,29 +26,29 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 
-const articlesList = ref([])
-const hover = ref(false)
+const articlesList = ref([]);
+const hover = ref(false);
 const index = ref(-1);
 articlesList.value = [
   { title: 'JavaScript事件循环机制', id: '001' },
   { title: 'Vue2数据响应式原理', id: '002' },
   { title: '闭包', id: '003' },
   { title: '执行上下文', id: '004' },
-  { title: '内存溢出', id: '002' },
-]
-/** 
+  { title: '内存溢出', id: '002' }
+];
+/**
  * 鼠标移动事件
  **/
-const mouseChangeEvent = (bool,number)=>{
+const mouseChangeEvent = (bool, number) => {
   hover.value = bool;
   index.value = number;
-}
+};
 /**设置图标颜色*/
 const setIconColor = (num) => {
-  return num === index.value && hover.value ? 'aqua' : '#707070'
-}
+  return num === index.value && hover.value ? 'aqua' : '#707070';
+};
 </script>
 
 <style lang="scss" scoped>
@@ -87,8 +87,7 @@ const setIconColor = (num) => {
       }
       &-title {
         line-height: 2;
-        background: -webkit-linear-gradient(left, aqua, aqua, aqua) no-repeat
-          right bottom;
+        background: -webkit-linear-gradient(left, aqua, aqua, aqua) no-repeat right bottom;
         background-size: 0% 2px;
         transition: background-size 200ms linear;
       }

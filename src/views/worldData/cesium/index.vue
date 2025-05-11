@@ -5,11 +5,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted,markRaw } from "vue";
 </script>
 
 <style scoped lang="scss">
-.cesium-main{
+.cesium-main {
   width: 100%;
   height: 100%;
 }

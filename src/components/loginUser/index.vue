@@ -2,7 +2,7 @@
   <el-dropdown trigger="hover">
     <div class="user-info">
       <SPIcon name="user" size="20px"></SPIcon>
-      <span class="span-user">{{userInfo?.username||"海峰"}}</span>
+      <span class="span-user">{{ userInfo?.username || '海峰' }}</span>
     </div>
     <template #dropdown>
       <el-dropdown-menu>
@@ -18,11 +18,9 @@
 
 <script setup lang="ts">
 //获取用户信息
-import {useUserStore} from "@/store/modules/user.ts";
-import {useRouter} from "vue-router"
+import { useUserStore } from '@/store/modules/user.ts';
+import { useRouter } from 'vue-router';
 //信息提示
-import { h } from 'vue'
-import { ElMessage } from 'element-plus'
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -32,10 +30,10 @@ const userInfo = userStore.userInfo;
 /**
  * 退出登录
  */
-function logout(){
+function logout() {
   router.push({
-    path:"/login"
-  })
+    path: '/login'
+  });
   // ElMessage({
   //   message:h('p', { style: 'line-height: 1; font-size: 14px' }, [
   //     h('span', null, '暂未开发，'),
@@ -43,20 +41,19 @@ function logout(){
   //   ]),
   // })
 }
-
 </script>
 
 <style scoped lang="scss">
-.user-info{
+.user-info {
   display: flex;
   align-items: center;
   margin-bottom: 5px;
-  .span-user{
+  .span-user {
     display: inline-block;
   }
 }
-.el-dropdown{
-  .el-tooltip__trigger:focus-visible{
+.el-dropdown {
+  .el-tooltip__trigger:focus-visible {
     outline: unset;
   }
 }

@@ -22,62 +22,62 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 //import type Node from 'element-plus/es/components/tree/src/model/node'
 
 interface Tree {
-  id: string
-  label: string
-  number: number
-  children?: Tree[]
+  id: string;
+  label: string;
+  number: number;
+  children?: Tree[];
 }
 
 const dataSource = ref<Tree[]>([
   {
     id: '01001',
     label: 'JAVA',
-    number:15,
+    number: 15,
     children: [
       {
         id: '01002',
         label: '基础',
-        number:4,
+        number: 4
       },
       {
         id: '01003',
         label: '多线程',
-        number:5,
+        number: 5
       },
       {
         id: '01004',
         label: '集合',
-        number:6,
-      },
-    ],
+        number: 6
+      }
+    ]
   },
   {
     id: '02001',
     label: '前端',
-    number:21,
+    number: 21,
     children: [
       {
         id: '02002',
         label: 'HTML',
-        number:3,
+        number: 3
       },
       {
         id: '02003',
         label: 'CSS',
-        number:6,
+        number: 6
       },
       {
         id: '02004',
         label: 'JavaScript',
-        number:15,
-      },
-    ],
-  },
-])
+        number: 15
+      }
+    ]
+  }
+]);
 </script>
 
 <style lang="scss" scoped>
@@ -117,7 +117,7 @@ const dataSource = ref<Tree[]>([
     border-bottom: 0.5px solid gray;
   }
 
-  &-tree{
+  &-tree {
     margin-top: 20px;
     .custom-tree-node {
       flex: 1;

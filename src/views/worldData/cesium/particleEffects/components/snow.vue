@@ -8,38 +8,38 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted,ref,onUnmounted,nextTick } from "vue";
+import { onMounted,onUnmounted, nextTick } from 'vue';
 //@ts-ignore
-import SnowEffect from "@/views/worldData/cesium/utils/snow.ts";
-import {useCesiumStore} from "@/store/modules/cesium";
+import SnowEffect from '@/views/worldData/cesium/utils/snow.ts';
+import { useCesiumStore } from '@/store/modules/cesium';
 const cesiumStore = useCesiumStore();
-let snow:any = null;
+let snow: any = null;
 const hide = () => {
-  snow.show(false)
-}
+  snow.show(false);
+};
 const start = () => {
-  snow.show(true)
-}
+  snow.show(true);
+};
 //等待下一个DOM更新循环后执行
-nextTick(()=>{
+nextTick(() => {
   //获取非响应式的viewer对象
-  snow = new SnowEffect(cesiumStore.$state.cesiumViewer,{
+  snow = new SnowEffect(cesiumStore.$state.cesiumViewer, {
     snowSize: 0.02, // 雪花大小
-    snowSpeed: 60.0, // 雪速
+    snowSpeed: 60.0 // 雪速
   });
-})
+});
 //组件实例被销毁时执行
 onUnmounted(() => {
-  snow.destroy()
-})
-onMounted(async ()=>{
+  snow.destroy();
+});
+onMounted(async () => {
   await nextTick();
-})
+});
 </script>
 
 <style lang="scss" scoped>
-.snow{
-  padding:20px;
+.snow {
+  padding: 20px;
   position: absolute;
   z-index: 100;
 }

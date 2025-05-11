@@ -1,15 +1,14 @@
-import * as Cesium from "cesium";
-import {Viewer} from "cesium"
+import * as Cesium from 'cesium';
+import { Viewer } from 'cesium';
 
 // 下雨特效参数类型
-export interface RainOption{
-  tiltAngle?:number,
-  rainSize?:number,
-  rainSpeed?:number
+export interface RainOption {
+  tiltAngle?: number;
+  rainSize?: number;
+  rainSpeed?: number;
 }
 
-export default class RainEffect{
-
+export default class RainEffect {
   tiltAngle?: number;
   //雨点大小
   rainSize?: number;
@@ -21,22 +20,22 @@ export default class RainEffect{
 
   /**
    * 构造器
-   * @param viewer 
-   * @param options 
+   * @param viewer
+   * @param options
    */
-  constructor(viewer:Viewer,options:RainOption){
-    if(!viewer) throw new Error("no viewer object!");
-    options = options||{};
-    this.tiltAngle = Cesium.defaultValue(options.tiltAngle,-0.5);
-    this.rainSize = Cesium.defaultValue(options.rainSize,0.3);
-    this.rainSpeed = Cesium.defaultValue(options.rainSpeed,60.0);
+  constructor(viewer: Viewer, options: RainOption) {
+    if (!viewer) throw new Error('no viewer object!');
+    options = options || {};
+    this.tiltAngle = Cesium.defaultValue(options.tiltAngle, -0.5);
+    this.rainSize = Cesium.defaultValue(options.rainSize, 0.3);
+    this.rainSpeed = Cesium.defaultValue(options.rainSpeed, 60.0);
     this.viewer = viewer;
     this.init();
-  };
+  }
 
-  init(){
+  init() {
     this.rainStage = new Cesium.PostProcessStage({
-      name:"zhf_rain",
+      name: 'zhf_rain',
       //要使用的片段着色器
       fragmentShader: this.rain(),
       //一个对象，其属性将用于设置着色器统一
@@ -49,9 +48,9 @@ export default class RainEffect{
         },
         rainSpeed: () => {
           return this.rainSpeed;
-        },
-      },
-    })
+        }
+      }
+    });
     this.viewer.scene.postProcessStages.add(this.rainStage);
   }
 
@@ -68,14 +67,12 @@ export default class RainEffect{
     delete this.rainSpeed;
   }
 
-  show(visible:boolean) {
+  show(visible: boolean) {
     this.rainStage.enabled = visible;
   }
 
-
-
   rain() {
-    return "uniform sampler2D colorTexture;\n\
+    return 'uniform sampler2D colorTexture;\n\
               in vec2 v_textureCoordinates;\n\
               uniform float tiltAngle;\n\
               uniform float rainSize;\n\
@@ -98,6 +95,6 @@ export default class RainEffect{
                   c *= v * b;\n\
                   fragColor = mix(texture(colorTexture, v_textureCoordinates), vec4(c, 1), .5);\n\
               }\n\
-              ";
+              ';
   }
 }

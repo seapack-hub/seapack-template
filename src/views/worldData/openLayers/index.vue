@@ -4,12 +4,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
-
-</script>
+<script setup lang="ts"></script>
 
 <style scoped lang="scss">
-.open-layers-main{
+.open-layers-main {
   width: 100%;
   height: 100%;
 }

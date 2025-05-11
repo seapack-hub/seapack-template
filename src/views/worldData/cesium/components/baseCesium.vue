@@ -1,10 +1,10 @@
 <template>
-  <div id="base-cesium"></div>
+  <div id="base-cesium" />
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import * as Cesium from 'cesium'
+import { onMounted } from 'vue';
+import * as Cesium from 'cesium';
 
 // 设置cesium默认视角
 Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(
@@ -16,13 +16,13 @@ Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(
   110.4,
   // 北边维度
   61.2
-)
-Cesium.Camera.DEFAULT_VIEW_FACTOR = 0
+);
+Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
 function initCesium() {
   //viewer是所有Api的开始,
   //设置token
   Cesium.Ion.defaultAccessToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhMTA5YzcyZC03OTdlLTRjYTMtYjJhZC1lYzQwODhlODliNTIiLCJpZCI6MjUyOTU2LCJpYXQiOjE3MzA3OTMzNjd9.NSkZaVBGMb4WwS0jz0_zTq1ivn-5MYee_gmGDChsNys'
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhMTA5YzcyZC03OTdlLTRjYTMtYjJhZC1lYzQwODhlODliNTIiLCJpZCI6MjUyOTU2LCJpYXQiOjE3MzA3OTMzNjd9.NSkZaVBGMb4WwS0jz0_zTq1ivn-5MYee_gmGDChsNys';
 
   //绑定容器
   const viewer = new Cesium.Viewer('base-cesium', {
@@ -35,22 +35,22 @@ function initCesium() {
     navigationHelpButton: false, //帮助手势按钮
     fullscreenButton: false, //全屏按钮
     infoBox: false, //是否显示信息窗口
-    selectionIndicator: false,
-  })
+    selectionIndicator: false
+  });
 
   //1.创建几何体
   let rectGeometry = new Cesium.RectangleGeometry({
-    rectangle:Cesium.Rectangle.fromDegrees(115,20,135,30),
-    height:0,
-    vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+    rectangle: Cesium.Rectangle.fromDegrees(115, 20, 135, 30),
+    height: 0,
+    vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT
   });
 
   //2.创建几何实例
   let instance = new Cesium.GeometryInstance({
-    id:"rect001",
-    geometry:rectGeometry,
-    attributes:{
-      color:Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.RED.withAlpha(0.5))
+    id: 'rect001',
+    geometry: rectGeometry,
+    attributes: {
+      color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.RED.withAlpha(0.5))
     }
   });
 
@@ -73,10 +73,10 @@ function initCesium() {
   //   lineCount: new Cesium.Cartesian2(4, 4),
   //   lineThickness: new Cesium.Cartesian2(2.0, 2.0),
   // });
-  let material = new Cesium.Material.fromType("Water", {
+  let material = new Cesium.Material.fromType('Water', {
     baseWaterColor: Cesium.Color.AQUA.withAlpha(0.5),
     distortion: 0.25,
-    normalMap: new URL("@/views/worldData/cesium/images/waterNormals.jpg",import.meta.url).href
+    normalMap: new URL('@/views/worldData/cesium/images/waterNormals.jpg', import.meta.url).href
   });
   //3设置外观
   // let appearance = new Cesium.MaterialAppearance({
@@ -85,12 +85,12 @@ function initCesium() {
   let appearance = new Cesium.EllipsoidSurfaceAppearance({
     material: material,
     aboveGround: false,
-    translucent: true,
-  })
+    translucent: true
+  });
   //4 图元
   let primitive = new Cesium.Primitive({
-    geometryInstances:instance,
-    appearance:appearance
+    geometryInstances: instance,
+    appearance: appearance
   });
 
   //5 将图元添加到viewer
@@ -98,8 +98,8 @@ function initCesium() {
 }
 
 onMounted(() => {
-  initCesium()
-})
+  initCesium();
+});
 </script>
 
 <style lang="scss" scoped>

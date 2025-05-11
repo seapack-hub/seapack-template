@@ -1,16 +1,16 @@
-import * as Cesium from "cesium";
-import {Viewer} from "cesium"
+import * as Cesium from 'cesium';
+import { Viewer } from 'cesium';
 
 // 下雨特效参数类型
-export interface SnowOption{
-  snowSize?:number,
-  snowSpeed?:number
+export interface SnowOption {
+  snowSize?: number;
+  snowSpeed?: number;
 }
 
 /**
  * 雪花类
  */
-export default class SnowEffect{
+export default class SnowEffect {
   snowSize?: number;
   snowSpeed?: number;
   viewer: Cesium.Viewer;
@@ -21,41 +21,41 @@ export default class SnowEffect{
    * @param {*} viewer 视图
    * @param {*} options 配置项
    */
-  constructor(viewer:Viewer,options:SnowOption){
+  constructor(viewer: Viewer, options: SnowOption) {
     //视图为空，抛出异常
-    if(!viewer) throw new Error("new viewer object");
+    if (!viewer) throw new Error('new viewer object');
     options = options || {};
     //defaultValue:如果未定义，则返回第一个参数，否则返回第二个参数 ;❄️大小，最好小于0.02
     //雪花大小
-    this.snowSize = Cesium.defaultValue(options.snowSize, 0.02); 
+    this.snowSize = Cesium.defaultValue(options.snowSize, 0.02);
     //雪花飘落速度
     this.snowSpeed = Cesium.defaultValue(options.snowSpeed, 60.0);
     this.viewer = viewer;
     this.init();
-  };
+  }
 
   /**初始化函数 */
-  init(){
+  init() {
     this.snowStage = new Cesium.PostProcessStage({
-      name: "zhf_snow",
+      name: 'zhf_snow',
       //要使用的片段着色器
-      fragmentShader:this.snow(),
+      fragmentShader: this.snow(),
       //一个对象，其属性将用于设置着色器统一
-      uniforms:{
-        snowSize:()=>this.snowSize,
-        snowSpeed:()=>this.snowSpeed
+      uniforms: {
+        snowSize: () => this.snowSize,
+        snowSpeed: () => this.snowSpeed
       }
     });
     this.viewer.scene.postProcessStages.add(this.snowStage);
-  };
+  }
 
   /**销毁下雪特效 */
-  destroy(){
-    if(!this.viewer || !this.snowStage) return;
+  destroy() {
+    if (!this.viewer || !this.snowStage) return;
     this.viewer.scene.postProcessStages.remove(this.snowStage);
     //判断是否被销毁过
     const isDestroyed = this.snowStage.isDestroyed();
-    if(!isDestroyed){
+    if (!isDestroyed) {
       this.snowStage.destroy();
     }
     delete this.snowSize;
@@ -63,7 +63,7 @@ export default class SnowEffect{
   }
 
   /**控制展示与隐藏 */
-  show(visible:boolean){
+  show(visible: boolean) {
     this.snowStage.enabled = visible;
   }
 
@@ -71,8 +71,8 @@ export default class SnowEffect{
    * 设置雪花着色器
    * @returns 着色器片段
    */
-  snow(){
-    return "uniform sampler2D colorTexture;\n\
+  snow() {
+    return 'uniform sampler2D colorTexture;\n\
             in vec2 v_textureCoordinates;\n\
             uniform float snowSpeed;\n\
                     uniform float snowSize;\n\
@@ -103,6 +103,6 @@ export default class SnowEffect{
                 finalColor=(vec3(c));\n\
                 fragColor=mix(texture(colorTexture,v_textureCoordinates),vec4(finalColor,1),.5);\n\
                 }\n\
-                ";
+                ';
   }
 }

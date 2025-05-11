@@ -7,13 +7,13 @@
 </template>
 
 <script setup>
-import { onMounted,markRaw} from "vue";
-import InitView from "@/views/worldData/cesium/utils/map3d/initView.ts";
-import {useCesiumStore} from "@/store/modules/cesium";
+import { onMounted, markRaw } from 'vue';
+import InitView from '@/views/worldData/cesium/utils/map3d/initView.ts';
+import { useCesiumStore } from '@/store/modules/cesium';
 
 const cesiumStore = useCesiumStore();
-const init = ()=>{
-  const {viewer} = new InitView("cesiumContainer");
+const init = () => {
+  const { viewer } = new InitView('cesiumContainer');
   // 显示帧率
   viewer.scene.debugShowFramesPerSecond = true;
   viewer.scene.globe.depthTestAgainstTerrain = true;
@@ -21,15 +21,14 @@ const init = ()=>{
   const rawViewer = markRaw(viewer);
   //将 rawViewer 存入store
   cesiumStore.setCesiumViewer(rawViewer);
-}
+};
 onMounted(() => {
   init();
 });
-
 </script>
 
 <style lang="scss" scoped>
-.particleEffects{
+.particleEffects {
   position: relative;
   width: 100%;
   height: 100%;

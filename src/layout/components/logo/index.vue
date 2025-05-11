@@ -8,31 +8,31 @@
 </template>
 
 <script setup lang="ts">
-import {useLayoutMode} from "@/hooks/useLayoutMode.ts";
-import {computed} from "vue";
+import { useLayoutMode } from '@/hooks/useLayoutMode.ts';
+import { computed } from 'vue';
 
 interface Props {
-  collapse?: boolean
+  collapse?: boolean;
 }
-const {isLeft,isTop,isLeftTop}  = useLayoutMode();
+const { isLeft, isLeftTop } = useLayoutMode();
 
 const props = withDefaults(defineProps<Props>(), {
   collapse: true
-})
+});
 
-const fontColor = computed(()=>{
-  return isLeft.value?"var(--sidebar-menu-text-color)":"#000000"
-})
+const fontColor = computed(() => {
+  return isLeft.value ? 'var(--sidebar-menu-text-color)' : '#000000';
+});
 
-const logoHeight = computed(()=>{
-  return isLeftTop.value?"80px":"60px"
-})
+const logoHeight = computed(() => {
+  return isLeftTop.value ? '80px' : '60px';
+});
 </script>
 
 <style scoped lang="scss">
-.layout-logo-container{
-  .logo-title{
-    color:v-bind(fontColor);
+.layout-logo-container {
+  .logo-title {
+    color: v-bind(fontColor);
     width: 100%;
     text-align: left;
     height: v-bind(logoHeight);

@@ -6,36 +6,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import {
-  type RouteRecordRaw,
-  type RouteLocationMatched,
-  useRouter,
-  useRoute,
-} from 'vue-router'
-import routerInfo from '@/json/router.json'
-import Blogs from '@/views/blogs/index.vue'
+import { ref, onMounted } from 'vue';
+import { type RouteRecordRaw,useRouter} from 'vue-router';
+import routerInfo from '@/json/router.json';
+import Blogs from '@/views/blogs/index.vue';
 //初始化菜单
-const menuList = ref<RouteRecordRaw[]>([])
-const router = useRouter()
+const menuList = ref<RouteRecordRaw[]>([]);
+const router = useRouter();
 /**
  * 获取菜单信息
  */
 const getMeanList = () => {
-  menuList.value = routerInfo.filter(
-    (item: { show: boolean }) => item?.show === true
-  )
-}
+  menuList.value = routerInfo.filter((item: { show: boolean }) => item?.show === true);
+};
 /**
  * 路由跳转
  * @param item
  */
-const handToPage = (item: RouteRecordRaw) => {
-  router.push({ path: item?.path })
-}
+// const handToPage = (item: RouteRecordRaw) => {
+//   router.push({ path: item?.path });
+// };
 onMounted(() => {
-  getMeanList()
-})
+  getMeanList();
+});
 </script>
 
 <style scoped lang="scss">
