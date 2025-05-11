@@ -39,7 +39,7 @@ export default [
         parser: {
           // 为 `<script>` 块指定 TypeScript 解析器
           ts: tsParser, // 解析 `<script lang="ts">`
-          js: 'espree', // 默认 JS 解析器
+          js: 'espree' // 默认 JS 解析器
         },
         extraFileExtensions: ['.vue']
       }
@@ -48,7 +48,19 @@ export default [
       vue: pluginVue
     },
     rules: {
-      "vue/html-indent": ["error", 2]
+      'vue/html-indent': ['error', 2],
+      'vue/html-self-closing': [
+        'error',
+        {
+          html: {
+            void: 'always',
+            normal: 'always',
+            component: 'off'   //自定义组件标签不要求自闭和
+          },
+          svg: 'always',
+          math: 'always'
+        }
+      ]
     }
   },
 
@@ -61,15 +73,15 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: './tsconfig.json'  // 关联 TS 配置文件
+        project: './tsconfig.json' // 关联 TS 配置文件
       }
     },
     rules: {
       ...tsPlugin.configs.recommended.rules, // TS 推荐规则
-      'semi': ['error', 'always'], // 强制分号
-      'no-unused-expressions': 'off',  //关闭
+      semi: ['error', 'always'], // 强制分号
+      'no-unused-expressions': 'off', //关闭
       '@typescript-eslint/no-unused-expressions': 'off',
-      '@typescript-eslint/no-explicit-any': 'off', // 关闭 no-explicit-any 规则
+      '@typescript-eslint/no-explicit-any': 'off' // 关闭 no-explicit-any 规则
       // "indent": "off", // 关闭基础 indent 规则
       // "@typescript-eslint/indent": ["error", 2] // TS 专用缩进规则
     }
@@ -79,7 +91,7 @@ export default [
   {
     rules: {
       'no-console': 'warn', // 禁止 console
-      'vue/multi-word-component-names': 'off', // 允许单单词组件名
+      'vue/multi-word-component-names': 'off' // 允许单单词组件名
     }
   }
 ];
