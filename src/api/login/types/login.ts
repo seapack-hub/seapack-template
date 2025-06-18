@@ -13,4 +13,6 @@ export interface LoginRequestData {
   password: string;
   /** 验证码 */
   code: string;
+
+  data:string;
 }

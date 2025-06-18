@@ -11,8 +11,12 @@
       @touchend="endDrawing"
     ></canvas>
     <div class="controls">
-      <button @click="clearCanvas">清除</button>
-      <button @click="saveSignature">保存签名</button>
+      <button @click="clearCanvas">
+        清除
+      </button>
+      <button @click="saveSignature">
+        保存签名
+      </button>
     </div>
   </div>
 </template>
@@ -60,8 +64,8 @@ onMounted(() => {
   //方法返回一个 DOMRect 对象，其提供了元素的大小及其相对于视口的位置。
   const rect = canvasRef.value.getBoundingClientRect();
   //设置画布大小
-  canvasRef.value.width = rect.width * dpr;
-  canvasRef.value.height = rect.height * dpr;
+  canvasRef.value.width = rect.width;
+  canvasRef.value.height = rect.height;
 
   //获取2d上下文
   ctx.value = canvasRef.value.getContext('2d');
@@ -236,18 +240,17 @@ const saveSignature = () => {
   padding: 20px;
   background: #fff;
   border-radius: 8px;
-}
-
-canvas {
-  background: white;
-  touch-action: none; /* 禁用触摸滚动 */
-  border: 1px solid #eee;
-}
-
-.controls {
-  margin-top: 15px;
-  display: flex;
-  gap: 10px;
+  width:80%;
+  canvas {
+    background: white;
+    touch-action: none; /* 禁用触摸滚动 */
+    border: 1px solid #eee;
+  }
+  .controls {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+  }
 }
 
 button {

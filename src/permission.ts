@@ -1,5 +1,5 @@
 //引入路由配置文件
-import routerJson from '@/json/router.json';
+//import routerJson from '@/json/router.json';
 
 import { usePermissionStore } from '@/store/modules/permission.ts';
 import { setRouteChange } from '@/hooks/useRouteListener.ts';
@@ -8,12 +8,14 @@ import router from './router';
 
 //创建路由前置守卫
 router.beforeEach((to, from, next) => {
+  console.log('-3333---');
   //使用权限存储对象
   const permissionStore = usePermissionStore();
 
   //判断是否添加动态路由
   const dynamicRoutes = permissionStore?.dynamicRoutes ?? [];
   if (dynamicRoutes.length > 0) {
+    console.log('--222---');
     //todo 动态路由处理
 
     // 判断是否根据模块匹配模块路由
@@ -32,11 +34,22 @@ router.beforeEach((to, from, next) => {
     }
     next();
   } else {
+    //扫描静态路由文件
+    const tsFiles = import.meta.glob('@/router/modules/*.ts', { eager: true });
+    //合并文件
+    const mergedArray: any[] = [];
+    Object.values(tsFiles).forEach((module: any) => {
+      if (module.default && Array.isArray(module.default)) {
+        mergedArray.push(...module.default); // 合并数组
+      }
+    });
     //将静态路由添加至路由表中
-    const asyncRouter = permissionStore.formatDynamicRoutes(routerJson);
+    // const asyncRouter = permissionStore.formatDynamicRoutes(routerJson);
+    const asyncRouter = permissionStore.formatDynamicRoutes(mergedArray);
     asyncRouter.forEach((route) => {
       router.addRoute(route);
     });
+    console.log('--路由--',asyncRouter);
     permissionStore.dynamicRoutes = asyncRouter;
     permissionStore.setRoutes(asyncRouter);
     //重定向并替换当前路径

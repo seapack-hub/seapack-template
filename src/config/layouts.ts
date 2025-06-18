@@ -24,7 +24,7 @@ const defaultSetting: LayoutSetting = {
   showTagsView: true,
   showLogo: true,
   cacheTagsView: false,
-  showWatermark: true,
+  showWatermark: false,
   systemType: SystemTypeEnum.BlogSystem
 };
 

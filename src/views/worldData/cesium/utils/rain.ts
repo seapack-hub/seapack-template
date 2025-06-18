@@ -14,7 +14,6 @@ export default class RainEffect {
   rainSize?: number;
   //雨点速度
   rainSpeed?: number;
-  // @ts-ignore
   rainStage: Cesium.PostProcessStage;
   viewer: Cesium.Viewer;
 

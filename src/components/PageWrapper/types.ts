@@ -18,7 +18,7 @@ export interface SearchParamType {
   name: string; //查询条件关键字或绑定的ID
   component: string; //element-plus组件名称，如el-input,el-select等
   props: SearchPropsType; //组件默认参数配置
-  cascaderProps?: Object;
+  cascaderProps?: object;
   render?: Function;
   formatParams?: Function; //自定义输出
   modelValue?: Record<string, any> | undefined; //自定义组件绑定值

@@ -14,7 +14,6 @@ export default class SnowEffect {
   snowSize?: number;
   snowSpeed?: number;
   viewer: Cesium.Viewer;
-  // @ts-ignore
   snowStage: Cesium.PostProcessStage;
   /**
    * 构造器

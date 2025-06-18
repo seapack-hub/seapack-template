@@ -2,9 +2,16 @@
   <div class="login-container">
     <Owl :close-eyes="isFocus" />
     <div class="login-card">
-      <div class="title">Sea Pack</div>
+      <div class="title">
+        Sea Pack
+      </div>
       <div class="content">
-        <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
+        <el-form 
+          ref="loginFormRef" 
+          :model="loginFormData" 
+          :rules="loginFormRules" 
+          @keyup.enter="handleLogin"
+        >
           <el-form-item prop="username">
             <el-input
               v-model.trim="loginFormData.username"
@@ -39,10 +46,14 @@
               size="large"
             >
               <template #append>
-                <el-image :src="codeUrl" @click="createCode" draggable="false">
+                <el-image
+                  :src="codeUrl"
+                  draggable="false"
+                  @click="createCode"
+                >
                   <template #placeholder>
                     <el-icon>
-                      <picture />
+                      <Picture />
                     </el-icon>
                   </template>
                   <template #error>
@@ -54,7 +65,14 @@
               </template>
             </el-input>
           </el-form-item>
-          <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">登 录</el-button>
+          <el-button
+            :loading="loading"
+            type="primary"
+            size="large"
+            @click.prevent="handleLogin"
+          >
+            登 录
+          </el-button>
         </el-form>
       </div>
     </div>
@@ -102,9 +120,7 @@ const handleLogin = () => {
   loginFormRef.value?.validate((valid: boolean, fields) => {
     if (valid) {
       loading.value = true;
-
       router.push({ path: '/menuTab' });
-
       loading.value = false;
     } else {
       console.error('表单校验不通过', fields);

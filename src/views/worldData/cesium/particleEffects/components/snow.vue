@@ -1,15 +1,24 @@
 <template>
   <div class="snow">
     <div class="container">
-      <el-button type="primary" @click="start">开始</el-button>
-      <el-button type="primary" @click="hide">停止</el-button>
+      <el-button
+        type="primary"
+        @click="start"
+      >
+        开始
+      </el-button>
+      <el-button
+        type="primary"
+        @click="hide"
+      >
+        停止
+      </el-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted,onUnmounted, nextTick } from 'vue';
-//@ts-ignore
+import { onMounted, onUnmounted, nextTick } from 'vue';
 import SnowEffect from '@/views/worldData/cesium/utils/snow.ts';
 import { useCesiumStore } from '@/store/modules/cesium';
 const cesiumStore = useCesiumStore();

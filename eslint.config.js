@@ -50,16 +50,16 @@ export default [
     rules: {
       'vue/html-indent': ['error', 2],
       'vue/html-self-closing': [
-        'error',
-        {
-          html: {
-            void: 'always',
-            normal: 'always',
-            component: 'off'   //自定义组件标签不要求自闭和
-          },
-          svg: 'always',
-          math: 'always'
-        }
+        'off'
+        // {
+        //   html: {
+        //     void: 'always',
+        //     normal: 'always',
+        //     component: ['off']   //自定义组件标签不要求自闭和
+        //   },
+        //   svg: 'always',
+        //   math: 'always'
+        // }
       ]
     }
   },

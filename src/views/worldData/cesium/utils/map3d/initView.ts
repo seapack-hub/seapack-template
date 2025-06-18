@@ -18,7 +18,6 @@ const defaultConfig = {
   shouldAnimate: true //展示动画
 };
 export default class InitView {
-  // @ts-ignore
   viewer: Cesium.Viewer;
   //构造器
   constructor(id: string, paramsOpts: object) {

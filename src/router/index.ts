@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
-import layout from '@/layout/menuTab/index.vue';
+//import layout from '@/layout/main/index.vue';
 
 export const routerRecordRow: RouteRecordRaw[] = [
   {
@@ -14,17 +14,22 @@ export const routerRecordRow: RouteRecordRaw[] = [
       hidden: true
     }
   },
+  //主页-工作台
   {
     path: '/menuTab',
-    component: layout,
-    redirect: '/menuTab/index',
-    meta: {},
-    children: [
+    component: () => import('@/views/common/workbench/index.vue'),
+  },
+  //博客
+  {
+    path: "/blogsManagement",
+    //component:()=> import("@/views/blogs/index.vue"),
+    component: ()=>import("@/layout/menuTab/index.vue"),
+    redirect: '/blogs',
+    children:[
       {
-        path: 'index',
-        name: 'menuTabIndex',
-        component: () => import('@/views/common/menuTab/index.vue'),
-        meta: {}
+        path: "/blogs",
+        component: () => import("@/views/blogs/index.vue"),
+        name: "blogs",
       }
     ]
   },
