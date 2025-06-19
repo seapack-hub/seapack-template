@@ -23,6 +23,18 @@ declare global {
     rowIndex: number;
     columnIndex: number;
     rowId: string | number;
+  };
+
+    /**
+   * 下拉选项数据类型
+   */
+  interface OptionType {
+    /** 值 */
+    value: string | number;
+    /** 文本 */
+    label: string;
+    /** 子列表  */
+    children?: OptionType[];
   }
 }
 

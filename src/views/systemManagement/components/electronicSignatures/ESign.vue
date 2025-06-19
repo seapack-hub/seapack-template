@@ -245,6 +245,8 @@ const saveSignature = () => {
     background: white;
     touch-action: none; /* 禁用触摸滚动 */
     border: 1px solid #eee;
+    width:800px;
+    height:400px;
   }
   .controls {
     margin-top: 15px;

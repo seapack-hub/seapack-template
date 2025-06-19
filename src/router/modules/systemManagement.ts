@@ -4,7 +4,6 @@ interface RouterObject {
 const Layout = () => import('@/layout/main/index.vue');
 //系统管理模块路由
 const systemManagementRoute: Array<RouterObject> = [
-  //系统管理
   {
     path: '/systemManagement',
     name: 'systemManagement',
@@ -29,29 +28,125 @@ const systemManagementRoute: Array<RouterObject> = [
           keepAlive: true,
         },
       },
-      //通用组件
+      //系统管理
+      {
+        path:"/system",
+        component: () => import('@/views/systemManagement/components/index.vue'),
+        meta:{
+          title:"system",
+          description:"系统管理",
+          icon:"system"
+        },
+        children:[
+          //用户管理
+          {
+            path: '/user',
+            name: 'user',
+            component: () => import('@/views/systemManagement/userManagement/index.vue'),
+            meta: {
+              title: 'user',
+              description: '用户管理',
+              icon: 'user'
+            }
+          },
+        ]
+      },
+      //组件封装
       {
         path: '/genericComponent',
         name: 'genericComponent',
-        //component: "systemManagement/components/index",
         component: () => import('@/views/systemManagement/components/index.vue'),
         meta: {
           title: 'genericComponent',
-          description: '通用组件',
+          description: '组件封装',
           icon: 'generic-com'
         },
         children: [
+          //电子签名
           {
-            path: '/systemManagement/components/electronicSignatures/ESign',
+            path: '/electronicSignatures',
             name: 'electronicSignatures',
-            //component: "systemManagement/components/electronicSignatures/ESign",
             component: () => import('@/views/systemManagement/components/electronicSignatures/ESign.vue'),
             meta: {
               title: 'electronicSignatures',
               description: '电子签名',
               icon: 'e-sign'
             }
+          },
+          //富文本编辑器
+          {
+            path:"/wang-editer",
+            name:"wangEditer",
+            component:() => import("@/views/systemManagement/wangEditer/wang-editor.vue"),
+            meta:{
+              title: 'wangEditer',
+              description: '富文本编辑器',
+              icon: 'wang-editer'
+            }
           }
+        ]
+      },
+      //博客文档
+      {
+        path:"/doc",
+        name:"doc",
+        redirect: "https://juejin.cn/post/7484987385665011762",
+        meta: {
+          title: 'document',
+          description: '博客文档',
+          icon: 'document'
+        },
+        children:[
+          {
+            path: "/internal-doc-1",
+            component: () => import("@/views/blogs/demo/internal-doc-1.vue"),
+            name: "InternalDoc-1",
+            meta: {
+              title: "InternalDoc-1",
+              description: '实现电子签名',
+              icon: "document"
+            },
+          },
+          {
+            path: "/internal-doc-2",
+            component: () => import("@/views/blogs/demo/internal-doc-2.vue"),
+            name: "InternalDoc-2",
+            meta: {
+              title: "InternalDoc-2",
+              description: '实现水印',
+              icon: "document"
+            },
+          },
+          {
+            path: "/internal-doc-3",
+            component: () => import("@/views/blogs/demo/internal-doc-3.vue"),
+            name: "InternalDoc-3",
+            meta: {
+              title: "InternalDoc-3",
+              description: '封装SVG图标',
+              icon: "document"
+            },
+          },
+          {
+            path: "/internal-doc-4",
+            component: () => import("@/views/blogs/demo/internal-doc-4.vue"),
+            name: "InternalDoc-4",
+            meta: {
+              title: "InternalDoc-4",
+              description: 'JS原型链详解',
+              icon: "document"
+            },
+          },
+          {
+            path: "/internal-doc-5",
+            component: () => import("@/views/blogs/demo/internal-doc-5.vue"),
+            name: "InternalDoc-5",
+            meta: {
+              title: "InternalDoc-5",
+              description: '模板引擎详解',
+              icon: "document"
+            },
+          },
         ]
       },
       //文件上传

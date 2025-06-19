@@ -1,7 +1,7 @@
 <template>
   <el-card class="container-top">
     <el-row>
-      <el-col :span="18">
+      <el-col :span="16">
         <div class="container-top-left">
           <img
             class="img-rotate"
@@ -20,7 +20,7 @@
         </div>
       </el-col>
 
-      <el-col :span="6">
+      <el-col :span="8">
         <el-row
           class="container-top-right"
           :gutter="10"
@@ -141,7 +141,7 @@ const warehouseList = ref([
 
 //文档列表
 const documentList = ref([
-  { svgIcon: 'juejin', href: 'https://juejin.cn/user/2071912223613783/posts', color: '##4080ff' },
+  { svgIcon: 'juejin', href: 'https://juejin.cn/user/2071912223613783/posts', color: '#4080ff' },
   { svgIcon: 'csdn', href: 'https://blog.csdn.net/seapackk?spm=1010.2135.3001.10640', color: '' },
   { svgIcon: 'zhihu', href: 'https://www.zhihu.com/people/lie-feng-xiao-yao/posts', color: '' }
 ]);

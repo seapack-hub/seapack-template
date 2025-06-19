@@ -13,12 +13,29 @@
         </el-col>
       </el-row>
     </div>
+    <!--趋势图-->
+    <div class="visit-trend">
+      <el-row :gutter="20">
+        <el-col :span="16">
+          <VisitTrend
+            id="VisitTrend"
+            width="100%"
+            height="400px"
+          />
+        </el-col>
+        <el-col :span="8">
+          <NoticeCard />
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import DashboardTop from './components/DashboardTop.vue';
 import StatisticsModule from './components/StatisticsModule.vue';
+import VisitTrend from './components/VisitTrend.vue';
+import NoticeCard from './components/NoticeCard.vue';
 import { VisitStatsVO } from '@/api/types/log.ts';
 //浏览数据
 const visitStatsVisit = ref<VisitStatsVO>({
@@ -42,6 +59,9 @@ const visitStatsBrowse = ref<VisitStatsVO>({
 <style lang="scss" scoped>
 .dashboard-container {
   .statistics-module {
+    margin-top: 20px;
+  }
+  .visit-trend{
     margin-top: 20px;
   }
 }

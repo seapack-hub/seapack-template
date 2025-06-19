@@ -1,11 +1,3 @@
-/*
- * @Author: 曾海峰 zenghf@tsingyun.net
- * @Date: 2024-04-24 09:27:48
- * @LastEditors: 曾海峰 7753230+zenghaifenga@user.noreply.gitee.com
- * @LastEditTime: 2025-05-11 08:52:21
- * @FilePath: \seapack-template\vite.config.ts
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import * as path from 'path'
@@ -26,11 +18,14 @@ import cesium from 'vite-plugin-cesium'
 //@ts-ignore
 //import eslintPlugin from 'vite-plugin-eslint'
 import eslint from 'vite-plugin-eslint';
-import { type ConfigEnv, type UserConfigExport, loadEnv } from 'vite'
+import { type ConfigEnv, type UserConfigExport, loadEnv } from 'vite';
+
+//引入mock服务
+import mockDevServerPlugin from 'vite-plugin-mock-dev-server'
 
 export default defineConfig(({mode}:ConfigEnv) => {
   const viteEnv = loadEnv(mode,process.cwd());
-  const { VITE_PUBLIC_PATH } = viteEnv
+  const { VITE_PUBLIC_PATH,VITE_MOCK_DEV_SERVER,VITE_BASE_API,VITE_APP_API_URL } = viteEnv;
   return {
     base:VITE_PUBLIC_PATH,
     server:{
@@ -46,22 +41,24 @@ export default defineConfig(({mode}:ConfigEnv) => {
       strictPort:false,
       /** 接口代理 */
       proxy:{
-        "/api/v1": {
-          target: "https://mock.mengxuegu.com/mock/63218b5fb4c53348ed2bc212",
-          ws: true,
-          /** 是否允许跨域 */
-          changeOrigin: true
+        "/dev-api": {
+          target: VITE_APP_API_URL,
+          // ws: true,
+          // /** 是否允许跨域 */
+          // changeOrigin: true,
+          rewrite: (path) => path.replace(new RegExp("^" + VITE_BASE_API), ""),
         }
       }
     },
     plugins: [
       vue(),
+      VITE_MOCK_DEV_SERVER === "true" ? mockDevServerPlugin() : null,
       cesium(),
       //配置ElementPlus,自动引入
       ElementPlus({}),
       AutoImport({
         resolvers: [ElementPlusResolver()],
-        imports: ['vue','vue-router'], // 自动导入 Vue 相关函数
+        imports: ['vue','vue-router','@vueuse/core'], // 自动导入 Vue 相关函数
         dts: './auto-imports.d.ts', // 生成类型声明文件的路径
         eslintrc: {
           enabled: false,  // 1、改为true用于生成eslint配置。2、生成后改回false，避免重复生成消耗
@@ -90,6 +87,13 @@ export default defineConfig(({mode}:ConfigEnv) => {
         '@p':path.resolve(__dirname,'public'),
         '@ces':path.resolve(__dirname, 'src/views/worldData/cesium')
       },
+    },
+    // 预加载项目必需的组件
+    optimizeDeps: {
+      include:[
+        "@wangeditor/editor",
+        "@wangeditor/editor-for-vue",
+      ]
     },
     lintOnSave: false,  // 添加这一行代码
   }
