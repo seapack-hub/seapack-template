@@ -8,14 +8,23 @@ const mapWorldRoute:Array<RouterObject> = [
     path: "/worldData",
     name: "worldData",
     component: worldData,
-    //component:"Layout",
-    redirect: "/worldData/openLayers",
+    redirect: "/baseMap",
     show: true,
     meta: {
       title: "home",
       description: "数据世界"
     },
     children: [
+      {
+        path: "/baseMap",
+        name: "baseMap",
+        component: () => import('@/views/worldData/openLayers/baseMap/baseMap.vue'),
+        meta: {
+          title: "baseMap",
+          description: "基础地图",
+          icon: "base-map"
+        }
+      },
       //openLayers地图
       {
         path: "/worldData/openLayers",
@@ -28,18 +37,6 @@ const mapWorldRoute:Array<RouterObject> = [
           icon: "openlayers"
         },
         children: [
-          //基础控件
-          {
-            path: "/worldData/openLayers/baseMap",
-            name: "baseMap",
-            // component: "worldData/openLayers/baseMap/baseMap",
-            component: () => import('@/views/worldData/openLayers/baseMap/baseMap.vue'),
-            meta: {
-              title: "baseMap",
-              description: "基础控件",
-              icon: "base-map"
-            }
-          },
           //图层类型
           {
             path: "/worldData/openLayers/layerType/heatMap",
@@ -136,7 +133,7 @@ const mapWorldRoute:Array<RouterObject> = [
             component: () => import('@/views/worldData/cesium/components/baseCesium.vue'),
             meta: {
               title: "baseCesium",
-              description: "基础地图",
+              description: "3D基础",
               icon: "cesium"
             }
           },

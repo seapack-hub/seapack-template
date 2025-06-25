@@ -149,31 +149,71 @@ const systemManagementRoute: Array<RouterObject> = [
           },
         ]
       },
-      //文件上传
-      {
-        path: '/systemManagement/components/SPFileUpload',
-        name: 'fileUpload',
-        //component: "systemManagement/components/SPFileUpload",
-        component: () => import('@/views/systemManagement/components/SPFileUpload.vue'),
-        meta: {
-          title: 'fileUpload',
-          description: '文件上传',
-          icon: 'file-upload-dark',
-          elIcon: 'Grid'
-        }
-      },
       //echarts图表
       {
-        path: '/echarts-table',
+        path: '/echarts',
         name: 'echarts',
         //component: "systemManagement/components/SPEcharts",
-        component: () => import('@/views/systemManagement/components/SPEcharts.vue'),
+        component: () => import('@/views/systemManagement/components/index.vue'),
+        //component: () => import('@/views/systemManagement/echarts/chinaMap.vue'),
         meta: {
-          title: 'fileUpload',
-          description: 'echarts图表',
+          title: 'echarts',
+          description: 'echarts',
           icon: 'pie-chart',
-          elIcon: 'Grid'
-        }
+        },
+        children:[
+          //中国地图
+          {
+            path: '/chinaMap',
+            name: 'chinaMap',
+            component: () => import('@/views/systemManagement/echarts/chinaMap.vue'),
+            meta: {
+              title: 'chinaMap',
+              description: '中国地图',
+              icon: 'china-map'
+            }
+          },
+          {
+            path: '/migrationMap',
+            name: 'migrationMap',
+            component: () => import('@/views/systemManagement/echarts/migrationMap.vue'),
+            meta: {
+              title: 'migrationMap',
+              description: '迁徙地图',
+              icon: 'migration-map'
+            }
+          },
+          {
+            path: '/histogram',
+            name: 'histogram',
+            component: () => import('@/views/systemManagement/echarts/histogram.vue'),
+            meta: {
+              title: 'histogram',
+              description: '柱状图',
+              icon: 'histogram'
+            }
+          },
+          {
+            path: '/relationship',
+            name: 'relationship',
+            component: () => import('@/views/systemManagement/echarts/relationship.vue'),
+            meta: {
+              title: 'relationship',
+              description: '人物关系',
+              icon: 'histogram'
+            }
+          },
+          {
+            path: '/radar',
+            name: 'radar',
+            component: () => import('@/views/systemManagement/echarts/radar.vue'),
+            meta: {
+              title: 'radar',
+              description: '雷达图',
+              icon: 'radar'
+            }
+          },
+        ]
       }
     ]
   },

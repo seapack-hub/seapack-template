@@ -58,7 +58,7 @@ onBeforeUnmount(stopDrag);
   height: 48px;
   background-color: var(--right-panel-button-bg-color);
   position: fixed;
-  top: 350px;
+  top: 650px;
   right: 20px;
   border-radius: 6px 0 0 6px;
   z-index: 10;

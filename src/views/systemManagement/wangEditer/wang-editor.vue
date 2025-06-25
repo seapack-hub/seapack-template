@@ -17,7 +17,7 @@ const value = ref("开始编辑");
 .editor-style{
   z-index: 99999; 
   height: calc(100vh - 240px);
-  border:1px solid rgb(255, 254, 254);
+  border:1px solid rgb(212, 212, 212);
   border-radius: 5px;
 }
 </style>

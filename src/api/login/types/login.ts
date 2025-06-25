@@ -14,5 +14,5 @@ export interface LoginRequestData {
   /** 验证码 */
   code: string;
 
-  data:string;
+  data?:string;
 }

@@ -135,7 +135,7 @@ const createCode = async () => {
   //获取验证码
   codeUrl.value = '';
   const code = await getLoginCodeApi();
-  codeUrl.value = code.data;
+  codeUrl.value = code;
 };
 
 /** 初始化验证码 */

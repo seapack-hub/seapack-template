@@ -1,20 +1,38 @@
 <template>
-  <el-dropdown @command="handleCommand" :hide-on-click="false">
+  <el-dropdown
+    :hide-on-click="false"
+    @command="handleCommand"
+  >
     <div>
-      <SPIcon name="translation" size="20px"></SPIcon>
+      <SPIcon
+        name="translation"
+        size="20px"
+      ></SPIcon>
     </div>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item command="zh-CN">
-          <SPIcon name="simplified" size="20px" class="svg-icon"></SPIcon>
+          <SPIcon
+            name="simplified"
+            size="20px"
+            class="svg-icon"
+          ></SPIcon>
           中文简体
         </el-dropdown-item>
         <el-dropdown-item command="zh-TW">
-          <SPIcon name="complex" size="20px" class="svg-icon"></SPIcon>
+          <SPIcon
+            name="complex"
+            size="20px"
+            class="svg-icon"
+          ></SPIcon>
           中文繁體
         </el-dropdown-item>
         <el-dropdown-item command="en">
-          <SPIcon name="english" size="20px" class="svg-icon"></SPIcon>
+          <SPIcon
+            name="english"
+            size="20px"
+            class="svg-icon"
+          ></SPIcon>
           English
         </el-dropdown-item>
       </el-dropdown-menu>

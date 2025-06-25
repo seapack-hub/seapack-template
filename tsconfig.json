@@ -9,7 +9,8 @@
     /* Bundler mode */
     "moduleResolution": "Node",
     "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": true, // 允许导入 JSON 文件
+    "esModuleInterop": true,     // 兼容 CommonJS/ES 模块
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
@@ -29,7 +30,7 @@
       "@/*": ["src/*"],
       "@p/*":["public/*"],
       "@ces/*":["src/views/worldData/cesium/*"],
-    }
+    },
   },
   "include": [
     "src/**/*.ts", 

@@ -1,6 +1,9 @@
 <!-- 部门树 -->
 <template>
-  <el-card shadow="never">
+  <el-card
+    shadow="never"
+    class="card-body"
+  >
     <el-input
       v-model="deptName"
       placeholder="部门名称"
@@ -13,7 +16,7 @@
 
     <el-tree
       ref="deptTreeRef"
-      class="mt-2"
+      class="left-tree"
       :data="deptList"
       :props="{ children: 'children', label: 'label', disabled: '' }"
       :expand-on-click-node="false"
@@ -68,8 +71,15 @@ function handleNodeClick(data: { [key: string]: any }) {
 
 onBeforeMount(() => {
   DeptAPI.getOptions().then((data) => {
-    console.log('--||data--',data);
     deptList.value = data;
   });
 });
 </script>
+<style lang="scss" scoped>
+.card-body{
+  height: 100%;
+  .left-tree{
+    margin-top: 12px;
+  }
+}
+</style>
