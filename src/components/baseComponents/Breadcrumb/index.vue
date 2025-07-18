@@ -23,7 +23,7 @@ const getBreadcrumb = () => {
   breadcrumbs.value = route.matched.filter((item) => item.meta?.description && item.meta?.breadcrumb !== false);
 };
 
-listenerRouteChange((route) => {
+listenerRouteChange(() => {
   getBreadcrumb();
 }, true);
 </script>

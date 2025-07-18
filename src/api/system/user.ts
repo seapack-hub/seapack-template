@@ -1,5 +1,5 @@
  import { request } from "@/utils/axios";
- const USER_BASE_URL = "/api/users";
+ const USER_BASE_URL = "/user";
 
  const UserAPI = {
   /**
@@ -21,7 +21,7 @@
    */
   getPage(queryParams: UserPageQuery) {
     return request<any, PageResult<UserPageVO[]>>({
-      url: `${USER_BASE_URL}/page`,
+      url: `${USER_BASE_URL}/page/list`,
       method: "get",
       params: queryParams,
     });
@@ -242,7 +242,9 @@ export interface UserInfo {
   //部门ID
   deptId?:number,
   //开始时间
-  createTime?:[string,string]
+  startTime?:string,
+  //结束时间
+  endTime?:string
  }
 
  /** 用户分页对象 */

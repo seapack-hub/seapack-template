@@ -43,6 +43,6 @@
     "src/views/worldData/cesium/**/*.tsx", 
     "src/views/worldData/cesium/**/*.vue",
     "./auto-imports.d.ts"
-  ],
+, "mock/mockProdServer.ts"  ],
   "references": [{ "path": "./tsconfig.node.json" }],
 }

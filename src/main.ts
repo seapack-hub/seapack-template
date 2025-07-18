@@ -19,6 +19,8 @@ import ElementPlus from 'element-plus';
 import zhCn from 'element-plus/es/locale/lang/zh-cn'; // 导入中文包
 //导入路由
 import router from './router';
+// import {setupProdMockServer} from "../mock/mockProdServer.ts";
+// setupProdMockServer();
 const app = createApp(App);
 //注册所有图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

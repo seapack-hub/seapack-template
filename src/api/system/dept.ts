@@ -1,6 +1,6 @@
 import { request } from "@/utils/axios";
 
-const DEPT_BASE_URL = "/api/dept";
+const DEPT_BASE_URL = "/dept";
 
 const DeptAPI = {
   /**
@@ -22,6 +22,14 @@ const DeptAPI = {
     return request<any, OptionType[]>({
       url: `${DEPT_BASE_URL}/options`,
       method: "get",
+    });
+  },
+
+  /**获取部门树 */
+  getDeptTree(){
+    return request<any,DeptVO[]>({
+      url:`${DEPT_BASE_URL}/tree`,
+      method:"get"
     });
   },
 
@@ -98,17 +106,17 @@ export interface DeptVO {
   /** 创建时间 */
   createTime?: Date;
   /** 部门ID */
-  id?: number;
+  deptId?: number;
   /** 部门名称 */
-  name?: string;
-  /** 部门编号 */
-  code?: string;
-  /** 父部门ID */
-  parentId?: number;
-  /** 排序 */
-  sort?: number;
-  /** 状态(1:启用；0:禁用) */
-  status?: number;
+  deptName?: string;
+  /** 部门父级编号 */
+  parentDeptId?: number|null;
+  /** 部门层级 */
+  deptLevel?: number;
+  /** 部门路径 */
+  deptPath?: string;
+  /** 同级排序序号 */
+  seq?: number;
   /** 修改时间 */
   updateTime?: Date;
 }

@@ -18,17 +18,18 @@
       ref="deptTreeRef"
       class="left-tree"
       :data="deptList"
-      :props="{ children: 'children', label: 'label', disabled: '' }"
+      :props="{ children: 'children', label: 'deptName', disabled: '' }"
       :expand-on-click-node="false"
       :filter-node-method="handleFilter"
       default-expand-all
+      :highlight-current="true"
       @node-click="handleNodeClick"
     />
   </el-card>
 </template>
 
 <script setup lang="ts">
-import DeptAPI from "@/api/system/dept";
+import DeptAPI ,{DeptVO} from "@/api/system/dept";
 const props = defineProps({
   modelValue: {
     type: [Number],
@@ -36,7 +37,7 @@ const props = defineProps({
   },
 });
 
-const deptList = ref<OptionType[]>(); // 部门列表
+const deptList = ref<DeptVO[]>(); // 部门列表
 const deptTreeRef = ref(ElTree); // 部门树
 const deptName = ref(); // 部门名称
 
@@ -60,17 +61,17 @@ function handleFilter(value: string, data: any) {
   if (!value) {
     return true;
   }
-  return data.label.indexOf(value) !== -1;
+  return data.deptName.indexOf(value) !== -1;
 }
 
 /** 部门树节点 Click */
 function handleNodeClick(data: { [key: string]: any }) {
-  deptId.value = data.value;
+  deptId.value = data.deptId;
   emits("node-click");
 }
 
 onBeforeMount(() => {
-  DeptAPI.getOptions().then((data) => {
+  DeptAPI.getDeptTree().then((data) => {
     deptList.value = data;
   });
 });

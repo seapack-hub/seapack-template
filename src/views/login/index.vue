@@ -35,36 +35,6 @@
               @focus="handleFocus"
             />
           </el-form-item>
-          <el-form-item prop="code">
-            <el-input
-              v-model.trim="loginFormData.code"
-              placeholder="验证码"
-              type="text"
-              tabindex="3"
-              :prefix-icon="Key"
-              maxlength="7"
-              size="large"
-            >
-              <template #append>
-                <el-image
-                  :src="codeUrl"
-                  draggable="false"
-                  @click="createCode"
-                >
-                  <template #placeholder>
-                    <el-icon>
-                      <Picture />
-                    </el-icon>
-                  </template>
-                  <template #error>
-                    <el-icon>
-                      <Loading />
-                    </el-icon>
-                  </template>
-                </el-image>
-              </template>
-            </el-input>
-          </el-form-item>
           <el-button
             :loading="loading"
             type="primary"
@@ -76,6 +46,7 @@
         </el-form>
       </div>
     </div>
+    <SliderDialog v-model="showCaptcha" :login-form="loginFormData"></SliderDialog>
   </div>
 </template>
 
@@ -84,21 +55,19 @@ import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { type LoginRequestData } from '@/api/login/types/login.ts';
 import { type FormInstance, type FormRules } from 'element-plus';
-import { User, Lock, Key, Picture, Loading } from '@element-plus/icons-vue';
-import { getLoginCodeApi } from '@/api/login/index.ts';
+import { User, Lock } from '@element-plus/icons-vue';
 import Owl from './components/Owl.vue';
+import SliderDialog from './components/SliderDialog.vue';
 import { useFocus } from './hooks/useFocus';
-
 const router = useRouter();
+
 const { isFocus, handleBlur, handleFocus } = useFocus();
 
-/** 验证码图片*/
-const codeUrl = ref('');
+const showCaptcha = ref(false);
 /** 登录表单数据 */
 const loginFormData: LoginRequestData = reactive({
   username: 'admin',
   password: '12345678',
-  code: ''
 });
 /** 登录表单元素的引用 */
 const loginFormRef = ref<FormInstance | null>(null);
@@ -119,25 +88,28 @@ const loading = ref(false);
 const handleLogin = () => {
   loginFormRef.value?.validate((valid: boolean, fields) => {
     if (valid) {
-      loading.value = true;
-      router.push({ path: '/menuTab' });
-      loading.value = false;
+      // loading.value = true;
+      // router.push({ path: '/menuTab' });
+      // loading.value = false;
+      showCaptcha.value = true;
     } else {
       console.error('表单校验不通过', fields);
     }
   });
 };
-
 /** 创建验证码图片*/
 const createCode = async () => {
   //清空输入
-  loginFormData.code = '';
-  //获取验证码
-  codeUrl.value = '';
-  const code = await getLoginCodeApi();
-  codeUrl.value = code;
+  // loginFormData.code = '';
+  // //获取验证码
+  // codeUrl.value = '';
+  // const code = await getLoginCodeApi();
+  // codeUrl.value = code;
+  // const res = await getSlideVerifyImg();
+  // console.log('--res--',res);
+  // localImgs.value = [res.bgImage]
+  // img.value = res.bgImage;
 };
-
 /** 初始化验证码 */
 createCode();
 </script>
@@ -181,6 +153,9 @@ createCode();
           cursor: pointer;
           text-align: center;
         }
+      }
+      .captcha-section {
+        margin: 20px 0;
       }
       .el-button {
         width: 100%;

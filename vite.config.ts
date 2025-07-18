@@ -21,11 +21,11 @@ import eslint from 'vite-plugin-eslint';
 import { type ConfigEnv, type UserConfigExport, loadEnv } from 'vite';
 
 //引入mock服务
-import mockDevServerPlugin from 'vite-plugin-mock-dev-server'
-
+//import mockDevServerPlugin from 'vite-plugin-mock-dev-server'
+import { viteMockServe } from 'vite-plugin-mock';
 export default defineConfig(({mode}:ConfigEnv) => {
   const viteEnv = loadEnv(mode,process.cwd());
-  const { VITE_PUBLIC_PATH,VITE_MOCK_DEV_SERVER,VITE_BASE_API,VITE_APP_API_URL } = viteEnv;
+  const { VITE_PUBLIC_PATH,VITE_MOCK_DEV_SERVER,VITE_BASE_API,VITE_APP_API_URL,NODE_ENV } = viteEnv;
   return {
     base:VITE_PUBLIC_PATH,
     server:{
@@ -41,7 +41,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
       strictPort:false,
       /** 接口代理 */
       proxy:{
-        "/dev-api": {
+        "/api": {
           target: VITE_APP_API_URL,
           // ws: true,
           // /** 是否允许跨域 */
@@ -52,7 +52,16 @@ export default defineConfig(({mode}:ConfigEnv) => {
     },
     plugins: [
       vue(),
-      VITE_MOCK_DEV_SERVER === "true" ? mockDevServerPlugin() : null,
+      VITE_MOCK_DEV_SERVER === "true" ? viteMockServe({
+        ignore: /^\_/,
+        mockPath: 'mock',   // Mock 文件存放目录（默认 `mock`）
+        localEnabled: false,     // 开发环境启用 Mock
+        prodEnabled: true,     // 生产环境禁用 Mock
+        supportTs: true,       // 支持 TypeScript 文件
+        logger: true,           // 控制台显示请求日志
+        watchFiles: true,       // 监听 Mock 文件修改自动更新
+        injectCode: `import { setupProdMockServer } from '../mock/mockProdServer.ts'; setupProdMockServer();`, 
+      }) : null,
       cesium(),
       //配置ElementPlus,自动引入
       ElementPlus({}),
@@ -96,5 +105,8 @@ export default defineConfig(({mode}:ConfigEnv) => {
       ]
     },
     lintOnSave: false,  // 添加这一行代码
+    build:{
+      target: 'es2020'
+    }
   }
 })

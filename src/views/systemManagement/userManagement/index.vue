@@ -55,7 +55,7 @@
 
             <el-form-item label="创建时间">
               <el-date-picker
-                v-model="queryParams.createTime"
+                v-model="timeArr"
                 :editable="false"
                 type="daterange"
                 range-separator="~"
@@ -128,18 +128,18 @@
             />
             <el-table-column
               label="用户名"
-              prop="username"
-              min-width="120px"
+              prop="userName"
+              min-width="100px"
             />
             <el-table-column
               label="昵称"
-              min-width="120px"
+              min-width="100px"
               align="center"
-              prop="nickname"
+              prop="nickName"
             />
             <el-table-column
               label="性别"
-              min-width="100"
+              min-width="80px"
               align="center"
               prop="gender"
             >
@@ -178,12 +178,12 @@
               label="创建时间"
               align="center"
               prop="createTime"
-              min-width="120"
+              min-width="160"
             />
             <el-table-column
               label="操作"
               fixed="right"
-              min-width="180"
+              min-width="160"
             >
               <template #default="scope">
                 <el-button
@@ -246,7 +246,7 @@ const queryParams = reactive<UserPageQuery>({
 const pageData = ref<UserPageVO[]>();
 const total = ref(0);
 const loading = ref(false);
-
+const timeArr = ref<string[]>([])
 // 选中的用户ID
 const selectIds = ref<number[]>([]);
 // 部门下拉数据源
@@ -259,6 +259,14 @@ const selectIds = ref<number[]>([]);
 // 查询
 function handleQuery() {
   loading.value = true;
+  //处理时间参数
+  if(timeArr.value && timeArr.value.length ===2){
+    queryParams.startTime = timeArr.value[0];
+    queryParams.endTime = timeArr.value[1];
+  }else{
+    queryParams.startTime = "";
+    queryParams.endTime = "";
+  }
   UserAPI.getPage(queryParams)
     .then((data) => {
       pageData.value = data.list;
@@ -274,7 +282,9 @@ function handleResetQuery() {
   queryFormRef.value.resetFields();
   queryParams.pageNum = 1;
   queryParams.deptId = undefined;
-  queryParams.createTime = undefined;
+  queryParams.startTime = "";
+  queryParams.endTime = "";
+  timeArr.value = [];
   handleQuery();
 }
 
@@ -337,7 +347,10 @@ function hancleResetPassword(row: UserPageVO) {
 }
 
 onMounted(() => {
-  handleQuery();
+  setTimeout(() => {
+    console.log('--延迟请求--');
+    handleQuery();
+  }, 200);
 });
 </script>
 
