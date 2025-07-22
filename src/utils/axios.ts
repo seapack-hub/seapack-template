@@ -60,15 +60,14 @@ function createAxios() {
       // 6. HTTP 状态码错误处理[8](@ref)
       const status = error.response?.status || 500;
       let message = '请求异常';
+      console.log('--err--',error);
       // status 是 HTTP 状态码
       //const status = get(error, 'response.status');
       switch (status) {
         case 400:message = '请求错误';
           break;
         case 401:
-          // Token 过期时
-          // logout()
-          message = '未授权，请重新登录'; 
+          message = error.response.data.data; 
           break;
         case 403:
           message = '拒绝访问';

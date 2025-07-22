@@ -17,7 +17,7 @@ export const loginVerify = (params:loginForm)=>{
     url:`/auth/login`,
     method:"get",
     params
-  });
+  }) as Promise<string>;
 };
 
 export const getSlideVerifyImg = ()=>{

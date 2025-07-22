@@ -46,20 +46,21 @@
         </el-form>
       </div>
     </div>
-    <SliderDialog v-model="showCaptcha" :login-form="loginFormData"></SliderDialog>
+    <SliderDialog
+      v-model="showCaptcha"
+      :login-form="loginFormData"
+    ></SliderDialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import { type LoginRequestData } from '@/api/login/types/login.ts';
 import { type FormInstance, type FormRules } from 'element-plus';
 import { User, Lock } from '@element-plus/icons-vue';
 import Owl from './components/Owl.vue';
 import SliderDialog from './components/SliderDialog.vue';
 import { useFocus } from './hooks/useFocus';
-const router = useRouter();
 
 const { isFocus, handleBlur, handleFocus } = useFocus();
 
@@ -67,7 +68,7 @@ const showCaptcha = ref(false);
 /** 登录表单数据 */
 const loginFormData: LoginRequestData = reactive({
   username: 'admin',
-  password: '12345678',
+  password: 'seapack',
 });
 /** 登录表单元素的引用 */
 const loginFormRef = ref<FormInstance | null>(null);
@@ -76,7 +77,7 @@ const loginFormRules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 8, max: 16, message: '长度在 8 到 16 个字符', trigger: 'blur' }
+    { min: 6, max: 16, message: '长度在 6 到 16 个字符', trigger: 'blur' }
   ],
   code: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
 };
@@ -97,21 +98,6 @@ const handleLogin = () => {
     }
   });
 };
-/** 创建验证码图片*/
-const createCode = async () => {
-  //清空输入
-  // loginFormData.code = '';
-  // //获取验证码
-  // codeUrl.value = '';
-  // const code = await getLoginCodeApi();
-  // codeUrl.value = code;
-  // const res = await getSlideVerifyImg();
-  // console.log('--res--',res);
-  // localImgs.value = [res.bgImage]
-  // img.value = res.bgImage;
-};
-/** 初始化验证码 */
-createCode();
 </script>
 
 <style scoped lang="scss">

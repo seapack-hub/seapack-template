@@ -7,17 +7,28 @@
       ref="container"
       class="captcha-container"
     >
-      <!-- 背景图 -->
-      <img
-        :src="bgImage"
-        class="bg-image"
-      />
-      <!-- 滑块图 -->
-      <img
-        :src="sliderImage"
-        class="slider-image"
-        :style="{ left: sliderImageX + 'px',top:sliderImageY + 'px' }"
-      />
+      <el-skeleton
+        :loading="loading"
+        animated
+      >
+        <template #template>
+          <el-skeleton-item
+            variant="image"
+            style="width: 100%; height: 155px;"
+          />
+        </template>
+        <!-- 背景图 -->
+        <img
+          :src="bgImage"
+          class="bg-image"
+        />
+        <!-- 滑块图 -->
+        <img
+          :src="sliderImage"
+          class="slider-image"
+          :style="{ left: sliderImageX + 'px',top:sliderImageY + 'px' }"
+        />
+      </el-skeleton>
       <!--轨道和滑块-->
       <div class="slider-track-container">
         <!-- 滑块轨道 -->
@@ -43,7 +54,10 @@
       </div>
     </div>
     <!-- 状态提示 -->
-    <div class="status-text">
+    <div
+      class="status-text"
+      :class="{'success-text':statusFlag}"
+    >
       {{ statusText }}
     </div>
   </div>
@@ -56,7 +70,8 @@ interface TrackPoint {
   x: number;
   t: number;
 }
-const emit = defineEmits(['success'])
+const emit = defineEmits(['success']);
+const loading= ref(true);
 // 响应式数据
 const bgImage = ref('');
 const sliderImage = ref('');
@@ -72,8 +87,8 @@ const container = ref<HTMLElement | null>(null);
 const trackPoints = ref<TrackPoint[]>([]);
 const startTime = ref(0);
 const statusText = ref("请按住滑块，拖动到最右侧"); // 状态提示文本[7](@ref)
+const statusFlag = ref(false);
 const maxX = ref(0); // 最大可拖动距离
-const resolveCallback = ref<Function | null>(null);
 // 计算填充百分比（用于轨道填充效果）
 const fillPercentage = computed(() => {
   return maxX.value ? Math.min(100, (sliderX.value / maxX.value) * 100) : 0;
@@ -82,6 +97,7 @@ const fillPercentage = computed(() => {
 // 初始化验证码
 const initCaptcha = async () => {
   try {
+    loading.value = true;
     const data = await getSlideVerifyImg();
     bgImage.value = data.bgImage;
     sliderImage.value = data.sliderImage;
@@ -99,6 +115,7 @@ const initCaptcha = async () => {
     if (container.value) {
       maxX.value = container.value.offsetWidth - 50;
     }
+    loading.value = false;
   } catch (error) {
     statusText.value = "验证码加载失败，点击重试";
   }
@@ -153,53 +170,47 @@ const endDrag = async (e: Event) => {
   const isMouseEvent = e.type === 'mouseup';
   document.removeEventListener(isMouseEvent ? 'mousemove' : 'touchmove', dragHandler);
   document.removeEventListener(e.type, endDrag);
-  console.log('--结束拖动--');
   submitData();
-  try {
-    // 验证逻辑（此处添加实际验证代码）
-    if (sliderX.value >= maxX.value - 5) {
-      statusText.value = "验证成功 ✓";
-      // 成功动画
-      setTimeout(() => {
-        // emit('success');
-      }, 800);
-    } else {
-      statusText.value = "验证失败，请重试";
-      // 自动回弹动画
-      const startPos = sliderX.value;
-      const duration = 300;
-      const startTime = Date.now();
-      
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(1, elapsed / duration);
-        sliderX.value = startPos - (startPos * progress);
-        sliderImageX.value = sliderX.value - 15;
-        
-        if (progress < 1) requestAnimationFrame(animate);
-      };
-      animate();
-    }
-  } catch (error) {
-    console.error('验证失败:', error);
-    //emit('failure');
-  } finally {
-    //initCaptcha(); // 刷新验证码
-  }
 };
+
+const lastSet = (isValid:boolean)=>{
+  if(isValid){
+    statusText.value = "验证成功 ✓";
+    statusFlag.value = true;
+  }else{
+    statusText.value = "验证失败，请重试";
+    statusFlag.value = false;
+    // 自动回弹动画
+    const startPos = sliderX.value;
+    const duration = 300;
+    const startTime = Date.now();
+    
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      sliderX.value = startPos - (startPos * progress);
+      sliderImageX.value = sliderX.value - 15;
+      
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    animate();
+  }
+}
 
 //提交数据
 const submitData = () => {
-  return new Promise((resolve)=>{
-    resolveCallback.value = resolve;
-    emit('success', { 
-      sliderX: sliderX.value,
-      token:token.value
-    }); // 触发父组件校验
-  })
-}
+  emit('success', { 
+    sliderX: sliderX.value,
+    token:token.value
+  }); 
+};
+
+defineExpose({
+  lastSet,
+  initCaptcha
+});
 //初始化验证码
-initCaptcha();
+//initCaptcha();
 </script>
 
 <style scoped lang="scss">
@@ -310,6 +321,9 @@ initCaptcha();
     height: 25px;
     color: #666;
     transition: color 0.3s;
+  }
+  .success-text{
+    color:#00f715;
   }
 }
 </style>
