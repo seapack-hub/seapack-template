@@ -204,7 +204,6 @@ export const histogramOption = {
     {
       type: 'custom',
       renderItem: function (params:any, api:any) {
-        console.log('-params1--',params);
         const location = api.coord([api.value(0), api.value(1)]);
         return {
           type: 'group',

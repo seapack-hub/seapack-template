@@ -1,21 +1,15 @@
 import axios ,{ type AxiosResponse} from 'axios';
 import { ElMessage } from 'element-plus';
-import { getToken } from './cache/cookies';
+//import { getToken } from './cache/cookies';
 
-const token = getToken();
+
 
 /**创建请求实例 */
 function createAxios() {
   // 创建一个axios实例
   const Axios = axios.create({
     baseURL: import.meta.env.VITE_BASE_API,
-    headers: {
-      // 携带 Token
-      Authorization: token ? `Bearer ${token}` : undefined,
-      'Content-Type': 'application/json'
-    },
-    timeout: 5000,
-    data: {}
+    timeout: 30000,
   });
 
   // 请求拦截

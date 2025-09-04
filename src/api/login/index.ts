@@ -1,6 +1,6 @@
 import {request} from "@/utils/axios";
 import type * as Login from "./types/login";
-const USER_BASE_URL = "/api/login";
+const USER_BASE_URL = "";
 /** 获取登录验证码*/
 export const getLoginCodeApi = ()=>{
   return request<Login.LoginRequestData>({
@@ -14,7 +14,7 @@ export const getLoginCodeApi = ()=>{
  */
 export const loginVerify = (params:loginForm)=>{
   return request({
-    url:`/auth/login`,
+    url:`${USER_BASE_URL}/auth/login`,
     method:"get",
     params
   }) as Promise<string>;
@@ -22,7 +22,7 @@ export const loginVerify = (params:loginForm)=>{
 
 export const getSlideVerifyImg = ()=>{
   return request({
-    url:`/captcha/generate`,
+    url:`${USER_BASE_URL}/captcha/generate`,
     method:"get"
   }) as Promise<CaptchaData>;
 };

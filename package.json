@@ -42,6 +42,7 @@
     "@eslint/create-config": "^1.8.1",
     "@eslint/js": "^9.25.1",
     "@types/node": "^20.12.7",
+    "@types/ol": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^8.31.0",
     "@typescript-eslint/parser": "^8.31.0",
     "@vitejs/plugin-vue": "^5.0.4",
