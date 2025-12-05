@@ -74,39 +74,39 @@
             class="m-l-2px"
             name="arrow_down"
           ></SPIcon>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <template
-                v-for="(btnItem, btnIndex) in dropDownButtons"
-                :key="btnIndex"
-              >
-                <el-dropdown-item
-                  v-if="btnItem?.vIFHandler ? btnItem.vIFHandler(scope) : true"
-                  :disabled="btnItem?.disabledHandler ? btnItem.disabledHandler(scope) : false"
-                  class="!p-0"
-                >
-                  <SpAction
-                    v-if="btnItem.targetView || btnItem.metaKey"
-                    :disabled="btnItem?.disabledHandler ? btnItem.disabledHandler(scope) : false"
-                    :row="scope.row"
-                    v-bind="btnItem"
-                    class="w-100% !p-x-15px !p-y-7px"
-                  ></SpAction>
-                  <el-link
-                    v-else
-                    :disabled="btnItem?.disabledHandler ? btnItem.disabledHandler(scope) : false"
-                    :underline="false"
-                    v-bind="btnItem"
-                    class="w-100% !p-x-15px !p-y-7px"
-                    @click="dropdownClick(btnItem, scope)"
-                  >
-                    {{ btnItem.label }}
-                  </el-link>
-                </el-dropdown-item>
-              </template>
-            </el-dropdown-menu>
-          </template>
         </el-link>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <template
+              v-for="(btnItem, btnIndex) in dropDownButtons"
+              :key="btnIndex"
+            >
+              <el-dropdown-item
+                v-if="btnItem?.vIFHandler ? btnItem.vIFHandler(scope) : true"
+                :disabled="btnItem?.disabledHandler ? btnItem.disabledHandler(scope) : false"
+                class="!p-0"
+              >
+                <SpAction
+                  v-if="btnItem.targetView || btnItem.metaKey"
+                  :disabled="btnItem?.disabledHandler ? btnItem.disabledHandler(scope) : false"
+                  :row="scope.row"
+                  v-bind="btnItem"
+                  class="w-100% !p-x-15px !p-y-7px"
+                ></SpAction>
+                <el-link
+                  v-else
+                  :disabled="btnItem?.disabledHandler ? btnItem.disabledHandler(scope) : false"
+                  :underline="false"
+                  v-bind="btnItem"
+                  class="w-100% !p-x-15px !p-y-7px"
+                  @click="dropdownClick(btnItem, scope)"
+                >
+                  {{ btnItem.label }}
+                </el-link>
+              </el-dropdown-item>
+            </template>
+          </el-dropdown-menu>
+        </template>
       </el-dropdown>
     </template>
   </div>

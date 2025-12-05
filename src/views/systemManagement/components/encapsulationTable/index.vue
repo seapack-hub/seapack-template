@@ -1,11 +1,10 @@
 <template>
-  <SpTable style="height:100%" class="h-100%" :columns="tableColumns" :data="tableData"></SpTable>
+  <SpTable height="100%" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
 </template>
 
 <script setup lang="ts">
 //表格头信息
 const tableColumns = ref([
-  { label: '序号', fixed: 'left', prop: 'index', width: 60, props: { type: 'index', width: '40px', align: 'center' }},
   { label: '用户ID',prop: 'userId'},
   { label: '姓名', prop: 'name', minWidth: '140px'},
   { label: '性别', prop: 'gender', minWidth: '100px'},
@@ -17,9 +16,23 @@ const tableColumns = ref([
   {
     columnType: 'operate',
     label: '操作',
-    width: '120px',
+    width: '160px',
     fixed: 'right',
     buttons: [
+       {
+        type: 'primary',
+        label: '删除',
+        renderType: 'link',
+        popconFirm:"数据测试",
+        // buttonPermission: {
+        //   name: '删除',
+        //   type: 'row',
+        //   permission: 'delete'
+        // },
+      },
+      { type:'primary',label:"修改",renderType: 'link',},
+      { type:'primary',label:"关联",renderType: 'link', },
+      { type:'primary',label:"变动",renderType: 'link',},
       {
         type: 'primary',
         label: '详情',
@@ -35,19 +48,6 @@ const tableColumns = ref([
           permission: 'detail'
         }
       },
-      {
-        type: 'primary',
-        label: '删除',
-        popconFirm:"数据测试",
-        buttonPermission: {
-          name: '删除',
-          type: 'row',
-          permission: 'delete'
-        },
-      },
-      { type:'primary',label:"修改"},
-      { type:'primary',label:"关联" },
-      { type:'primary',label:"变动" },
     ]
   }
 ]);
