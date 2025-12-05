@@ -34,23 +34,24 @@ const loading = ref(true);
 
 const childRef = ref();
 const onCaptchaSuccess = async (info:any)=>{
+  router.push({ path: '/menuTab' });
   //获取登录参数
-  const params = {
-    token:info.token,
-    sliderX:info.sliderX,
-    username:props.loginForm.username,
-    password:props.loginForm.password
-  };
-  const res = await loginVerify(params);
-  if(res === "登录成功"){
-    await childRef.value?.lastSet(true);
-    setTimeout(() => {
-      //跳转主页面
-      router.push({ path: '/menuTab' });
-    }, 1000);
-  }else{
-    childRef.value?.lastSet(false);
-  }
+  // const params = {
+  //   token:info.token,
+  //   sliderX:info.sliderX,
+  //   username:props.loginForm.username,
+  //   password:props.loginForm.password
+  // };
+  // const res = await loginVerify(params);
+  // if(res === "登录成功"){
+  //   await childRef.value?.lastSet(true);
+  //   setTimeout(() => {
+  //     //跳转主页面
+  //     router.push({ path: '/menuTab' });
+  //   }, 1000);
+  // }else{
+  //   childRef.value?.lastSet(false);
+  // }
 };
 // 对话框完全打开后执行
 const handleDialogOpened = async () => {

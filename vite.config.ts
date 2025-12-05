@@ -10,7 +10,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 //引入工具插件
 import VueDevTools from 'vite-plugin-vue-devtools'
 //配置UnoCSS
-//import UnoCSS from 'unocss/vite'
+import UnoCSS from 'unocss/vite'
 //配置SVG
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 //引入地图组件
@@ -73,6 +73,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
           enabled: false,  // 1、改为true用于生成eslint配置。2、生成后改回false，避免重复生成消耗
         },
       }),
+      UnoCSS(),
       Components({
         resolvers: [ElementPlusResolver()],
         // 指定自动导入的组件位置，默认是 src/components

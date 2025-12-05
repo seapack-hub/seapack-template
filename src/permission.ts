@@ -15,7 +15,6 @@ router.beforeEach((to, from, next) => {
   //判断是否添加动态路由
   const dynamicRoutes = permissionStore?.dynamicRoutes ?? [];
   if (dynamicRoutes.length > 0) {
-    console.log('--222---');
     //todo 动态路由处理
 
     // 判断是否根据模块匹配模块路由

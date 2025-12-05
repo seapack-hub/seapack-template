@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120px" height="100px" viewBox="0 0 120 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>暂无数据</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="切图" transform="translate(-64.000000, -58.000000)">
+            <g id="暂无数据" transform="translate(64.000000, 58.000000)">
+                <g id="Group-13" transform="translate(4.000000, 11.000000)">
+                    <g id="Group-12" transform="translate(0.000000, 1.000000)" fill="#D8DEE6" opacity="0.400000006">
+                        <circle id="Oval-Copy-3" cx="3" cy="26" r="3"></circle>
+                        <path d="M13,37 C13.8333333,37.6666667 14.6666667,38 15.5,38 C16.3333333,38 17.1666667,37.6666667 18,37 C17.3333333,37.8333333 17,38.6666667 17,39.5 C17,40.3333333 17.3333333,41.1666667 18,42 C17.1666667,41.3333333 16.3333333,41 15.5,41 C14.6666667,41 13.8333333,41.3333333 13,42 C13.6666667,41.1666667 14,40.3333333 14,39.5 C14,38.6666667 13.6666667,37.8333333 13,37 Z" id="Rectangle" transform="translate(15.500000, 39.500000) rotate(45.000000) translate(-15.500000, -39.500000) "></path>
+                        <path d="M107,34 C107.833333,34.6666667 108.666667,35 109.5,35 C110.333333,35 111.166667,34.6666667 112,34 C111.333333,34.8333333 111,35.6666667 111,36.5 C111,37.3333333 111.333333,38.1666667 112,39 C111.166667,38.3333333 110.333333,38 109.5,38 C108.666667,38 107.833333,38.3333333 107,39 C107.666667,38.1666667 108,37.3333333 108,36.5 C108,35.6666667 107.666667,34.8333333 107,34 Z" id="Rectangle-Copy-34" transform="translate(109.500000, 36.500000) rotate(45.000000) translate(-109.500000, -36.500000) "></path>
+                        <path d="M93,44 C93.8333333,44.6666667 94.6666667,45 95.5,45 C96.3333333,45 97.1666667,44.6666667 98,44 C97.3333333,44.8333333 97,45.6666667 97,46.5 C97,47.3333333 97.3333333,48.1666667 98,49 C97.1666667,48.3333333 96.3333333,48 95.5,48 C94.6666667,48 93.8333333,48.3333333 93,49 C93.6666667,48.1666667 94,47.3333333 94,46.5 C94,45.6666667 93.6666667,44.8333333 93,44 Z" id="Rectangle-Copy-35" transform="translate(95.500000, 46.500000) rotate(45.000000) translate(-95.500000, -46.500000) "></path>
+                        <circle id="Oval-Copy-4" cx="22" cy="66" r="3"></circle>
+                        <circle id="Oval-Copy-5" cx="97" cy="3" r="3"></circle>
+                    </g>
+                    <ellipse id="Oval" fill="#D8DEE6" opacity="0.400000006" cx="58" cy="83.5" rx="29" ry="3.5"></ellipse>
+                    <rect id="Rectangle" fill="#D8DEE6" opacity="0.3" x="31" y="0" width="47" height="64" rx="4"></rect>
+                    <rect id="Rectangle" stroke="#D8DEE6" x="37.5" y="11.5" width="41" height="1"></rect>
+                    <rect id="Rectangle" stroke="#D8DEE6" x="37.5" y="22.5" width="19" height="1"></rect>
+                    <rect id="Rectangle-Copy-98" stroke="#D8DEE6" x="37.5" y="44.5" width="11" height="1"></rect>
+                    <rect id="Rectangle-Copy-100" stroke="#D8DEE6" x="59.5" y="44.5" width="10" height="1"></rect>
+                    <rect id="Rectangle-Copy-99" stroke="#D8DEE6" x="37.5" y="55.5" width="19" height="1"></rect>
+                    <rect id="Rectangle-Copy-96" stroke="#D8DEE6" x="37.5" y="33.5" width="7" height="1"></rect>
+                    <rect id="Rectangle-Copy-95" stroke="#D8DEE6" x="59.5" y="22.5" width="19" height="1"></rect>
+                    <rect id="Rectangle-Copy-97" stroke="#D8DEE6" x="47.5" y="33.5" width="31" height="1"></rect>
+                    <path d="M77,70 L35,70 C32.790861,70 31,68.209139 31,66 L31,4 C31,1.790861 32.790861,0 35,0 L81,0 C83.209139,0 85,1.790861 85,4 L85,13.5 M85,16 L85,17.5 M85,19 L85,56.5 M85,58 L85,60" id="Shape" stroke="#D8DEE6"></path>
+                    <g id="Group-6" transform="translate(71.000000, 56.500000) rotate(-50.000000) translate(-71.000000, -56.500000) translate(59.000000, 35.000000)">
+                        <circle id="Oval" stroke="#D8DEE6" cx="12" cy="12" r="12"></circle>
+                        <circle id="Oval" stroke="#D8DEE6" cx="12" cy="12" r="9"></circle>
+                        <path d="M12,3 C16.9705627,3 21,7.02943725 21,12 C21,16.9705627 16.9705627,21 12,21 C11.4888403,21 10.9876336,20.9573866 10.4997385,20.8755185 C14.7572132,20.1607111 18,16.4590523 18,12 C18,7.54094773 14.7572132,3.83928891 10.5012661,3.12465017 C10.9876336,3.04261342 11.4888403,3 12,3 Z" id="Combined-Shape" fill="#D8DEE6" opacity="0.7"></path>
+                        <path d="M13.5,24 L13.5,41.5 C13.5,42.3284271 12.8284271,43 12,43 C11.1715729,43 10.5,42.3284271 10.5,41.5 L10.5,24 L10.5,24" id="Path" stroke="#D8DEE6"></path>
+                        <rect id="Rectangle" stroke="#D8DEE6" x="11.5" y="27.5" width="1" height="1"></rect>
+                        <rect id="Rectangle-Copy-101" stroke="#D8DEE6" x="11.5" y="38.5" width="1" height="1"></rect>
+                    </g>
+                    <text id="？" font-family="PingFangSC-Regular, PingFang SC" font-size="12" font-weight="normal" fill="#D8DEE6">
+                        <tspan x="61" y="55">？</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

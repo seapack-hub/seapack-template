@@ -73,6 +73,16 @@ const systemManagementRoute: Array<RouterObject> = [
               icon: 'e-sign'
             }
           },
+          {
+            path:"/encapsulationTable",
+            name:"encapsulationTable",
+            component:()=> import("@/views/systemManagement/components/encapsulationTable/index.vue"),
+            meta:{
+              title:"encapsulationTable",
+              description:"表格封装",
+              icon:"encapsulation-table"
+            }
+          },
           //富文本编辑器
           {
             path:"/wang-editer",
@@ -83,7 +93,7 @@ const systemManagementRoute: Array<RouterObject> = [
               description: '富文本编辑器',
               icon: 'wang-editer'
             }
-          }
+          },
         ]
       },
       //博客文档
