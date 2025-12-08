@@ -9,7 +9,7 @@
     "preview": "vite preview --port 4444 --mode preview --debug",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "lint:eslint": "eslint --cache --max-warnings 0 {src,mock}/**/*.{js,vue,ts,tsx,jsx} --fix",
-    "i":"npm install"
+    "i": "npm install"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
@@ -20,6 +20,7 @@
     "axios": "^1.7.7",
     "cesium": "^1.119.0",
     "echarts": "^5.5.1",
+    "echarts-gl": "^2.0.9",
     "element-plus": "^2.6.1",
     "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
@@ -46,7 +47,6 @@
     "@types/ol": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^8.31.0",
     "@typescript-eslint/parser": "^8.31.0",
-    "@vitejs/plugin-vue": "^5.0.4",
     "@unocss/eslint-config": "^0.65.2",
     "@unocss/preset-attributify": "^0.65.2",
     "@unocss/preset-icons": "^0.65.2",
@@ -55,7 +55,7 @@
     "@unocss/preset-uno": "^0.65.2",
     "@unocss/transformer-directives": "^0.65.2",
     "@unocss/transformer-variant-group": "^0.65.2",
-    "unocss": "^0.65.2",
+    "@vitejs/plugin-vue": "^5.0.4",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
@@ -64,6 +64,7 @@
     "prettier": "^3.5.3",
     "sass": "^1.74.1",
     "typescript": "^5.2.2",
+    "unocss": "^0.65.2",
     "unplugin-auto-import": "^0.17.5",
     "unplugin-element-plus": "^0.8.0",
     "unplugin-vue-components": "^0.26.0",

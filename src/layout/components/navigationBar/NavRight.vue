@@ -4,8 +4,8 @@
     <div class="setting-navigation">
       <!--返回主屏幕-->
       <SPIcon class="setting-item" name="to-home" size="20px" @click="jumpToLink('/menuTab')"></SPIcon>
-      <SPIcon class="setting-item" name="2D-layers" size="20px" @click="jumpToLink('/worldData')"></SPIcon>
       <SPIcon class="setting-item" name="3D-layers" size="20px" @click="jumpToLink('/worldData')"></SPIcon>
+      <SPIcon class="setting-item" name="basic-dashboard" size="20px" @click="jumpToLink('/universalTemplate')"></SPIcon>
       <!--消息通知-->
       <SPIcon class="setting-item" name="message-notify" size="20px"></SPIcon>
       <!--全屏设置-->

@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    BaseCharts: typeof import('./src/components/baseCharts/index.vue')['default']
     Breadcrumb: typeof import('./src/components/baseComponents/Breadcrumb/index.vue')['default']
     ChangeLanguage: typeof import('./src/components/changeLanguage/index.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
