@@ -1,5 +1,5 @@
  import { request } from "@/utils/axios";
- const USER_BASE_URL = "/user";
+ const USER_BASE_URL = "/api/user";
 
  const UserAPI = {
   /**

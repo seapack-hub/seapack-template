@@ -43,10 +43,10 @@ export default defineConfig(({mode}:ConfigEnv) => {
       proxy:{
         "/api": {
           target: VITE_APP_API_URL,
-          // ws: true,
-          // /** 是否允许跨域 */
-          // changeOrigin: true,
-          rewrite: (path) => path.replace(new RegExp("^" + VITE_BASE_API), ""),
+          ws: true,
+          /** 是否允许跨域 */
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
         }
       }
     },

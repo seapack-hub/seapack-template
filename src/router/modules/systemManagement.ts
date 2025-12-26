@@ -51,6 +51,29 @@ const systemManagementRoute: Array<RouterObject> = [
           },
         ]
       },
+      //基金模块
+      {
+        path:"/fund",
+        component: () => import('@/views/systemManagement/components/index.vue'),
+        meta:{
+          title:"fund",
+          description:"基金模块",
+          icon:"fund"
+        },
+        children:[
+          //基金信息表
+          {
+            path: '/fundBaseInfo',
+            name: 'fundBaseInfo',
+            component: () => import('@/views/systemManagement/fundManagement/fundBaseInfo.vue'),
+            meta: {
+              title: 'fundBaseInfo',
+              description: '基金信息',
+              icon: 'fund-info'
+            }
+          },
+        ]
+      },
       //组件封装
       {
         path: '/genericComponent',
@@ -79,6 +102,16 @@ const systemManagementRoute: Array<RouterObject> = [
             component:()=> import("@/views/systemManagement/components/encapsulationTable/index.vue"),
             meta:{
               title:"encapsulationTable",
+              description:"表格封装",
+              icon:"encapsulation-table"
+            }
+          },
+          {
+            path:"/splitTable",
+            name:"splitTable",
+            component:()=> import("@/views/systemManagement/components/splitTableCode/index.vue"),
+            meta:{
+              title:"splitTable",
               description:"表格封装",
               icon:"encapsulation-table"
             }

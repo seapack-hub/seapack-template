@@ -1,6 +1,6 @@
 import { request } from "@/utils/axios";
 
-const DEPT_BASE_URL = "dept";
+const DEPT_BASE_URL = "/api/dept";
 
 const DeptAPI = {
   /**

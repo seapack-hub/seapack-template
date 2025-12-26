@@ -14,7 +14,10 @@ function createAxios() {
 
   // 请求拦截
   Axios.interceptors.request.use(
-    (config) => config,
+    (config) => {
+      console.log('--,,config--',config);
+      return config;
+    },
     // 发送失败
     (error) => Promise.reject(error)
   );
