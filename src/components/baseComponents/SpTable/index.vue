@@ -1,6 +1,6 @@
 <template>
   <el-table 
-    v-if="refreshTable" 
+    v-if="refreshTable"
     v-bind="{...$attrs,border:true}"
     ref="SpTableRef"
     v-loading="loading"

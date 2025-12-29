@@ -32,8 +32,29 @@
         </el-form-item>
       </el-form>
     </div>
-    <el-card class="el-card-main flex-1" shadow="never"> 
-      <SpTable height="100%" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
+    <el-card class="el-card-main flex-1 flex-col gap-10px" shadow="never">
+      <div class="table-search h-[50px] flex items-center justify-between">
+        <div>
+          <el-button type="success" icon="plus">新增</el-button>
+          <el-button type="danger" icon="delete">删除</el-button>
+        </div>
+        <div>
+          <el-button icon="upload">导入</el-button>
+          <el-button icon="download">导出</el-button>
+        </div>
+      </div>
+      <div class="flex flex-1 flex-col overflow-hidden">
+         <SpTable hight="100%" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
+      </div>
+      <div class="h-[50px]">
+        <Pagination
+          v-if="total > 0"
+          v-model:total="total"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="handleQuery"
+        />
+      </div>
     </el-card>
   </div>
 </template>
@@ -42,10 +63,10 @@
 import FundBaseInfoAPI,{FundPageQuery} from '@/api/system/fund.ts';
 const queryParams = ref<FundPageQuery>({
   pageNum: 1,
-  pageSize: 15,
+  pageSize: 10,
   keywords:""
 });
-
+const total = ref(0);
 //表格头信息
 const tableColumns = ref([
   { label: '基金代码',prop: 'fundCode',minWidth: '100px'},
@@ -59,7 +80,35 @@ const tableColumns = ref([
   { label: '管理费率', prop: 'mfee', minWidth: '100px'},
   { label: '托管费率', prop: 'cfee', minWidth: '100px'},
   { label: '销售服务费率', prop: 'sfee', minWidth: '120px'},
-  { label: '基金状态', prop: 'status', minWidth: '100px'}
+  { label: '基金状态', prop: 'status', minWidth: '100px'},
+  {
+    columnType: 'operate',
+    label: '操作',
+    width: '160px',
+    fixed: 'right',
+    buttons: [
+       {
+        type: 'primary',
+        label: '删除',
+        renderType: 'link',
+      },
+      { 
+        type:'primary',
+        label:"修改",
+        renderType: 'link',
+      },
+      {
+        type: 'primary',
+        label: '详情',
+        renderType: 'link',
+        underline: false,
+        actionType: 'view',
+        action: 'openView',
+        metaKey: 'userDetail',
+        openViewType: 'newPage',
+      },
+    ]
+  }
 ]);
 
 //表格信息
@@ -69,8 +118,9 @@ const loading = ref(false);
 //查询
 const handleQuery = async ()=>{
   loading.value = true;
-  const {list,total} = await FundBaseInfoAPI.getFundBaseInfoList(queryParams.value);
-  tableData.value = list;
+  const res = await FundBaseInfoAPI.getFundBaseInfoList(queryParams.value);
+  tableData.value = res.list;
+  total.value = res.total;
 }
 
 //重置
@@ -93,6 +143,12 @@ onMounted(() => {
       align-items: center;
     }
   }
-  
+}
+
+.el-card-main ::v-deep(.el-card__body){
+  height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>
