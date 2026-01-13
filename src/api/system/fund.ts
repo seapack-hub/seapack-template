@@ -2,10 +2,13 @@ import { request } from "@/utils/axios";
 const USER_BASE_URL = "/api/fundBaseInfo";
 const FundBaseInfoAPI = {
   getFundBaseInfoList(queryParams:FundPageQuery){
+    // 从参数中解构出分页字段和查询条件对象
+    const { pageNum, pageSize, ...fundBaseInfo } = queryParams;
     return request<any,FundBaseInfo>({
       url: `${USER_BASE_URL}/page`,
-      method: "get",
-      params:queryParams
+      method: "post",
+      params:{pageNum,pageSize},
+      data:fundBaseInfo,
     });
   }
 };

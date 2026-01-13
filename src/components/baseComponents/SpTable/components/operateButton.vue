@@ -162,13 +162,11 @@ const allShowButtons = computed(()=>{
 
 //多个按钮，获取直接展示的按钮
 const showButtons = computed(()=>{
-  console.log('--全展示按钮--',allShowButtons.value)
   const buttons = allShowButtons.value;
   // 获取展示的前operateButtonCount按钮
   return buttons.length > props.operateButtonCount ? 
   (buttons?.filter((_item:any, index:number) => index < props.operateButtonCount - 1) ?? []):buttons
 });
-console.log('直接展示按钮',showButtons.value);
 //多个按钮，获取下拉隐藏的按钮
 const dropDownButtons = computed(()=>{
   const buttons = allShowButtons.value;
@@ -176,8 +174,6 @@ const dropDownButtons = computed(()=>{
   return buttons.length > props.operateButtonCount ? 
   (buttons?.filter((_item:any, index:number) => index >= props.operateButtonCount - 1) ?? []):[]
 });
-
-console.log('下拉展示按钮',dropDownButtons.value);
 
 // getProps 方法确保配置参数格式统一
 const getProps = (data:any)=>{

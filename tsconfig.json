@@ -24,7 +24,7 @@
     "noFallthroughCasesInSwitch": true,
 
     /*element-plus全局组件类型，Volar支持 */
-    "types": ["element-plus/global","vue"],
+    "types": ["element-plus/global","vue","vite/client"],
     "baseUrl":"./",   
     "paths":{
       "@/*": ["src/*"],

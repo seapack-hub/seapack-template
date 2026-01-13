@@ -43,17 +43,18 @@
           <el-button icon="download">导出</el-button>
         </div>
       </div>
-      <div class="flex flex-1 flex-col overflow-hidden">
-         <SpTable hight="100%" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
-      </div>
-      <div class="h-[50px]">
-        <Pagination
-          v-if="total > 0"
-          v-model:total="total"
-          v-model:page="queryParams.pageNum"
-          v-model:limit="queryParams.pageSize"
-          @pagination="handleQuery"
-        />
+      <!--flex flex-col flex-1-->
+      <div class="flex-1 flex flex-col justify-between overflow-hidden">
+         <SpTable class="flex-1" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
+         <div class="h-[50px]">
+          <Pagination
+            v-if="total > 0"
+            v-model:total="total"
+            v-model:page="queryParams.pageNum"
+            v-model:limit="queryParams.pageSize"
+            @pagination="handleQuery"
+          />
+        </div>
       </div>
     </el-card>
   </div>
