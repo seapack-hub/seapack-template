@@ -10,7 +10,7 @@
     :collapse="collapse"
     :mode="isTop ? 'horizontal' : 'vertical'"
   >
-    <side-bar-item v-for="(item, index) in menuList" :key="index" :item="item" :base-path="basePath"></side-bar-item>
+    <side-bar-item v-for="(item, index) in showMeanList" :key="index" :item="item" :base-path="basePath"></side-bar-item>
   </el-menu>
 </template>
 
@@ -20,7 +20,8 @@ import { type RouteRecordRaw, useRoute } from 'vue-router';
 import SideBarItem from '@/layout/components/sideBar/SideBarItem.vue';
 import { useLayoutMode } from '@/hooks/useLayoutMode.ts';
 // 获取CSS 全局变量
-import { getCssVariableValue } from '@/utils/index.ts';
+import { getCssVariableValue ,deepClone} from '@/utils/index.ts';
+import { filterVisibleRoutes } from '@/utils/routeUtils.ts'
 const route = useRoute();
 const { isTop,isLeft } = useLayoutMode();
 
@@ -46,7 +47,7 @@ const hoverMenuActiveTextColor = computed(() => {
 const tipLineWidth = computed(() => {
   return isLeft.value ? '2px' : '0px';
 });
-defineProps({
+const props = defineProps({
   menuList: {
     required: true,
     default: () => [],
@@ -61,6 +62,13 @@ defineProps({
     required: true
   }
 });
+console.log('---props.menuList--',props.menuList);
+
+//计算展示的菜单
+const showMeanList = computed(()=>{
+  let tempList = deepClone(props.menuList);
+  return filterVisibleRoutes(tempList);
+})
 </script>
 
 <style scoped lang="scss">

@@ -72,6 +72,18 @@ const systemManagementRoute: Array<RouterObject> = [
               icon: 'fund-info'
             }
           },
+          //基金信息表
+          {
+            path: '/fundBaseInfo/detail',
+            name: 'fundBaseInfoDetail',
+            component: () => import('@/views/systemManagement/fundManagement/detail.vue'),
+            meta: {
+              title: 'fundBaseInfoDetail',
+              hidden: true,
+              description: '基金信息详情',
+              icon: 'fund-info'
+            }
+          },
         ]
       },
       //组件封装

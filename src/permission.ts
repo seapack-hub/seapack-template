@@ -8,7 +8,6 @@ import router from './router';
 
 //创建路由前置守卫
 router.beforeEach((to, from, next) => {
-  console.log('-3333---');
   //使用权限存储对象
   const permissionStore = usePermissionStore();
 
