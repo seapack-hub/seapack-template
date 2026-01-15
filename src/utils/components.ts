@@ -65,6 +65,17 @@ const componentsTypes: Record<string, Component> = markRaw({
   ElFormItem,
   ElButton
 });
+// 定义一个接口，允许用任何字符串索引，返回值是 string
+interface PlaceholderMap {
+  [key: string]: string; // 索引签名
+  input: string;
+  select: string;
+}
+
+const placeholderList:PlaceholderMap = {
+  "input":"请输入",
+  "select":"请选择"
+};
 
 export const styleTypes = ['default', 'primary', 'success', 'info', 'warning', 'danger'];
 
@@ -140,9 +151,9 @@ export const formatFormColumns = (columns: any[]) => {
   )
 }
 export const formatFormItem = (item: any) => {
-  const { inputType = getComponentType(item.name), name, label, customComponent } = item
+  const { inputType = getComponentType(item.name), name, label, customComponent } = item;
 
-  const placeholder = `${inputType}${label}`
+  const placeholder = `${placeholderList[inputType]}${label}`
   return {
     ...item,
     label: item.label ? (item.label?.includes(':') ? item.label : `${item.label}:`) : item.label,
@@ -175,7 +186,7 @@ export const getRulesHandler = (column: { rules: object; label: string; name: fo
                 : // 否则设置规则
                   {
                     required: true,
-                    message: `${inputTypeStr}${label}`,
+                    message: `${placeholderList[inputTypeStr]}${label}`,
                     trigger: ['blur', 'change']
                   }
             )

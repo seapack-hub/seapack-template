@@ -83,6 +83,7 @@ declare module 'vue' {
     SPIcon: typeof import('./src/components/baseComponents/SPIcon/index.vue')['default']
     SpInput: typeof import('./src/components/Form/SpInput.vue')['default']
     SpRadio: typeof import('./src/components/baseComponents/SpRadio/index.vue')['default']
+    SpSelect: typeof import('./src/components/baseComponents/SpSelect/index.vue')['default']
     SpTable: typeof import('./src/components/baseComponents/SpTable/index.vue')['default']
     SpTitle: typeof import('./src/components/baseComponents/SpTitle/index.vue')['default']
     WangEditor: typeof import('./src/components/WangEditor/index.vue')['default']

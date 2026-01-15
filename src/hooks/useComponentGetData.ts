@@ -40,6 +40,7 @@ export default (props: { getDataMethod: any; options?: any; methodParams?: any; 
 
   return {
     loading,
-    data
+    data,
+    getData
   }
 }

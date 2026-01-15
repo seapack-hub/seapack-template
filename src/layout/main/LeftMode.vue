@@ -32,4 +32,7 @@ const sidebarWidth = computed(() => {
   transition-property: width;
   transition-duration: 0.5s;
 }
+.el-main{
+  background-color:rgba(247, 249, 252, 1);
+}
 </style>

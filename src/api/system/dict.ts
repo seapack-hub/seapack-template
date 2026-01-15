@@ -1,10 +1,10 @@
 import { request } from "@/utils/axios";
+const USER_BASE_URL = "/api";
 
-export const getDictByType = (type:string)=>{
+export const getDictByType = (dictType:string)=>{
   return request<any,any>({
-    url: `/xxx/page`,
-    method: "post",
-    params:{type},
-    data:{},
+    url: `${USER_BASE_URL}/dict/list`,
+    method: "get",
+    params:{dictType}
   });
 };

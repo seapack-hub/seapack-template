@@ -5,7 +5,7 @@
       <div class="inline-flex items-center gap-x-3px">
         {{ column.label }}
         <el-tooltip effect="dark" :content="String(column.tips)" placement="top">
-          <SpIcon name="tips" size="14px"></SpIcon>
+          <SPIcon name="tips" size="14px" color="#909299"></SPIcon>
         </el-tooltip>
       </div>
     </template>
@@ -48,7 +48,7 @@
         </Suspense>
       </SpDetailEditable>
       <el-tooltip v-if="column.tooltipOption && editable" v-bind="column.tooltipOption">
-        <SpIcon name="tips" text="[var(--el-text-color-secondary)]" class="ml-[8px]"></SpIcon>
+        <SPIcon name="tips" text="[var(--el-text-color-secondary)]" class="ml-[8px]"></SPIcon>
       </el-tooltip>
       <slot
         v-if="column.slotOptions"
@@ -86,4 +86,8 @@ const getDisabled = (props: any) => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-input-number{
+  width:250px;
+}
+</style>

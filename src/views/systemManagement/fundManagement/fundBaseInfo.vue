@@ -35,7 +35,7 @@
     <el-card class="el-card-main flex-1 flex-col gap-10px" shadow="never">
       <div class="table-search h-[50px] flex items-center justify-between">
         <div>
-          <el-button type="success" icon="plus">新增</el-button>
+          <el-button type="success" icon="plus" @click="toAdd">新增</el-button>
           <el-button type="danger" icon="delete">删除</el-button>
         </div>
         <div>
@@ -62,6 +62,10 @@
 
 <script setup lang="ts">
 import FundBaseInfoAPI,{FundPageQuery} from '@/api/system/fund.ts';
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
+
 const queryParams = ref<FundPageQuery>({
   pageNum: 1,
   pageSize: 10,
@@ -127,6 +131,16 @@ const handleQuery = async ()=>{
 //重置
 const handleResetQuery = ()=>{
   handleQuery();
+}
+
+//新增
+const toAdd = ()=>{
+  router.push({
+    path:"/fundBaseInfo/detail",
+    query:{
+      id:"",
+    }
+  })
 }
 
 onMounted(() => {

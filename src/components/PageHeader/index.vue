@@ -1,5 +1,5 @@
 <template>
-  <div class="m-b-14px flex items-center justify-between">
+  <div class="m-b-8px flex items-center justify-between">
     <!--标题插槽-->
     <slot v-if="$slots.title" name="title"></slot>
     <p v-else class="font-size-[20px] color-[var(--el-text-color-primary)] font-semibold line-height-[20px]">{{ props.title }}</p>
