@@ -2,7 +2,8 @@
 @import './variables.css';
 //布局样式
 @import './layout/index.scss';
-
+//form样式
+@import './form.scss';
 body {
   margin: 0;
   display: flex;

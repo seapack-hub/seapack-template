@@ -1,0 +1,31 @@
+.el-form {
+  .el-form-item {
+    &:has(+ .detail-value, .detail-value) {
+      .el-form-item__label {
+        &::before {
+          display: none !important;
+        }
+      }
+    }
+    &.is-required.detail-value {
+      .el-form-item__label {
+        &::before {
+          display: none !important;
+        }
+      }
+    }
+    .el-form-item__label {
+      // color: var(--el-text-color-primary);
+      color:#909299;
+      font-size: 14px;
+    }
+  }
+
+  .el-form-item__content {
+    // color: var(--el-text-color-regular);
+    color:#191919;
+  }
+  .el-form-item--default {
+    margin-bottom: 20px;
+  }
+}

@@ -45,7 +45,7 @@
       </div>
       <!--flex flex-col flex-1-->
       <div class="flex-1 flex flex-col justify-between overflow-hidden">
-         <SpTable class="flex-1" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
+         <SpTable class="flex-1" :loading="loading" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
          <div class="h-[50px]">
           <Pagination
             v-if="total > 0"
@@ -81,7 +81,19 @@ const tableColumns = ref([
   { label: '基金管理公司', prop: 'managementCompany', minWidth: '130px'},
   { label: '基金托管人', prop: 'custodian', minWidth: '130px' },
   { label: '成立日期', prop: 'inceptDate', minWidth: '200px'},
-  { label: '成立规模', prop: 'issueShare', minWidth: '150px'},
+  { 
+    label: '成立规模', 
+    prop: 'issueShare', 
+    minWidth: '150px',
+    formatter: (row: any) => {
+      return `${row.issueShare}`.replace(/\B(?=(\d{3})+(?!\d))/g, ', ');
+    }
+  },
+  {
+    label:"成立时长",
+    prop:"distanceTime",
+    minWidth: '150px',
+  },
   { label: '管理费率', prop: 'mfee', minWidth: '100px'},
   { label: '托管费率', prop: 'cfee', minWidth: '100px'},
   { label: '销售服务费率', prop: 'sfee', minWidth: '120px'},
@@ -96,11 +108,22 @@ const tableColumns = ref([
         type: 'primary',
         label: '删除',
         renderType: 'link',
+        click: ({ row }: any) => {
+          handleDelete(row)
+        }
       },
       { 
         type:'primary',
         label:"修改",
         renderType: 'link',
+        click: ({ row }: any) => {
+          router.push({
+            path:"/fundBaseInfo/detail",
+            query:{
+              id:row.fundCode,
+            }
+          })
+        }
       },
       {
         type: 'primary',
@@ -126,6 +149,7 @@ const handleQuery = async ()=>{
   const res = await FundBaseInfoAPI.getFundBaseInfoList(queryParams.value);
   tableData.value = res.list;
   total.value = res.total;
+  loading.value = false;
 }
 
 //重置
@@ -141,6 +165,23 @@ const toAdd = ()=>{
       id:"",
     }
   })
+}
+
+//删除
+const handleDelete = async (row:any)=>{
+  ElMessageBox.confirm('确定删除吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () => {
+    await FundBaseInfoAPI.deleteFundBaseInfo(row.fundCode);
+    handleQuery();
+  }).catch(() => {
+    ElMessage({
+      type: 'info',
+      message: '已取消删除',
+    });
+  });
 }
 
 onMounted(() => {

@@ -1,6 +1,7 @@
 import { request } from "@/utils/axios";
 const USER_BASE_URL = "/api/fundBaseInfo";
 const FundBaseInfoAPI = {
+  //分页查询基金列表
   getFundBaseInfoList(queryParams:FundPageQuery){
     // 从参数中解构出分页字段和查询条件对象
     const { pageNum, pageSize, ...fundBaseInfo } = queryParams;
@@ -10,7 +11,38 @@ const FundBaseInfoAPI = {
       params:{pageNum,pageSize},
       data:fundBaseInfo,
     });
-  }
+  },
+
+  //插入
+  insertFundBaseInfo(fundInfo:FundBaseInfo){
+    return request<any,any>({
+      url:`${USER_BASE_URL}/insert`,
+      method:"post",
+      data:fundInfo
+    })
+  },
+  //删除
+  deleteFundBaseInfo(fundCode:string){
+    return request<any,any>({
+      url:`${USER_BASE_URL}/delete/${fundCode}`,
+      method:"delete",
+    })
+  },
+  //详情
+  getFundBaseInfoDetail(fundCode:string){
+    return request<any,FundBaseInfo>({
+      url:`${USER_BASE_URL}/detail/${fundCode}`,
+      method:"get"
+    })
+  },
+  //更新
+  updateFundBaseInfo(fundInfo:FundBaseInfo){
+    return request<any,any>({
+      url:`${USER_BASE_URL}/update`,
+      method:"post",
+      data:fundInfo
+    })
+  },
 };
 export default FundBaseInfoAPI;
 

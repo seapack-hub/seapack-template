@@ -41,7 +41,7 @@ export default defineConfig({
   },
   shortcuts: {
     // 详情页面一级标题样式变量
-    cardTitlePrimary: 'font-size-16px line-height-16px font-600 color-[#e2f5fd]'
+    cardTitlePrimary: 'font-size-16px line-height-16px font-600 color-[#AAAAAA]'
   },
   rules: [['lh-1', { 'line-height': 1 }]]
 });

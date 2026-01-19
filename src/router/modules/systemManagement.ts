@@ -65,7 +65,7 @@ const systemManagementRoute: Array<RouterObject> = [
           {
             path: '/fundBaseInfo',
             name: 'fundBaseInfo',
-            component: () => import('@/views/systemManagement/fundManagement/fundBaseInfo.vue'),
+            component: () => import('@/views/systemManagement/fundManagement/index.vue'),
             meta: {
               title: 'fundBaseInfo',
               description: '基金信息',
