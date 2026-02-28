@@ -36,7 +36,6 @@
       <div class="table-search h-[50px] flex items-center justify-between">
         <div>
           <el-button type="success" icon="plus" @click="toAdd">新增</el-button>
-          <el-button type="danger" icon="delete">删除</el-button>
         </div>
         <div>
           <el-button icon="upload">导入</el-button>
@@ -101,7 +100,7 @@ const tableColumns = ref([
   {
     columnType: 'operate',
     label: '操作',
-    width: '160px',
+    width: '120px',
     fixed: 'right',
     buttons: [
        {
@@ -124,17 +123,7 @@ const tableColumns = ref([
             }
           })
         }
-      },
-      {
-        type: 'primary',
-        label: '详情',
-        renderType: 'link',
-        underline: false,
-        actionType: 'view',
-        action: 'openView',
-        metaKey: 'userDetail',
-        openViewType: 'newPage',
-      },
+      }
     ]
   }
 ]);

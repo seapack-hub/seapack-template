@@ -35,6 +35,8 @@ const router = useRouter();
 const route = useRoute();
 const { id } = route.query;
 const editable = ref(!Boolean(id));
+//是否新增页或编辑页
+const isAddOrEdit = ref(!Boolean(id));
 const detailId = ref(id);
 
 //绑定数据
@@ -64,7 +66,7 @@ const formColumns:any = computed(()=>{
       rules: { required: true },
       props: { 
         maxlength: 10,
-        disabled:true
+        disabled:!isAddOrEdit.value,
       }
     },
     {label:"基金简称",prop:"fundName",name: 'ElInput',rules: { required: true },props: { maxlength: 20 }},

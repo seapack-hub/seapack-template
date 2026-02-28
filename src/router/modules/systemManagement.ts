@@ -141,6 +141,17 @@ const systemManagementRoute: Array<RouterObject> = [
           },
         ]
       },
+      //图形化管理
+      {
+        path:"/graphical",
+        name:"graphical",
+        component:() => import("@/views/systemManagement/graphical/index.vue"),
+        meta:{
+          title:"graphical",
+          description:"图形化管理",
+          icon:"graphical"
+        }
+      },
       //博客文档
       {
         path:"/doc",

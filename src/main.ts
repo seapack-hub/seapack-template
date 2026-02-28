@@ -7,6 +7,7 @@ import 'element-plus/dist/index.css';
 //引入全局样式
 import './styles/index.scss';
 // 本地SVG图标
+// @ts-ignore 本地SVG图标
 import 'virtual:svg-icons-register';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import ElementPlus from 'element-plus';
