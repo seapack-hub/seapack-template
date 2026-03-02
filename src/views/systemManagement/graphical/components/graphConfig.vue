@@ -51,12 +51,13 @@
         </el-tab-pane>
       </el-tabs>
 
-      <el-button class="absolute top-50% left-[-15px] -translate-y-1/2 z-20" :icon="DArrowRight" circle @click="togglePanel" />
+      <el-button class="absolute top-50% left-[-15px] -translate-y-1/2 z-20 toggle-btn" :icon="DArrowRight" circle @click="togglePanel" />
     </div>
   </transition>
   <transition name="btn-fade">
     <el-button v-show="isOpen" class="absolute top-50% right-[5px] -translate-y-1/2 z-20 toggle-btn" :icon="DArrowLeft" circle @click="togglePanel" />
   </transition>
+  
 </template>
 
 <script setup lang="ts">
@@ -108,29 +109,16 @@ const edgeForm = reactive({
   padding: 10px;
   box-sizing: border-box;
   border: 1px solid #e8e8e8;
+}
 
-  :deep(.el-tabs__content) {
-    flex: 1;
-    overflow-y: auto;
-    padding: 4px;
-    
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-    &::-webkit-scrollbar-track {
-      @apply bg-gray-100 rounded;
-    }
-    &::-webkit-scrollbar-thumb {
-      @apply bg-gray-300 rounded hover:bg-gray-400;
-    }
-  }
-  
-  :deep(.el-form-item) {
-    margin-bottom: 16px;
+// ============ 按钮悬停反馈 ============
+.toggle-btn {
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 }
 
-//过渡样式
+// ============ 面板滑动过渡 ============
 .panel-slide-enter-active,
 .panel-slide-leave-active {
   transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1), 
@@ -158,40 +146,19 @@ const edgeForm = reactive({
   opacity: 0;
 }
 
-// ============ 按钮淡入淡出过渡 ============
+// ============ 按钮过渡优化 ============
 .btn-fade-enter-active,
 .btn-fade-leave-active {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, opacity;
 }
 
-.btn-fade-enter-from {
-  opacity: 0;
-  transform: translateX(10px);
-}
-
-.btn-fade-enter-to {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.btn-fade-leave-from {
-  opacity: 1;
-  transform: translateX(0);
-}
-
+.btn-fade-enter-from,
 .btn-fade-leave-to {
   opacity: 0;
-  transform: translateX(10px);
 }
 
-// ============ 按钮悬停反馈 ============
-.toggle-btn {
-  transition: all 0.2s ease;
-  
-  &:hover {
-    transform: translateX(0) scale(1.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
+.btn-fade-enter-to,
+.btn-fade-leave-from {
+  opacity: 1;
 }
 </style>

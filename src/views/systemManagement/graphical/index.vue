@@ -1,7 +1,7 @@
 <template>
   <div class="graphical-body h-100% w-100% flex flex-col">
-    <HeaderOperate class="header-operate h-[35px]" />
-    <div class="graphical-main relative flex-1 w-100% flex align-center">
+    <HeaderOperate class="header-operate h-[35px]" :graph="graph"/>
+    <div class="graphical-main relative flex-1 w-100% flex align-center overflow-x-hidden">
       <div class="sidebar-stencil relative h-100% w-[260px]" ref="stencilRef"></div>
       <div class="flow-chart-container h-100% flex-1 overflow-auto" ref="containerRef"></div>
       <GraphConfig class="graph-config" />
@@ -16,7 +16,8 @@ import {
   Snapline,
   Dnd,
   Shape,
-  History
+  History,
+  Export 
 } from '@antv/x6';
 import HeaderOperate from './components/headerOperate.vue';
 import GraphConfig from './components/graphConfig.vue';
@@ -26,7 +27,7 @@ const containerRef = ref<null | HTMLDivElement>(null);
 //侧边栏UI界面
 const stencilRef = ref<HTMLElement | null>(null);
 
-let graph: Graph | null = null;
+const graph = ref<Graph | null>(null);
 let stencil: Stencil | null = null;
 let dnd: Dnd | null = null;
 
@@ -49,13 +50,19 @@ const groups = [
  * 初始化图表
  */
 const initGraph = ()=>{
+  // 如果 graph 已经存在，先销毁它
+  if (graph.value) {
+    graph.value.dispose()
+  }
+
+  //界面是否渲染
   if(!containerRef.value || !stencilRef.value){
     return;
   }
   //注册基础图形
   registerBaseNode();
   // 1. 初始化画布
-  graph = new Graph({
+  let graphObj = new Graph({
     container: containerRef.value,
     grid: true, //启用网格
     // 通过设置 autoResize: true 来开启自适应容器大小，
@@ -99,33 +106,34 @@ const initGraph = ()=>{
   });
 
   // 仅监听画布节点事件（Stencil 预览节点在独立 Graph，不受影响）
-  graph.on('node:mouseenter', ({ view }) => {
-    if (!view || !view.graph || view.graph !== graph) return; 
-    toggleNodePorts(view,graph, true);
+  graphObj.on('node:mouseenter', ({ view }) => {
+    if (!view || !view.graph || view.graph !== graph.value) return; 
+    toggleNodePorts(view,graphObj, true);
   })
-  graph.on('node:mouseleave', ({ view }) => {
-    if (!view || !view.graph || view.graph !== graph) return; 
-    toggleNodePorts(view,graph, false);
+  graphObj.on('node:mouseleave', ({ view }) => {
+    if (!view || !view.graph || view.graph !== graph.value) return; 
+    toggleNodePorts(view,graphObj, false);
   })
 
   //使用插件
-  graph.use(
+  graphObj.use(
     new Snapline({
       enabled: true,
       sharp: true,
     }),
   ).use(new History({
     enabled: true,
-  }))
+  }),
+  ).use(new Export())
   // 拖拽
   dnd = new Dnd({
-    target: graph,
+    target: graphObj,
   })
 
   // 2. 初始化侧边栏
   stencil = new Stencil({
     title: '流程图',
-    target: graph,
+    target: graphObj,
     collapsable: true,
     search(cell, keyword) {
       // 自定义搜索逻辑，返回 true 表示匹配成功
@@ -144,7 +152,9 @@ const initGraph = ()=>{
   });
   // 3. 挂载 Stencil 容器到 DOM
   stencilRef.value.appendChild(stencil.container);
-  loadStencil(graph, stencil);
+  loadStencil(graphObj, stencil);
+
+  graph.value = graphObj;
 }
 
 onMounted(()=>{
