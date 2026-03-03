@@ -31,7 +31,7 @@ const systemManagementRoute: Array<RouterObject> = [
       //系统管理
       {
         path:"/system",
-        component: () => import('@/views/systemManagement/components/index.vue'),
+        redirect: '/user',
         meta:{
           title:"system",
           description:"系统管理",
@@ -54,7 +54,7 @@ const systemManagementRoute: Array<RouterObject> = [
       //基金模块
       {
         path:"/fund",
-        component: () => import('@/views/systemManagement/components/index.vue'),
+        redirect: '/fundBaseInfo',
         meta:{
           title:"fund",
           description:"基金模块",
@@ -90,7 +90,7 @@ const systemManagementRoute: Array<RouterObject> = [
       {
         path: '/genericComponent',
         name: 'genericComponent',
-        component: () => import('@/views/systemManagement/components/index.vue'),
+        redirect: '/electronicSignatures',
         meta: {
           title: 'genericComponent',
           description: '组件封装',
@@ -145,12 +145,24 @@ const systemManagementRoute: Array<RouterObject> = [
       {
         path:"/graphical",
         name:"graphical",
-        component:() => import("@/views/systemManagement/graphical/index.vue"),
+        redirect: '/flowCharts',
         meta:{
           title:"graphical",
           description:"图形化管理",
           icon:"graphical"
-        }
+        },
+        children:[
+          {
+            path: '/flowCharts',
+            name: 'flowCharts',
+            component:() => import("@/views/systemManagement/graphical/index.vue"),
+            meta: {
+              title: 'flowCharts',
+              description: '流程图',
+              icon: 'flow-chart'
+            }
+          },
+        ]
       },
       //博客文档
       {
@@ -219,9 +231,7 @@ const systemManagementRoute: Array<RouterObject> = [
       {
         path: '/echarts',
         name: 'echarts',
-        //component: "systemManagement/components/SPEcharts",
-        component: () => import('@/views/systemManagement/components/index.vue'),
-        //component: () => import('@/views/systemManagement/echarts/chinaMap.vue'),
+        redirect: '/chinaMap',
         meta: {
           title: 'echarts',
           description: 'echarts',

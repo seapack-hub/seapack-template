@@ -220,7 +220,7 @@ export const loadStencil = (graph:Graph,stencil:Stencil)=>{
         ry: 26
       },
     },
-    ports: { items: [] }
+    ports: { items: [] },
   });
   const r2 = graph.createNode({
     shape: 'custom-rect',

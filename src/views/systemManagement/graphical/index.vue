@@ -1,10 +1,15 @@
 <template>
   <div class="graphical-body h-100% w-100% flex flex-col">
-    <HeaderOperate class="header-operate h-[35px]" :graph="graph"/>
+    <HeaderOperate class="header-operate h-[35px]" :graph="graph as Graph"/>
     <div class="graphical-main relative flex-1 w-100% flex align-center overflow-x-hidden">
       <div class="sidebar-stencil relative h-100% w-[260px]" ref="stencilRef"></div>
       <div class="flow-chart-container h-100% flex-1 overflow-auto" ref="containerRef"></div>
-      <GraphConfig class="graph-config" />
+      <GraphConfig 
+        class="graph-config" 
+        :node="curNode as Node"
+        :edge="curEdge as Edge"
+        :isNode="isNode"
+      />
     </div>
   </div>
 </template>
@@ -17,7 +22,9 @@ import {
   Dnd,
   Shape,
   History,
-  Export 
+  Export,
+  Node,
+  Edge
 } from '@antv/x6';
 import HeaderOperate from './components/headerOperate.vue';
 import GraphConfig from './components/graphConfig.vue';
@@ -30,7 +37,9 @@ const stencilRef = ref<HTMLElement | null>(null);
 const graph = ref<Graph | null>(null);
 let stencil: Stencil | null = null;
 let dnd: Dnd | null = null;
-
+const curNode = ref<Node | null>(null);
+const curEdge = ref<Edge | null>(null);
+const isNode = ref<boolean>(false);
 const groups = [
   {
     title: '基础节点',
@@ -54,7 +63,6 @@ const initGraph = ()=>{
   if (graph.value) {
     graph.value.dispose()
   }
-
   //界面是否渲染
   if(!containerRef.value || !stencilRef.value){
     return;
@@ -104,17 +112,8 @@ const initGraph = ()=>{
       },
     },
   });
-
-  // 仅监听画布节点事件（Stencil 预览节点在独立 Graph，不受影响）
-  graphObj.on('node:mouseenter', ({ view }) => {
-    if (!view || !view.graph || view.graph !== graph.value) return; 
-    toggleNodePorts(view,graphObj, true);
-  })
-  graphObj.on('node:mouseleave', ({ view }) => {
-    if (!view || !view.graph || view.graph !== graph.value) return; 
-    toggleNodePorts(view,graphObj, false);
-  })
-
+  //添加事件监听
+  addMonitorEvent(graphObj);
   //使用插件
   graphObj.use(
     new Snapline({
@@ -129,8 +128,7 @@ const initGraph = ()=>{
   dnd = new Dnd({
     target: graphObj,
   })
-
-  // 2. 初始化侧边栏
+  // 初始化侧边栏
   stencil = new Stencil({
     title: '流程图',
     target: graphObj,
@@ -150,11 +148,56 @@ const initGraph = ()=>{
       rowHeight: 60
     }
   });
-  // 3. 挂载 Stencil 容器到 DOM
+  //挂载 Stencil 容器到 DOM
   stencilRef.value.appendChild(stencil.container);
   loadStencil(graphObj, stencil);
 
   graph.value = graphObj;
+}
+
+// 添加事件监听
+const addMonitorEvent = (graphObj:Graph)=>{
+  //--节点相关监听事件-----------------------------------------------
+  // 仅监听画布节点事件（Stencil 预览节点在独立 Graph，不受影响）
+  graphObj.on('node:mouseenter', ({ view }) => {
+    if (!view || !view.graph || view.graph !== graph.value) return; 
+    toggleNodePorts(view,graphObj, true);
+  })
+  graphObj.on('node:mouseleave', ({ view }) => {
+    if (!view || !view.graph || view.graph !== graph.value) return; 
+    toggleNodePorts(view,graphObj, false);
+  })
+  //监听画布添加节点动作
+  graphObj.on('node:added', ({ node }) => {
+    console.log('----添加节点----',node)
+    curNode.value = node;
+    isNode.value = true;
+  })
+  //监听节点点击动作
+  graphObj.on('node:click', ({ node }) => {
+    curNode.value = node;
+    isNode.value = true;
+  })
+  //监听节点删除动作
+  graphObj.on('node:removed', () => {
+    curNode.value = null;
+    isNode.value = false;
+  })
+
+  //--连接边相关事件---------------------------------------------
+  //监听画布添加连接线动作
+  graphObj.on('edge:added', ({ edge }) => {
+    curEdge.value = edge;
+    isNode.value = false;
+  })
+  graphObj.on('edge:click', ({ edge }) => {
+    curEdge.value = edge;
+    isNode.value = false;
+  })
+  graphObj.on('edge:removed', () => {
+    curEdge.value = null;
+    isNode.value = false;
+  })
 }
 
 onMounted(()=>{

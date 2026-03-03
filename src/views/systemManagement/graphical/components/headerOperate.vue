@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import { PropType } from 'vue'
 import { 
   ZoomIn, 
   ZoomOut,
@@ -43,7 +44,7 @@ import { Graph ,DataUri} from '@antv/x6';
 
 const props = defineProps({
   graph: {
-    type: Graph || null,
+    type: Object as PropType<Graph>,
     default: null,
   },
 });
