@@ -87,11 +87,73 @@ const addHistoryChange = ()=>{
 
 // 导出图片
 const exportPhone = ()=>{
-  if(props.graph){
-    props.graph.toSVG((dataUri)=>{
-      DataUri.downloadDataUri(DataUri.svgToDataUrl(dataUri), 'chart.svg')
-    });
-  }
+  if(!props.graph) return;
+  //计算完整内容边界框（含节点+边+连接线延伸）
+  const cells = props.graph.getCells();
+  let contentBBox = null;
+  if (cells.length > 0) {
+    // 获取所有元素的精确包围盒（含边路径）
+    contentBBox = props.graph.getCellsBBox(cells)
+    // 若 bbox 无效，尝试备用方案
+    if (!contentBBox || contentBBox.width <= 0 || contentBBox.height <= 0) {
+      const nodes = props.graph.getNodes()
+      const edges = props.graph.getEdges()
+      if (nodes.length > 0 || edges.length > 0) {
+        // 手动计算：取所有节点/边坐标的极值
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        // 处理节点
+        nodes.forEach(node => {
+          const pos = node.position()
+          const size = node.size()
+          minX = Math.min(minX, pos.x)
+          minY = Math.min(minY, pos.y)
+          maxX = Math.max(maxX, pos.x + size.width)
+          maxY = Math.max(maxY, pos.y + size.height)
+        })
+        // 处理边（考虑控制点）
+        edges.forEach(edge => {
+          const vertices = edge.getVertices() || []
+          vertices.forEach(v => {
+            minX = Math.min(minX, v.x)
+            minY = Math.min(minY, v.y)
+            maxX = Math.max(maxX, v.x)
+            maxY = Math.max(maxY, v.y)
+          })
+        })
+        if (minX !== Infinity) {
+          contentBBox = {
+            x: minX - 20, // 预留边距
+            y: minY - 20,
+            width: maxX - minX + 40,
+            height: maxY - minY + 40
+          }
+        }
+      }
+    }
+  };
+  const SAFE_PADDING = 40 // 比常规20px更大，避免连接线被裁
+  const exportBBox = contentBBox 
+    ? {
+        x: contentBBox.x - SAFE_PADDING,
+        y: contentBBox.y - SAFE_PADDING,
+        width: contentBBox.width + SAFE_PADDING * 2,
+        height: contentBBox.height + SAFE_PADDING * 2
+      }
+    : {
+        // 无内容时使用容器尺寸
+        x: 0,
+        y: 0,
+        width: props.graph.container.clientWidth || 800,
+        height: props.graph.container.clientHeight || 600
+      };
+    
+  props.graph.toSVG((dataUri)=>{
+    DataUri.downloadDataUri(DataUri.svgToDataUrl(dataUri), '流程图_' + Date.now() + '.svg')
+  },
+  {
+    preserveDimensions:true,
+    viewBox:exportBBox,
+  });
 }
 
 onMounted(()=>{
