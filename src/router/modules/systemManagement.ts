@@ -84,6 +84,17 @@ const systemManagementRoute: Array<RouterObject> = [
               icon: 'fund-info'
             }
           },
+          //行业分类
+          {
+            path: '/industry',
+            name: 'industry',
+            component: () => import('@/views/systemManagement/fundManagement/Industry/index.vue'),
+            meta: {
+              title: 'industry',
+              description: '行业分类',
+              icon: 'industry'
+            }
+          }
         ]
       },
       //组件封装
