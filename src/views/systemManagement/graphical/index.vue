@@ -54,7 +54,7 @@ const groups = [
       rowHeight: 110
     }
   }
-]
+];
 /**
  * 初始化图表
  */
@@ -157,6 +157,21 @@ const initGraph = ()=>{
 
 // 添加事件监听
 const addMonitorEvent = (graphObj:Graph)=>{
+  //存储当前选中节点
+  let selectedNode: Node | null = null;
+
+  // 清除选中状态
+  const clearSelection = () => {
+    if (selectedNode) {
+      // 移除删除按钮
+      selectedNode.removeTools()
+      selectedNode = null
+      // 同步配置面板状态
+      curNode.value = null
+      isNode.value = false
+    }
+  }
+
   //--节点相关监听事件-----------------------------------------------
   // 仅监听画布节点事件（Stencil 预览节点在独立 Graph，不受影响）
   graphObj.on('node:mouseenter', ({ view }) => {
@@ -169,19 +184,63 @@ const addMonitorEvent = (graphObj:Graph)=>{
   })
   //监听画布添加节点动作
   graphObj.on('node:added', ({ node }) => {
-    console.log('----添加节点----',node)
     curNode.value = node;
     isNode.value = true;
   })
   //监听节点点击动作
-  graphObj.on('node:click', ({ node }) => {
+  graphObj.on('node:click', ({ node,e }) => {
+    // 阻止事件冒泡到 blank:click
+    e.stopPropagation();
+    // 如果点击的是当前选中节点，取消选中
+    if (selectedNode === node) {
+      clearSelection();
+      return;
+    }
+    // 清除上一个选中节点
+    clearSelection();
+    selectedNode = node;
     curNode.value = node;
     isNode.value = true;
+
+    // 添加删除按钮（X6 原生工具）
+    node.addTools([
+      {
+        name: 'button-remove',
+        args: {
+          // 定位：右上角（x=100% - 16px, y=8px）
+          distance: 8,
+          offset: { x: 110, y: 15 },
+          // 点击删除
+          onClick: () => {
+            if (node) {
+              node.remove()
+              clearSelection()
+            }
+          }
+        }
+      },
+      {
+        name: 'boundary',
+        args: {
+          attrs: {
+            fill: '#7c68fc',
+            stroke: '#333',
+            'stroke-width': 1,
+            'fill-opacity': 0.2,
+          },
+        },
+      }
+    ])
   })
   //监听节点删除动作
   graphObj.on('node:removed', () => {
     curNode.value = null;
     isNode.value = false;
+  })
+
+  // ====== 新增：空白区域点击 ======
+  graphObj.on('blank:click', () => {
+    clearSelection()
   })
 
   //--连接边相关事件---------------------------------------------
@@ -193,6 +252,8 @@ const addMonitorEvent = (graphObj:Graph)=>{
   graphObj.on('edge:click', ({ edge }) => {
     curEdge.value = edge;
     isNode.value = false;
+    // 点击边时清除节点选中
+    clearSelection()
   })
   graphObj.on('edge:removed', () => {
     curEdge.value = null;
