@@ -59,16 +59,16 @@ const commonPorts = {
   },
   items: [
     {
-      group: 'top'
+      group: 'top',
     },
     {
-      group: 'right'
+      group: 'right',
     },
     {
-      group: 'bottom'
+      group: 'bottom',
     },
     {
-      group: 'left'
+      group: 'left',
     }
   ]
 }
@@ -249,21 +249,11 @@ export const loadStencil = (graph:Graph,stencil:Stencil)=>{
     ports: { items: [] }
   })
   const r5 = graph.createNode({
-    shape: 'custom-polygon',
-    attrs: {
-      body: {
-        refPoints: '10,0 40,0 30,20 0,20'
-      }
-    },
-    label: '数据',
-    ports: { items: [] }
-  })
-  const r6 = graph.createNode({
     shape: 'custom-circle',
     label: '连接',
     ports: { items: [] }
   })
-  const r7 = graph.createNode({   
+  const r6 = graph.createNode({   
     shape: 'custom-path',
     label: '文档',
     attrs: {
@@ -273,7 +263,7 @@ export const loadStencil = (graph:Graph,stencil:Stencil)=>{
     },
     ports: { items: [] }
   })
-  const r8 = graph.createNode({
+  const r7 = graph.createNode({
     shape: 'custom-path',
     label: '手动输入',
     attrs: {
@@ -283,7 +273,7 @@ export const loadStencil = (graph:Graph,stencil:Stencil)=>{
     },
     ports: { items: [] }
   })
-  stencil.load([r1, r2, r3, r4, r5, r6, r7, r8], 'basic-node');
+  stencil.load([r1, r2, r3, r4, r5, r6, r7], 'basic-node');
 
   //添加图片节点
   const imageNodes = Object.keys(NODE_ICONS).map(key => {
