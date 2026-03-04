@@ -3,15 +3,26 @@
     <!--导航栏设置-->
     <div class="setting-navigation">
       <!--返回主屏幕-->
-      <SPIcon class="setting-item" name="to-home" size="20px" @click="jumpToLink('/menuTab')"></SPIcon>
-      <SPIcon class="setting-item" name="3D-layers" size="20px" @click="jumpToLink('/worldData')"></SPIcon>
-      <SPIcon class="setting-item" name="basic-dashboard" size="20px" @click="jumpToLink('/universalTemplate')"></SPIcon>
+      <el-tooltip class="item" content="主屏幕" effect="light" placement="top">
+        <SPIcon class="setting-item" name="to-home" size="20px" @click="jumpToLink('/menuTab')"></SPIcon>
+      </el-tooltip>
+      <el-tooltip class="item" content="3D系统" effect="light" placement="top">
+        <SPIcon class="setting-item" name="3D-layers" size="20px" @click="jumpToLink('/worldData')"></SPIcon>
+      </el-tooltip>
+      <el-tooltip class="item" content="GIS系统" effect="light" placement="top">
+        <SPIcon class="setting-item" name="gis" size="20px" @click="jumpToLink('/universalTemplate')"></SPIcon>
+      </el-tooltip>
+      <el-tooltip class="item" content="博客" effect="light" placement="top">
+        <SPIcon class="setting-item" name="blogs" size="20px" @click="jumpToLink('/blogsManagement')"></SPIcon>
+      </el-tooltip>
       <!--消息通知-->
-      <SPIcon class="setting-item" name="message-notify" size="20px"></SPIcon>
+      <el-tooltip class="item" content="消息通知" effect="light" placement="top">
+        <SPIcon class="setting-item" name="message-notify" size="20px"></SPIcon>
+      </el-tooltip>
       <!--全屏设置-->
-      <div @click="toggle">
-        <SPIcon :name="isFullscreen ? 'fullscreen-shrink' : 'fullscreen-expand'" size="20px"></SPIcon>
-      </div>
+      <el-tooltip class="item" content="全屏设置" effect="light" placement="top">
+        <SPIcon :name="isFullscreen ? 'fullscreen-shrink' : 'fullscreen-expand'" size="20px" @click="toggle"></SPIcon>
+      </el-tooltip>
       <!--语言设置-->
       <changeLanguage></changeLanguage>
 
