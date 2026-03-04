@@ -42,7 +42,6 @@
           <el-button icon="download">导出</el-button>
         </div>
       </div>
-      <!--flex flex-col flex-1-->
       <div class="flex-1 flex flex-col justify-between overflow-hidden">
          <SpTable class="flex-1" :loading="loading" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
          <div class="h-[50px]">

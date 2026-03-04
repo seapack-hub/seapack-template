@@ -19,7 +19,6 @@ import {
   Graph,
   Stencil,
   Snapline,
-  Dnd,
   Shape,
   History,
   Export,
@@ -36,7 +35,6 @@ const stencilRef = ref<HTMLElement | null>(null);
 
 const graph = ref<Graph | null>(null);
 let stencil: Stencil | null = null;
-let dnd: Dnd | null = null;
 const curNode = ref<Node | null>(null);
 const curEdge = ref<Edge | null>(null);
 const isNode = ref<boolean>(false);
@@ -124,10 +122,6 @@ const initGraph = ()=>{
     enabled: true,
   }),
   ).use(new Export())
-  // 拖拽
-  dnd = new Dnd({
-    target: graphObj,
-  })
   // 初始化侧边栏
   stencil = new Stencil({
     title: '流程图',
