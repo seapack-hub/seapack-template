@@ -39,7 +39,7 @@
         </div>
         <div>
           <el-button icon="upload">导入</el-button>
-          <el-button icon="download">导出</el-button>
+          <el-button icon="download" @click="handleExport">导出</el-button>
         </div>
       </div>
       <div class="flex-1 flex flex-col justify-between overflow-hidden">
@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
 import FundBaseInfoAPI,{FundPageQuery} from '@/api/system/fund.ts';
+import { ExportHeader,ExportRequest, exportExcel} from '@/api/system/export.ts';
 import { useRouter } from 'vue-router'
 
 const router = useRouter();
@@ -153,6 +154,25 @@ const toAdd = ()=>{
       id:"",
     }
   })
+}
+
+/**
+ * 导出基金信息
+ */
+const handleExport = async ()=>{
+  let headersInfo:ExportHeader[] = [];
+  headersInfo = tableColumns.value.filter((item:any)=>item.columnType !== 'operate').map((item:any)=>{
+    return {
+      label: item.label,
+      field: item.prop,
+    }
+  });
+  const exportRequest:ExportRequest = {
+    fileName: `基金信息表`,
+    headers: headersInfo,
+    dataList: tableData.value,
+  }
+  exportExcel(exportRequest);
 }
 
 //删除

@@ -37,6 +37,7 @@
        class="flex-1" 
        v-loading="loading"
        :data="tableData"
+       border
        lazy
        row-key="industryId"
        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
@@ -62,13 +63,13 @@ const queryParams = ref({
 
 //表格头信息
 const tableColumns = ref([
-  { label: '行业唯一标识',prop: 'industryId',minWidth: '120px',sortable: true},
-  { label: '国家标准行业代码', prop: 'industryCode', minWidth: '160px',sortable: true},
-  { label: '行业标准名称', prop: 'industryName', minWidth: '200px',sortable: true},
-  { label: '父级行业代码',prop: 'parentCode',minWidth: '120px',sortable: true},
-  { label: '是否启用', prop: 'industryState', minWidth: '130px',sortable: true},
-  { label: '描述', prop: 'description', minWidth: '130px',sortable: true},
-  { label: '更新时间', prop: 'updateTime', minWidth: '160px',sortable: true}
+  { label: '行业唯一标识',prop: 'industryId',minWidth: '120px'},
+  { label: '国家标准行业代码', prop: 'industryCode', minWidth: '160px'},
+  { label: '行业标准名称', prop: 'industryName', minWidth: '200px'},
+  { label: '父级行业代码',prop: 'parentCode',minWidth: '120px'},
+  { label: '是否启用', prop: 'industryState', minWidth: '130px'},
+  { label: '描述', prop: 'description', minWidth: '130px'},
+  { label: '更新时间', prop: 'updateTime', minWidth: '160px'}
 ]);
 
 //表格信息
