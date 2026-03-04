@@ -38,7 +38,7 @@
           <el-button type="success" icon="plus" @click="toAdd">新增</el-button>
         </div>
         <div>
-          <el-button icon="upload">导入</el-button>
+          <!-- <el-button icon="upload">导入</el-button> -->
           <el-button icon="download" @click="handleExport">导出</el-button>
         </div>
       </div>
@@ -104,8 +104,10 @@ const tableColumns = ref([
     fixed: 'right',
     buttons: [
        {
-        type: 'primary',
+        type: 'danger',
         label: '删除',
+        icon:'delete',
+        size:'small',
         renderType: 'link',
         click: ({ row }: any) => {
           handleDelete(row)
@@ -114,6 +116,8 @@ const tableColumns = ref([
       { 
         type:'primary',
         label:"修改",
+        icon:'edit',
+        size:'small',
         renderType: 'link',
         click: ({ row }: any) => {
           router.push({

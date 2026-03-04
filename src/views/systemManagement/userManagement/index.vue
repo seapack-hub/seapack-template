@@ -55,7 +55,7 @@
 
             <el-form-item label="创建时间">
               <el-date-picker
-                v-model="timeArr"
+                v-model="timeArr as any"
                 :editable="false"
                 type="daterange"
                 range-separator="~"
@@ -105,11 +105,11 @@
               </el-button>
             </div>
             <div>
-              <el-button icon="upload">
+              <!-- <el-button icon="upload">
                 导入
-              </el-button>
+              </el-button> -->
 
-              <el-button icon="download">
+              <el-button icon="download" @click="handleExport">
                 导出
               </el-button>
             </div>
@@ -235,6 +235,7 @@
 <script setup lang="ts">
 import DeptTree from './components/DeptTree.vue';
 import UserAPI, { UserPageQuery, UserPageVO } from '@/api/system/user';
+import { ExportHeader,ExportRequest, exportExcel} from '@/api/system/export.ts';
 
 const queryFormRef = ref(ElForm);
 //const userFormRef = ref(ElForm);
@@ -249,12 +250,6 @@ const loading = ref(false);
 const timeArr = ref<string[]>([])
 // 选中的用户ID
 const selectIds = ref<number[]>([]);
-// 部门下拉数据源
-//const deptOptions = ref<OptionType[]>();
-// 角色下拉数据源
-//const roleOptions = ref<OptionType[]>();
-// 导入弹窗显示状态
-//const importDialogVisible = ref(false);
 
 // 查询
 function handleQuery() {
@@ -346,11 +341,34 @@ function hancleResetPassword(row: UserPageVO) {
   );
 }
 
+const handleExport = () => {
+  // UserAPI.export(queryParams).then((data) => {
+  //   ElMessage.success('导出成功');
+  // });
+  let headersInfo:ExportHeader[]=[
+    { label:'用户名',field:'userName'},
+    { label:'昵称',field:'nickName' },
+    { label:'性别',field:'gender'},
+    { label:'部门',field:'deptName'},
+    { label:'手机号',field:'mobile'},
+    { label:'状态',field:'status'},
+    { label:'创建时间',field:'createTime'} 
+  ];
+
+  let exportRequest:ExportRequest={
+    fileName: `用户信息表`,
+    headers:headersInfo,
+    dataList:(pageData.value || []).map(item=>({
+      ...item,
+      gender: item.gender == 1 ? '男' : '女',
+      status: item.status == 1 ? '正常' : '停用',
+    }))
+  };
+  exportExcel(exportRequest);
+}
+
 onMounted(() => {
-  setTimeout(() => {
-    console.log('--延迟请求--');
-    handleQuery();
-  }, 200);
+  handleQuery();
 });
 </script>
 

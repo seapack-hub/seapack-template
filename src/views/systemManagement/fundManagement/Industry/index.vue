@@ -44,8 +44,18 @@
       >
        <template
           v-for="item in tableColumns" :key="item.prop"
-        >
+        > 
           <el-table-column 
+            v-if="item.prop ==='industryState'"
+            v-bind="{ align: 'left',fixed: 'right', ...item }"
+          >
+            <template #default="scope">
+              <el-tag :type="scope.row.industryState == 1 ? 'success' : 'info'">
+                {{ scope.row.industryState == 1 ? '启用' : '停用' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column v-else
               v-bind="{ align: 'left',fixed: 'right', ...item }"
           ></el-table-column>
        </template>
@@ -67,7 +77,7 @@ const tableColumns = ref([
   { label: '国家标准行业代码', prop: 'industryCode', minWidth: '160px'},
   { label: '行业标准名称', prop: 'industryName', minWidth: '200px'},
   { label: '父级行业代码',prop: 'parentCode',minWidth: '120px'},
-  { label: '是否启用', prop: 'industryState', minWidth: '130px'},
+  { label: '是否启用', prop: 'industryState', minWidth: '80px'},
   { label: '描述', prop: 'description', minWidth: '130px'},
   { label: '更新时间', prop: 'updateTime', minWidth: '160px'}
 ]);
