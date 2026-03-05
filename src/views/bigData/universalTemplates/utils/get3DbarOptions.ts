@@ -236,6 +236,6 @@ export function getCircleOptions():EChartsOption {
         autoRotate: true, //禁止自动旋转
       },
     },
-    series,
+    series: series as any,
   };
 }

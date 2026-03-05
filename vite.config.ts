@@ -62,6 +62,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
         watchFiles: true,       // 监听 Mock 文件修改自动更新
         injectCode: `import { setupProdMockServer } from '../mock/mockProdServer.ts'; setupProdMockServer();`, 
       }) : null,
+      // 自动处理Cesium资源、Web Worker、Base URL
       cesium(),
       //配置ElementPlus,自动引入
       ElementPlus({}),
@@ -97,6 +98,10 @@ export default defineConfig(({mode}:ConfigEnv) => {
         '@p':path.resolve(__dirname,'public'),
         '@ces':path.resolve(__dirname, 'src/views/worldData/cesium')
       },
+    },
+    define: {
+      // 解决Cesium全局变量问题（vite-plugin-cesium已处理，保留备用）
+      CESIUM_BASE_URL: JSON.stringify('')
     },
     // 预加载项目必需的组件
     optimizeDeps: {

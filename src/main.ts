@@ -4,6 +4,8 @@ import App from './App.vue';
 //import 'uno.css';
 import 'virtual:uno.css';
 import 'element-plus/dist/index.css';
+// Cesium官方UI样式
+import 'cesium/Build/Cesium/Widgets/widgets.css'
 //引入全局样式
 import './styles/index.scss';
 // 本地SVG图标

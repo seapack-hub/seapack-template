@@ -1,6 +1,6 @@
 <template>
   <div class="head">
-    <h1>大数据可视化</h1>
+    <h1>GIS大屏</h1>
     <div class="weather">
       <img src="@/views/bigData/universalTemplates/images/weather.png" />
       <span>多云转小雨</span>
@@ -48,11 +48,10 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .head{
-  height:105px; 
-  background: url(../images/head_bg.png) no-repeat center center; 
+  height:115px; 
+  background:url(../images/header_bg.png) no-repeat center center; 
   background-size: 100% 100%; 
-  position: relative; 
-  z-index: 100;
+  position: relative;
   h1{ 
     color:#fff; 
     text-align: center; 
