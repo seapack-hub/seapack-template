@@ -31,6 +31,7 @@
     "element-plus": "^2.6.1",
     "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
+    "markdown-it": "^14.1.1",
     "mitt": "^3.0.1",
     "mockjs": "^1.1.0",
     "ol": "^9.1.0",

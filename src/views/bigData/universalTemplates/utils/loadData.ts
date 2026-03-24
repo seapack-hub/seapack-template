@@ -1,5 +1,5 @@
 import * as Cesium from 'cesium';
-
+import { convertGeoJSON } from './coordTransform'
 //加载Json数据
 export const loadJsonData = async (url:string, viewer:Cesium.Viewer)=>{
   if(!url || !viewer) return;
@@ -11,9 +11,10 @@ export const loadJsonData = async (url:string, viewer:Cesium.Viewer)=>{
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const jsonData = await response.json();
-
+    // 2.坐标转换：GCJ02 → WGS84
+    const convertedGeojson = convertGeoJSON(jsonData)
     // 创建数据源（带样式配置）
-    const dataSource = await Cesium.GeoJsonDataSource.load(jsonData,{
+    const dataSource = await Cesium.GeoJsonDataSource.load(convertedGeojson,{
       stroke: Cesium.Color.WHITE.withAlpha(0.8), // 边框颜色
       fill: Cesium.Color.fromCssColorString('#0a3d8c').withAlpha(0.25), // 填充色（武汉蓝）
       strokeWidth: 2,
@@ -21,34 +22,47 @@ export const loadJsonData = async (url:string, viewer:Cesium.Viewer)=>{
     });
 
     // 自定义每个区的样式
-    dataSource.entities.values.forEach(entity => {
-      if(entity.polygon){
-        const districtName = (entity.properties as any)?.name || '未知区域';
-        // 添加区名标签
-        entity.label = new Cesium.LabelGraphics({
-          text: districtName,
-          font: '14px sans-serif',
-          fillColor: Cesium.Color.BLACK,
-          outlineColor: Cesium.Color.BLACK,
-          outlineWidth: 2,
-          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-          pixelOffset: new Cesium.Cartesian2(0, -15),
-          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
-        })
+    // dataSource.entities.values.forEach(entity => {
+    //   if(entity.polygon){
+    //     const districtName = (entity.properties as any)?.name || '未知区域';
+    //     // 添加区名标签
+    //     entity.label = new Cesium.LabelGraphics({
+    //       text: districtName,
+    //       font: '14px sans-serif',
+    //       fillColor: Cesium.Color.BLACK,
+    //       outlineColor: Cesium.Color.BLACK,
+    //       outlineWidth: 2,
+    //       style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+    //       pixelOffset: new Cesium.Cartesian2(0, -15),
+    //       heightReference: Cesium.HeightReference.CLAMP_TO_GROUND
+    //     })
         
-        // 添加悬停高亮效果
-        entity.polygon.height = new Cesium.ConstantProperty(0);
-        entity.polygon.heightReference = new Cesium.ConstantProperty(Cesium.HeightReference.CLAMP_TO_GROUND);
-        (entity as any).originalFillColor = entity.polygon.material
-        entity.polygon.material = new Cesium.ColorMaterialProperty(
-          Cesium.Color.fromCssColorString('#0a3d8c').withAlpha(0.25)
-        )
+    //     // 添加悬停高亮效果
+    //     entity.polygon.height = new Cesium.ConstantProperty(0);
+    //     entity.polygon.heightReference = new Cesium.ConstantProperty(Cesium.HeightReference.CLAMP_TO_GROUND);
+    //     (entity as any).originalFillColor = entity.polygon.material
+    //     entity.polygon.material = new Cesium.ColorMaterialProperty(
+    //       Cesium.Color.fromCssColorString('#0a3d8c').withAlpha(0.25)
+    //     )
 
-         // 4. 添加到场景
-        viewer.dataSources.add(dataSource)
-        viewer.zoomTo(dataSource) // 可选：自动缩放至武汉范围
-      }
-    });
+    //      // 4. 添加到场景
+    //     viewer.dataSources.add(dataSource)
+    //     viewer.zoomTo(dataSource) // 可选：自动缩放至武汉范围
+    //   }
+    // });
+    viewer.dataSources.add(dataSource)
+    //viewer.zoomTo(dataSource) // 可选：自动缩
+    // 5. 【可选】聚焦到围栏区域（提升用户体验）
+    if (dataSource.entities.values.length > 0) {
+      viewer.flyTo(dataSource, {
+        duration: 2.0,
+        offset: new Cesium.HeadingPitchRange(
+          0,
+          Cesium.Math.toRadians(-45),
+          1500 // 聚焦高度（米）
+        )
+      })
+    }
   }catch(err){
     console.error('加载Json数据失败:', err);
   }

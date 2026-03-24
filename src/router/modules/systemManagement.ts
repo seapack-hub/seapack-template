@@ -175,6 +175,16 @@ const systemManagementRoute: Array<RouterObject> = [
           },
         ]
       },
+      {
+        path:"/aiInteraction",
+        name:"aiInteraction",
+        component:() => import("@/views/systemManagement/aiInteraction/index.vue"),
+        meta:{
+          title:"aiInteraction",
+          description: 'AI交互',
+          icon:"ai-interaction"
+        }
+      },
       //博客文档
       {
         path:"/doc",

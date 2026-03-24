@@ -37,9 +37,9 @@ const initCesium = async () => {
       sceneModePicker: false,
       baseLayerPicker: false,
       navigationHelpButton: false,
-      infoBox: true,
+      infoBox: false,
       selectionIndicator: true,
-      shadows: true, // 启用阴影增强立体感
+      shadows: false, // 启用阴影增强立体感
       //terrainProvider: Cesium.createWorldTerrain({ requestWaterMask: true, requestVertexNormals: true })
     });
 
@@ -57,9 +57,9 @@ const initCesium = async () => {
     viewer.value.imageryLayers.addImageryProvider(imagery)
 
     // 初始定位武汉
-    await flyToWuhan();
+   // await flyToWuhan();
     //加载武汉区域数据
-    await loadJsonData('/geojson/wuhan_districts.geojson',viewer.value)
+    await loadJsonData('/geojson/ckx.geojson',viewer.value)
     
     // 监听相机移动更新坐标显示
     viewer.value.camera.moveEnd.addEventListener(() => {
