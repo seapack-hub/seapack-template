@@ -7,10 +7,9 @@
     :show-close="false"
     append-to-body
     :modal="loading"
-    :modal-append-to-body="true"  
-    @opened="handleDialogOpened"
+    :modal-append-to-body="true"
   >
-    <SliderCaptcha
+    <SlideVerify
       ref="childRef"
       @success="onCaptchaSuccess"
     />
@@ -18,7 +17,8 @@
 </template>
 <script lang="ts" setup>
 import { type LoginRequestData } from '@/api/login/types/login.ts';
-import {loginVerify} from "@/api/login/index.ts";
+import {loginVerify,getPublicKey} from "@/api/login/index.ts";
+import { RsaUtil } from "@/utils/jsencrypt.ts";
 
 const router = useRouter();
 const props = defineProps<{
@@ -29,39 +29,46 @@ const visible = defineModel('modelValue', {
   required: true,
   default: false
 });
-
+const rsaUtil = new RsaUtil();
 const loading = ref(true);
 
-const childRef = ref();
-const onCaptchaSuccess = async (info:any)=>{
-  // router.push({ path: '/menuTab' });
+const onCaptchaSuccess = async ()=>{
+  //加密密码
+  const encryptedPassword = rsaUtil.encrypt(props.loginForm.password);
+  if (!encryptedPassword) {
+    ElMessage.error('密码加密失败');
+    return;
+  }
   //获取登录参数
   const params = {
-    token:info.token,
-    sliderX:info.sliderX,
     username:props.loginForm.username,
-    password:props.loginForm.password
+    password:encryptedPassword
   };
   const res = await loginVerify(params);
   if(res === "登录成功"){
-    await childRef.value?.lastSet(true);
+    ElMessage.success('登录成功');
+    visible.value = false;
     setTimeout(() => {
-      //跳转主页面
-      router.push({ path: '/menuTab' });
+      //跳转后端
+      router.push({ path: '/systemManagement' });
     }, 1000);
   }else{
-    childRef.value?.lastSet(false);
+    ElMessage.error(res);
+    visible.value = false;
   }
 };
-// 对话框完全打开后执行
-const handleDialogOpened = async () => {
-  //开启遮罩
-  loading.value = true;
-  //初始化
-  await childRef.value?.initCaptcha();
-  loading.value = false;
 
-};
+//获取公钥
+const searchPublicKey = async ()=>{
+  const res = await getPublicKey();
+  if(res.publicKey){
+    rsaUtil.setPublicKey(res.publicKey);
+  }
+}
+
+onMounted(()=>{
+  searchPublicKey();
+})
 </script>
 <style scoped>
 </style>

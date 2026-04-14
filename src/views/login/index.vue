@@ -89,9 +89,6 @@ const loading = ref(false);
 const handleLogin = () => {
   loginFormRef.value?.validate((valid: boolean, fields) => {
     if (valid) {
-      // loading.value = true;
-      // router.push({ path: '/menuTab' });
-      // loading.value = false;
       showCaptcha.value = true;
     } else {
       console.error('表单校验不通过', fields);

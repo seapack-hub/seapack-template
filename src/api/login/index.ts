@@ -20,6 +20,14 @@ export const loginVerify = (params:loginForm)=>{
   }) as Promise<string>;
 };
 
+// 获取公钥
+export const getPublicKey = ()=>{
+  return request({
+    url:`${USER_BASE_URL}/rsa/auth/publicKey`,
+    method:"get"
+  }) as Promise<{publicKey:string}>;
+};
+
 export const getSlideVerifyImg = ()=>{
   return request({
     url:`${USER_BASE_URL}/captcha/generate`,
@@ -36,8 +44,8 @@ export interface CaptchaData {
 }
 
 export interface loginForm {
-  token:string,
-  sliderX:number,
+  token?:string,
+  sliderX?:number,
   username:string,
-  password:string
+  password:string | boolean
 }

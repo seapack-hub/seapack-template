@@ -77,6 +77,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SliderCaptcha: typeof import('./src/components/SliderCaptcha/index.vue')['default']
+    SlideVerify: typeof import('./src/components/SlideVerify/index.vue')['default']
     SpAction: typeof import('./src/components/baseComponents/SpAction/index.vue')['default']
     SpButtonPermission: typeof import('./src/components/baseComponents/SpButtonPermission/index.vue')['default']
     SpCheckbox: typeof import('./src/components/baseComponents/SpCheckbox/index.vue')['default']

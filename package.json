@@ -30,6 +30,7 @@
     "echarts-gl": "^2.0.9",
     "element-plus": "^2.6.1",
     "js-cookie": "^3.0.5",
+    "jsencrypt": "^3.5.4",
     "lodash-es": "^4.17.21",
     "markdown-it": "^14.1.1",
     "mitt": "^3.0.1",
