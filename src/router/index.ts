@@ -29,6 +29,10 @@ export const routerRecordRow: RouteRecordRaw[] = [
       {
         path: "/blogs",
         component: () => import("@/views/blogs/index.vue"),
+        meta: {
+          title: '博客管理',
+          icon: 'security'
+        },
         name: "blogs",
       }
     ]

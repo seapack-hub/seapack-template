@@ -1,6 +1,7 @@
+import {request} from "@/utils/axios";
 const API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
 const BASE_URL = import.meta.env.VITE_DEEPSEEK_BASE_URL;
-
+const USER_BASE_URL = "/api";
 
 // 定义消息类型
 export interface ChatMessage {
@@ -83,4 +84,17 @@ export async function streamChat(
   }catch(err){
     onError(err as Error)
   }
+}
+
+/**
+ * 上传文件到AI平台
+ * @param file 
+ * @returns 
+ */
+export const ingestFile = (file:File)=>{
+  return request({
+    url:`${USER_BASE_URL}/rag/ingest-file`,
+    method:"post",
+    data:file
+  }) as Promise<{fileId:string}>;
 }

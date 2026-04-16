@@ -1,13 +1,16 @@
 //引入路由配置文件
 //import routerJson from '@/json/router.json';
-
 import { usePermissionStore } from '@/store/modules/permission.ts';
 import { setRouteChange } from '@/hooks/useRouteListener.ts';
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css' // 引入默认样式
 //引入路由
 import router from './router';
 
 //创建路由前置守卫
 router.beforeEach((to, from, next) => {
+  // 开始进度条
+  NProgress.start();
   //使用权限存储对象
   const permissionStore = usePermissionStore();
 
@@ -42,12 +45,10 @@ router.beforeEach((to, from, next) => {
       }
     });
     //将静态路由添加至路由表中
-    // const asyncRouter = permissionStore.formatDynamicRoutes(routerJson);
     const asyncRouter = permissionStore.formatDynamicRoutes(mergedArray);
     asyncRouter.forEach((route) => {
       router.addRoute(route);
     });
-    console.log('--路由--',asyncRouter);
     permissionStore.dynamicRoutes = asyncRouter;
     permissionStore.setRoutes(asyncRouter);
     //重定向并替换当前路径
@@ -57,6 +58,7 @@ router.beforeEach((to, from, next) => {
 
 //路由后置守卫
 router.afterEach((to) => {
+  NProgress.done() // 完成进度条
   //路由变化时，设置最新的路由
   setRouteChange(to);
 });
