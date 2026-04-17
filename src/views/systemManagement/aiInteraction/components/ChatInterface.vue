@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-10 h-full border-[#e8e8e8] border-solid border-1 relative">
     <!-- 聊天头部 -->
     <el-header class="!h-[60px] flex items-center justify-center gap-20 flex-shrink-0">
-      <h2 class="font-bold text-blue-500">DeepSeek RAG 助手</h2>
+      <h2 class="font-bold text-blue-500">AI大模型 RAG 助手</h2>
       <el-button type="primary" @click="handleClear" :icon="Delete">清空会话</el-button>
     </el-header>
     <!-- 消息列表 -->
@@ -21,7 +21,7 @@
             >
               <template #header>
                 <span class="font-medium" :class="msg.role === 'user' ? 'text-blue-600' : 'text-green-600'">
-                  {{ msg.role === 'user' ? '👤 用户' : '🤖 DeepSeek' }}
+                  {{ msg.role === 'user' ? '👤 用户' : '🤖 AI大模型' }}
                 </span>
               </template>
               <div class="markdown-body" v-html="renderMarkdown(msg.content)"></div>
@@ -79,6 +79,10 @@ const md = new MarkdownIt({
   linkify: true,
   typographer: true
 })
+// 1. 定义 Props 接收命名空间
+const props = defineProps<{
+  currentNamespace?: string; // 接收父组件传来的空间名
+}>();
 
 const store = useChatStore()
 const inputText = ref('')
@@ -133,7 +137,9 @@ const handleSend = async ()=>{
     (err)=>{
       store.updateLastMessage(`\n\n[错误: ${err.message}]`)
       store.loading = false
-    }
+    },
+    //传递命名空间
+    props.currentNamespace,
   )
 }
 

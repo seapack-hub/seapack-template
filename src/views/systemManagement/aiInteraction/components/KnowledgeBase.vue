@@ -5,7 +5,7 @@
       <span class="font-bold text-gray-800">我的知识库</span>
     </div>
     <!-- 文件上传卡片 -->
-    <div class="h-[200px] mb-6 border-dashed border-2 border-blue-100 bg-blue-50/30">    
+    <div class="h-[220px] mb-6 border-dashed border-2 border-blue-100 bg-blue-50/30">    
       <!-- Element Plus 上传组件 -->
       <el-upload
         ref="uploadRef"
@@ -16,6 +16,7 @@
         :limit="1"
         :on-exceed="handleExceed"
         accept=".txt,.pdf,.doc,.docx"
+        :disabled="uploading"
       >
         <el-icon class="el-icon--upload text-blue-500"><upload-filled /></el-icon>
         <div class="el-upload__text">
@@ -29,11 +30,11 @@
       </el-upload>
 
       <!-- 命名空间选择 -->
-      <div class="mt-4 flex items-center">
+      <div class="mt-4 flex items-center p-r-10">
         <el-text size="small" class="mr-2 w-[130px] text-right">知识库空间：</el-text>
         <el-input
           v-model="currentNamespace"
-          placeholder="请输入命名空间"
+          placeholder="请输入知识库空间"
           size="small"
           @keyup.enter="handleSend"
         />
@@ -62,41 +63,52 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios';
 import {Folder, UploadFilled } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox, ElScrollbar, UploadInstance, UploadProps } from 'element-plus'
 import { useChatStore } from '@/store/modules/chat'
+import { ragApi } from '@/api/ai/rag'
 
 const uploadRef = ref<UploadInstance>()
 const store = useChatStore()
 
 const currentNamespace = ref('') // 默认命名空间
-const namespaceList = ref<string[]>(['命名空间一', '命名空间二']) // Mock数据
+const namespaceList = ref<string[]>([]) // Mock数据
+const uploading = ref(false) // 新增：上传状态
 
 // --- 文件上传逻辑 ---
 // 文件改变时的钩子
 const onFileChange: UploadProps['onChange'] = async (file) => {
+  // 1. 校验命名空间
+  if (!currentNamespace.value.trim()) {
+    ElMessage.warning('请先输入或选择“知识库空间”')
+    uploadRef.value?.clearFiles() // 清空文件选择
+    return
+  }
+
+  // 2. 校验文件对象是否存在
+  if (!file.raw) {
+    ElMessage.error('文件读取失败，请重新选择')
+    return
+  }
+
+  uploading.value = true // 开始上传
+
   const formData = new FormData()
   formData.append('file', file.raw!)
   formData.append('namespace', currentNamespace.value)
-
   try {
     // 这里假设你有一个专门的 upload API
-    const response = await axios.post('/api/rag/ingest-file', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 30000
+    await ragApi.ingestFile(formData);
+    ElMessage.success(`《${file.name}》上传成功！`)
+    store.addMessage({
+      role: 'assistant',
+      content: `✅ **文件入库成功**\n\n文件名：${file.name}\n空间：${currentNamespace.value}\n\n您可以开始提问了。`
     })
-
-    if (response.data.code === 200) {
-      ElMessage.success(`《${file.name}》上传成功！`)
-      store.addMessage({
-        role: 'assistant',
-        content: `✅ **文件入库成功**\n\n文件名：${file.name}\n空间：${currentNamespace.value}\n\n您可以开始提问了。`
-      })
-      uploadRef.value?.clearFiles() // 清空选择
-    }
+    uploadRef.value?.clearFiles() // 清空选择
   } catch (err: any) {
     ElMessage.error(`上传失败: ${err.message}`)
+  }finally {
+    uploading.value = false // 无论成功失败，结束上传状态
   }
 }
 
@@ -109,10 +121,21 @@ const handleSend = async () => {
   //发送到主页面
 }
 
+// 1. 获取知识库列表
+const fetchNamespaces = async () => {
+  namespaceList.value = await ragApi.getNamespaces();
+};
+
+// 2. 切换命名空间
 const selectNamespace = (ns: string) => {
   currentNamespace.value = ns
   ElMessage.info(`切换到空间: ${ns}`)
 }
+
+// 初始化时获取知识库列表
+onMounted(() => {
+  fetchNamespaces()
+})
 </script>
 
 <style lang="scss" scoped>

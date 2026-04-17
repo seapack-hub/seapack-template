@@ -1,100 +1,81 @@
-import {request} from "@/utils/axios";
-const API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
-const BASE_URL = import.meta.env.VITE_DEEPSEEK_BASE_URL;
 const USER_BASE_URL = "/api";
-
-// 定义消息类型
 export interface ChatMessage {
-  role:'user'|'assistant'|'system',
-  content:string
+  role: 'user' | 'assistant' | 'system';
+  content: string;
 }
 
-//流式对话函数
 export async function streamChat(
-  messages:ChatMessage[],
-  //接收文本片段的回调
-  onChunk:(text:string)=>void,
-  //完成回调
-  onDone:() => void,
-  //错误回调
-  onError:(e: Error) => void
-){
-
-  try{
-    const response = await fetch(`${BASE_URL}/v1/chat/completions`,{
+  messages: ChatMessage[],
+  onChunk: (text: string) => void,
+  onDone: () => void,
+  onError: (e: Error) => void,
+  namespace?: string, //命名空间参数
+) {
+  try {
+    const response = await fetch(`${USER_BASE_URL}/chat/aiModel`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`
       },
       body: JSON.stringify({
-        model: 'deepseek-chat', // 或者 'deepseek-coder'
         messages: messages,
-        stream: true // 开启流式输出
+        namespace: namespace, //命名空间参数
+        stream: true
       })
     });
+
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error?.message || 'API 请求失败')
-    }
-    if (!response.body) {
-      throw new Error('响应体为空，无法读取流')
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'API 请求失败');
     }
 
+    if (!response.body) {
+      throw new Error('响应体为空，无法读取流');
+    }
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
-
-    while(true){
-      const { done,value} = await reader.read();
-
-      //如果流结束
-      if(done){
+    let buffer = ''; // 用于处理粘包或半包问题
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
         onDone();
         break;
       }
-
-      //解析数码快
-      const chunk = decoder.decode(value,{stream:true});
-      const lines = chunk.split('\n');
-
-      //解析SSE格式数据
-      for(const line of lines){
-        if(line.startsWith('data: ')){
-          // 去掉 'data: ' 前缀
-          const data = line.slice(6);
-
-          if(data.trim() === '[DONE]'){
+      // 将新读取的数据追加到缓冲区
+      buffer += decoder.decode(value, { stream: true });      
+      // 按行分割
+      const lines = buffer.split('\n');      
+      // 保留最后一行（可能是不完整的），留待下次循环处理
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        const trimmedLine = line.trim();        
+        // 1. 确保以 data: 开头
+        if (trimmedLine.startsWith('data:')) {
+          // 2. 去掉 data: 前缀
+          const jsonString = trimmedLine.replace(/^data:\s*/, '');
+          // 3. 处理结束标记
+          if (jsonString === '[DONE]') {
             onDone();
             return;
           }
-
-          try{
-            const parsed = JSON.parse(data);
-            const content = parsed.choices[0]?.delta?.content||'';
-            if(content){
-              // 将生成的文本片段传递给 UI
-              onChunk(content)
+          try {
+            const parsed = JSON.parse(jsonString);
+            // --- 核心修复：提取路径 ---
+            // 截图显示 object 为 chat.completion.chunk，这是标准流式格式
+            // 内容通常在 delta.content 中
+            const content = parsed.choices?.[0]?.delta?.content;
+            
+            if (content) {
+              onChunk(content);
             }
-          }catch(e){
-            console.error('JSON 解析错误', e)
+          } catch (e) {
+            // 忽略非 JSON 的心跳包或解析错误
+            console.warn('解析失败:', e, jsonString);
           }
         }
       }
     }
-  }catch(err){
-    onError(err as Error)
+  } catch (err) {
+    onError(err as Error);
   }
-}
-
-/**
- * 上传文件到AI平台
- * @param file 
- * @returns 
- */
-export const ingestFile = (file:File)=>{
-  return request({
-    url:`${USER_BASE_URL}/rag/ingest-file`,
-    method:"post",
-    data:file
-  }) as Promise<{fileId:string}>;
 }
