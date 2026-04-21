@@ -72,17 +72,15 @@ import { useChatStore } from '@/store/modules/chat'
 import { streamChat } from '@/api/ai/index.ts'
 // @ts-ignore  // 忽略类型检查，解决缺少声明文件的问题
 import MarkdownIt from 'markdown-it'
+import emitter from '@/utils/bus';
 
+const namespace = ref('');
 // 初始化 Markdown 解析器
 const md = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: true
 })
-// 1. 定义 Props 接收命名空间
-const props = defineProps<{
-  currentNamespace?: string; // 接收父组件传来的空间名
-}>();
 
 const store = useChatStore()
 const inputText = ref('')
@@ -139,7 +137,7 @@ const handleSend = async ()=>{
       store.loading = false
     },
     //传递命名空间
-    props.currentNamespace,
+    namespace.value,
   )
 }
 
@@ -148,6 +146,21 @@ const handleClear = () => {
   store.clearHistory()
   ElMessageBox.confirm('会话已清空', '提示', { type: 'info' })
 }
+
+// 设置命名空间
+const setNamespace = (ns: string) => {
+  namespace.value = ns;
+}
+
+onMounted(() => {
+  // 订阅事件
+  emitter.on('update-namespace', setNamespace);
+})
+
+onUnmounted(() => {
+  // 取消订阅事件
+  emitter.off('update-namespace', setNamespace);
+})
 </script>
 
 <style lang="scss" scoped>

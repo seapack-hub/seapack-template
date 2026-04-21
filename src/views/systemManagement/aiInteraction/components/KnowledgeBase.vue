@@ -44,7 +44,7 @@
     <!-- 知识库列表 -->
     <el-scrollbar class="flex-1 min-h-0">
       <div class="p-1"> <!-- 包裹层防止 tag 贴边 -->
-        <div v-if="namespaceList.length === 0" class="text-xs text-gray-400 italic text-center mt-4">
+        <div v-if="namespaceList.length === 0" class="text-gray-400 italic text-center mt-4">
           暂无数据
         </div>
         <el-tag
@@ -67,6 +67,7 @@ import {Folder, UploadFilled } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox, ElScrollbar, UploadInstance, UploadProps } from 'element-plus'
 import { useChatStore } from '@/store/modules/chat'
 import { ragApi } from '@/api/ai/rag'
+import emitter from '@/utils/bus';
 
 const uploadRef = ref<UploadInstance>()
 const store = useChatStore()
@@ -105,6 +106,8 @@ const onFileChange: UploadProps['onChange'] = async (file) => {
       content: `✅ **文件入库成功**\n\n文件名：${file.name}\n空间：${currentNamespace.value}\n\n您可以开始提问了。`
     })
     uploadRef.value?.clearFiles() // 清空选择
+    //加载知识库列表
+    fetchNamespaces()
   } catch (err: any) {
     ElMessage.error(`上传失败: ${err.message}`)
   }finally {
@@ -131,6 +134,10 @@ const selectNamespace = (ns: string) => {
   currentNamespace.value = ns
   ElMessage.info(`切换到空间: ${ns}`)
 }
+// 监听命名空间变化
+watch(() => currentNamespace.value, (newVal) => {
+  emitter.emit('update-namespace', newVal)
+})
 
 // 初始化时获取知识库列表
 onMounted(() => {

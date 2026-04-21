@@ -8,6 +8,7 @@
     :header-row-style="rowStyle"
     :header-cell-style="{ ...headerCellStyle }"
     :row-style="rowStyle"
+    v-table-shadow
     :cell-style="{ ...cellStyle }"
     stripe
   >
