@@ -178,10 +178,35 @@ const systemManagementRoute: Array<RouterObject> = [
       {
         path:"/aiInteraction",
         name:"aiInteraction",
-        component:() => import("@/views/systemManagement/aiInteraction/index.vue"),
+        // component:() => import("@/views/systemManagement/aiInteraction/index.vue"),
+        redirect: '/rag',
+        children:[
+          //RAG知识库
+          {
+            path:"/rag",
+            name:"rag",
+            component:() => import("@/views/systemManagement/aiInteraction/index.vue"),
+            meta:{
+              title:"rag",
+              description:"RAG知识库",
+              icon:"rag"
+            }
+          },
+          //智能体交互
+          {
+            path:"/agent",
+            name:"agent",
+            component:() => import("@/views/systemManagement/aiInteraction/agent/index.vue"),
+            meta:{
+              title:"agent",
+              description:"智能体交互",
+              icon:"agent"
+            }
+          },
+        ],
         meta:{
           title:"aiInteraction",
-          description: 'AI交互',
+          description: '人工智能',
           icon:"ai-interaction"
         }
       },

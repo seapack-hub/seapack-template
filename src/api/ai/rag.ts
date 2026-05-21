@@ -1,5 +1,5 @@
 import {request} from "@/utils/axios";
-import {ChatRequest,ApiResponse } from '@/api/ai/types/rag.ts';
+import { ApiResponse } from '@/api/ai/types/rag.ts';
 
 const USER_BASE_URL = "/api";
 
@@ -12,14 +12,6 @@ export const ragApi = {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    })
-  },
-
-  // 聊天
-  chat:(data:ChatRequest)=>{
-    return request<ApiResponse<string>>(`${USER_BASE_URL}/rag/chat`,{
-      method:'POST',
-      data
     })
   },
 

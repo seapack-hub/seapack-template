@@ -59,6 +59,7 @@
         </el-tag>
         </div>
     </el-scrollbar>
+    <el-button type="primary" @click="handleSend">调用智能体</el-button>
   </div>
 </template>
 
@@ -68,6 +69,7 @@ import { ElMessage, ElMessageBox, ElScrollbar, UploadInstance, UploadProps } fro
 import { useChatStore } from '@/store/modules/chat'
 import { ragApi } from '@/api/ai/rag'
 import emitter from '@/utils/bus';
+import { agentApi } from '@/api/ai/agent';
 
 const uploadRef = ref<UploadInstance>()
 const store = useChatStore()
@@ -122,6 +124,10 @@ const handleExceed: UploadProps['onExceed'] = () => {
 
 const handleSend = async () => {
   //发送到主页面
+  const res = await agentApi.callAgent({task:'帮我搜集一下武汉2026年的购房政策并生成报告,文件下载地址为D:/test.docx'})
+  console.log('===',res);
+  
+  //ElMessage.success(res)
 }
 
 // 1. 获取知识库列表
