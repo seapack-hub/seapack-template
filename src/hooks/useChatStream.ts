@@ -87,18 +87,18 @@ export function useChatStream(options: UseChatStreamOptions) {
 
   // 处理后端发来的流式数据
   const handleStreamData = (data: any) => {
-    console.log('原始数据:', data)
      // 如果后端返回的是开始状态，更新进度条并添加系统提示
     if (data.status === 'start') {
       currentStepIndex.value = 1
       addLog('system', `${data.message}`)
     }
     // 根据后端返回的具体消息内容，动态更新进度条（例如检测到"搜索"关键词）
-    if (data.message && data.message.includes('搜索')) {
+    if (data.type === 'search') {
       currentStepIndex.value = 2
+      addLog('system', `${data.message}`)
     }
 
-    if(data.status === 'processing'){
+    if(data.type === 'documents'){
       currentStepIndex.value = 3
       addLog('system', `${data.message}`)
     }
