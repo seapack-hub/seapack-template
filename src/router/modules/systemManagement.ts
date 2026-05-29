@@ -94,6 +94,17 @@ const systemManagementRoute: Array<RouterObject> = [
               description: '行业分类',
               icon: 'industry'
             }
+          },
+          //股票行情
+          {
+            path: '/stockTrading',
+            name: 'stockTrading',
+            component: () => import('@/views/systemManagement/stockTrading/index.vue'),
+            meta: {
+              title: 'stockTrading',
+              description: '股票行情',
+              icon: 'trend-charts'
+            }
           }
         ]
       },

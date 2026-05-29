@@ -3,5 +3,10 @@
   "footer": "頁脚",
   "systemManagement": "系統管理",
   "funGame": "趣味遊戲",
-  "technologyWorld": "技術天地"
+  "technologyWorld": "技術天地",
+  "stockTrading": "股票行情",
+  "fund": "基金模塊",
+  "fundBaseInfo": "基金信息",
+  "fundBaseInfoDetail": "基金信息詳情",
+  "industry": "行業分類"
 }

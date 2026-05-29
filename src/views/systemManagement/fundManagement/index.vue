@@ -44,7 +44,7 @@
       </div>
       <div class="flex-1 flex flex-col justify-between overflow-hidden">
          <SpTable class="flex-1" :loading="loading" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
-         <div class="h-[50px]">
+         <div class="h-[40px] mt-10px">
           <Pagination
             v-if="total > 0"
             v-model:total="total"

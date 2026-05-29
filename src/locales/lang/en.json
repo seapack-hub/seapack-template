@@ -3,5 +3,10 @@
   "footer": "footer",
   "systemManagement": "system management",
   "funGame": "fun game",
-  "technologyWorld": "technology world"
+  "technologyWorld": "technology world",
+  "stockTrading": "Stock Market",
+  "fund": "Fund Module",
+  "fundBaseInfo": "Fund Info",
+  "fundBaseInfoDetail": "Fund Detail",
+  "industry": "Industry"
 }
