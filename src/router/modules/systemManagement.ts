@@ -108,6 +108,68 @@ const systemManagementRoute: Array<RouterObject> = [
           }
         ]
       },
+      //股息监控
+      {
+        path:"/stockManagement",
+        redirect: '/dashboardView',
+        meta:{
+          title:"stockManagement",
+          description:"股息监控",
+          icon:"trend-charts"
+        },
+        children:[
+          {
+            path: '/dashboardView',
+            name: 'dashboardView',
+            component: () => import('@/views/systemManagement/stockManagement/dashboard/index.vue'),
+            meta: {
+              title: 'dashboardView',
+              description: '核心监控大盘',
+              icon: 'home'
+            }
+          },
+          {
+            path: '/stockPool',
+            name: 'stockPool',
+            component: () => import('@/views/systemManagement/stockManagement/stockPool/index.vue'),
+            meta: {
+              title: 'stockPool',
+              description: '股票池管理',
+              icon: 'fund-info'
+            }
+          },
+          {
+            path: '/dividendData',
+            name: 'dividendData',
+            component: () => import('@/views/systemManagement/stockManagement/dividendData/index.vue'),
+            meta: {
+              title: 'dividendData',
+              description: '分红数据维护',
+              icon: 'pie-chart'
+            }
+          },
+          {
+            path: '/alertRules',
+            name: 'alertRules',
+            component: () => import('@/views/systemManagement/stockManagement/alertRules/index.vue'),
+            meta: {
+              title: 'alertRules',
+              description: '监控规则配置',
+              icon: 'alert'
+            }
+          },
+          {
+            path: '/alertHistory',
+            name: 'alertHistory',
+            component: () => import('@/views/systemManagement/stockManagement/alertHistory/index.vue'),
+            meta: {
+              title: 'alertHistory',
+              description: '告警历史记录',
+              icon: 'histogram'
+            }
+          }
+        ]
+      },
       //组件封装
       {
         path: '/genericComponent',
