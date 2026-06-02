@@ -90,46 +90,46 @@
         @selection-change="handleSelectionChange"
       >
         <!--勾选框-->
-        <el-table-columns v-if="innerConfig.select?.show" type="selection" width="55" fixed="left"></el-table-columns>
+        <el-table-column v-if="innerConfig.select?.show" type="selection" width="55" fixed="left"></el-table-column>
         <!--序号-->
-        <el-table-columns
+        <el-table-column
           fixed="left"
           type="index"
           :index="innerConfig.index"
           label="序号"
           width="80"
-        ></el-table-columns>
+        ></el-table-column>
         <!--正常列-->
         <template v-for="item in innerConfig.columns" :key="item.prop">
           <!--render函数自定义节点-->
-          <el-table-columns v-if="item.render" v-bind="item">
+          <el-table-column v-if="item.render" v-bind="item">
             <template #default="scope">
               <custom-com :vnode="item.render" :scope="scope" />
             </template>
-          </el-table-columns>
-          <el-table-columns v-else-if="item.map" v-bind="item" show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column v-else-if="item.map" v-bind="item" show-overflow-tooltip>
             <template #default="scope">
               <span>{{ item.map[scope.row[item.prop]] }}</span>
             </template>
-          </el-table-columns>
+          </el-table-column>
           <!--自定义展示格式-->
-          <el-table-columns v-else-if="item.formatter" v-bind="item" show-overflow-tooltip>
+          <el-table-column v-else-if="item.formatter" v-bind="item" show-overflow-tooltip>
             <template #default="scope">
               <span>{{ item.formatter(scope.row[item.prop], item.props, item) || '-' }}</span>
             </template>
-          </el-table-columns>
+          </el-table-column>
           <!--普通列-->
-          <el-table-columns v-else v-bind="item" show-overflow-tooltip>
+          <el-table-column v-else v-bind="item" show-overflow-tooltip>
             <template #default="scope">
               <span>
                 {{ scope.row[item.prop] || scope.row[item.prop] == 0 ? scope.row[item.prop] + '' || '--' : '--' }}
               </span>
             </template>
-          </el-table-columns>
+          </el-table-column>
         </template>
         <!--操作列-->
         <template v-if="innerConfig.operate?.useOperate">
-          <el-table-columns label="操作" fixed="right" :min-width="innerConfig.operate.minWidth">
+          <el-table-column label="操作" fixed="right" :min-width="innerConfig.operate.minWidth">
             <template #default="scope">
               <template v-for="item in innerConfig.operate.operates()" :key="item">
                 <el-button
@@ -142,7 +142,7 @@
                 <custom-com v-else-if="typeof item === 'object' && item.render" :vnode="item.render" :scope="scope" />
               </template>
             </template>
-          </el-table-columns>
+          </el-table-column>
         </template>
         <template #empty>
           <span :class="{ 'color-danger': data.error }">
@@ -153,8 +153,8 @@
       <!--分页-->
       <div class="page-wrapper">
         <el-pagination
-          v-model:page-size="innerConfig.page?.pageSize"
-          v-model:current-page="innerConfig.page?.pageNum"
+          v-model:page-size="innerConfig.page!.pageSize"
+          v-model:current-page="innerConfig.page!.pageNum"
           :page-sizes="[10, 20, 30, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
           :total="Number(data.total)"

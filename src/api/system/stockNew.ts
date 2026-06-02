@@ -12,28 +12,35 @@ export interface StockBasic {
 }
 
 /** 股票池分页查询参数 */
-export interface StockPoolPageQuery extends PageQuery {
-  keywords?: string
+export interface StockPoolQuery {
+  pageNum?: number
+  pageSize?: number
+  keyword?: string
   exchange?: string
   industry?: string
 }
 
 export const StockBasicAPI = {
-  getList(query: StockPoolPageQuery) {
-    const { pageNum, pageSize, ...rest } = query
+  /** 分页查询股票列表 */
+  getList(params?: StockPoolQuery) {
     return request<any, PageResult<StockBasic[]>>({
-      url: '/api/stockBasic/page', method: 'post', params: { pageNum, pageSize }, data: rest,
+      url: '/api/stockBasic/list', method: 'get', params,
     })
   },
-  insert(data: StockBasic) {
-    return request<any, any>({ url: '/api/stockBasic/insert', method: 'post', data })
+  /** 新增（id 自增，无需传入） */
+  insert(data: Partial<StockBasic>) {
+    const { stockId, ...rest } = data as any
+    return request<any, any>({ url: '/api/stockBasic/insert', method: 'post', data: rest })
   },
+  /** 更新 */
   update(data: StockBasic) {
     return request<any, any>({ url: '/api/stockBasic/update', method: 'post', data })
   },
-  delete(stockId: number) {
-    return request<any, any>({ url: `/api/stockBasic/delete/${stockId}`, method: 'delete' })
+  /** 删除 */
+  delete(id: number) {
+    return request<any, any>({ url: `/api/stockBasic/delete/${id}`, method: 'delete' })
   },
+  /** 批量导入 */
   batchImport(codes: string[]) {
     return request<any, any>({ url: '/api/stockBasic/batchImport', method: 'post', data: { codes } })
   },

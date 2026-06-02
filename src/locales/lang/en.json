@@ -14,5 +14,7 @@
   "fund": "Fund Module",
   "fundBaseInfo": "Fund Info",
   "fundBaseInfoDetail": "Fund Detail",
-  "industry": "Industry"
+  "industry": "Industry",
+  "industryManagement": "Industry Management",
+  "dictSetting": "Dictionary Settings"
 }

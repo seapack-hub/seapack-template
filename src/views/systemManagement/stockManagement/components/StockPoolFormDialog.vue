@@ -10,14 +10,27 @@
       </el-form-item>
       <el-form-item label="交易所" prop="exchange">
         <el-select v-model="form.exchange" placeholder="请选择" style="width: 100%">
-          <el-option label="沪市" value="SH" />
-          <el-option label="深市" value="SZ" />
+          <el-option v-for="item in exchangeOptions" :key="item.dictCode" :label="item.dictName" :value="item.dictCode" />
         </el-select>
       </el-form-item>
       <el-form-item label="所属行业" prop="industry">
-        <el-select v-model="form.industry" placeholder="请选择" style="width: 100%" filterable>
-          <el-option v-for="opt in industryOpts" :key="opt.value" :label="opt.label" :value="opt.value" />
-        </el-select>
+        <el-cascader
+          v-model="industryPath"
+          :options="cascaderOpts"
+          :props="{ 
+            value: 'id', 
+            label: 'label', 
+            children: 'children', 
+            leaf: 'leaf', 
+            expandTrigger: 'hover'
+          }"
+          placeholder="请选择行业（仅叶子节点可选）"
+          clearable
+          filterable
+          style="width: 100%"
+          :show-all-levels="false"
+          @change="onIndustryChange"
+        />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -28,23 +41,76 @@
 </template>
 
 <script setup lang="ts">
-/* 通过 defineModel 双向绑定父组件的 visible / isEdit / form */
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector'
+import { getDictByType } from '@/api/system/dict'
+
+const exchangeOptions = ref<any[]>([])
+
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
 const form = defineModel<any>('form', { default: () => ({ stockCode: '', stockName: '', exchange: '', industry: '' }) })
 
 const emit = defineEmits<{ confirm: [formData: any, isEdit: boolean] }>()
 
-/* 行业下拉选项 */
-const industryOpts = [
-  { label: '银行', value: '银行' }, { label: '煤炭', value: '煤炭' }, { label: '电力', value: '电力' },
-  { label: '钢铁', value: '钢铁' }, { label: '化工', value: '化工' }, { label: '食品饮料', value: '食品饮料' },
-  { label: '医药', value: '医药' }, { label: '科技', value: '科技' }, { label: '金融', value: '金融' },
-  { label: '地产', value: '地产' }, { label: '新能源', value: '新能源' }, { label: '消费', value: '消费' },
-  { label: '制造', value: '制造' },
-]
+const industryPath = ref<(string | number)[]>([])
+const cascaderOpts = ref<any[]>([])
+const labelToIdPath = ref<Record<string, number[]>>({})  // leaf label → [parentId, ..., leafId]
+const idToLabel = ref<Record<number, string>>({})  // id → label (reverse lookup)
 
-/* 表单校验规则 */
+/** 递归收集：叶子 label → ID 路径 + 所有 ID → label */
+function buildPathMap(list: IndustrySector[], prefix: number[] = []) {
+  for (const n of list) {
+    idToLabel.value[n.id] = n.label
+    const path = [...prefix, n.id]
+    if (n.children?.length) {
+      buildPathMap(n.children, path)
+    } else {
+      labelToIdPath.value[n.label] = path
+    }
+  }
+}
+
+/** API 树 → el-cascader 选项（仅叶子节点可选） */
+function toCascader(list: IndustrySector[]): any[] {
+  return list.map(n => {
+    const hasChildren = !!(n.children?.length)
+    return {
+      label: n.label,
+      id:n.id,
+      children: hasChildren ? toCascader(n.children!) : undefined,
+      leaf: !hasChildren,
+    }
+  })
+}
+
+/** 打开弹框时加载行业树 + 交易所字典 */
+watch(visible, async (val) => {
+  if (!val) return
+  try {
+    const [treeRes, dictRes] = await Promise.all([
+      IndustrySectorAPI.getTree(),
+      getDictByType('exchange_type'),
+    ])
+    const list = Array.isArray(treeRes) ? treeRes : []
+    cascaderOpts.value = toCascader(list)
+    labelToIdPath.value = {}
+    idToLabel.value = {}
+    buildPathMap(list)
+    exchangeOptions.value = Array.isArray(dictRes) ? dictRes : []
+    if (form.value.industry) {
+      industryPath.value = labelToIdPath.value[idToLabel.value[form.value.industry]]
+    }
+  } catch {
+    cascaderOpts.value = []
+  }
+})
+
+/** cascader 选择后仅取叶子节点 label 存入 form.industry */
+function onIndustryChange(val: any) {
+  const leafId = val?.length ? val[val.length - 1] : ''
+  form.value.industry = idToLabel.value[leafId] || ''
+}
+
 const formRules = {
   stockCode: [{ required: true, message: '请输入股票代码' }],
   stockName: [{ required: true, message: '请输入股票名称' }],
@@ -54,14 +120,13 @@ const formRules = {
 const formRef = ref<any>(null)
 const submitting = ref(false)
 
-/* 弹框关闭后重置表单 */
 function onClosed() {
   form.value = { stockCode: '', stockName: '', exchange: '', industry: '' }
+  industryPath.value = []
   isEdit.value = false
   formRef.value?.resetFields()
 }
 
-/* 提交表单：校验通过后 emit confirm 给父组件处理 */
 async function onSubmit() {
   await formRef.value?.validate()
   submitting.value = true

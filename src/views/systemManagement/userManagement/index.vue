@@ -55,7 +55,7 @@
 
             <el-form-item label="创建时间">
               <el-date-picker
-                v-model="timeArr as any"
+                v-model="timeArr"
                 :editable="false"
                 type="daterange"
                 range-separator="~"

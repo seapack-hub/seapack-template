@@ -32,8 +32,8 @@ export function createStockPoolColumns(handlers: ColumnHandlers) {
   return [
     { label: '股票代码', prop: 'stockCode', minWidth: '120px' },
     { label: '股票名称', prop: 'stockName', minWidth: '160px' },
-    { label: '交易所', prop: 'exchange', minWidth: '80px', formatter: exchangeFmt },
-    { label: '所属行业', prop: 'industry', minWidth: '100px' },
+    { label: '交易所', prop: 'exchangeName', minWidth: '80px', formatter: exchangeFmt },
+    { label: '所属行业', prop: 'industryName', minWidth: '100px' },
     { label: '创建时间', prop: 'createdAt', minWidth: '170px' },
     /* 操作列：编辑 + 删除，删除需二次确认 */
     {

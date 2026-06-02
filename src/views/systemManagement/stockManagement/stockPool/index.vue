@@ -3,13 +3,13 @@
     <!-- ===== 左侧行业树 + 右侧表格 ===== -->
     <div class="flex-1 flex gap-10px overflow-hidden">
       <!-- 左侧：行业板块树形分类 -->
-      <el-card shadow="never" class="tree-panel w-180px flex-shrink-0" :body-style="{ padding: '12px', height: '100%' }">
+      <el-card shadow="never" class="tree-panel w-220px flex-shrink-0" :body-style="{ padding: '12px', height: '100%' }">
         <div class="font-bold text-15px mb-8px">行业板块</div>
         <el-input v-model="filterText" placeholder="搜索板块" clearable class="mb-8px" size="small" />
         <div class="tree-wrapper overflow-y-auto pb-20">
           <el-tree
             ref="treeRef"
-            :data="industryTree"
+            :data="industryTreeData"
             :props="{ children: 'children', label: 'label' }"
             node-key="id"
             default-expand-all
@@ -17,11 +17,10 @@
             :filter-node-method="filterNode"
             @node-click="handleNodeClick"
           >
-            <template #default="{ node, data }">
+            <template #default="{ node }">
               <span class="flex items-center gap-4px text-14px">
                 <span class="text-yellow-500 text-13px">&#9679;</span>
                 <span>{{ node.label }}</span>
-                <span class="text-gray-400 text-13px ml-auto">({{ data.count }})</span>
               </span>
             </template>
           </el-tree>
@@ -38,8 +37,7 @@
             </el-form-item>
             <el-form-item label="交易所" prop="exchange">
               <el-select v-model="query.exchange" placeholder="全部" clearable style="width: 120px">
-                <el-option label="沪市" value="SH" />
-                <el-option label="深市" value="SZ" />
+                <el-option v-for="item in exchangeOptions" :key="item.dictCode" :label="item.dictName" :value="item.dictCode" />
               </el-select>
             </el-form-item>
             <el-form-item>
@@ -50,10 +48,6 @@
         </div>
         <!-- 工具栏 -->
         <div class="table-toolbar h-[50px] flex items-center justify-between">
-          <div class="flex items-center gap-8px">
-            <span class="text-15px font-bold">{{ currentTitle }}</span>
-            <el-tag type="info" effect="plain" size="small">{{ total }} 只股票</el-tag>
-          </div>
           <div class="flex gap-8px">
             <el-button type="success" icon="plus" @click="openFormDialog()">新增</el-button>
             <el-button icon="upload-filled" @click="batchVisible = true">批量导入</el-button>
@@ -77,28 +71,33 @@
 </template>
 
 <script setup lang="ts">
-import { StockBasicAPI } from '@/api/system/stockNew'
-import type { StockBasic } from '@/api/system/stockNew'
-import { industryTree } from '../components/shared'
+import { StockInfoAPI } from '@/api/system/stockPool'
+import type { StockInfo } from '@/api/system/stockPool'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector'
+import { getDictByType } from '@/api/system/dict'
 import { createStockPoolColumns } from '../components/columns'
 import StockPoolFormDialog from '../components/StockPoolFormDialog.vue'
 import StockPoolBatchDialog from '../components/StockPoolBatchDialog.vue'
+
+/* ========== 交易所字典 ========== */
+const exchangeOptions = ref<any[]>([])
 
 /* ========== 行业树状态 ========== */
 const filterText = ref('')
 const treeRef = ref<any>(null)
 const currentTitle = ref('全部分类')
+const industryTreeData = ref<any[]>([])
 
 /* ========== 查询参数 ========== */
 const query = ref({ pageNum: 1, pageSize: 10, keywords: '', exchange: '', industry: '' })
 const loading = ref(false)
-const tableData = ref<StockBasic[]>([])
+const tableData = ref<StockInfo[]>([])
 const total = ref(0)
 
 /* 表格列配置（操作列回调绑定到当前页面逻辑） */
 const columns = createStockPoolColumns({
   onEdit(row) { formData.value = { ...row }; formIsEdit.value = true; formVisible.value = true },
-  async onDelete(row) { await StockBasicAPI.delete(row.stockId); ElMessage.success('删除成功'); handleQuery() },
+  async onDelete(row) { await StockInfoAPI.delete(row.stockId); ElMessage.success('删除成功'); handleQuery() },
 })
 
 /* ========== 表单弹框 ========== */
@@ -109,7 +108,7 @@ const formData = ref<any>({ stockCode: '', stockName: '', exchange: '', industry
 function openFormDialog() { formVisible.value = true }
 
 async function onFormConfirm(form: any, isEdit: boolean) {
-  const api = isEdit ? StockBasicAPI.update : StockBasicAPI.insert
+  const api = isEdit ? StockInfoAPI.update : StockInfoAPI.insert
   await api(form)
   ElMessage.success(isEdit ? '更新成功' : '新增成功')
   formVisible.value = false
@@ -119,10 +118,33 @@ async function onFormConfirm(form: any, isEdit: boolean) {
 /* ========== 批量导入弹框 ========== */
 const batchVisible = ref(false)
 async function onBatchConfirm(codes: string[]) {
-  await StockBasicAPI.batchImport(codes)
+  await Promise.all(codes.map(code => StockInfoAPI.insert({ stockCode: code })))
   ElMessage.success(`成功导入 ${codes.length} 只股票`)
   batchVisible.value = false
   handleQuery()
+}
+
+/* ========== 加载行业树 ========== */
+/** 将 API 返回的 IndustrySector[] 转为 el-tree 所需格式 */
+function toTreeNodes(list: IndustrySector[]): any[] {
+  return list.map(n => ({
+    id: n.id,
+    label: n.label,
+    children: n.children?.length ? toTreeNodes(n.children) : [],
+  }))
+}
+
+/** 虚拟根节点 + 真实行业树 */
+async function loadIndustryTree() {
+  try {
+    const res = await IndustrySectorAPI.getTree()
+    const children = Array.isArray(res) ? toTreeNodes(res) : []
+    industryTreeData.value = [{ id: 'all', label: '全部分类', children }]
+  } catch {
+    // 降级：使用静态树
+    const { industryTree } = await import('../components/shared')
+    industryTreeData.value = industryTree
+  }
 }
 
 /* ========== 行业树操作 ========== */
@@ -140,40 +162,18 @@ function handleNodeClick(data: any) {
 
 watch(filterText, (val) => { treeRef.value?.filter(val) })
 
-/* ========== Mock 数据 ========== */
-const allMockData = [
-  { code: '600519', name: '贵州茅台', ex: 'SH', ind: '食品饮料' },
-  { code: '601398', name: '工商银行', ex: 'SH', ind: '银行' },
-  { code: '600036', name: '招商银行', ex: 'SH', ind: '银行' },
-  { code: '000858', name: '五粮液', ex: 'SZ', ind: '食品饮料' },
-  { code: '600585', name: '海螺水泥', ex: 'SH', ind: '钢铁' },
-  { code: '601088', name: '中国神华', ex: 'SH', ind: '煤炭' },
-  { code: '000002', name: '万科A', ex: 'SZ', ind: '地产' },
-  { code: '600900', name: '长江电力', ex: 'SH', ind: '电力' },
-  { code: '601857', name: '中国石油', ex: 'SH', ind: '化工' },
-  { code: '600028', name: '中国石化', ex: 'SH', ind: '化工' },
-]
-
 /* ========== 查询（带 Mock 降级） ========== */
 const handleQuery = async () => {
   loading.value = true
   try {
-    const res = await StockBasicAPI.getList(query.value)
-    tableData.value = res.list; total.value = res.total
-  } catch {
-    const filtered = allMockData.filter(s => {
-      if (query.value.keywords && !s.name.includes(query.value.keywords) && !s.code.includes(query.value.keywords)) return false
-      if (query.value.exchange && s.ex !== query.value.exchange) return false
-      if (query.value.industry && s.ind !== query.value.industry) return false
-      return true
-    })
-    const start = (query.value.pageNum - 1) * query.value.pageSize
-    tableData.value = filtered.slice(start, start + query.value.pageSize).map((s, i) => ({
-      stockId: i + 1, stockCode: s.code, stockName: s.name, exchange: s.ex,
-      industry: s.ind, createdAt: '2026-01-01 10:00:00',
-    }))
-    total.value = filtered.length
-  } finally { loading.value = false }
+    const res = await StockInfoAPI.page(query.value)
+    tableData.value = res.list; 
+    total.value = res.total
+  } catch(err) {
+    console.log(err);
+  } finally { 
+    loading.value = false 
+  }
 }
 
 const handleReset = () => {
@@ -182,7 +182,14 @@ const handleReset = () => {
   handleQuery()
 }
 
-onMounted(() => { handleQuery() })
+onMounted(async () => {
+  try {
+    const res = await getDictByType('exchange_type')
+    exchangeOptions.value = Array.isArray(res) ? res : []
+  } catch { /* 降级为空 */ }
+  loadIndustryTree()
+  handleQuery()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -202,4 +209,11 @@ onMounted(() => { handleQuery() })
   flex-direction: column;
   gap: 10px;
 }
+
+/* 全局滚动条美化 */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.3); border-radius: 20px; border: 1px solid transparent; }
+::-webkit-scrollbar-thumb:hover { background-color: rgba(156, 163, 175, 0.6); }
+.tree-wrapper ::-webkit-scrollbar { width: 4px; }
 </style>

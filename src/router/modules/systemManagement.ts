@@ -49,6 +49,28 @@ const systemManagementRoute: Array<RouterObject> = [
               icon: 'user'
             }
           },
+          //行业管理
+          {
+            path: '/industryManagement',
+            name: 'industryManagement',
+            component: () => import('@/views/systemManagement/industryManagement/index.vue'),
+            meta: {
+              title: 'industryManagement',
+              description: '行业管理',
+              icon: 'industry'
+            }
+          },
+          //字典设置
+          {
+            path: '/dictSetting',
+            name: 'dictSetting',
+            component: () => import('@/views/systemManagement/dictSetting/index.vue'),
+            meta: {
+              title: 'dictSetting',
+              description: '字典设置',
+              icon: 'dict'
+            }
+          },
         ]
       },
       //基金模块

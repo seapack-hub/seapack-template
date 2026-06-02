@@ -14,5 +14,7 @@
   "fund": "基金模块",
   "fundBaseInfo": "基金信息",
   "fundBaseInfoDetail": "基金信息详情",
-  "industry": "行业分类"
+  "industry": "行业分类",
+  "industryManagement": "行业管理",
+  "dictSetting": "字典设置"
 }
