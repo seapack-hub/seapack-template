@@ -47,8 +47,8 @@
           </el-form>
         </div>
         <!-- 工具栏 -->
-        <div class="table-toolbar h-[50px] flex items-center justify-between">
-          <div class="flex gap-8px">
+        <div class="table-toolbar h-[50px] flex items-center">
+          <div>
             <el-button type="success" icon="plus" @click="openFormDialog()">新增</el-button>
             <el-button icon="upload-filled" @click="batchVisible = true">批量导入</el-button>
           </div>
@@ -76,8 +76,8 @@ import type { StockInfo } from '@/api/system/stockPool'
 import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector'
 import { getDictByType } from '@/api/system/dict'
 import { createStockPoolColumns } from '../components/columns'
-import StockPoolFormDialog from '../components/StockPoolFormDialog.vue'
-import StockPoolBatchDialog from '../components/StockPoolBatchDialog.vue'
+import StockPoolFormDialog from './components/StockPoolFormDialog.vue'
+import StockPoolBatchDialog from './components/StockPoolBatchDialog.vue'
 
 /* ========== 交易所字典 ========== */
 const exchangeOptions = ref<any[]>([])

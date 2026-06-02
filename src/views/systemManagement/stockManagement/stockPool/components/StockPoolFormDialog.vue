@@ -107,8 +107,7 @@ watch(visible, async (val) => {
 
 /** cascader 选择后仅取叶子节点 label 存入 form.industry */
 function onIndustryChange(val: any) {
-  const leafId = val?.length ? val[val.length - 1] : ''
-  form.value.industry = idToLabel.value[leafId] || ''
+  form.value.industry = val?.length ? val[val.length - 1] : ''
 }
 
 const formRules = {
