@@ -36,7 +36,7 @@
               <el-input v-model="query.keywords" placeholder="股票代码/名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
             </el-form-item>
             <el-form-item label="交易所" prop="exchange">
-              <el-select v-model="query.exchange" placeholder="全部" clearable style="width: 120px">
+              <el-select v-model="query.exchange" placeholder="全部" clearable style="width: 200px">
                 <el-option v-for="item in exchangeOptions" :key="item.dictCode" :label="item.dictName" :value="item.dictCode" />
               </el-select>
             </el-form-item>
