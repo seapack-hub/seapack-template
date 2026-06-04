@@ -125,3 +125,71 @@ export const DividendAPI = {
     })
   },
 }
+
+// ==================== 三大财务报表 ====================
+
+/** 资产负债表 */
+export interface BalanceSheet {
+  id?: number
+  stockId: number
+  reportDate: string
+  totalAssets: number
+  totalLiabilities: number
+  totalEquity: number
+  currentAssets: number
+  nonCurrentAssets: number
+  currentLiabilities: number
+  nonCurrentLiabilities: number
+  accountsReceivable: number
+  inventory: number
+  cashAndEquivalents: number
+  createTime?: string
+}
+
+/** 利润表 */
+export interface IncomeStatement {
+  id?: number
+  stockId: number
+  reportDate: string
+  revenue: number
+  costOfSales: number
+  grossProfit: number
+  operatingExpenses: number
+  operatingProfit: number
+  netProfit: number
+  eps: number
+  createTime?: string
+}
+
+/** 现金流量表 */
+export interface CashFlowStatement {
+  id?: number
+  stockId: number
+  reportDate: string
+  operatingCashFlow: number
+  investingCashFlow: number
+  financingCashFlow: number
+  freeCashFlow: number
+  createTime?: string
+}
+
+export const FinancialAPI = {
+  /** 查询资产负债表 */
+  balanceSheet(stockId: number) {
+    return request<any, BalanceSheet[]>({
+      url: `${BASE_URL}/finance/balance/${stockId}`, method: 'get',
+    })
+  },
+  /** 查询利润表 */
+  incomeStatement(stockId: number) {
+    return request<any, IncomeStatement[]>({
+      url: `${BASE_URL}/finance/income/${stockId}`, method: 'get',
+    })
+  },
+  /** 查询现金流量表 */
+  cashFlow(stockId: number) {
+    return request<any, CashFlowStatement[]>({
+      url: `${BASE_URL}/finance/cashflow/${stockId}`, method: 'get',
+    })
+  },
+}

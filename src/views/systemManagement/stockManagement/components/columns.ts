@@ -5,6 +5,7 @@ export interface ColumnHandlers {
   onEdit: (row: any) => void
   onDelete?: (row: any) => void
   onToggle?: (row: any) => void
+  onDetail?: (row: any) => void
 }
 
 /** 核心监控大盘表格列 */
@@ -35,10 +36,11 @@ export function createStockPoolColumns(handlers: ColumnHandlers) {
     { label: '交易所', prop: 'exchangeName', minWidth: '100px'},
     { label: '所属行业', prop: 'industryName', minWidth: '100px' },
     { label: '创建时间', prop: 'createdAt', minWidth: '170px' },
-    /* 操作列：编辑 + 删除，删除需二次确认 */
+    /* 操作列：详情 + 编辑 + 删除 */
     {
-      columnType: 'operate', label: '操作', width: '130px', fixed: 'right',
+      columnType: 'operate', label: '操作', width: '190px', fixed: 'right',
       buttons: [
+        { type: 'primary', label: '详情', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onDetail?.(row) },
         { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
         { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该股票吗？' }, click: ({ row }: any) => handlers.onDelete?.(row) },
       ],

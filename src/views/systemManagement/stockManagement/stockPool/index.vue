@@ -95,7 +95,10 @@ const tableData = ref<StockInfo[]>([])
 const total = ref(0)
 
 /* 表格列配置（操作列回调绑定到当前页面逻辑） */
+const router = useRouter()
+
 const columns = createStockPoolColumns({
+  onDetail(row) { router.push({ path: '/stockPool/detail', query: { stockId: row.stockId } }) },
   onEdit(row) { formData.value = { ...row }; formIsEdit.value = true; formVisible.value = true },
   async onDelete(row) { await StockInfoAPI.delete(row.stockId); ElMessage.success('删除成功'); handleQuery() },
 })

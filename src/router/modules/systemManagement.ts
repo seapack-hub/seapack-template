@@ -161,6 +161,16 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
+            path: '/stockPool/detail',
+            name: 'stockPoolDetail',
+            component: () => import('@/views/systemManagement/stockManagement/stockPool/detail.vue'),
+            meta: {
+              title: 'stockPoolDetail',
+              description: '股票详情',
+              hidden: true,
+            }
+          },
+          {
             path: '/dividendData',
             name: 'dividendData',
             component: () => import('@/views/systemManagement/stockManagement/dividendData/index.vue'),
