@@ -9,7 +9,7 @@
     "preview": "vite preview --port 4444 --mode preview --debug",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "lint:eslint": "eslint --cache --max-warnings 0 {src,mock}/**/*.{js,vue,ts,tsx,jsx} --fix",
-    "i": "npm install"
+    "i": "pnpm install"
   },
   "dependencies": {
     "@antv/x6": "^3.1.6",
