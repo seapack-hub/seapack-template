@@ -6,8 +6,11 @@
       <el-tab-pane label="基本信息" name="info" lazy>
         <StockInfoTab :info="stockInfo" />
       </el-tab-pane>
-      <el-tab-pane label="分红与股价" name="charts" lazy>
-        <StockChartTab :dividends="dividends" :prices="[]" />
+      <el-tab-pane label="分红" name="dividend" lazy>
+        <StockDividendTab :dividends="dividends" />
+      </el-tab-pane>
+      <el-tab-pane label="股价" name="price" lazy>
+        <StockChartTab :stockCode="stockInfo.stockCode" />
       </el-tab-pane>
       <el-tab-pane label="财务数据" name="finance" lazy>
         <StockFinanceTab :data="financeData" />
@@ -21,6 +24,7 @@ import { StockInfoAPI, MarketDataAPI, FinancialAPI } from '@/api/system/stockPoo
 import { generateMockFinance } from './components/detailShared'
 import StockInfoTab from './components/StockInfoTab.vue'
 import StockChartTab from './components/StockChartTab.vue'
+import StockDividendTab from './components/StockDividendTab.vue'
 import StockFinanceTab from './components/StockFinanceTab.vue'
 
 const router = useRouter()

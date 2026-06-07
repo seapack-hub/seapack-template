@@ -111,33 +111,125 @@ export function buildDividendChartOption(data: any[]): EChartsOption {
 }
 
 /**
- * 股价走势折线图，橙色渐变面积，无标记点
- * 横坐标采样约 12 个间隔点，避免过密
+ * K 线图 + 成交量柱状图
+ * data: StockHistoryData[] (tradeDate, openPrice, closePrice, highPrice, lowPrice, volume, turnover, amplitude)
  */
-export function buildPriceChartOption(data: any[]): EChartsOption {
-  if (!data?.length) {
-    data = generateMockPrice()
-  }
-  const dates = data.map(d => d.dataTime || d.reportDate)
-  const prices = data.map(d => d.currentPrice)
+export function buildKLineChartOption(data: any[]): EChartsOption {
+  if (!data?.length) return {}
+
+  const dates = data.map(d => d.tradeDate)
+  // candlestick 需要 [open, close, low, high] 顺序
+  const ohlc = data.map(d => [d.openPrice, d.closePrice, d.lowPrice, d.highPrice])
+  const volumes = data.map(d => d.volume)
+  const turnovers = data.map(d => d.turnover)
+  const amplitudes = data.map(d => d.amplitude)
+
+  // 成交量颜色：涨红跌绿
+  const volColors = data.map(d =>
+    d.closePrice >= d.openPrice ? '#f56c6c' : '#67c23a'
+  )
+
+  // 计算成交量最大值用于 Y 轴刻度
+  const maxVol = Math.max(...volumes, 1)
+
   return {
-    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
-    grid: { left: '8%', right: '6%', bottom: '15%', top: '10%' },
-    xAxis: { type: 'category', data: dates, axisLabel: { rotate: 30 } },
-    yAxis: { type: 'value', name: '股价(元)' },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'cross' },
+      backgroundColor: 'rgba(255,255,255,0.95)',
+      borderColor: '#ddd',
+      borderWidth: 1,
+      formatter: (params: any) => {
+        const i = params[0]?.dataIndex ?? 0
+        const d = data[i]
+        if (!d) return ''
+        const vol = d.volume >= 1e8
+          ? (d.volume / 1e8).toFixed(2) + ' 亿'
+          : d.volume >= 1e4
+            ? (d.volume / 1e4).toFixed(2) + ' 万'
+            : d.volume
+        const turnover = d.turnover >= 1e8
+          ? (d.turnover / 1e8).toFixed(2) + ' 亿'
+          : d.turnover >= 1e4
+            ? (d.turnover / 1e4).toFixed(2) + ' 万'
+            : d.turnover
+        return `
+          <b>${d.tradeDate}</b><br/>
+          开盘: ${d.openPrice?.toFixed(2)} 元<br/>
+          收盘: ${d.closePrice?.toFixed(2)} 元<br/>
+          最高: ${d.highPrice?.toFixed(2)} 元<br/>
+          最低: ${d.lowPrice?.toFixed(2)} 元<br/>
+          成交量: ${vol} 股<br/>
+          成交额: ${turnover} 元<br/>
+          振幅: ${d.amplitude?.toFixed(2)}%
+        `
+      },
+    },
+    grid: [
+      { left: '8%', right: '6%', top: '6%', height: '55%' },
+      { left: '8%', right: '6%', top: '72%', height: '18%' },
+    ],
+    xAxis: [
+      {
+        type: 'category',
+        data: dates,
+        axisLabel: { rotate: 30, fontSize: 10 },
+        gridIndex: 0,
+        axisLine: { onZero: false },
+        splitLine: { show: false },
+      },
+      {
+        type: 'category',
+        data: dates,
+        axisLabel: { show: false },
+        gridIndex: 1,
+        splitLine: { show: false },
+      },
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        scale: true,
+        gridIndex: 0,
+        splitNumber: 4,
+        axisLabel: {
+          formatter: (v: number) => v.toFixed(0),
+        },
+      },
+      {
+        type: 'value',
+        gridIndex: 1,
+        splitNumber: 2,
+        axisLabel: {
+          formatter: (v: number) => {
+            if (v >= 1e8) return (v / 1e8).toFixed(0) + '亿'
+            if (v >= 1e4) return (v / 1e4).toFixed(0) + '万'
+            return v
+          },
+        },
+        max: maxVol * 4,
+      },
+    ],
     series: [
       {
-        type: 'line',
-        data: prices,
-        smooth: true,
-        symbol: 'none',
-        lineStyle: { color: '#e6a23c', width: 2 },
-        areaStyle: {
-          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: 'rgba(230,162,60,0.35)' },
-            { offset: 1, color: 'rgba(230,162,60,0.02)' },
-          ]),
+        name: 'K 线',
+        type: 'candlestick',
+        xAxisIndex: 0,
+        yAxisIndex: 0,
+        data: ohlc,
+        itemStyle: {
+          color: '#f56c6c',
+          color0: '#67c23a',
+          borderColor: '#f56c6c',
+          borderColor0: '#67c23a',
         },
+      },
+      {
+        name: '成交量',
+        type: 'bar',
+        xAxisIndex: 1,
+        yAxisIndex: 1,
+        data: volumes.map((v, i) => ({ value: v, itemStyle: { color: volColors[i] } })),
       },
     ],
   }
