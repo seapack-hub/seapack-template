@@ -51,16 +51,17 @@ export function createStockPoolColumns(handlers: ColumnHandlers) {
 /** 分红数据维护表格列 */
 export function createDividendColumns(handlers: ColumnHandlers) {
   return [
+    { label: '股票代码', prop: 'stockCode', minWidth: '100px' },
     { label: '股票名称', prop: 'stockName', minWidth: '120px' },
-    { label: '分红年度', prop: 'year', minWidth: '90px', align: 'center' },
-    /* 分红类型使用 slotName 插槽，el-tag 渲染 */
-    { label: '分红类型', prop: 'dividendType', minWidth: '100px', align: 'center', slotName: 'dividendType' },
-    { label: '每股派息(元)', prop: 'cashPerShare', minWidth: '120px', align: 'right' },
-    { label: '分红方案', prop: 'planText', minWidth: '120px' },
+    { label: '分红年度', prop: 'year', minWidth: '80px', align: 'center' },
+    { label: '分红类型', prop: 'dividendType', minWidth: '90px', align: 'center', slotName: 'dividendType' },
+    { label: '每股派息(元)', prop: 'cashPerShare', minWidth: '110px', align: 'right' },
+    { label: '送股(每10股)', prop: 'bonusSharesPer10', minWidth: '110px', align: 'right' },
+    { label: '转增(每10股)', prop: 'transferSharesPer10', minWidth: '110px', align: 'right' },
+    { label: '分红方案', prop: 'planText', minWidth: '140px' },
     { label: '公告日期', prop: 'announcementDate', minWidth: '110px', align: 'center' },
     { label: '除权除息日', prop: 'exDividendDate', minWidth: '110px', align: 'center' },
-    /* 实施状态使用 slotName 插槽，颜色区分：已实施绿色/已批准蓝色/预案黄色 */
-    { label: '实施状态', prop: 'status', minWidth: '90px', align: 'center', slotName: 'status' },
+    { label: '实施状态', prop: 'status', minWidth: '80px', align: 'center', slotName: 'status' },
     { label: '创建时间', prop: 'createdAt', minWidth: '160px' },
     {
       columnType: 'operate', label: '操作', width: '130px', fixed: 'right',

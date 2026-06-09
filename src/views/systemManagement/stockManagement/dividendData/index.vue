@@ -1,42 +1,34 @@
 <template>
   <div class="page-container">
     <el-card shadow="never" class="flex-1 flex flex-col el-card-main">
+      <!-- 搜索区域：关键字 + 年度 + 分红类型 + 实施状态 -->
       <div class="search-bar h-[50px]">
-        <el-form :model="query" :inline="true">
-          <el-form-item label="股票">
-            <el-select v-model="query.stockId" placeholder="全部" clearable style="width: 180px" filterable>
-              <el-option v-for="s in stockCandidates" :key="s.stockId" :label="s.stockName" :value="s.stockId" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="年度">
-            <el-date-picker v-model="query.year" type="year" placeholder="全部" clearable style="width: 130px" value-format="YYYY" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" icon="search" @click="handleQuery">搜索</el-button>
-            <el-button icon="refresh" @click="handleReset">重置</el-button>
-          </el-form-item>
-        </el-form>
+        <DividendSearch :model="query" @search="handleQuery" @reset="handleReset" />
       </div>
+      <!-- 工具栏 -->
       <div class="table-toolbar h-[50px] flex items-center justify-between">
         <span class="text-15px font-bold">分红数据维护</span>
         <el-button type="success" icon="plus" @click="openDialog()">新增分红</el-button>
       </div>
+      <!-- 表格 + 分页 -->
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
         <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true">
+          <!-- 分红类型 el-tag：颜色从 dict tagType 映射读取，无映射则默认 primary -->
           <template #dividendType>
-            <el-table-column label="分红类型" minWidth="100px" align="center" slotName="dividendType">
+            <el-table-column label="分红类型" minWidth="90px" align="center" slotName="dividendType">
               <template #default="{ row }">
-                <el-tag :type="row.dividendType === 'FINAL' ? 'primary' : 'warning'" size="small" effect="light">
-                  {{ row.dividendType === 'FINAL' ? '末期' : '中期' }}
+                <el-tag :type="typeTagMap[row.dividendType] || 'primary'" size="small" effect="light">
+                  {{ dictName(typeOpts, row.dividendType) }}
                 </el-tag>
               </template>
             </el-table-column>
           </template>
+          <!-- 实施状态彩色徽章：颜色根据 dict 配置显示 -->
           <template #status>
-            <el-table-column label="实施状态" minWidth="90px" align="center" slotName="status">
+            <el-table-column label="实施状态" minWidth="80px" align="center" slotName="status">
               <template #default="{ row }">
-                <span :class="['badge', row.status === 'IMPLEMENTED' ? 'badge-green' : row.status === 'APPROVED' ? 'badge-blue' : 'badge-yellow']">
-                  {{ { PROPOSED: '预案', APPROVED: '已批准', IMPLEMENTED: '已实施' }[row.status as string] || row.status }}
+                <span :class="['badge', statusClassMap[row.status] || 'badge-yellow']">
+                  {{ dictName(statusOpts, row.status) }}
                 </span>
               </template>
             </el-table-column>
@@ -47,59 +39,82 @@
         </div>
       </div>
     </el-card>
-    <DividendDialog v-model:visible="dialogVisible" v-model:isEdit="dialogIsEdit" v-model:form="dialogForm" @confirm="onDialogConfirm" />
+    <!-- 新增/编辑弹框 -->
+    <DividendFormDialog v-model:visible="dialogVisible" v-model:isEdit="dialogIsEdit" v-model:form="dialogForm" @confirm="onDialogConfirm" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { stockCandidates } from '../components/shared'
+import { StockDividendAPI } from '@/api/system/stockDividend'
 import { createDividendColumns } from '../components/columns'
-import DividendDialog from '../components/DividendDialog.vue'
+import { useDividendDict } from './components/useDividendDict'
+import DividendSearch from './components/DividendSearch.vue'
+import DividendFormDialog from './components/DividendFormDialog.vue'
 
-/* ========== 查询参数 ========== */
-const query = ref({ pageNum: 1, pageSize: 10, stockId: undefined, year: '' })
+const { typeOpts, statusOpts, load, dictName } = useDividendDict()
+
+const typeTagMap: Record<string, string> = { FINAL: 'primary', INTERIM: 'warning' }
+const statusClassMap: Record<string, string> = { IMPLEMENTED: 'badge-green', APPROVED: 'badge-blue', PROPOSED: 'badge-yellow' }
+
+load()
+
+/** 查询参数：后端分页 + 四个筛选条件 */
+const query = ref({ pageNum: 1, pageSize: 10, keyword: '', year: '', dividendType: '', status: '' })
 const loading = ref(false)
 const tableData = ref<any[]>([])
 const total = ref(0)
 
-/* 弹框状态 */
+/** 弹框状态 */
 const dialogVisible = ref(false)
 const dialogIsEdit = ref(false)
 const dialogForm = ref<any>({})
 
-/* 表格列配置 */
+/** 表格列配置（操作列回调绑定到当前页面逻辑） */
 const columns = createDividendColumns({
   onEdit(row) { dialogIsEdit.value = true; dialogForm.value = { ...row }; dialogVisible.value = true },
-  onDelete(row) { tableData.value = tableData.value.filter((r: any) => r.id !== row.id); total.value--; ElMessage.success('删除成功') },
+  async onDelete(row) {
+    await StockDividendAPI.delete(row.id)
+    ElMessage.success('删除成功')
+    handleQuery()
+  },
 })
 
 function openDialog() { dialogVisible.value = true }
 
-function onDialogConfirm(_form: any, isEdit: boolean) {
+/** 弹框确认回调：编辑调用 update，新增调用 insert */
+async function onDialogConfirm(form: any, isEdit: boolean) {
+  const api = isEdit ? StockDividendAPI.update : StockDividendAPI.insert
+  await api(form)
   ElMessage.success(isEdit ? '更新成功' : '新增成功')
   dialogVisible.value = false
   handleQuery()
 }
 
-function handleQuery() {
+/** 查询：移除空字符串参数后调用分页接口 */
+const handleQuery = async () => {
   loading.value = true
-  setTimeout(() => {
-    const data = [
-      { id: 1, stockName: '工商银行', year: '2025', dividendType: 'FINAL', cashPerShare: 0.3200, planText: '10派3.2元', announcementDate: '2026-03-28', exDividendDate: '2026-04-15', status: 'IMPLEMENTED', createdAt: '2026-01-15 10:00:00' },
-      { id: 2, stockName: '招商银行', year: '2025', dividendType: 'FINAL', cashPerShare: 1.9500, planText: '10派19.5元', announcementDate: '2026-03-25', exDividendDate: '2026-04-20', status: 'APPROVED', createdAt: '2026-01-20 14:30:00' },
-      { id: 3, stockName: '中国神华', year: '2025', dividendType: 'FINAL', cashPerShare: 2.5500, planText: '10派25.5元', announcementDate: '2026-03-30', exDividendDate: '2026-04-22', status: 'PROPOSED', createdAt: '2026-02-01 09:00:00' },
-      { id: 4, stockName: '海螺水泥', year: '2025', dividendType: 'FINAL', cashPerShare: 1.2000, planText: '10派12元', announcementDate: '2026-03-20', exDividendDate: '2026-04-10', status: 'IMPLEMENTED', createdAt: '2026-01-10 11:00:00' },
-      { id: 5, stockName: '中国石油', year: '2025', dividendType: 'INTERIM', cashPerShare: 0.2200, planText: '10派2.2元', announcementDate: '2025-09-15', exDividendDate: '2025-10-08', status: 'IMPLEMENTED', createdAt: '2025-09-16 08:00:00' },
-    ]
-    tableData.value = data
-    total.value = data.length
-    loading.value = false
-  }, 200)
+  try {
+    const params = { ...query.value }
+    if (!params.year) delete (params as any).year
+    if (!params.dividendType) delete (params as any).dividendType
+    if (!params.status) delete (params as any).status
+    if (!params.keyword) delete (params as any).keyword
+    const res = await StockDividendAPI.list(params as any)
+    tableData.value = res.list
+    total.value = res.total
+  } catch {
+    tableData.value = []
+    total.value = 0
+  } finally { loading.value = false }
 }
 
-const handleReset = () => { query.value = { pageNum: 1, pageSize: 10, stockId: undefined, year: '' } as any; handleQuery() }
+/** 重置查询条件并重新加载 */
+const handleReset = () => {
+  query.value = { pageNum: 1, pageSize: 10, keyword: '', year: '', dividendType: '', status: '' }
+  handleQuery()
+}
 
-onMounted(() => { handleQuery() })
+onMounted(() => handleQuery())
 </script>
 
 <style lang="scss" scoped>
@@ -108,17 +123,13 @@ onMounted(() => { handleQuery() })
   padding: 10px; background: #f5f7fa; box-sizing: border-box;
 }
 .table-toolbar { display: flex; justify-content: space-between; align-items: center; }
-
 :deep(.badge) {
   display: inline-block; padding: 0 8px; border-radius: 10px; font-size: 12px; line-height: 22px; font-weight: 500;
 }
 :deep(.badge-green) { background: #e1f3d8; color: #67c23a; }
 :deep(.badge-blue) { background: #ecf5ff; color: #409eff; }
 :deep(.badge-yellow) { background: #fdf6ec; color: #e6a23c; }
-.el-card-main ::v-deep(.el-card__body){
-  height: calc(100% - 40px);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.el-card-main ::v-deep(.el-card__body) {
+  height: calc(100% - 40px); display: flex; flex-direction: column; gap: 10px;
 }
 </style>
