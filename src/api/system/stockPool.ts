@@ -173,6 +173,74 @@ export interface CashFlowStatement {
   createTime?: string
 }
 
+/* ==================== 东方财富行情接口 ==================== */
+
+/** 历史K线数据 */
+export interface StockHistoryData {
+  tradeDate: string
+  openPrice: number
+  closePrice: number
+  highPrice: number
+  lowPrice: number
+  volume: number
+  turnover: number
+  amplitude: number
+}
+
+/** 实时行情 */
+export interface RealtimeQuote {
+  openPrice: number
+  closePrice: number
+  highPrice: number
+  lowPrice: number
+  currentPrice: number
+  previousClose: number
+  volume: number
+  turnover: number
+  changePct: number
+  amplitude: number
+}
+
+/** 龙虎榜条目 */
+export interface BillboardItem {
+  tradeDate: string
+  stockCode: string
+  stockName: string
+  buyAmount: number
+  sellAmount: number
+  netAmount: number
+  reason: string
+}
+
+export const EastMoneyAPI = {
+  /** 获取历史K线数据（格式：code, start=yyyMMdd, end=yyyyMMdd） */
+  history(code: string, start?: string, end?: string) {
+    return request<any, StockHistoryData[]>({
+      url: '/api/eastmoney/history',
+      method: 'get',
+      params: { code, start, end },
+    })
+  },
+
+  /** 获取实时行情 */
+  realtime(code: string) {
+    return request<any, RealtimeQuote>({
+      url: '/api/eastmoney/realtime',
+      method: 'get',
+      params: { code },
+    })
+  },
+
+  /** 获取龙虎榜详情（date 格式 yyyy-MM-dd） */
+  billboard(code: string, date?: string) {
+    return request<any, BillboardItem[]>({
+      url: '/api/eastmoney/billboard',
+      method: 'get',
+      params: { code, date },
+    })
+  },
+}
+
 export const FinancialAPI = {
   /** 查询资产负债表 */
   balanceSheet(stockId: number) {
