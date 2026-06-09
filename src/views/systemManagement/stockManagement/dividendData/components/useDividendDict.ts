@@ -1,5 +1,4 @@
 import { getDictByType } from '@/api/system/dict'
-import type { Ref } from 'vue'
 
 interface DictItem {
   dictCode: string
@@ -37,8 +36,8 @@ export function useDividendDict() {
     statusOpts.value = statuses
   }
 
-  function dictName(opts: Ref<DictItem[]>, code: string): string {
-    return opts.value.find(o => o.dictCode === code)?.dictName || code
+  function dictName(opts: DictItem[], code: string): string {
+    return opts.find(o => o.dictCode === code)?.dictName || code
   }
 
   return { typeOpts, statusOpts, load, dictName }

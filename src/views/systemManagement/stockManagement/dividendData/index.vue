@@ -15,9 +15,9 @@
         <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true">
           <!-- 分红类型 el-tag：颜色从 dict tagType 映射读取，无映射则默认 primary -->
           <template #dividendType>
-            <el-table-column label="分红类型" minWidth="90px" align="center" slotName="dividendType">
+            <el-table-column label="分红类型" minWidth="120px" align="center" slotName="dividendType">
               <template #default="{ row }">
-                <el-tag :type="typeTagMap[row.dividendType] || 'primary'" size="small" effect="light">
+                <el-tag :type="typeTagMap[row.dividendType] as any || 'primary'" size="small" effect="light">
                   {{ dictName(typeOpts, row.dividendType) }}
                 </el-tag>
               </template>
@@ -25,7 +25,7 @@
           </template>
           <!-- 实施状态彩色徽章：颜色根据 dict 配置显示 -->
           <template #status>
-            <el-table-column label="实施状态" minWidth="80px" align="center" slotName="status">
+            <el-table-column label="实施状态" minWidth="130px" align="center" slotName="status">
               <template #default="{ row }">
                 <span :class="['badge', statusClassMap[row.status] || 'badge-yellow']">
                   {{ dictName(statusOpts, row.status) }}
@@ -71,11 +71,19 @@ const dialogForm = ref<any>({})
 
 /** 表格列配置（操作列回调绑定到当前页面逻辑） */
 const columns = createDividendColumns({
-  onEdit(row) { dialogIsEdit.value = true; dialogForm.value = { ...row }; dialogVisible.value = true },
+  onEdit(row) {
+    dialogIsEdit.value = true;
+    console.log('--row--',row);
+    dialogForm.value = {
+      ...row ,
+      year: String(row.year)
+    };
+    dialogVisible.value = true
+  },
   async onDelete(row) {
     await StockDividendAPI.delete(row.id)
     ElMessage.success('删除成功')
-    handleQuery()
+    await handleQuery()
   },
 })
 
@@ -87,7 +95,7 @@ async function onDialogConfirm(form: any, isEdit: boolean) {
   await api(form)
   ElMessage.success(isEdit ? '更新成功' : '新增成功')
   dialogVisible.value = false
-  handleQuery()
+  await handleQuery()
 }
 
 /** 查询：移除空字符串参数后调用分页接口 */

@@ -76,10 +76,18 @@ import { useDividendDict } from './useDividendDict'
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
 const form = defineModel<any>('form', { default: () => ({
-  stockCode: '', year: '', dividendType: 'FINAL', cashPerShare: 0,
-  bonusSharesPer10: 0, transferSharesPer10: 0,
-  planText: '', announcementDate: '', exDividendDate: '', status: 'PROPOSED',
-}) })
+    stockCode: '',
+    year: '',
+    dividendType: 'FINAL',
+    cashPerShare: 0,
+    bonusSharesPer10: 0,
+    transferSharesPer10: 0,
+    planText: '',
+    announcementDate: '',
+    exDividendDate: '',
+    status: 'PROPOSED',
+  })
+})
 
 const emit = defineEmits<{ confirm: [formData: any, isEdit: boolean] }>()
 
@@ -87,7 +95,7 @@ const { typeOpts, statusOpts, load } = useDividendDict()
 const stockList = ref<any[]>([])
 
 onMounted(async () => {
-  load()
+  await load()
   const stocks = await StockInfoAPI.list().catch(() => [])
   stockList.value = Array.isArray(stocks) ? stocks : []
 })
@@ -102,7 +110,18 @@ const formRef = ref<any>(null)
 const submitting = ref(false)
 
 function onClosed() {
-  form.value = { stockCode: '', year: '', dividendType: 'FINAL', cashPerShare: 0, bonusSharesPer10: 0, transferSharesPer10: 0, planText: '', announcementDate: '', exDividendDate: '', status: 'PROPOSED' }
+  form.value = {
+    stockCode: '',
+    year: '',
+    dividendType: 'FINAL',
+    cashPerShare: 0,
+    bonusSharesPer10: 0,
+    transferSharesPer10: 0,
+    planText: '',
+    announcementDate: '',
+    exDividendDate: '',
+    status: 'PROPOSED'
+  }
   isEdit.value = false
   formRef.value?.resetFields()
 }
