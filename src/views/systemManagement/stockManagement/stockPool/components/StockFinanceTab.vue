@@ -1,6 +1,5 @@
 <template>
   <el-card shadow="never" class="finance-card">
-    <template #header><span class="card-title">三大财务报表</span></template>
     <el-tabs v-model="activeTab" @tab-change="onTabChange">
       <el-tab-pane label="资产负债表" name="balance" lazy>
         <el-row :gutter="16">
@@ -56,6 +55,5 @@ const cashflowChartOpts = computed(() => buildCashflowChartOption(props.data.cas
 </script>
 
 <style lang="scss" scoped>
-.card-title { font-size: 15px; font-weight: 600; color: #303133; }
 .finance-card { border-radius: 8px; }
 </style>

@@ -1,17 +1,22 @@
 <template>
-  <div class="detail-container">
-    <PageHeader title="股票详情" backText="返回" @cancel="goBack" />
+  <!-- 股票详情页：基本信息 / 分红 / K 线 / 财务 四个 Tab -->
+  <div class="detail-container flex flex-col">
+    <PageHeader :title="stockName" :edit="false" backText="返回" @cancel="goBack" />
 
-    <el-tabs v-model="activeTab" class="detail-tabs">
+    <el-tabs v-model="activeTab" class="detail-tabs flex-1">
+      <!-- 标的概况 + 交易参数 -->
       <el-tab-pane label="基本信息" name="info" lazy>
         <StockInfoTab :info="stockInfo" />
       </el-tab-pane>
+      <!-- 历年分红走势图 + 分红明细表 -->
       <el-tab-pane label="分红" name="dividend" lazy>
         <StockDividendTab :stockCode="stockInfo.stockCode" />
       </el-tab-pane>
+      <!-- K 线图 + 日期筛选 + 行情概要 -->
       <el-tab-pane label="历史行情" name="price" lazy>
         <StockChartTab :stockCode="stockInfo.stockCode" />
       </el-tab-pane>
+      <!-- 三大财务报表：资产负债表 / 利润表 / 现金流量表 -->
       <el-tab-pane label="财务数据" name="finance" lazy>
         <StockFinanceTab :data="financeData" />
       </el-tab-pane>
@@ -20,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { StockInfoAPI, MarketDataAPI, FinancialAPI } from '@/api/system/stockPool'
+import { InstrumentAPI } from '@/api/system/instrument'
 import { generateMockFinance } from './components/detailShared'
 import StockInfoTab from './components/StockInfoTab.vue'
 import StockChartTab from './components/StockChartTab.vue'
@@ -29,34 +34,30 @@ import StockFinanceTab from './components/StockFinanceTab.vue'
 
 const router = useRouter()
 const route = useRoute()
-const stockId = Number(route.query.stockId)
-
+/** 从路由查询参数取股票 ID（对应 stock_pool 表主键） */
+const stockCode = route.query?.stockCode || '000001'
+const stockName = computed(()=>(route.query?.stockName || '--'))
 function goBack() { router.back() }
 
+/** 当前激活的 tab 名称 */
 const activeTab = ref('info')
+/** 标的详情（InstrumentDto），合并后挂载 stockCode 供子组件使用 */
 const stockInfo = ref<any>({})
+/** 三大财务报表原始数据 */
 const financeData = ref<{ balance: any[]; income: any[]; cashflow: any[] }>({ balance: [], income: [], cashflow: [] })
 
 onMounted(async () => {
-  if (!stockId) return
+  if (!stockCode) return
   try {
-    const [info, market] = await Promise.all([
-      StockInfoAPI.detail(stockId),
-      MarketDataAPI.latest(stockId).catch(() => null),
+    const [instruments] = await Promise.all([
+      InstrumentAPI.getByCode(stockCode as string).catch(() => null),
     ])
-    stockInfo.value = { ...info, ...market }
+    const inst = Array.isArray(instruments) && instruments.length ? instruments[0] : null
+    stockInfo.value = { ...inst, stockCode: inst?.code }
 
-    const [bal, inc, cf] = await Promise.all([
-      FinancialAPI.balanceSheet(stockId).catch(() => [] as any),
-      FinancialAPI.incomeStatement(stockId).catch(() => [] as any),
-      FinancialAPI.cashFlow(stockId).catch(() => [] as any),
-    ])
-    if (bal?.length) financeData.value.balance = bal
-    if (inc?.length) financeData.value.income = inc
-    if (cf?.length) financeData.value.cashflow = cf
-    if (!bal?.length && !inc?.length && !cf?.length) {
-      financeData.value = generateMockFinance(stockId)
-    }
+    //虚拟数据
+    financeData.value = generateMockFinance(stockCode as string)
+
   } catch { /* 静默降级 */ }
 })
 </script>

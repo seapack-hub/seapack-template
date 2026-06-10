@@ -38,7 +38,7 @@ export function generateMockPrice() {
 }
 
 /** 生成近 5 年三大财务报表的模拟数据，返回 { balance, income, cashflow } */
-export function generateMockFinance(stockId: number) {
+export function generateMockFinance(stockId: string) {
   const years = ['2023-12-31', '2022-12-31', '2021-12-31', '2020-12-31', '2019-12-31']
   return {
     balance: years.map(d => ({
@@ -119,7 +119,6 @@ export function buildKLineChartOption(data: any[]): EChartsOption {
   // candlestick 需要 [open, close, low, high] 顺序
   const ohlc = data.map(d => [d.open, d.close, d.low, d.high])
   const volumes = data.map(d => d.volume)
-  const amounts = data.map(d => d.amount)
 
   const UP_RED = '#ef232a'
   const DOWN_GREEN = '#14b143'
@@ -202,7 +201,7 @@ export function buildKLineChartOption(data: any[]): EChartsOption {
           formatter: (v: number) => {
             if (v >= 1e8) return (v / 1e8).toFixed(0) + '亿'
             if (v >= 1e4) return (v / 1e4).toFixed(0) + '万'
-            return v
+            return v.toString()
           },
         },
         max: maxVol * 4,
@@ -287,35 +286,35 @@ export function buildCashflowChartOption(data: any[]): EChartsOption {
 
 /** 资产负债表列：报告期 + 资产/负债/权益类 10 列 */
 export const balanceColumns = [
-  { label: '报告期', prop: 'reportDate', width: 120 },
-  { label: '总资产', prop: 'totalAssets', width: 140, formatter: fmtMoney },
-  { label: '总负债', prop: 'totalLiabilities', width: 140, formatter: fmtMoney },
-  { label: '净资产', prop: 'totalEquity', width: 140, formatter: fmtMoney },
-  { label: '流动资产', prop: 'currentAssets', width: 140, formatter: fmtMoney },
-  { label: '非流动资产', prop: 'nonCurrentAssets', width: 140, formatter: fmtMoney },
-  { label: '流动负债', prop: 'currentLiabilities', width: 140, formatter: fmtMoney },
-  { label: '应收账款', prop: 'accountsReceivable', width: 140, formatter: fmtMoney },
-  { label: '存货', prop: 'inventory', width: 140, formatter: fmtMoney },
-  { label: '货币资金', prop: 'cashAndEquivalents', width: 140, formatter: fmtMoney },
+  { label: '报告期', prop: 'reportDate', minWidth: 120 },
+  { label: '总资产', prop: 'totalAssets', minWidth: 140, formatter: fmtMoney },
+  { label: '总负债', prop: 'totalLiabilities', minWidth: 140, formatter: fmtMoney },
+  { label: '净资产', prop: 'totalEquity', minWidth: 140, formatter: fmtMoney },
+  { label: '流动资产', prop: 'currentAssets', minWidth: 140, formatter: fmtMoney },
+  { label: '非流动资产', prop: 'nonCurrentAssets', minWidth: 140, formatter: fmtMoney },
+  { label: '流动负债', prop: 'currentLiabilities', minWidth: 140, formatter: fmtMoney },
+  { label: '应收账款', prop: 'accountsReceivable', minWidth: 140, formatter: fmtMoney },
+  { label: '存货', prop: 'inventory', minWidth: 140, formatter: fmtMoney },
+  { label: '货币资金', prop: 'cashAndEquivalents', minWidth: 140, formatter: fmtMoney },
 ]
 
 /** 利润表列：报告期 + 收入/成本/利润类 8 列 */
 export const incomeColumns = [
-  { label: '报告期', prop: 'reportDate', width: 120 },
-  { label: '营业收入', prop: 'revenue', width: 140, formatter: fmtMoney },
-  { label: '营业成本', prop: 'costOfSales', width: 140, formatter: fmtMoney },
-  { label: '毛利', prop: 'grossProfit', width: 140, formatter: fmtMoney },
-  { label: '营业费用', prop: 'operatingExpenses', width: 140, formatter: fmtMoney },
-  { label: '营业利润', prop: 'operatingProfit', width: 140, formatter: fmtMoney },
-  { label: '净利润', prop: 'netProfit', width: 140, formatter: fmtMoney },
-  { label: '每股收益', prop: 'eps', width: 110, align: 'right', formatter: epsFormatter },
+  { label: '报告期', prop: 'reportDate', minWidth: 120 },
+  { label: '营业收入', prop: 'revenue', minWidth: 140, formatter: fmtMoney },
+  { label: '营业成本', prop: 'costOfSales', minWidth: 140, formatter: fmtMoney },
+  { label: '毛利', prop: 'grossProfit', minWidth: 140, formatter: fmtMoney },
+  { label: '营业费用', prop: 'operatingExpenses', minWidth: 140, formatter: fmtMoney },
+  { label: '营业利润', prop: 'operatingProfit', minWidth: 140, formatter: fmtMoney },
+  { label: '净利润', prop: 'netProfit', minWidth: 140, formatter: fmtMoney },
+  { label: '每股收益', prop: 'eps', minWidth: 110, align: 'right', formatter: epsFormatter },
 ]
 
 /** 现金流量表列：报告期 + 三大现金流 + 自由现金流 5 列 */
 export const cashflowColumns = [
-  { label: '报告期', prop: 'reportDate', width: 120 },
-  { label: '经营活动现金流', prop: 'operatingCashFlow', width: 160, formatter: fmtMoney },
-  { label: '投资活动现金流', prop: 'investingCashFlow', width: 160, formatter: fmtMoney },
-  { label: '筹资活动现金流', prop: 'financingCashFlow', width: 160, formatter: fmtMoney },
-  { label: '自由现金流', prop: 'freeCashFlow', width: 160, formatter: fmtMoney },
+  { label: '报告期', prop: 'reportDate', minWidth: 120 },
+  { label: '经营活动现金流', prop: 'operatingCashFlow', minWidth: 160, formatter: fmtMoney },
+  { label: '投资活动现金流', prop: 'investingCashFlow', minWidth: 160, formatter: fmtMoney },
+  { label: '筹资活动现金流', prop: 'financingCashFlow', minWidth: 160, formatter: fmtMoney },
+  { label: '自由现金流', prop: 'freeCashFlow', minWidth: 160, formatter: fmtMoney },
 ]

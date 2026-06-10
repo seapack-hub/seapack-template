@@ -98,7 +98,15 @@ const total = ref(0)
 const router = useRouter()
 
 const columns = createStockPoolColumns({
-  onDetail(row) { router.push({ path: '/stockPool/detail', query: { stockId: row.stockId } }) },
+  onDetail(row) {
+    router.push({
+      path: '/stockPool/detail',
+      query: {
+        stockName: row.stockName,
+        stockCode: row.stockCode
+      }
+    })
+  },
   onEdit(row) { formData.value = { ...row }; formIsEdit.value = true; formVisible.value = true },
   async onDelete(row) { await StockInfoAPI.delete(row.stockId); ElMessage.success('删除成功'); handleQuery() },
 })

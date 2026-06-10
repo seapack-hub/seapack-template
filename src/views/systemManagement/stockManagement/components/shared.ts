@@ -52,6 +52,26 @@ export const dividendStatusOptions = [
   { label: '已实施', value: 'IMPLEMENTED' },
 ]
 
+/** 分红类型 → Element Plus tag 类型映射 */
+export const dividendTypeTagMap: Record<string, string> = { FINAL: 'primary', INTERIM: 'warning' }
+
+/** 实施状态 → 徽章 class 映射 */
+export const dividendStatusClassMap: Record<string, string> = {
+  IMPLEMENTED: 'badge-green', APPROVED: 'badge-blue', PROPOSED: 'badge-yellow',
+}
+
+/** 实施状态中文（短格式，适合表格） */
+export const statusShortFmt = (_r: any, _c: any, v: string) =>
+  ({ PROPOSED: '预案', APPROVED: '已批', IMPLEMENTED: '实施' }[v] || v)
+
+/** 每10股送转文本格式化 */
+export const sharesFmt = (bonus?: number, transfer?: number) => {
+  const parts: string[] = []
+  if (bonus) parts.push(`送${bonus}`)
+  if (transfer) parts.push(`转${transfer}`)
+  return parts.join('') || '-'
+}
+
 /** 通知渠道下拉选项 */
 export const channelOptions = [
   { label: '邮件', value: 'EMAIL' },

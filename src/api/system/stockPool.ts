@@ -116,16 +116,6 @@ export const MarketDataAPI = {
   },
 }
 
-export const DividendAPI = {
-  /** 统计全市场平均股息率 */
-  averageDividendYield() {
-    return request<any, Record<string, any>[]>({
-      url: `${BASE_URL}/dividend/average`,
-      method: 'get',
-    })
-  },
-}
-
 // ==================== 三大财务报表 ====================
 
 /** 资产负债表 */
@@ -173,117 +163,21 @@ export interface CashFlowStatement {
   createTime?: string
 }
 
-/* ==================== 东方财富行情接口 ==================== */
-
-/** 历史K线数据 */
-export interface StockHistoryData {
-  tradeDate: string
-  openPrice: number
-  closePrice: number
-  highPrice: number
-  lowPrice: number
-  volume: number
-  turnover: number
-  amplitude: number
-}
-
-/** 实时行情 */
-export interface RealtimeQuote {
-  openPrice: number
-  closePrice: number
-  highPrice: number
-  lowPrice: number
-  currentPrice: number
-  previousClose: number
-  volume: number
-  turnover: number
-  changePct: number
-  amplitude: number
-}
-
-/** 龙虎榜条目 */
-export interface BillboardItem {
-  tradeDate: string
-  stockCode: string
-  stockName: string
-  buyAmount: number
-  sellAmount: number
-  netAmount: number
-  reason: string
-}
-
-export const EastMoneyAPI = {
-  /** 获取历史K线数据（格式：code, start=yyyMMdd, end=yyyyMMdd） */
-  history(code: string, start?: string, end?: string) {
-    return request<any, StockHistoryData[]>({
-      url: '/api/eastmoney/history',
-      method: 'get',
-      params: { code, start, end },
-    })
-  },
-
-  /** 获取实时行情 */
-  realtime(code: string) {
-    return request<any, RealtimeQuote>({
-      url: '/api/eastmoney/realtime',
-      method: 'get',
-      params: { code },
-    })
-  },
-
-  /** 获取龙虎榜详情（date 格式 yyyy-MM-dd） */
-  billboard(code: string, date?: string) {
-    return request<any, BillboardItem[]>({
-      url: '/api/eastmoney/billboard',
-      method: 'get',
-      params: { code, date },
-    })
-  },
-}
-
-/* ==================== 股票日 K 线接口（StockDailyController） ==================== */
-
-/** 日 K 线数据 DTO，字段与 TickFlow klines.get 一致 */
-export interface StockDailyKlineDto {
-  symbol: string
-  name: string
-  timestamp: number
-  tradeDate: string
-  tradeTime: string
-  open: number
-  high: number
-  low: number
-  close: number
-  volume: number
-  amount: number
-}
-
-export const StockDailyAPI = {
-  /** 查询股票日 K 线，stockCode 为 6 位纯数字，日期格式 yyyy-MM-dd，不传日期默认最近 3 个月 */
-  klines(stockCode: string, startDate?: string, endDate?: string) {
-    return request<any, StockDailyKlineDto[]>({
-      url: '/api/stockDaily/klines',
-      method: 'get',
-      params: { stockCode, startDate, endDate },
-    })
-  },
-}
-
 export const FinancialAPI = {
   /** 查询资产负债表 */
-  balanceSheet(stockId: number) {
+  balanceSheet(stockId: string) {
     return request<any, BalanceSheet[]>({
       url: `${BASE_URL}/finance/balance/${stockId}`, method: 'get',
     })
   },
   /** 查询利润表 */
-  incomeStatement(stockId: number) {
+  incomeStatement(stockId: string) {
     return request<any, IncomeStatement[]>({
       url: `${BASE_URL}/finance/income/${stockId}`, method: 'get',
     })
   },
   /** 查询现金流量表 */
-  cashFlow(stockId: number) {
+  cashFlow(stockId: string) {
     return request<any, CashFlowStatement[]>({
       url: `${BASE_URL}/finance/cashflow/${stockId}`, method: 'get',
     })

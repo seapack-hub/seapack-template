@@ -38,7 +38,7 @@ export function createStockPoolColumns(handlers: ColumnHandlers) {
     { label: '创建时间', prop: 'createdAt', minWidth: '170px' },
     /* 操作列：详情 + 编辑 + 删除 */
     {
-      columnType: 'operate', label: '操作', width: '190px', fixed: 'right',
+      columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
       buttons: [
         { type: 'primary', label: '详情', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onDetail?.(row) },
         { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
@@ -95,6 +95,19 @@ export function createAlertRuleColumns(handlers: ColumnHandlers) {
         { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该规则吗？' }, click: ({ row }: any) => handlers.onDelete?.(row) },
       ],
     },
+  ]
+}
+
+/** 分红明细表格列（股票详情页用，只读，不分页） */
+export function createDividendDetailColumns() {
+  return [
+    { label: '年度', prop: 'year', minWidth: '60px', align: 'center' },
+    { label: '分红类型', prop: 'dividendType', minWidth: '90px', align: 'center', slotName: 'dividendType' },
+    { label: '每股派息(元)', prop: 'cashPerShare', minWidth: '120px', align: 'right' },
+    { label: '送转', prop: 'sharesText', minWidth: '90px', align: 'center' },
+    { label: '状态', prop: 'status', minWidth: '80px', align: 'center', slotName: 'status' },
+    { label: '除权除息日', prop: 'exDividendDate', minWidth: '110px', align: 'center' },
+    { label: '公告日期', prop: 'announcementDate', minWidth: '110px', align: 'center' },
   ]
 }
 
