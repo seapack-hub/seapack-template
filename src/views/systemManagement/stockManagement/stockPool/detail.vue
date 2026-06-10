@@ -64,8 +64,12 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .detail-container {
-  height: 100%; width: 100%;
-  padding: 16px; background: #f5f7fa; box-sizing: border-box; overflow-y: auto;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  background: #f5f7fa;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 .detail-tabs {
   background: #fff; border-radius: 8px; padding: 0 16px 16px;

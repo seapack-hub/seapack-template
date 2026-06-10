@@ -110,7 +110,7 @@ onMounted(() => { handleQuery() })
 }
 .page-container {
   height: 100%; width: 100%; display: flex; flex-direction: column; gap: 10px;
-  padding: 10px; background: #f5f7fa; box-sizing: border-box;
+  background: #f5f7fa; box-sizing: border-box;
 }
 .table-toolbar { display: flex; justify-content: space-between; align-items: center; }
 

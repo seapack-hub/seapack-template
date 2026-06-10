@@ -240,7 +240,7 @@ export function buildBalanceChartOption(data: any[]): EChartsOption {
   const years = data.map(d => d.reportDate?.slice(0, 4) || '')
   return {
     tooltip: { trigger: 'axis' },
-    grid: { left: '10%', right: '6%', bottom: '15%', top: '10%' },
+    grid: { left: '2%', right: '2%', bottom: '18%', top: '12%' },
     xAxis: { type: 'category', data: years, axisLabel: { rotate: 30 } },
     yAxis: { type: 'value', name: '金额' },
     series: [
@@ -256,7 +256,7 @@ export function buildIncomeChartOption(data: any[]): EChartsOption {
   const years = data.map(d => d.reportDate?.slice(0, 4) || '')
   return {
     tooltip: { trigger: 'axis' },
-    grid: { left: '10%', right: '6%', bottom: '15%', top: '10%' },
+    grid: { left: '2%', right: '2%', bottom: '18%', top: '12%' },
     xAxis: { type: 'category', data: years, axisLabel: { rotate: 30 } },
     yAxis: { type: 'value', name: '金额' },
     series: [
@@ -271,7 +271,7 @@ export function buildCashflowChartOption(data: any[]): EChartsOption {
   const years = data.map(d => d.reportDate?.slice(0, 4) || '')
   return {
     tooltip: { trigger: 'axis' },
-    grid: { left: '10%', right: '6%', bottom: '15%', top: '10%' },
+    grid: { left: '2%', right: '2%', bottom: '18%', top: '12%' },
     xAxis: { type: 'category', data: years, axisLabel: { rotate: 30 } },
     yAxis: { type: 'value', name: '金额' },
     series: [

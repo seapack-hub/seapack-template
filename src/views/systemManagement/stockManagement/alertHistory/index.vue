@@ -70,7 +70,7 @@ onMounted(() => { handleQuery() })
 <style lang="scss" scoped>
 .page-container {
   height: 100%; width: 100%; display: flex; flex-direction: column; gap: 10px;
-  padding: 10px; background: #f5f7fa; box-sizing: border-box;
+  background: #f5f7fa; box-sizing: border-box;
 }
 .el-card-main ::v-deep(.el-card__body){
   height: calc(100% - 40px);

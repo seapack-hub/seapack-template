@@ -205,8 +205,13 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 .page-container {
-  height: 100%; width: 100%; display: flex; flex-direction: column; gap: 10px;
-  padding: 10px; background: #f5f7fa; box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #f5f7fa;
+  box-sizing: border-box;
 }
 .tree-panel {
   border-radius: 8px;

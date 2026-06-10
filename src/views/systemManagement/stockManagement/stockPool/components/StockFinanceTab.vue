@@ -2,34 +2,28 @@
   <el-card shadow="never" class="finance-card">
     <el-tabs v-model="activeTab" @tab-change="onTabChange">
       <el-tab-pane label="资产负债表" name="balance" lazy>
-        <el-row :gutter="16">
-          <el-col :span="14">
+        <div class="tab-content">
+          <baseCharts :options="balanceChartOpts" height="300px" />
+          <div class="table-wrap">
             <SpTable :key="`bal-${k}`" :columns="balanceColumns" :data="data.balance" :show-empty="false" />
-          </el-col>
-          <el-col :span="10">
-            <baseCharts :options="balanceChartOpts" height="320px" />
-          </el-col>
-        </el-row>
+          </div>
+        </div>
       </el-tab-pane>
       <el-tab-pane label="利润表" name="income" lazy>
-        <el-row :gutter="16">
-          <el-col :span="14">
+        <div class="tab-content">
+          <baseCharts :options="incomeChartOpts" height="300px" />
+          <div class="table-wrap">
             <SpTable :key="`inc-${k}`" :columns="incomeColumns" :data="data.income" :show-empty="false" />
-          </el-col>
-          <el-col :span="10">
-            <baseCharts :options="incomeChartOpts" height="320px" />
-          </el-col>
-        </el-row>
+          </div>
+        </div>
       </el-tab-pane>
       <el-tab-pane label="现金流量表" name="cashflow" lazy>
-        <el-row :gutter="16">
-          <el-col :span="14">
+        <div class="tab-content">
+          <baseCharts :options="cashflowChartOpts" height="300px" />
+          <div class="table-wrap">
             <SpTable :key="`cf-${k}`" :columns="cashflowColumns" :data="data.cashflow" :show-empty="false" />
-          </el-col>
-          <el-col :span="10">
-            <baseCharts :options="cashflowChartOpts" height="320px" />
-          </el-col>
-        </el-row>
+          </div>
+        </div>
       </el-tab-pane>
     </el-tabs>
   </el-card>
@@ -56,4 +50,8 @@ const cashflowChartOpts = computed(() => buildCashflowChartOption(props.data.cas
 
 <style lang="scss" scoped>
 .finance-card { border-radius: 8px; }
+.tab-content {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.table-wrap { max-height: 360px; overflow-y: auto; }
 </style>
