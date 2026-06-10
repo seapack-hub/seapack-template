@@ -81,30 +81,28 @@ export function epsFormatter(_: any, __: any, v: any) {
 
 /* ========== ECharts 图表配置构建 ========== */
 
-/** 历年分红折线图，x 轴为年份，y 轴为每股股息，蓝色渐变面积 */
+/** 历年分红柱状图，x 轴为年份，y 轴为每股股息 */
 export function buildDividendChartOption(data: any[]): EChartsOption {
   if (!data?.length) {
     data = generateMockDividend()
   }
   const years = data.map(d => d.year || d.dataTime?.slice(0, 4))
-  const values = data.map(d => d.dividendPerShare ?? d.cashPerShare ?? 0)
+  const values = data.map(d => d.cashPerShare ?? d.dividendPerShare ?? 0)
   return {
     tooltip: { trigger: 'axis', valueFormatter: (v: any) => `${v} 元` },
-    grid: { left: '8%', right: '6%', bottom: '15%', top: '10%' },
+    grid: { left: '6%', right: '4%', bottom: '15%', top: '8%' },
     xAxis: { type: 'category', data: years, axisLabel: { rotate: 30 } },
     yAxis: { type: 'value', name: '每股股息(元)' },
     series: [{
-      type: 'line',
+      type: 'bar',
       data: values,
-      smooth: true,
-      symbol: 'circle',
-      symbolSize: 6,
-      lineStyle: { color: '#409EFF', width: 2 },
-      areaStyle: {
+      barWidth: '40%',
+      itemStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'rgba(64,158,255,0.35)' },
-          { offset: 1, color: 'rgba(64,158,255,0.02)' },
+          { offset: 0, color: '#ef232a' },
+          { offset: 1, color: 'rgba(239,35,42,0.25)' },
         ]),
+        borderRadius: [4, 4, 0, 0],
       },
     }],
   }
@@ -112,21 +110,22 @@ export function buildDividendChartOption(data: any[]): EChartsOption {
 
 /**
  * K 线图 + 成交量柱状图
- * data: StockHistoryData[] (tradeDate, openPrice, closePrice, highPrice, lowPrice, volume, turnover, amplitude)
+ * data: StockDailyKlineDto[] (tradeDate, open, close, low, high, volume, amount)
  */
 export function buildKLineChartOption(data: any[]): EChartsOption {
   if (!data?.length) return {}
 
   const dates = data.map(d => d.tradeDate)
   // candlestick 需要 [open, close, low, high] 顺序
-  const ohlc = data.map(d => [d.openPrice, d.closePrice, d.lowPrice, d.highPrice])
+  const ohlc = data.map(d => [d.open, d.close, d.low, d.high])
   const volumes = data.map(d => d.volume)
-  const turnovers = data.map(d => d.turnover)
-  const amplitudes = data.map(d => d.amplitude)
+  const amounts = data.map(d => d.amount)
 
-  // 成交量颜色：涨红跌绿
+  const UP_RED = '#ef232a'
+  const DOWN_GREEN = '#14b143'
+
   const volColors = data.map(d =>
-    d.closePrice >= d.openPrice ? '#f56c6c' : '#67c23a'
+    d.close >= d.open ? UP_RED : DOWN_GREEN
   )
 
   // 计算成交量最大值用于 Y 轴刻度
@@ -148,26 +147,25 @@ export function buildKLineChartOption(data: any[]): EChartsOption {
           : d.volume >= 1e4
             ? (d.volume / 1e4).toFixed(2) + ' 万'
             : d.volume
-        const turnover = d.turnover >= 1e8
-          ? (d.turnover / 1e8).toFixed(2) + ' 亿'
-          : d.turnover >= 1e4
-            ? (d.turnover / 1e4).toFixed(2) + ' 万'
-            : d.turnover
+        const amount = d.amount >= 1e8
+          ? (d.amount / 1e8).toFixed(2) + ' 亿'
+          : d.amount >= 1e4
+            ? (d.amount / 1e4).toFixed(2) + ' 万'
+            : d.amount
         return `
           <b>${d.tradeDate}</b><br/>
-          开盘: ${d.openPrice?.toFixed(2)} 元<br/>
-          收盘: ${d.closePrice?.toFixed(2)} 元<br/>
-          最高: ${d.highPrice?.toFixed(2)} 元<br/>
-          最低: ${d.lowPrice?.toFixed(2)} 元<br/>
+          开盘: ${d.open?.toFixed(2)} 元<br/>
+          收盘: ${d.close?.toFixed(2)} 元<br/>
+          最高: ${d.high?.toFixed(2)} 元<br/>
+          最低: ${d.low?.toFixed(2)} 元<br/>
           成交量: ${vol} 股<br/>
-          成交额: ${turnover} 元<br/>
-          振幅: ${d.amplitude?.toFixed(2)}%
+          成交额: ${amount} 元
         `
       },
     },
     grid: [
-      { left: '8%', right: '6%', top: '6%', height: '55%' },
-      { left: '8%', right: '6%', top: '72%', height: '18%' },
+      { left: '3%', right: '3%', top: '3%', height: '52%' },
+      { left: '3%', right: '3%', top: '72%', height: '22%' },
     ],
     xAxis: [
       {
@@ -218,10 +216,10 @@ export function buildKLineChartOption(data: any[]): EChartsOption {
         yAxisIndex: 0,
         data: ohlc,
         itemStyle: {
-          color: '#f56c6c',
-          color0: '#67c23a',
-          borderColor: '#f56c6c',
-          borderColor0: '#67c23a',
+          color: UP_RED,
+          color0: DOWN_GREEN,
+          borderColor: UP_RED,
+          borderColor0: DOWN_GREEN,
         },
       },
       {
@@ -229,6 +227,7 @@ export function buildKLineChartOption(data: any[]): EChartsOption {
         type: 'bar',
         xAxisIndex: 1,
         yAxisIndex: 1,
+        barWidth: '50%',
         data: volumes.map((v, i) => ({ value: v, itemStyle: { color: volColors[i] } })),
       },
     ],

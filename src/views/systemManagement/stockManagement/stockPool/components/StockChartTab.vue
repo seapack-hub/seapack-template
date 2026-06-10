@@ -1,15 +1,14 @@
 <template>
   <div class="chart-tab">
-    <!-- 时间筛选 -->
     <el-card shadow="never" class="filter-card">
       <el-form :inline="true" class="filter-form">
         <el-form-item label="开始日期">
-          <el-date-picker v-model="startDate" type="date" placeholder="选择开始日期" value-format="YYYYMMDD"
-            :disabled-date="d => d > endVal" />
+          <el-date-picker v-model="startDate" type="date" placeholder="选择开始日期" value-format="YYYY-MM-DD"
+            :disabled-date="d => endVal && d > endVal" />
         </el-form-item>
         <el-form-item label="结束日期">
-          <el-date-picker v-model="endDate" type="date" placeholder="选择结束日期" value-format="YYYYMMDD"
-            :disabled-date="d => d < startVal" />
+          <el-date-picker v-model="endDate" type="date" placeholder="选择结束日期" value-format="YYYY-MM-DD"
+            :disabled-date="d => startVal && d < startVal" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleQuery" :loading="loading">查询</el-button>
@@ -27,58 +26,25 @@
       </el-col>
     </el-row>
 
-    <el-row :gutter="16" class="chart-row">
-      <el-col :span="12">
-        <el-card shadow="never">
-          <template #header><span class="card-title">行情概要</span></template>
-          <div v-if="summary" class="summary-grid">
-            <div class="summary-item">
-              <span class="label">最新收盘</span>
-              <span class="value price">{{ summary.latestClose?.toFixed(2) }} 元</span>
-            </div>
-            <div class="summary-item">
-              <span class="label">区间最高</span>
-              <span class="value up">{{ summary.high?.toFixed(2) }} 元</span>
-            </div>
-            <div class="summary-item">
-              <span class="label">区间最低</span>
-              <span class="value down">{{ summary.low?.toFixed(2) }} 元</span>
-            </div>
-            <div class="summary-item">
-              <span class="label">总成交量</span>
-              <span class="value">{{ summary.totalVolume }}</span>
-            </div>
-            <div class="summary-item">
-              <span class="label">总成交额</span>
-              <span class="value">{{ summary.totalTurnover }} 元</span>
-            </div>
-            <div class="summary-item">
-              <span class="label">数据条数</span>
-              <span class="value">{{ summary.count }} 条</span>
-            </div>
-          </div>
-          <el-empty v-else description="暂无数据" />
-        </el-card>
-      </el-col>
-    </el-row>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { EastMoneyAPI } from '@/api/system/stockPool'
+import { StockDailyAPI } from '@/api/system/stockPool'
 import { buildKLineChartOption } from './detailShared'
 
-function todayStr() {
-  const d = new Date()
+function formatDate(d: Date): string {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
-  return `${y}${m}${day}`
+  return `${y}-${m}-${day}`
 }
 
-function parseYyyymmdd(s: string) {
-  if (!s || s.length !== 8) return undefined
-  return new Date(+s.slice(0, 4), +s.slice(4, 6) - 1, +s.slice(6, 8))
+function monthsAgo(n: number): Date {
+  const d = new Date()
+  d.setMonth(d.getMonth() - n)
+  return d
 }
 
 const props = defineProps<{
@@ -86,58 +52,41 @@ const props = defineProps<{
 }>()
 
 const loading = ref(false)
-const historyData = ref<any[]>([])
+const klineData = ref<any[]>([])
 
-const startDate = ref('20260101')
-const endDate = ref(todayStr())
+const now = new Date()
+const startDate = ref(formatDate(monthsAgo(3)))
+const endDate = ref(formatDate(now))
 
-const startVal = computed(() => parseYyyymmdd(startDate.value))
-const endVal = computed(() => parseYyyymmdd(endDate.value))
+const startVal = computed(() => startDate.value ? new Date(startDate.value) : undefined)
+const endVal = computed(() => endDate.value ? new Date(endDate.value) : undefined)
 
-const kLineOpts = computed(() => buildKLineChartOption(historyData.value))
+const kLineOpts = computed(() => buildKLineChartOption(klineData.value))
 
-const summary = computed(() => {
-  const d = historyData.value
-  if (!d?.length) return null
-  const closePrices = d.map(i => i.closePrice)
-  const vol = d.reduce((s, i) => s + (i.volume || 0), 0)
-  const turn = d.reduce((s, i) => s + (i.turnover || 0), 0)
-  const fmtVol = vol >= 1e8 ? (vol / 1e8).toFixed(2) + ' 亿' : vol >= 1e4 ? (vol / 1e4).toFixed(2) + ' 万' : vol
-  const fmtTurn = turn >= 1e8 ? (turn / 1e8).toFixed(2) + ' 亿' : turn >= 1e4 ? (turn / 1e4).toFixed(2) + ' 万' : turn
-  return {
-    latestClose: closePrices[closePrices.length - 1],
-    high: Math.max(...d.map(i => i.highPrice)),
-    low: Math.min(...d.map(i => i.lowPrice)),
-    totalVolume: fmtVol,
-    totalTurnover: fmtTurn,
-    count: d.length,
-  }
-})
-
-async function fetchHistory() {
+async function fetchKline() {
   if (!props.stockCode) return
   loading.value = true
   try {
-    const res = await EastMoneyAPI.history(props.stockCode, startDate.value, endDate.value)
-    historyData.value = res ?? []
+    const res = await StockDailyAPI.klines(props.stockCode, startDate.value, endDate.value)
+    klineData.value = res ?? []
   } catch {
-    historyData.value = []
+    klineData.value = []
   } finally {
     loading.value = false
   }
 }
 
 function handleQuery() {
-  fetchHistory()
+  fetchKline()
 }
 
 function handleReset() {
-  startDate.value = '20260101'
-  endDate.value = todayStr()
-  fetchHistory()
+  startDate.value = formatDate(monthsAgo(3))
+  endDate.value = formatDate(new Date())
+  fetchKline()
 }
 
-watch(() => props.stockCode, fetchHistory, { immediate: true })
+watch(() => props.stockCode, fetchKline, { immediate: true })
 </script>
 
 <style lang="scss" scoped>

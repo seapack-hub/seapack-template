@@ -7,9 +7,9 @@
         <StockInfoTab :info="stockInfo" />
       </el-tab-pane>
       <el-tab-pane label="分红" name="dividend" lazy>
-        <StockDividendTab :dividends="dividends" />
+        <StockDividendTab :stockCode="stockInfo.stockCode" />
       </el-tab-pane>
-      <el-tab-pane label="股价" name="price" lazy>
+      <el-tab-pane label="历史行情" name="price" lazy>
         <StockChartTab :stockCode="stockInfo.stockCode" />
       </el-tab-pane>
       <el-tab-pane label="财务数据" name="finance" lazy>
@@ -35,19 +35,16 @@ function goBack() { router.back() }
 
 const activeTab = ref('info')
 const stockInfo = ref<any>({})
-const dividends = ref<any[]>([])
 const financeData = ref<{ balance: any[]; income: any[]; cashflow: any[] }>({ balance: [], income: [], cashflow: [] })
 
 onMounted(async () => {
   if (!stockId) return
   try {
-    const [info, market, divs] = await Promise.all([
+    const [info, market] = await Promise.all([
       StockInfoAPI.detail(stockId),
       MarketDataAPI.latest(stockId).catch(() => null),
-      MarketDataAPI.history(stockId).catch(() => [] as any[]),
     ])
     stockInfo.value = { ...info, ...market }
-    dividends.value = divs?.length ? divs : []
 
     const [bal, inc, cf] = await Promise.all([
       FinancialAPI.balanceSheet(stockId).catch(() => [] as any),

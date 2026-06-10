@@ -241,6 +241,34 @@ export const EastMoneyAPI = {
   },
 }
 
+/* ==================== 股票日 K 线接口（StockDailyController） ==================== */
+
+/** 日 K 线数据 DTO，字段与 TickFlow klines.get 一致 */
+export interface StockDailyKlineDto {
+  symbol: string
+  name: string
+  timestamp: number
+  tradeDate: string
+  tradeTime: string
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
+  amount: number
+}
+
+export const StockDailyAPI = {
+  /** 查询股票日 K 线，stockCode 为 6 位纯数字，日期格式 yyyy-MM-dd，不传日期默认最近 3 个月 */
+  klines(stockCode: string, startDate?: string, endDate?: string) {
+    return request<any, StockDailyKlineDto[]>({
+      url: '/api/stockDaily/klines',
+      method: 'get',
+      params: { stockCode, startDate, endDate },
+    })
+  },
+}
+
 export const FinancialAPI = {
   /** 查询资产负债表 */
   balanceSheet(stockId: number) {
