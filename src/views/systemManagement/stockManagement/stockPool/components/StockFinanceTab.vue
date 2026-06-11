@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="never" class="finance-card">
+  <el-card shadow="never" class="finance-card" v-loading="loading" element-loading-text="加载中...">
     <el-tabs v-model="activeTab" @tab-change="onTabChange">
       <el-tab-pane label="资产负债表" name="balance" lazy>
         <div class="tab-content">
@@ -37,6 +37,7 @@ import {
 
 const props = defineProps<{
   data: { balance: any[]; income: any[]; cashflow: any[] }
+  loading?: boolean
 }>()
 
 const activeTab = ref('balance')

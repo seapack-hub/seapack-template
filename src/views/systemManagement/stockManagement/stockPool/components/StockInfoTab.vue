@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div v-loading="loading" element-loading-text="加载中...">
     <el-card shadow="never" class="info-card">
       <template #header><span class="card-title">标的概况</span></template>
       <el-row :gutter="24">
         <el-col :span="6" v-for="item in overview" :key="item.label">
           <div class="info-item">
             <span class="info-label">{{ item.label }}</span>
-            <span class="info-value" :class="item.class">{{ item.value ?? '-' }}</span>
+            <span class="info-value">{{ item.value ?? '-' }}</span>
           </div>
         </el-col>
       </el-row>
@@ -33,7 +33,7 @@ function fmtShares(v: number | undefined | null) {
   return v.toLocaleString()
 }
 
-const props = defineProps<{ info: any }>()
+const props = defineProps<{ info: any; loading?: boolean }>()
 
 const overview = computed(() => [
   { label: '股票代码', value: props.info.code },

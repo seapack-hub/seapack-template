@@ -1,5 +1,5 @@
 <template>
-  <div class="chart-tab">
+  <div class="chart-tab" v-loading="loading" element-loading-text="加载中...">
     <el-card shadow="never" class="filter-card">
       <el-form :inline="true" class="filter-form">
         <el-form-item label="开始日期">
@@ -17,7 +17,7 @@
       </el-form>
     </el-card>
 
-    <el-row :gutter="16" class="chart-row">
+    <el-row class="chart-row">
       <el-col :span="24" class="mb-16px">
         <el-card shadow="never">
           <template #header><span class="card-title">K 线走势</span></template>

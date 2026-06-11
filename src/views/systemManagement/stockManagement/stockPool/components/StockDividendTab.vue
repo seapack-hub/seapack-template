@@ -1,5 +1,5 @@
 <template>
-  <div class="dividend-tab">
+  <div class="dividend-tab" v-loading="loading" element-loading-text="加载中...">
     <el-row :gutter="16">
       <el-col :span="12">
         <el-card shadow="never">

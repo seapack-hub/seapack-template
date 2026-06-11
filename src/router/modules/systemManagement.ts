@@ -146,7 +146,7 @@ const systemManagementRoute: Array<RouterObject> = [
             component: () => import('@/views/systemManagement/stockManagement/dashboard/index.vue'),
             meta: {
               title: 'dashboardView',
-              description: '核心监控大盘',
+              description: '股票监控池',
               icon: 'home'
             }
           },

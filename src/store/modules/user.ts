@@ -1,15 +1,21 @@
 import { defineStore } from 'pinia';
 
-//引入User类型
 import { User } from '@/api/types/user.ts';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    userInfo: <User>{}
+    userInfo: {
+      id: '1',
+      username: 'admin',
+      email: 'admin@example.com',
+      phone: '13800138000',
+      address: '',
+      adminType: 1,
+    } as User,
   }),
   actions: {
     getUserInfo(userInfo: User) {
       this.userInfo = userInfo;
-    }
-  }
+    },
+  },
 });

@@ -6,7 +6,7 @@
     <el-tabs v-model="activeTab" class="detail-tabs flex-1">
       <!-- 标的概况 + 交易参数 -->
       <el-tab-pane label="基本信息" name="info" lazy>
-        <StockInfoTab :info="stockInfo" />
+        <StockInfoTab :info="stockInfo" :loading="infoLoading" />
       </el-tab-pane>
       <!-- 历年分红走势图 + 分红明细表 -->
       <el-tab-pane label="分红" name="dividend" lazy>
@@ -18,7 +18,7 @@
       </el-tab-pane>
       <!-- 三大财务报表：资产负债表 / 利润表 / 现金流量表 -->
       <el-tab-pane label="财务数据" name="finance" lazy>
-        <StockFinanceTab :data="financeData" />
+        <StockFinanceTab :data="financeData" :loading="financeLoading" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -46,19 +46,28 @@ const stockInfo = ref<any>({})
 /** 三大财务报表原始数据 */
 const financeData = ref<{ balance: any[]; income: any[]; cashflow: any[] }>({ balance: [], income: [], cashflow: [] })
 
+const infoLoading = ref(true)
+const financeLoading = ref(true)
+
 onMounted(async () => {
   if (!stockCode) return
   try {
+    infoLoading.value = true
+    financeLoading.value = true
     const [instruments] = await Promise.all([
       InstrumentAPI.getByCode(stockCode as string).catch(() => null),
     ])
     const inst = Array.isArray(instruments) && instruments.length ? instruments[0] : null
     stockInfo.value = { ...inst, stockCode: inst?.code }
+    infoLoading.value = false
 
-    //虚拟数据
     financeData.value = generateMockFinance(stockCode as string)
+    financeLoading.value = false
 
-  } catch { /* 静默降级 */ }
+  } catch {
+    infoLoading.value = false
+    financeLoading.value = false
+  }
 })
 </script>
 
