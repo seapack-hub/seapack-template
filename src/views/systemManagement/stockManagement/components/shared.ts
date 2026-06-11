@@ -72,12 +72,6 @@ export const sharesFmt = (bonus?: number, transfer?: number) => {
   return parts.join('') || '-'
 }
 
-/** 通知渠道下拉选项 */
-export const channelOptions = [
-  { label: '邮件', value: 'EMAIL' },
-  { label: '短信', value: 'SMS' },
-]
-
 /** 行业树节点类型 */
 export interface IndustryNode {
   id: string

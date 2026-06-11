@@ -181,16 +181,6 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/alertRules',
-            name: 'alertRules',
-            component: () => import('@/views/systemManagement/stockManagement/alertRules/index.vue'),
-            meta: {
-              title: 'alertRules',
-              description: '监控规则配置',
-              icon: 'alert'
-            }
-          },
-          {
             path: '/alertHistory',
             name: 'alertHistory',
             component: () => import('@/views/systemManagement/stockManagement/alertHistory/index.vue'),

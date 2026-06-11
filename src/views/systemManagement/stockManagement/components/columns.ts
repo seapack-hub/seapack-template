@@ -76,28 +76,6 @@ export function createDividendColumns(handlers: ColumnHandlers) {
   ]
 }
 
-/** 监控规则配置表格列 */
-export function createAlertRuleColumns(handlers: ColumnHandlers) {
-  return [
-    { label: '股票名称', prop: 'stockName', minWidth: '120px' },
-    { label: '监控阈值(%)', prop: 'thresholdRate', minWidth: '120px', align: 'right' },
-    { label: '通知渠道', prop: 'notifyChannels', minWidth: '140px' },
-    { label: '接收人', prop: 'contacts', minWidth: '200px', showOverflowTooltip: true },
-    { label: '创建时间', prop: 'createdAt', minWidth: '160px' },
-    /* 启用状态使用 slotName 插槽，启用绿色/停用灰色 */
-    { label: '状态', prop: 'isActive', minWidth: '80px', align: 'center', slotName: 'isActive' },
-    /* 操作列：编辑 + 启停切换 + 删除 */
-    {
-      columnType: 'operate', label: '操作', width: '180px', fixed: 'right',
-      buttons: [
-        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
-        { type: 'primary', label: '启/停', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onToggle?.(row) },
-        { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该规则吗？' }, click: ({ row }: any) => handlers.onDelete?.(row) },
-      ],
-    },
-  ]
-}
-
 /** 分红明细表格列（股票详情页用，只读，不分页） */
 export function createDividendDetailColumns() {
   return [
