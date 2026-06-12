@@ -133,13 +133,23 @@ const systemManagementRoute: Array<RouterObject> = [
       //股息监控
       {
         path:"/stockManagement",
-        redirect: '/dashboardView',
+        redirect: '/stockQuote',
         meta:{
           title:"stockManagement",
           description:"股息监控",
           icon:"trend-charts"
         },
         children:[
+          {
+            path: '/stockQuote',
+            name: 'stockQuote',
+            component: () => import('@/views/systemManagement/stockManagement/stockQuote/index.vue'),
+            meta: {
+              title: 'stockQuote',
+              description: '股票实时行情',
+              icon: 'trend-charts'
+            }
+          },
           {
             path: '/dashboardView',
             name: 'dashboardView',

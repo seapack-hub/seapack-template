@@ -89,6 +89,26 @@ export function createDividendDetailColumns() {
   ]
 }
 
+/** 实时行情表格列（只读，无操作） */
+export function createStockQuoteColumns() {
+  return [
+    { label: '股票代码', prop: 'stockCode', minWidth: '100px' },
+    { label: '股票名称', prop: 'stockName', minWidth: '100px' },
+    { label: '交易所', prop: 'exchangeName', minWidth: '130px' },
+    { label: '行业', prop: 'industryName', minWidth: '120px' },
+    { label: '最新价', prop: 'currentPrice', minWidth: '90px', align: 'right' },
+    { label: '涨跌幅', prop: 'changePercent', minWidth: '90px', align: 'right', slotName: 'changePercent' },
+    { label: '每股分红', prop: 'dividendPerShare', minWidth: '90px', align: 'right' },
+    { label: '股息率', prop: 'dividendYield', minWidth: '90px', align: 'right', slotName: 'dividendYield' },
+    { label: '动态股息率', prop: 'dynamicYield', minWidth: '100px', align: 'right', slotName: 'dynamicYield' },
+    { label: '交易日期', prop: 'tradeDate', minWidth: '120px', align: 'center' },
+    { label: '开盘价', prop: 'openPrice', minWidth: '90px', align: 'right', slotName: 'openPrice' },
+    { label: '最高价', prop: 'highPrice', minWidth: '90px', align: 'right', slotName: 'highPrice' },
+    { label: '最低价', prop: 'lowPrice', minWidth: '90px', align: 'right', slotName: 'lowPrice' },
+    { label: '更新', prop: 'quoteUpdateTime', minWidth: '180px', align: 'center' },
+  ]
+}
+
 /** 告警历史记录表格列（只读，无需操作） */
 export function createAlertHistoryColumns() {
   return [
