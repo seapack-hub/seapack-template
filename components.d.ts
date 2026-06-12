@@ -63,6 +63,7 @@ declare module 'vue' {
     ElText: typeof import('element-plus/es')['ElText']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElTree: typeof import('element-plus/es')['ElTree']
+    ElTreeSelect: typeof import('element-plus/es')['ElTreeSelect']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     FixRender: typeof import('./src/components/baseComponents/SpDetailEditable/components/fixRender.vue')['default']
     FormComponent: typeof import('./src/components/baseComponents/SpDetailForm/components/formComponent.vue')['default']
