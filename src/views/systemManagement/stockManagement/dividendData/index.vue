@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { StockDividendAPI } from '@/api/system/stockDividend'
+import { StockDividendAPI } from '@/api/system/stock/stockDividend/stockDividend.ts'
 import { createDividendColumns } from '../components/columns'
 import { useDividendDict } from './components/useDividendDict'
 import DividendSearch from './components/DividendSearch.vue'

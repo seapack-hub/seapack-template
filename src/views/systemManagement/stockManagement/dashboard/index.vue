@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { UserStockMonitorAPI, type UserStockMonitorVO, type UserStockMonitorQuery } from '@/api/system/userStockMonitor'
+import { UserStockMonitorAPI, type UserStockMonitorVO, type UserStockMonitorQuery } from '@/api/system/stock/stockMonitor/userStockMonitor.ts'
 import { useUserStore } from '@/store/modules/user'
 import AddStockDialog from './components/AddStockDialog.vue'
 import ThresholdDrawer from './components/ThresholdDrawer.vue'

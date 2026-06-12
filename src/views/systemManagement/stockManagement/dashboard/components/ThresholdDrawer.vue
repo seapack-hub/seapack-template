@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { Delete } from '@element-plus/icons-vue'
-import { UserStockMonitorAPI } from '@/api/system/userStockMonitor'
+import { UserStockMonitorAPI } from '@/api/system/stock/stockMonitor/userStockMonitor.ts'
 import { useUserStore } from '@/store/modules/user'
 
 const userStore = useUserStore()

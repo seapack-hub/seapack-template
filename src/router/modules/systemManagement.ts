@@ -28,13 +28,13 @@ const systemManagementRoute: Array<RouterObject> = [
           keepAlive: true,
         },
       },
-      //系统管理
+      //基础信息
       {
-        path:"/system",
+        path:"/baseInfo",
         redirect: '/user',
         meta:{
-          title:"system",
-          description:"系统管理",
+          title:"baseInfo",
+          description:"基础信息",
           icon:"system"
         },
         children:[
@@ -42,7 +42,7 @@ const systemManagementRoute: Array<RouterObject> = [
           {
             path: '/user',
             name: 'user',
-            component: () => import('@/views/systemManagement/userManagement/index.vue'),
+            component: () => import('@/views/systemManagement/baseInfo/userManagement/index.vue'),
             meta: {
               title: 'user',
               description: '用户管理',
@@ -53,7 +53,7 @@ const systemManagementRoute: Array<RouterObject> = [
           {
             path: '/industryManagement',
             name: 'industryManagement',
-            component: () => import('@/views/systemManagement/industryManagement/index.vue'),
+            component: () => import('@/views/systemManagement/baseInfo/industryManagement/index.vue'),
             meta: {
               title: 'industryManagement',
               description: '行业管理',
@@ -64,7 +64,7 @@ const systemManagementRoute: Array<RouterObject> = [
           {
             path: '/dictSetting',
             name: 'dictSetting',
-            component: () => import('@/views/systemManagement/dictSetting/index.vue'),
+            component: () => import('@/views/systemManagement/baseInfo/dictSetting/index.vue'),
             meta: {
               title: 'dictSetting',
               description: '字典设置',
@@ -87,7 +87,7 @@ const systemManagementRoute: Array<RouterObject> = [
           {
             path: '/fundBaseInfo',
             name: 'fundBaseInfo',
-            component: () => import('@/views/systemManagement/fundManagement/index.vue'),
+            component: () => import('@/views/systemManagement/fund/index.vue'),
             meta: {
               title: 'fundBaseInfo',
               description: '基金信息',
@@ -98,7 +98,7 @@ const systemManagementRoute: Array<RouterObject> = [
           {
             path: '/fundBaseInfo/detail',
             name: 'fundBaseInfoDetail',
-            component: () => import('@/views/systemManagement/fundManagement/detail.vue'),
+            component: () => import('@/views/systemManagement/fund/detail.vue'),
             meta: {
               title: 'fundBaseInfoDetail',
               hidden: true,
@@ -110,24 +110,13 @@ const systemManagementRoute: Array<RouterObject> = [
           {
             path: '/industry',
             name: 'industry',
-            component: () => import('@/views/systemManagement/fundManagement/Industry/index.vue'),
+            component: () => import('@/views/systemManagement/fund/Industry/index.vue'),
             meta: {
               title: 'industry',
               description: '行业分类',
               icon: 'industry'
             }
           },
-          //股票行情
-          {
-            path: '/stockTrading',
-            name: 'stockTrading',
-            component: () => import('@/views/systemManagement/stockTrading/index.vue'),
-            meta: {
-              title: 'stockTrading',
-              description: '股票行情',
-              icon: 'trend-charts'
-            }
-          }
         ]
       },
       //股息监控
@@ -248,7 +237,7 @@ const systemManagementRoute: Array<RouterObject> = [
           {
             path:"/wang-editer",
             name:"wangEditer",
-            component:() => import("@/views/systemManagement/wangEditer/wang-editor.vue"),
+            component:() => import("@/views/systemManagement/components/wangEditer/wang-editor.vue"),
             meta:{
               title: 'wangEditer',
               description: '富文本编辑器',
@@ -280,6 +269,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
         ]
       },
+      //AI
       {
         path:"/aiInteraction",
         name:"aiInteraction",

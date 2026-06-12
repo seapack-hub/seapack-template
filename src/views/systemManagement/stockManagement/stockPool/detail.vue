@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { InstrumentAPI } from '@/api/system/instrument'
+import { InstrumentAPI } from '@/api/system/stock/stockPool/instrument.ts'
 import { generateMockFinance } from './components/detailShared'
 import StockInfoTab from './components/StockInfoTab.vue'
 import StockChartTab from './components/StockChartTab.vue'

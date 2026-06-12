@@ -28,8 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { StockInfoAPI } from '@/api/system/stockPool'
-import { UserStockMonitorAPI } from '@/api/system/userStockMonitor'
+import { StockInfoAPI } from '@/api/system/stock/stockPool/stockPool.ts'
+import { UserStockMonitorAPI } from '@/api/system/stock/stockMonitor/userStockMonitor.ts'
 import { useUserStore } from '@/store/modules/user'
 
 const userStore = useUserStore()

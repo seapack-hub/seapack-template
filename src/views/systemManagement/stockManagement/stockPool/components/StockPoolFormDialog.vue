@@ -41,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector'
-import { getDictByType } from '@/api/system/dict'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/common/industrySector.ts'
+import { getDictByType } from '@/api/system/common/dict.ts'
 
 const exchangeOptions = ref<any[]>([])
 

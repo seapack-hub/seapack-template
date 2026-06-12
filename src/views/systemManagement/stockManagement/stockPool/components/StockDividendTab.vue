@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { StockDividendAPI } from '@/api/system/stockDividend'
+import { StockDividendAPI } from '@/api/system/stock/stockDividend/stockDividend.ts'
 import { createDividendDetailColumns } from '../../components/columns'
 import { dividendTypeFmt, statusShortFmt, dividendTypeTagMap, dividendStatusClassMap, sharesFmt } from '../../components/shared'
 import { buildDividendChartOption } from './detailShared'

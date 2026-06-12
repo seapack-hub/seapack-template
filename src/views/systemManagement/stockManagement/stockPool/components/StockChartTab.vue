@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { StockDailyAPI } from '@/api/system/instrument'
+import { StockDailyAPI } from '@/api/system/stock/stockPool/instrument.ts'
 import { buildKLineChartOption } from './detailShared'
 
 function formatDate(d: Date): string {

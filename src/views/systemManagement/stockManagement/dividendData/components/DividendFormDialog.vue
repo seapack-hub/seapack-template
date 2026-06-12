@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { StockInfoAPI } from '@/api/system/stockPool'
+import { StockInfoAPI } from '@/api/system/stock/stockPool/stockPool.ts'
 import { useDividendDict } from './useDividendDict'
 
 const visible = defineModel<boolean>('visible', { required: true })

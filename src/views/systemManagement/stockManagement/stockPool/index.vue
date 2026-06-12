@@ -71,10 +71,10 @@
 </template>
 
 <script setup lang="ts">
-import { StockInfoAPI } from '@/api/system/stockPool'
-import type { StockInfo } from '@/api/system/stockPool'
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector'
-import { getDictByType } from '@/api/system/dict'
+import { StockInfoAPI } from '@/api/system/stock/stockPool/stockPool.ts'
+import type { StockInfo } from '@/api/system/stock/stockPool/stockPool.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/common/industrySector.ts'
+import { getDictByType } from '@/api/system/common/dict.ts'
 import { createStockPoolColumns } from '../components/columns'
 import StockPoolFormDialog from './components/StockPoolFormDialog.vue'
 import StockPoolBatchDialog from './components/StockPoolBatchDialog.vue'
