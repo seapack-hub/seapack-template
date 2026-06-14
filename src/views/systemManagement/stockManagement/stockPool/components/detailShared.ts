@@ -86,12 +86,17 @@ export function buildDividendChartOption(data: any[]): EChartsOption {
   if (!data?.length) {
     data = generateMockDividend()
   }
-  const years = data.map(d => d.year || d.dataTime?.slice(0, 4))
-  const values = data.map(d => d.cashPerShare ?? d.dividendPerShare ?? 0)
+  const grouped: Record<string, number> = {}
+  for (const d of data) {
+    const year = String(d.year || d.dataTime?.slice(0, 4))
+    grouped[year] = (grouped[year] || 0) + (d.cashPerShare ?? d.dividendPerShare ?? 0)
+  }
+  const sortedYears = Object.keys(grouped).sort((a, b) => Number(a) - Number(b))
+  const values = sortedYears.map(y => +grouped[y].toFixed(3))
   return {
     tooltip: { trigger: 'axis', valueFormatter: (v: any) => `${v} 元` },
-    grid: { left: '6%', right: '4%', bottom: '15%', top: '8%' },
-    xAxis: { type: 'category', data: years, axisLabel: { rotate: 30 } },
+    grid: { left: '6%', right: '2%', bottom: '15%', top: '8%' },
+    xAxis: { type: 'category', data: sortedYears, axisLabel: { rotate: 30 } },
     yAxis: { type: 'value', name: '每股股息(元)' },
     series: [{
       type: 'bar',

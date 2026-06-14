@@ -55,7 +55,15 @@
         </div>
         <!-- 表格主体 + 分页 -->
         <div class="flex-1 flex flex-col justify-between overflow-hidden border">
-          <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true" />
+          <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true">
+            <template #stockName>
+              <el-table-column label="股票名称" minWidth="140px" slotName="stockName">
+                <template #default="{ row }">
+                  <span class="stock-name-link" @click="openEastMoney(row.stockCode)">{{ row.stockName }}</span>
+                </template>
+              </el-table-column>
+            </template>
+          </SpTable>
           <div class="h-[40px] mt-10px">
             <Pagination v-model:total="total" v-model:page="query.pageNum" v-model:limit="query.pageSize" @pagination="handleQuery" />
           </div>
@@ -73,8 +81,8 @@
 <script setup lang="ts">
 import { StockInfoAPI } from '@/api/system/stock/stockPool/stockPool.ts'
 import type { StockInfo } from '@/api/system/stock/stockPool/stockPool.ts'
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/common/industrySector.ts'
-import { getDictByType } from '@/api/system/common/dict.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
+import { getDictByType } from '@/api/system/baseInfo/dict.ts'
 import { createStockPoolColumns } from '../components/columns'
 import StockPoolFormDialog from './components/StockPoolFormDialog.vue'
 import StockPoolBatchDialog from './components/StockPoolBatchDialog.vue'
@@ -96,6 +104,19 @@ const total = ref(0)
 
 /* 表格列配置（操作列回调绑定到当前页面逻辑） */
 const router = useRouter()
+
+function openEastMoney(code: string) {
+  const c = String(code)
+  let url: string
+  if (c.startsWith('6')) {
+    url = `https://quote.eastmoney.com/sh${c}.html`
+  } else if (c.startsWith('0') || c.startsWith('3')) {
+    url = `https://quote.eastmoney.com/sz${c}.html`
+  } else {
+    url = `https://quote.eastmoney.com/bj/${c}.html`
+  }
+  window.open(url, '_blank')
+}
 
 const columns = createStockPoolColumns({
   onDetail(row) {
@@ -225,6 +246,9 @@ onMounted(async () => {
   flex-direction: column;
   gap: 10px;
 }
+
+.stock-name-link { color: #409eff; cursor: pointer; }
+.stock-name-link:hover { color: #1677ff; text-decoration: underline; }
 
 /* 全局滚动条美化 */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

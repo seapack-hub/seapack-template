@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/common/industrySector.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
 
 // ===== 双向绑定（父组件通过 v-model 控制） =====
 const visible = defineModel<boolean>('visible', { required: true })

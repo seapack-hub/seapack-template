@@ -9,6 +9,7 @@
   "dashboardView": "核心监控大盘",
   "stockPool": "股票池管理",
   "dividendData": "分红数据维护",
+  "dept": "部门管理",
   "alertHistory": "告警历史记录",
   "fund": "基金模块",
   "fundBaseInfo": "基金信息",

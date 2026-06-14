@@ -29,17 +29,18 @@ const UserAPI = {
       method: "delete",
     })
   },
-  resetPassword(id: number, password: string) {
+  resetPassword(id: number, newPassword: string) {
     return request({
-      url: `${USER_BASE_URL}/${id}/password/reset`,
+      url: `${USER_BASE_URL}/resetPassword`,
       method: "put",
-      params: { password },
+      data: { id, newPassword },
     })
   },
-  deleteByIds(ids: string) {
+  deleteByIds(ids: number[]) {
     return request({
-      url: `${USER_BASE_URL}/${ids}`,
+      url: `${USER_BASE_URL}/batchDelete`,
       method: "delete",
+      data: ids,
     })
   },
 }

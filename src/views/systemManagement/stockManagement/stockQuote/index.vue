@@ -135,8 +135,8 @@
 <script setup lang="ts">
 /* ========== API 和工具 ========== */
 import { StockMarketQuoteAPI, type StockMarketQuoteDto, type StockMarketQuoteQuery } from '@/api/system/stock/stockMarketQuote/stockMarketQuote.ts'
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/common/industrySector.ts'
-import { getDictByType } from '@/api/system/common/dict.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
+import { getDictByType } from '@/api/system/baseInfo/dict.ts'
 import { createStockQuoteColumns } from '../components/columns'
 import { yieldLevelClass } from '../components/shared'
 

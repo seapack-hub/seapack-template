@@ -32,7 +32,7 @@ export function createDashboardColumns() {
 export function createStockPoolColumns(handlers: ColumnHandlers) {
   return [
     { label: '股票代码', prop: 'stockCode', minWidth: '120px' },
-    { label: '股票名称', prop: 'stockName', minWidth: '140px' },
+    { label: '股票名称', prop: 'stockName', minWidth: '140px', slotName: 'stockName' },
     { label: '交易所', prop: 'exchangeName', minWidth: '100px'},
     { label: '所属行业', prop: 'industryName', minWidth: '100px' },
     { label: '创建时间', prop: 'createdAt', minWidth: '170px' },

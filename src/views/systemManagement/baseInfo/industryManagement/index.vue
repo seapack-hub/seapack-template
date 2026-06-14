@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/common/industrySector.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
 import IndustrySectorDialog from './components/IndustrySectorDialog.vue'
 
 // ===== 查询状态 =====

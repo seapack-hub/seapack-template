@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import DeptAPI ,{DeptVO} from "@/api/system/common/dept.ts";
+import DeptAPI ,{DeptVO} from "@/api/system/baseInfo/dept.ts";
 const props = defineProps({
   modelValue: {
     type: [Number],

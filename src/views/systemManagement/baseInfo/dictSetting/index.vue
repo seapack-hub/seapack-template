@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { DictAPI, type Dict } from '@/api/system/common/dict.ts'
+import { DictAPI, type Dict } from '@/api/system/baseInfo/dict.ts'
 import DictDialog from './components/DictDialog.vue'
 
 const queryFormRef = ref()

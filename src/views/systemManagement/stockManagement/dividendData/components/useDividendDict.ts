@@ -1,4 +1,4 @@
-import { getDictByType } from '@/api/system/common/dict.ts'
+import { getDictByType } from '@/api/system/baseInfo/dict.ts'
 
 interface DictItem {
   dictCode: string

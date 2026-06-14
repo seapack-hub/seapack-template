@@ -76,8 +76,8 @@
 import DeptTree from './components/DeptTree.vue'
 import UserFormDialog from './components/UserFormDialog.vue'
 import { createUserColumns } from './components/UserColumns'
-import UserAPI, { type UserPageQuery, type UserPageVO } from '@/api/system/user/user'
-import { exportExcel, type ExportRequest } from '@/api/system/common/export'
+import UserAPI, { type UserPageQuery, type UserPageVO } from '@/api/system/baseInfo/user.ts'
+import { exportExcel, type ExportRequest } from '@/api/system/baseInfo/export'
 
 const queryFormRef = ref<any>(null)
 const queryParams = reactive<UserPageQuery>({ pageNum: 1, pageSize: 10 })
@@ -109,16 +109,17 @@ const columns = createUserColumns({
 
 const formVisible = ref(false)
 const formIsEdit = ref(false)
-const formData = ref<any>({ userName: '', nickName: '', gender: 1, email: '', mobile: '', deptId: undefined, status: 1, password: '123456' })
+const defaultForm = { userName: '', password: '', confirmPassword: '', nickName: '', gender: '1', mobile: '', email: '', deptId: undefined, status: 1 }
+const formData = ref<any>({ ...defaultForm })
 
 function openFormDialog() {
-  formData.value = { userName: '', nickName: '', gender: 1, email: '', mobile: '', deptId: undefined, status: 1, password: '123456' }
+  formData.value = { ...defaultForm }
   formIsEdit.value = false
   formVisible.value = true
 }
 
 function onEdit(row: any) {
-  formData.value = { ...row }
+  formData.value = { ...row, password: '', confirmPassword: '' }
   formIsEdit.value = true
   formVisible.value = true
 }
@@ -165,7 +166,7 @@ function handleBatchDelete() {
   ElMessageBox.confirm('确认删除选中用户？', '警告', { type: 'warning' }).then(async () => {
     loading.value = true
     try {
-      await UserAPI.deleteByIds(selectIds.value.join(','))
+      await UserAPI.deleteByIds(selectIds.value)
       ElMessage.success('删除成功')
       handleResetQuery()
     } finally { loading.value = false }

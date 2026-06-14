@@ -1,7 +1,7 @@
 <template>
   <div class="chart-tab" v-loading="loading" element-loading-text="加载中...">
     <el-card shadow="never" class="filter-card">
-      <el-form :inline="true" class="filter-form">
+      <el-form :inline="true" class="filter-form h-[40px]">
         <el-form-item label="开始日期">
           <el-date-picker v-model="startDate" type="date" placeholder="选择开始日期" value-format="YYYY-MM-DD"
             :disabled-date="d => endVal && d > endVal" />
@@ -18,7 +18,7 @@
     </el-card>
 
     <el-row class="chart-row">
-      <el-col :span="24" class="mb-16px">
+      <el-col :span="24">
         <el-card shadow="never">
           <template #header><span class="card-title">K 线走势</span></template>
           <baseCharts :options="kLineOpts" height="480px" />
@@ -91,11 +91,10 @@ watch(() => props.stockCode, fetchKline, { immediate: true })
 
 <style lang="scss" scoped>
 .chart-tab { width: 100%; }
-.filter-card { margin-bottom: 16px; border-radius: 8px; }
+.filter-card { margin-bottom: 10px; border-radius: 8px; }
 .filter-form { margin: 0; }
 .card-title { font-size: 15px; font-weight: 600; color: #303133; }
 .chart-row { margin: 0 !important; }
-.mb-16px { margin-bottom: 16px; }
 .summary-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 12px 0;
   .summary-item {

@@ -38,6 +38,17 @@ const systemManagementRoute: Array<RouterObject> = [
           icon:"system"
         },
         children:[
+          //部门管理
+          {
+            path: '/dept',
+            name: 'dept',
+            component: () => import('@/views/systemManagement/baseInfo/deptManagement/index.vue'),
+            meta: {
+              title: 'dept',
+              description: '部门管理',
+              icon: 'dept'
+            }
+          },
           //用户管理
           {
             path: '/user',
@@ -140,16 +151,6 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/dashboardView',
-            name: 'dashboardView',
-            component: () => import('@/views/systemManagement/stockManagement/dashboard/index.vue'),
-            meta: {
-              title: 'dashboardView',
-              description: '股票监控池',
-              icon: 'home'
-            }
-          },
-          {
             path: '/stockPool',
             name: 'stockPool',
             component: () => import('@/views/systemManagement/stockManagement/stockPool/index.vue'),
@@ -177,6 +178,16 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'dividendData',
               description: '分红数据维护',
               icon: 'pie-chart'
+            }
+          },
+          {
+            path: '/dashboardView',
+            name: 'dashboardView',
+            component: () => import('@/views/systemManagement/stockManagement/dashboard/index.vue'),
+            meta: {
+              title: 'dashboardView',
+              description: '股票监控池',
+              icon: 'home'
             }
           },
           {

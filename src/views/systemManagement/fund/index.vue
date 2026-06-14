@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import FundBaseInfoAPI,{FundPageQuery} from '@/api/system/fund/fund.ts';
-import { ExportHeader,ExportRequest, exportExcel} from '@/api/system/common/export.ts';
+import { ExportHeader,ExportRequest, exportExcel} from '@/api/system/baseInfo/export.ts';
 import { useRouter } from 'vue-router'
 
 const router = useRouter();
