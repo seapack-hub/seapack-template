@@ -91,7 +91,7 @@ const systemManagementRoute: Array<RouterObject> = [
         meta:{
           title:"permission",
           description:"权限管理",
-          icon:"safe"
+          icon:"permission"
         },
         children:[
           {
@@ -361,7 +361,7 @@ const systemManagementRoute: Array<RouterObject> = [
         children:[
           {
             path: "/internal-doc-1",
-            component: () => import("@/views/blogs/demo/internal-doc-1.vue"),
+            component: () => import("@/views/systemManagement/blogDocument/internal-doc-1.vue"),
             name: "InternalDoc-1",
             meta: {
               title: "InternalDoc-1",
@@ -371,7 +371,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           {
             path: "/internal-doc-2",
-            component: () => import("@/views/blogs/demo/internal-doc-2.vue"),
+            component: () => import("@/views/systemManagement/blogDocument/internal-doc-2.vue"),
             name: "InternalDoc-2",
             meta: {
               title: "InternalDoc-2",
@@ -381,7 +381,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           {
             path: "/internal-doc-3",
-            component: () => import("@/views/blogs/demo/internal-doc-3.vue"),
+            component: () => import("@/views/systemManagement/blogDocument/internal-doc-3.vue"),
             name: "InternalDoc-3",
             meta: {
               title: "InternalDoc-3",
@@ -391,7 +391,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           {
             path: "/internal-doc-4",
-            component: () => import("@/views/blogs/demo/internal-doc-4.vue"),
+            component: () => import("@/views/systemManagement/blogDocument/internal-doc-4.vue"),
             name: "InternalDoc-4",
             meta: {
               title: "InternalDoc-4",
@@ -401,7 +401,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           {
             path: "/internal-doc-5",
-            component: () => import("@/views/blogs/demo/internal-doc-5.vue"),
+            component: () => import("@/views/systemManagement/blogDocument/internal-doc-5.vue"),
             name: "InternalDoc-5",
             meta: {
               title: "InternalDoc-5",
