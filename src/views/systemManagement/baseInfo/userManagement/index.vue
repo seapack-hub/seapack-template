@@ -69,12 +69,14 @@
     </el-row>
 
     <UserFormDialog v-model:visible="formVisible" v-model:isEdit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
+    <RoleAssignDialog v-model:visible="roleVisible" :user-id="roleUserId" :user-name="roleUserName" @refresh="handleQuery" />
   </div>
 </template>
 
 <script setup lang="ts">
 import DeptTree from './components/DeptTree.vue'
 import UserFormDialog from './components/UserFormDialog.vue'
+import RoleAssignDialog from './components/RoleAssignDialog.vue'
 import { createUserColumns } from './components/UserColumns'
 import UserAPI, { type UserPageQuery, type UserPageVO } from '@/api/system/baseInfo/user.ts'
 import { exportExcel, type ExportRequest } from '@/api/system/baseInfo/export'
@@ -86,6 +88,9 @@ const total = ref(0)
 const loading = ref(false)
 const timeArr = ref<any>([])
 const selectIds = ref<number[]>([])
+const roleVisible = ref(false)
+const roleUserId = ref(0)
+const roleUserName = ref('')
 
 const columns = createUserColumns({
   onEdit(row) { onEdit(row) },
@@ -104,6 +109,11 @@ const columns = createUserColumns({
       await UserAPI.resetPassword(row.id, value)
       ElMessage.success('密码重置成功')
     }).catch(() => {})
+  },
+  onAssignRole(row) {
+    roleUserId.value = row.id
+    roleUserName.value = row.userName
+    roleVisible.value = true
   },
 })
 

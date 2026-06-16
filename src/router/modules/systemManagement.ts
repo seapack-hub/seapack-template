@@ -84,6 +84,38 @@ const systemManagementRoute: Array<RouterObject> = [
           },
         ]
       },
+      //权限管理
+      {
+        path:"/permission",
+        redirect: '/role',
+        meta:{
+          title:"permission",
+          description:"权限管理",
+          icon:"safe"
+        },
+        children:[
+          {
+            path: '/role',
+            name: 'role',
+            component: () => import('@/views/systemManagement/permission/role/index.vue'),
+            meta: {
+              title: 'role',
+              description: '角色管理',
+              icon: 'role'
+            }
+          },
+          {
+            path: '/menu',
+            name: 'menu',
+            component: () => import('@/views/systemManagement/permission/menu/index.vue'),
+            meta: {
+              title: 'menu',
+              description: '菜单权限',
+              icon: 'menu'
+            }
+          },
+        ]
+      },
       //基金模块
       {
         path:"/fund",

@@ -21,8 +21,6 @@
 <script setup lang="ts">
 // 正确导入方式
 import CodeMirror from 'codemirror-editor-vue3';
-import { oneDark } from '@codemirror/theme-one-dark'
-import { javascript } from '@codemirror/lang-javascript'
 
 // 代码折叠所需的样式和脚本
 //import 'codemirror/addon/fold/foldgutter.css'
@@ -31,7 +29,7 @@ import TableComponent from "../encapsulationTable/index.vue";
 
 // 源代码数据
 const sourceCode = ref('');
-const extensions = ref([javascript()])
+//const extensions = ref([javascript()])
 // CodeMirror 配置选项
 const cmOptions = ref({
   mode: 'vue', // 根据显示的代码类型设置，如 'javascript', 'vue'
