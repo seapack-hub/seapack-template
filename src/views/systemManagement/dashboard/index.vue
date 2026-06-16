@@ -1,68 +1,45 @@
 <template>
   <div class="dashboard-container">
-    <!--头部-->
-    <DashboardTop />
-    <!--数据统计-->
-    <div class="statistics-module">
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <StatisticsModule :data-info="visitStatsVisit" />
-        </el-col>
-        <el-col :span="12">
-          <StatisticsModule :data-info="visitStatsBrowse" />
-        </el-col>
-      </el-row>
+    <!-- 欢迎横幅 -->
+    <WelcomeHeader />
+
+    <!-- 统计卡片 -->
+    <div class="section-gap">
+      <StatsCards />
     </div>
-    <!--趋势图-->
-    <div class="visit-trend">
-      <el-row :gutter="20">
-        <el-col :span="16">
-          <VisitTrend
-            id="VisitTrend"
-            width="100%"
-            height="400px"
-          />
-        </el-col>
-        <el-col :span="8">
-          <NoticeCard />
-        </el-col>
-      </el-row>
+
+    <!-- 快捷导航 -->
+    <div class="section-gap">
+      <QuickNav />
     </div>
+
+    <!-- 告警 + 图表 -->
+    <el-row :gutter="16" class="section-gap">
+      <el-col :xs="24" :sm="24" :md="14">
+        <RecentAlerts />
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="10">
+        <MiniCharts />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import DashboardTop from './components/DashboardTop.vue';
-import StatisticsModule from './components/StatisticsModule.vue';
-import VisitTrend from './components/VisitTrend.vue';
-import NoticeCard from './components/NoticeCard.vue';
-import { VisitStatsVO } from '@/api/types/log.ts';
-//浏览数据
-const visitStatsVisit = ref<VisitStatsVO>({
-  todayUvCount: 261,
-  uvGrowthRate: 20.75,
-  totalUvCount: 11439,
-  label:"访客数(UV)",
-  icon:"visitor",
-  title:"总访客数",
-});
-const visitStatsBrowse = ref<VisitStatsVO>({
-  todayUvCount: 2075,
-  uvGrowthRate: 18.57,
-  totalUvCount: 183523,
-  label:"浏览量(PV)",
-  icon:"browser",
-  title:"总浏览数",
-});
+import WelcomeHeader from './components/WelcomeHeader.vue'
+import StatsCards from './components/StatsCards.vue'
+import QuickNav from './components/QuickNav.vue'
+import RecentAlerts from './components/RecentAlerts.vue'
+import MiniCharts from './components/MiniCharts.vue'
+
 </script>
 
 <style lang="scss" scoped>
 .dashboard-container {
-  .statistics-module {
-    margin-top: 20px;
-  }
-  .visit-trend{
-    margin-top: 20px;
-  }
+  padding: 4px 0;
+}
+
+.section-gap {
+  margin-top: 16px;
 }
 </style>

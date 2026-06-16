@@ -23,7 +23,7 @@ export const routerRecordRow: RouteRecordRaw[] = [
   {
     path: "/blogsManagement",
     //component:()=> import("@/views/blogs/index.vue"),
-    component: ()=>import("@/layout/menuTab/index.vue"),
+    //component: ()=>import("@/layout/menuTab/index.vue"),
     redirect: '/blogs',
     children:[
       {
