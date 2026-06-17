@@ -1,4 +1,5 @@
 import * as Cesium from 'cesium';
+import 'cesium/Build/Cesium/Widgets/widgets.css'
 // Cesium 官网设置个人Token
 const Token =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJhMTA5YzcyZC03OTdlLTRjYTMtYjJhZC1lYzQwODhlODliNTIiLCJpZCI6MjUyOTU2LCJpYXQiOjE3MzA3OTMzNjd9.NSkZaVBGMb4WwS0jz0_zTq1ivn-5MYee_gmGDChsNys';

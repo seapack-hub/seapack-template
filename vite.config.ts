@@ -110,9 +110,23 @@ export default defineConfig(({mode}:ConfigEnv) => {
         "@wangeditor/editor-for-vue",
       ]
     },
-    lintOnSave: false,  // 添加这一行代码
+    lintOnSave: false,
     build:{
-      target: 'es2020'
+      target: 'es2020',
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (id.includes('node_modules/cesium')) return 'cesium'
+            if (id.includes('node_modules/echarts')) return 'echarts'
+            if (id.includes('node_modules/element-plus')) return 'element-plus'
+            if (id.includes('node_modules/@antv/x6')) return 'antv-x6'
+            if (id.includes('node_modules/@wangeditor')) return 'wangeditor'
+            if (id.includes('node_modules/ol')) return 'ol'
+            if (id.includes('node_modules/codemirror')) return 'codemirror'
+            if (id.includes('node_modules')) return 'vendor'
+          }
+        }
+      }
     }
   }
 })

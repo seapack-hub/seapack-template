@@ -8,7 +8,13 @@
       </div>
     </el-header>
     <el-main>
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </transition>
+      </router-view>
     </el-main>
   </el-container>
 </template>

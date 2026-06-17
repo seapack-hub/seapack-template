@@ -5,6 +5,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import * as Cesium from 'cesium';
+import 'cesium/Build/Cesium/Widgets/widgets.css'
 
 function initCesium() {
   //viewer是所有Api的开始,

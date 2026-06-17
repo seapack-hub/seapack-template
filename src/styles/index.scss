@@ -4,6 +4,16 @@
 @import './layout/index.scss';
 //form样式
 @import './form.scss';
+// 路由切换淡入淡出过渡
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 body {
   margin: 0;
   display: flex;

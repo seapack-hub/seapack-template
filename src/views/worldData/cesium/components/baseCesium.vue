@@ -5,6 +5,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import * as Cesium from 'cesium';
+import 'cesium/Build/Cesium/Widgets/widgets.css'
 
 // 设置cesium默认视角
 Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(
