@@ -2,7 +2,6 @@
   <div class="gis-container relative h-100vh w-100% bg-[#0a0e17]">
     <!-- Cesium渲染容器 -->
     <div class="cesiumContainer h-100% w-100%" ref="cesiumContainerRef"></div>
-
   </div>
 </template>
 

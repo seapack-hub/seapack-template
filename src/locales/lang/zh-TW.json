@@ -1,20 +1,93 @@
 {
   "mainBody": "主體",
-  "footer": "頁脚",
+  "footer": "頁腳",
+
   "systemManagement": "系統管理",
   "funGame": "趣味遊戲",
   "technologyWorld": "技術天地",
   "stockTrading": "股票行情",
-  "stockManagement": "股息監控",
-  "dashboardView": "核心監控大盤",
-  "stockPool": "股票池管理",
-  "dividendData": "分紅數據維護",
+
+  "home": "首頁",
+  "dashboard": "首頁",
+
+  "baseInfo": "基礎信息",
   "dept": "部門管理",
-  "alertHistory": "告警歷史記錄",
+  "user": "用戶管理",
+  "industryManagement": "行業管理",
+  "dictSetting": "字典設置",
+
+  "permission": "權限管理",
+  "role": "角色管理",
+  "menu": "菜單權限",
+
   "fund": "基金模塊",
   "fundBaseInfo": "基金信息",
   "fundBaseInfoDetail": "基金信息詳情",
   "industry": "行業分類",
-  "industryManagement": "行業管理",
-  "dictSetting": "字典設置"
+
+  "stockManagement": "股息監控",
+  "stockQuote": "股票實時行情",
+  "stockPool": "股票池管理",
+  "stockPoolDetail": "股票詳情",
+  "dividendData": "分紅數據維護",
+  "dashboardView": "核心監控大盤",
+  "alertHistory": "告警歷史記錄",
+
+  "genericComponent": "組件封裝",
+  "electronicSignatures": "電子簽名",
+  "encapsulationTable": "表格封裝",
+  "splitTable": "表格拆分",
+  "wangEditer": "富文本編輯器",
+
+  "graphical": "圖形化管理",
+  "flowCharts": "流程圖",
+
+  "aiInteraction": "人工智能",
+  "rag": "RAG知識庫",
+  "agent": "智能體交互",
+
+  "document": "博客文檔",
+  "InternalDoc-1": "實現電子簽名",
+  "InternalDoc-2": "實現水印",
+  "InternalDoc-3": "封裝SVG圖標",
+  "InternalDoc-4": "JS原型鏈詳解",
+  "InternalDoc-5": "模板引擎詳解",
+
+  "echarts": "ECharts圖表",
+  "chinaMap": "中國地圖",
+  "migrationMap": "遷徙地圖",
+  "histogram": "柱狀圖",
+  "relationship": "人物關係",
+  "radar": "雷達圖",
+
+  "worldData": "地圖世界",
+  "blogs": "個人博客",
+
+  "common": {
+    "add": "新增",
+    "edit": "編輯",
+    "delete": "刪除",
+    "search": "搜索",
+    "reset": "重置",
+    "confirm": "確定",
+    "cancel": "取消",
+    "save": "保存",
+    "submit": "提交",
+    "export": "導出",
+    "import": "導入",
+    "detail": "詳情",
+    "operation": "操作",
+    "status": "狀態",
+    "createTime": "創建時間",
+    "updateTime": "更新時間",
+    "remark": "備註",
+    "action": "操作"
+  },
+
+  "message": {
+    "success": "操作成功",
+    "error": "操作失敗",
+    "confirmDelete": "確認刪除該記錄嗎？",
+    "confirmTitle": "系統提示"
+  }
 }

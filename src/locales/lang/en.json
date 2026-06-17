@@ -1,20 +1,93 @@
 {
   "mainBody": "main body",
   "footer": "footer",
-  "systemManagement": "system management",
-  "funGame": "fun game",
-  "technologyWorld": "technology world",
+
+  "systemManagement": "System Management",
+  "funGame": "Fun Game",
+  "technologyWorld": "Technology World",
   "stockTrading": "Stock Market",
-  "stockManagement": "Dividend Monitor",
-  "dashboardView": "Dashboard",
-  "stockPool": "Stock Pool",
-  "dividendData": "Dividend Data",
+
+  "home": "Home",
+  "dashboard": "Dashboard",
+
+  "baseInfo": "Base Info",
   "dept": "Department",
-  "alertHistory": "Alert History",
+  "user": "User",
+  "industryManagement": "Industry Management",
+  "dictSetting": "Dictionary Settings",
+
+  "permission": "Permission",
+  "role": "Role",
+  "menu": "Menu Permission",
+
   "fund": "Fund Module",
   "fundBaseInfo": "Fund Info",
   "fundBaseInfoDetail": "Fund Detail",
   "industry": "Industry",
-  "industryManagement": "Industry Management",
-  "dictSetting": "Dictionary Settings"
+
+  "stockManagement": "Dividend Monitor",
+  "stockQuote": "Stock Quotes",
+  "stockPool": "Stock Pool",
+  "stockPoolDetail": "Stock Detail",
+  "dividendData": "Dividend Data",
+  "dashboardView": "Monitor Dashboard",
+  "alertHistory": "Alert History",
+
+  "genericComponent": "Components",
+  "electronicSignatures": "E-Signature",
+  "encapsulationTable": "Table Encapsulation",
+  "splitTable": "Table Split",
+  "wangEditer": "Rich Text Editor",
+
+  "graphical": "Graphical",
+  "flowCharts": "Flow Charts",
+
+  "aiInteraction": "AI",
+  "rag": "RAG Knowledge Base",
+  "agent": "Agent",
+
+  "document": "Docs",
+  "InternalDoc-1": "E-Signature Implementation",
+  "InternalDoc-2": "Watermark Implementation",
+  "InternalDoc-3": "SVG Icon Package",
+  "InternalDoc-4": "JS Prototype Chain",
+  "InternalDoc-5": "Template Engine",
+
+  "echarts": "ECharts",
+  "chinaMap": "China Map",
+  "migrationMap": "Migration Map",
+  "histogram": "Histogram",
+  "relationship": "Relationship",
+  "radar": "Radar",
+
+  "worldData": "GIS Map",
+  "blogs": "Blogs",
+
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "reset": "Reset",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "submit": "Submit",
+    "export": "Export",
+    "import": "Import",
+    "detail": "Detail",
+    "operation": "Operation",
+    "status": "Status",
+    "createTime": "Create Time",
+    "updateTime": "Update Time",
+    "remark": "Remark",
+    "action": "Action"
+  },
+
+  "message": {
+    "success": "Operation successful",
+    "error": "Operation failed",
+    "confirmDelete": "Are you sure you want to delete?",
+    "confirmTitle": "Confirmation"
+  }
 }

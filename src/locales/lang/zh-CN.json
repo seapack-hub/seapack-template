@@ -1,20 +1,93 @@
 {
   "mainBody": "主体",
   "footer": "页脚",
+
   "systemManagement": "系统管理",
   "funGame": "趣味游戏",
   "technologyWorld": "技术天地",
   "stockTrading": "股票行情",
-  "stockManagement": "股息监控",
-  "dashboardView": "核心监控大盘",
-  "stockPool": "股票池管理",
-  "dividendData": "分红数据维护",
+
+  "home": "首页",
+  "dashboard": "首页",
+
+  "baseInfo": "基础信息",
   "dept": "部门管理",
-  "alertHistory": "告警历史记录",
+  "user": "用户管理",
+  "industryManagement": "行业管理",
+  "dictSetting": "字典设置",
+
+  "permission": "权限管理",
+  "role": "角色管理",
+  "menu": "菜单权限",
+
   "fund": "基金模块",
   "fundBaseInfo": "基金信息",
   "fundBaseInfoDetail": "基金信息详情",
   "industry": "行业分类",
-  "industryManagement": "行业管理",
-  "dictSetting": "字典设置"
+
+  "stockManagement": "股息监控",
+  "stockQuote": "股票实时行情",
+  "stockPool": "股票池管理",
+  "stockPoolDetail": "股票详情",
+  "dividendData": "分红数据维护",
+  "dashboardView": "核心监控大盘",
+  "alertHistory": "告警历史记录",
+
+  "genericComponent": "组件封装",
+  "electronicSignatures": "电子签名",
+  "encapsulationTable": "表格封装",
+  "splitTable": "表格拆分",
+  "wangEditer": "富文本编辑器",
+
+  "graphical": "图形化管理",
+  "flowCharts": "流程图",
+
+  "aiInteraction": "人工智能",
+  "rag": "RAG知识库",
+  "agent": "智能体交互",
+
+  "document": "博客文档",
+  "InternalDoc-1": "实现电子签名",
+  "InternalDoc-2": "实现水印",
+  "InternalDoc-3": "封装SVG图标",
+  "InternalDoc-4": "JS原型链详解",
+  "InternalDoc-5": "模板引擎详解",
+
+  "echarts": "ECharts图表",
+  "chinaMap": "中国地图",
+  "migrationMap": "迁徙地图",
+  "histogram": "柱状图",
+  "relationship": "人物关系",
+  "radar": "雷达图",
+
+  "worldData": "地图世界",
+  "blogs": "个人博客",
+
+  "common": {
+    "add": "新增",
+    "edit": "编辑",
+    "delete": "删除",
+    "search": "搜索",
+    "reset": "重置",
+    "confirm": "确定",
+    "cancel": "取消",
+    "save": "保存",
+    "submit": "提交",
+    "export": "导出",
+    "import": "导入",
+    "detail": "详情",
+    "operation": "操作",
+    "status": "状态",
+    "createTime": "创建时间",
+    "updateTime": "更新时间",
+    "remark": "备注",
+    "action": "操作"
+  },
+
+  "message": {
+    "success": "操作成功",
+    "error": "操作失败",
+    "confirmDelete": "确认删除该记录吗？",
+    "confirmTitle": "系统提示"
+  }
 }
