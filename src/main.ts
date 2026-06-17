@@ -20,6 +20,7 @@ import pinia from './store';
 import i18n from './locales';
 import './permission.ts';
 import vTableShadow from './directives/tableBottomShadow'
+import { setupPermissionDirective } from './directives/permission'
 // 如果您正在使用CDN引入，请删除下面一行。
 //导入路由
 import router from './router';
@@ -30,6 +31,8 @@ const app = createApp(App);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }
+// 注册全局 v-permission 权限指令
+setupPermissionDirective(app);
 app.use(router)
 .use(i18n)
 .use(pinia)

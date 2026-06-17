@@ -115,7 +115,6 @@
 <script setup lang="ts">
 import { WarningFilled } from '@element-plus/icons-vue';
 import { computed, PropType } from 'vue';
-import { useRoute } from 'vue-router';
 import useButtonPermission from '@/hooks/useButtonPermission'
 
 const props = defineProps({
@@ -136,27 +135,15 @@ const props = defineProps({
   }
 });
 
-const route:any = useRoute();
-
-//从当前路由的元数据中筛选出类型为 'row' 的按钮配置列表
-const buttonList = computed(()=>{
-  return route?.meta?.buttonList?.filter((item:{type:string})=> item.type === 'row')??[];
-});
-
 const { buttonHasPermission } = useButtonPermission();
 
-//获取所有展示的按钮
+// 获取所有展示的按钮：同时过滤权限（buttonPermission）和行级显隐（vIFHandler）
 const allShowButtons = computed(()=>{
   const buttons = props.buttons;
   return buttons?.filter((item:any)=>{
-    //权限验证优先：如果路由配置了按钮列表，则检查每个按钮的权限
-    if(buttonList.value.length>0){
-      return (item?.buttonPermission?buttonHasPermission(item.buttonPermission):true) 
-      && (item?.vIFHandler ? item.vIFHandler(props.scope) : true)
-    }else{
-      //通过可选的 vIFHandler 方法实现基于行数据的动态显示逻辑。
-      return item?.vIFHandler ? item.vIFHandler(props.scope) : true
-    }
+    const hasPerm = item?.buttonPermission ? buttonHasPermission(item.buttonPermission) : true
+    const hasVif = item?.vIFHandler ? item.vIFHandler(props.scope) : true
+    return hasPerm && hasVif
   })
 });
 

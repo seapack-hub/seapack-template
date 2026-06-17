@@ -11,23 +11,19 @@
 import { PropType } from 'vue';
 import useButtonPermission from '@/hooks/useButtonPermission';
 
-// 定义组件接收的属性
 const props = defineProps({
-  buttonPermission:{
-    type:Object as PropType<{ permission: string;type: string;name:string}>,
-    default:()=>({})
-  }
+  buttonPermission: {
+    // 支持字符串（'user:add'）和对象（{ permission, type, name }）两种格式
+    type: [Object, String] as PropType<{ permission: string; type: string; name: string } | string>,
+    default: null,
+  },
 });
 
-// 引入权限判断方法
 const { buttonHasPermission } = useButtonPermission();
 
-// 计算属性：核心权限判断逻辑
-const hasPermission = computed(()=>{
-  // 如果传入了有效的 buttonPermission 对象（特别是包含 permission 字段），
-  // 则调用 buttonHasPermission 方法进行权限验证
-  // 如果没有配置任何权限要求（buttonPermission 无效或为空），则默认返回 true，渲染内容
-  return props?.buttonPermission?.permission?buttonHasPermission(props.buttonPermission):true;
+const hasPermission = computed(() => {
+  if (!props.buttonPermission) return true;
+  return buttonHasPermission(props.buttonPermission);
 });
 
 </script>

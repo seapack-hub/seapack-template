@@ -25,7 +25,7 @@
         <!--操作列，固定在右侧-->
         <template v-if="item.columnType === 'operate'">
           <el-table-column 
-            v-if="showOperateButton"
+            v-if="showOperateButton(item)"
             v-bind="{ align: 'left', width: '200px', minWidth: '200px', fixed: 'right', ...item }"
             :key="index"
           >
@@ -121,8 +121,11 @@
 
 <script setup lang="ts">
 import { ElTable } from 'element-plus'
-import {CSSProperties, PropType} from 'vue';
+import { CSSProperties, PropType } from 'vue';
 import { columnsType } from './type';
+import { usePermission } from '@/hooks/usePermission'
+
+const { hasPermission } = usePermission()
 //刷新列表
 const refreshTable = ref(true);
 // 获取 el-table 实体
@@ -179,8 +182,11 @@ const props = defineProps({
     default:true
   }
 });
-//是否展示操作按钮
-const showOperateButton = ref(true);
+// 操作列显隐判断：如果列定义了 permission 字段，则校验当前用户是否有权看到整列
+const showOperateButton = (item: any) => {
+  if (item.permission) return hasPermission(item.permission)
+  return true
+};
 
 //在props.columns 变化时，将refreshTable从true变为false，马上改变refreshTable的值为true，从而重新渲染列表
 watch(

@@ -1,3 +1,11 @@
+/**
+ * components —— 动态表单组件工具
+ *
+ * 集中管理 Element Plus 表单组件的注册、查找、格式化，
+ * 支持根据组件名称字符串动态渲染对应的组件实例，
+ * 以及统一的表单项配置格式化（占位符、校验规则等）。
+ */
+
 import {
   ElAlert,
   ElAutocomplete,
@@ -26,15 +34,19 @@ import {
   ElTimeSelect,
   ElTransfer,
   ElTreeSelect,
-  ElUpload
+  ElUpload,
 } from 'element-plus';
 
 import { type Component, defineAsyncComponent, markRaw } from 'vue';
 import componentDefaultProps from '@/config/componentDefaultProps';
-
 import { formItemName } from '@/vite-env';
 
-// 定义动态组件
+/**
+ * 组件名称到组件实例的映射表
+ *
+ * markRaw 标记组件为非响应式，避免 Vue 对组件定义进行响应式代理
+ * （组件定义是静态对象，无需响应式追踪，标记后可提升性能）。
+ */
 const componentsTypes: Record<string, Component> = markRaw({
   ElAutocomplete,
   ElCalendar,
@@ -63,48 +75,68 @@ const componentsTypes: Record<string, Component> = markRaw({
   ElAlert,
   ElForm,
   ElFormItem,
-  ElButton
+  ElButton,
 });
-// 定义一个接口，允许用任何字符串索引，返回值是 string
+
+/**
+ * 占位符映射
+ * input 类型用"请输入"，select 类型用"请选择"
+ */
 interface PlaceholderMap {
-  [key: string]: string; // 索引签名
+  [key: string]: string;
   input: string;
   select: string;
 }
 
-const placeholderList:PlaceholderMap = {
-  "input":"请输入",
-  "select":"请选择"
+const placeholderList: PlaceholderMap = {
+  input: '请输入',
+  select: '请选择',
 };
 
+/** 通用的样式类型列表，按 Element Plus 的 type 属性排列 */
 export const styleTypes = ['default', 'primary', 'success', 'info', 'warning', 'danger'];
 
+/**
+ * 根据组件名称字符串获取对应的 Vue 组件
+ *
+ * 查找顺序：
+ *   1. 优先从 componentsTypes（Element Plus 组件映射）中查找
+ *   2. 若未找到且传入了 customComponent，则返回 customComponent
+ *   3. 若仍未找到，从 @/components 目录下动态导入与名称匹配的自定义组件
+ *   4. 兜底返回 ElInput
+ *
+ * @param name            组件名称，如 'ElInput'、'TyNumberInterval'
+ * @param customComponent 可选的自定义组件实例，优先级高于动态导入
+ * @returns 匹配到的组件实例
+ */
 export const getComponentName = (name: string, customComponent: Component | null = null) => {
-  if (componentsTypes[name]) return componentsTypes[name]
+  if (componentsTypes[name]) return componentsTypes[name];
   else {
     if (customComponent) return customComponent;
-    //动态导入自定义组件
-    const modules = import.meta.glob('../components/**/**.vue')
-    let component
-    // modules对象的属性名如果包含name，则返回对应的组件，没有则返回ElInput
+    // 扫描 @/components 下所有 .vue 文件，动态导入与 name 匹配的组件
+    const modules = import.meta.glob('../components/**/**.vue');
+    let component;
     for (const key in modules) {
+      // 根据路径中是否包含 "/${name}/" 来匹配，如 TyNumberInterval 匹配到 components/form/TyNumberInterval/index.vue
       if (key.includes(`/${name}/`)) {
-        component = defineAsyncComponent(modules[key] as any)
+        component = defineAsyncComponent(modules[key] as any);
       }
     }
-    return component || ElInput
+    return component || ElInput;
   }
 };
 
 /**
- * 判断输入类型是输入框还是选择框
- * @param {string} componentName 'ElAutocomplete'
- * @returns {string} input/select
+ * 判断组件类型属于输入框（input）还是选择框（select）
  *
+ * 用于自动生成 placeholder 文本。
+ *
+ * @param componentName 组件名称，如 'ElAutocomplete'
+ * @returns 'input' | 'select'，未匹配时默认返回 'select'
  */
 export function getComponentType(componentName: string): 'input' | 'select' | string {
   interface ComponentMap {
-    [key: string]: string[]
+    [key: string]: string[];
   }
   const componentType: ComponentMap = {
     input: ['ElAutocomplete', 'ElInput', 'ElInputNumber', 'TyNumberInterval'],
@@ -127,142 +159,164 @@ export function getComponentType(componentName: string): 'input' | 'select' | st
       'ElTransfer',
       'ElUpload',
       'ElTreeSelect',
-      'ElColorPicker'
-    ]
-  }
+      'ElColorPicker',
+    ],
+  };
 
-  return Object.keys(componentType).find((key) => componentType[key]?.includes(componentName)) ?? 'select'
+  // 在映射表中查找，找到第一个匹配的 key 即为类型
+  return Object.keys(componentType).find((key) => componentType[key]?.includes(componentName)) ?? 'select';
 }
 
+/**
+ * 格式化搜索栏的列配置（与 formatFormColumns 逻辑相同）
+ */
 export const formatSearchColumns = (columns: any[]) => {
-  return (
-    columns?.map((item) => {
-      return formatFormItem(item)
-    }) ?? []
-  )
-}
+  return columns?.map((item) => formatFormItem(item)) ?? [];
+};
 
-//表单配置格式化
+/**
+ * 格式化表单的列配置数组，逐项调用 formatFormItem
+ */
 export const formatFormColumns = (columns: any[]) => {
-  return (
-    columns?.map((item) => {
-      return formatFormItem(item)
-    }) ?? []
-  )
-}
+  return columns?.map((item) => formatFormItem(item)) ?? [];
+};
+
+/**
+ * 格式化单个表单项配置
+ *
+ * 处理事项：
+ *   - 自动补充 label 后的冒号（:）
+ *   - 根据组件名称查找对应的组件实例
+ *   - 判断 input/select 类型并生成 placeholder
+ *   - 合并默认 props 和自定义 props
+ *   - 生成表单校验规则
+ *
+ * @param item 原始列配置项
+ * @returns 格式化后的完整配置项
+ */
 export const formatFormItem = (item: any) => {
   const { inputType = getComponentType(item.name), name, label, customComponent } = item;
 
-  const placeholder = `${placeholderList[inputType]}${label}`
+  const placeholder = `${placeholderList[inputType]}${label}`;
   return {
     ...item,
+    // 如果 label 末尾没有冒号，自动补上一个
     label: item.label ? (item.label?.includes(':') ? item.label : `${item.label}:`) : item.label,
+    // 获取对应的 Vue 组件实例
     componentsName: getComponentName(name, customComponent),
     inputType,
+    // 合并：自定义 placeholder + 全局默认 props + 当前项 props
     props: { placeholder, ...componentDefaultProps, ...item.props },
-    rules: getRulesHandler({ ...item, inputType })
-  }
-}
-export const getRulesHandler = (column: { rules: object; label: string; name: formItemName; inputType: string }) => {
-  const { rules, label, inputType } = column
-  // 如果 rules 存在
-  if (rules) {
-    // 组件类型字符串
-    const inputTypeStr = `${inputType}`
-    // 初始化规则数组
-    const rulesArr: object[] = []
+    // 生成表单校验规则
+    rules: getRulesHandler({ ...item, inputType }),
+  };
+};
 
-    // 遍历 rules
+/**
+ * 根据列配置生成 Element Plus 表单校验规则数组
+ *
+ * 支持 five 种规则类型：
+ *   - required：必填校验，提示信息为"请输入/请选择" + label
+ *   - min/max/len：长度限制校验
+ *   - pattern/type：正则或数据类型校验
+ *   - validator：自定义校验函数
+ *
+ * @param column 列配置，包含 rules、label、name、inputType
+ * @returns 格式化后的校验规则数组
+ */
+export const getRulesHandler = (column: { rules: object; label: string; name: formItemName; inputType: string }) => {
+  const { rules, label, inputType } = column;
+
+  if (rules) {
+    const inputTypeStr = `${inputType}`;
+    // 收集所有规则
+    const rulesArr: object[] = [];
+
+    // 遍历 rules 对象的每个键值对
     Object.entries(rules).forEach(([key, value]) => {
       switch (key) {
-        // 如果是 required 键
+        // ---- required：必填校验 ----
         case 'required':
-          // 如果 value 存在
           if (value) {
-            // 如果 value 是对象，则将其转换为对象并设置 trigger
             rulesArr.push(
+              // value 为对象时直接扩展（可自定义 message、trigger 等）
               typeof value === 'object'
                 ? { ...value, trigger: ['blur', 'change'] }
-                : // 否则设置规则
+                : // value 为布尔值时自动生成提示文本
                   {
                     required: true,
                     message: `${placeholderList[inputTypeStr]}${label}`,
-                    trigger: ['blur', 'change']
+                    trigger: ['blur', 'change'],
                   }
-            )
+            );
           }
-          break
-        // 如果是 min、max、len 键
+          break;
+
+        // ---- min / max / len：长度校验 ----
         case 'min':
         case 'max':
         case 'len':
-          // 如果 value 存在
           if (value) {
-            // 如果 value 是对象，则将其转换为对象并设置 trigger
             rulesArr.push(
               typeof value === 'object'
                 ? { ...value, trigger: ['blur', 'change'] }
-                : // 否则设置规则
-                  {
+                : {
                     [key]: value,
                     message: `${label}${value}`,
-                    trigger: ['blur', 'change']
+                    trigger: ['blur', 'change'],
                   }
-            )
+            );
           }
-          break
-        // 如果是 pattern、type 键
+          break;
+
+        // ---- pattern / type：正则或类型校验 ----
         case 'pattern':
         case 'type':
-          // 如果 value 存在
           if (value) {
-            // 如果 value 是对象，则将其转换为对象并设置 trigger
             rulesArr.push(
               typeof value === 'object'
                 ? { ...value, trigger: ['blur', 'change'] }
                 : {
                     [key]: value,
                     message: `${label}`,
-                    trigger: ['blur', 'change']
+                    trigger: ['blur', 'change'],
                   }
-            )
+            );
           }
-          break
-        // 如果是 validator 键
+          break;
+
+        // ---- validator：自定义校验函数 ----
         case 'validator':
-          // 如果 value 存在
           if (value) {
-            // 设置验证器规则
             rulesArr.push({
               validator: value,
-              trigger: ['blur', 'change']
-            })
+              trigger: ['blur', 'change'],
+            });
           }
-          break
-        // 默认情况
+          break;
+
         default:
-          break
+          break;
       }
-    })
-    // 返回规则数组
-    return rulesArr
+    });
+
+    return rulesArr;
   }
-  return []
-}
+  return [];
+};
 
 /**
- * @function 判断一个组件是否为日期范围组件。
+ * 判断一个表单项是否为日期范围组件
  *
- * 本函数用于确定传入的组件是否属于日期选择器类型，并且是范围选择器。这在处理不同类型的组件时非常有用，
- * 特别是在需要对日期范围组件进行特殊处理的场景中。
+ * 日期范围组件需要特殊处理，如展示两个输入框、范围选择器 UI 等。
  *
- * @param item 一个包含组件名称和类型的对象。
- * @returns 如果组件是日期范围组件，则返回true；否则返回false。
+ * @param item 组件配置对象，包含 name、type、props
+ * @returns true=是日期范围组件
  */
 export const isDateRangeComponent = (item: { name: string; type: string; props?: any }) => {
   return (
-    (['ElDatePicker', 'ElTimePicker'].includes(item?.name) && (item?.type?.endsWith('range') || item?.props?.type?.endsWith('range'))) ||
+    (['ElDatePicker', 'ElTimePicker'].includes(item?.name) &&
+      (item?.type?.endsWith('range') || item?.props?.type?.endsWith('range'))) ||
     ['TyNumberInterval'].includes(item?.name)
-  )
-}
-
+  );
+};
