@@ -30,11 +30,16 @@ export interface MenuTree {
 }
 
 export const AuthAPI = {
-  /** 获取用户信息+权限（GET /auth/user-info?userId=，返回角色编码列表和权限标识符集合） */
+  /** 
+   * 获取用户信息+权限（GET /auth/user-info?userId=，返回角色编码列表和权限标识符集合） 
+   **/
   getUserInfo(userId: number | string) {
     return request<any, UserAuthInfo>({ url: `${BASE_URL}/user-info`, method: 'get', params: { userId } })
   },
-  /** 获取动态菜单树（GET /auth/menus?userId=，返回角色过滤后的目录+菜单，type=1/2） */
+
+  /** 
+   * 获取动态菜单树（GET /auth/menus?userId=，返回角色过滤后的目录+菜单，type=1/2） 
+   **/
   getMenus(userId: number | string) {
     return request<any, MenuTree[]>({ url: `${BASE_URL}/menus`, method: 'get', params: { userId } })
   },

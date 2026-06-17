@@ -30,19 +30,30 @@ export interface PermissionTree extends Permission {
 }
 
 export const PermissionAPI = {
-  /** 获取权限树（GET /sys/permissions/tree，后端将扁平数据组装为嵌套树形JSON） */
+  /** 
+   * 获取权限树（GET /sys/permissions/tree，后端将扁平数据组装为嵌套树形JSON） 
+   **/
   getTree() {
     return request<any, PermissionTree[]>({ url: `${BASE_URL}/tree`, method: 'get' })
   },
-  /** 新增权限节点（POST /sys/permissions，需 parentId 确定层级） */
+
+  /** 
+   * 新增权限节点（POST /sys/permissions，需 parentId 确定层级） 
+   **/
   insert(data: Partial<Permission>) {
     return request<any, any>({ url: BASE_URL, method: 'post', data })
   },
-  /** 编辑权限节点（PUT /sys/permissions/{id}） */
+
+  /** 
+   * 编辑权限节点（PUT /sys/permissions/{id}） 
+   **/
   update(id: number, data: Partial<Permission>) {
     return request<any, any>({ url: `${BASE_URL}/${id}`, method: 'put', data })
   },
-  /** 删除权限节点（DELETE /sys/permissions/{id}，递归删子节点+清理关联） */
+
+  /** 
+   * 删除权限节点（DELETE /sys/permissions/{id}，递归删子节点+清理关联） 
+   **/
   delete(id: number) {
     return request<any, any>({ url: `${BASE_URL}/${id}`, method: 'delete' })
   },
