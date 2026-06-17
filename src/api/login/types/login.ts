@@ -24,9 +24,9 @@ export interface LoginResponse {
   /** 用户名 */
   username: string;
   /** 用户昵称 */
-  nickName: string;
+  nickName?: string;
   /** 邮箱 */
-  email: string;
+  email?: string;
   /** 手机号 */
-  mobile: string;
+  mobile?: string;
 }

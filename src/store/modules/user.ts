@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { User } from '@/api/types/user.ts';
+import { usePermissionStore } from '@/store/modules/permission';
 
 /**
  * 用户状态管理

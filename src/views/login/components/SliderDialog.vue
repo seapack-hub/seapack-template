@@ -19,9 +19,10 @@
 import { type LoginRequestData } from '@/api/login/types/login.ts';
 import {loginVerify,getPublicKey} from "@/api/login/index.ts";
 import { RsaUtil } from "@/utils/jsencrypt.ts";
-import { AuthAPI } from '@/api/system/permission/auth';
+//import { AuthAPI } from '@/api/system/permission/auth';
 import { useUserStore } from '@/store/modules/user';
-import { usePermissionStore } from '@/store/modules/permission';
+//import { usePermissionStore } from '@/store/modules/permission';
+import { User } from '@/api/types/user.ts';
 
 const router = useRouter();
 const props = defineProps<{
@@ -35,7 +36,7 @@ const visible = defineModel('modelValue', {
 const rsaUtil = new RsaUtil();
 const loading = ref(true);
 const userStore = useUserStore();
-const permissionStore = usePermissionStore();
+//const permissionStore = usePermissionStore();
 
 const onCaptchaSuccess = async ()=>{
   const encryptedPassword = rsaUtil.encrypt(props.loginForm.password);
@@ -51,6 +52,7 @@ const onCaptchaSuccess = async ()=>{
   try {
     // 调用后端登录接口，返回 { token, userId, username, nickName, email, mobile }
     const loginRes = await loginVerify(params);
+    console.log('loginRes', loginRes);
 
     if (!loginRes || !loginRes.token) {
       ElMessage.error('登录失败：未获取到 Token');

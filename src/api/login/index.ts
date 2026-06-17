@@ -16,8 +16,8 @@ export const getLoginCodeApi = () => {
  * @param params 包含 username 和 password（RSA加密后）
  * @returns Promise<LoginResponse> 包含 token 和用户信息
  */
-export const loginVerify = (params: { username: string; password: string }) => {
-  return request<LoginResponse>({
+export const loginVerify = (params: { username: string; password: string|true }) => {
+  return request<any, LoginResponse>({
     url: `${USER_BASE_URL}/auth/login`,
     method: "get",
     params
@@ -26,7 +26,7 @@ export const loginVerify = (params: { username: string; password: string }) => {
 
 /** 获取公钥 */
 export const getPublicKey = () => {
-  return request<{ publicKey: string }>({
+  return request<any, { publicKey: string }>({
     url: `${USER_BASE_URL}/rsa/auth/publicKey`,
     method: "get"
   });
