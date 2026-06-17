@@ -72,6 +72,22 @@ export const usePermissionStore = defineStore('permission', {
     setDynamicLoaded(val: boolean) {
       this.isDynamicLoaded = val;
     },
+
+    /**
+     * 重置权限状态（登出时调用）
+     * 清空所有动态路由和权限相关状态
+     */
+    resetPermissionState() {
+      this.basePath = '';
+      this.currentModules = '';
+      this.dynamicRoutes = [];
+      this.currentModulesRoutes = [];
+      this.routes = [];
+      this.mixLeftMenu = [];
+      this.routesHierarchy = [];
+      this.activeTopMenu = '';
+      this.isDynamicLoaded = false;
+    },
   }
 });
 

@@ -5,12 +5,14 @@
 </template>
  
 <script setup lang="ts">
-import * as echarts from 'echarts';
+import { echarts } from '@/utils/echarts'
 import {chinaMapOption} from "./components/contens.ts";
 import chinaJson from "./mapInfo/chinaMap/data-china.json";
 let ringEcharts:any=ref(null);
 
+//@ts-ignore
 echarts.registerMap('china', chinaJson);
+
 const initEcharts = () => {
   let echartsEl = document.getElementById('china-map-ref');
   ringEcharts.value = echarts.init(echartsEl);

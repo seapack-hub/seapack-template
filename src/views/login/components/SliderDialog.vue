@@ -47,29 +47,39 @@ const onCaptchaSuccess = async ()=>{
     username:props.loginForm.username,
     password:encryptedPassword
   };
-  const res = await loginVerify(params);
-  if(res === "登录成功"){
+
+  try {
+    // 调用后端登录接口，返回 { token, userId, username, nickName, email, mobile }
+    const loginRes = await loginVerify(params);
+
+    if (!loginRes || !loginRes.token) {
+      ElMessage.error('登录失败：未获取到 Token');
+      visible.value = false;
+      return;
+    }
+
+    // 1. 保存 Token 到 Store 和 localStorage
+    userStore.setToken(loginRes.token);
+
+    // 2. 保存用户信息（后端返回的用户基本信息）
+    userStore.setUserInfo({
+      id: String(loginRes.userId),
+      username: loginRes.username,
+      nickName: loginRes.nickName,
+      email: loginRes.email,
+      mobile: loginRes.mobile,
+    } as User);
+
     ElMessage.success('登录成功');
     visible.value = false;
-    // 登录成功后拉取权限数据并存入 Pinia
-    // getUserInfo 返回 { roles: string[], perms: string[] }
-    // 供 v-permission 指令和 usePermission 组合式函数使用
-    try {
-      const userId = userStore.userInfo.id;
-      const authInfo = await AuthAPI.getUserInfo(userId);
-      userStore.setAuthInfo({ roles: authInfo.roles, perms: authInfo.perms });
-      // 重置动态菜单标记，让路由守卫重新拉取后端菜单
-      permissionStore.setDynamicLoaded(false);
-    } catch {
-      // 后端未部署时降级：赋予管理员全部权限（*:*:*），不阻塞登录
-      ElMessage.warning('获取权限信息失败，使用默认权限');
-      userStore.setAuthInfo({ roles: ['admin'], perms: ['*:*:*'] });
-    }
-    setTimeout(() => {
-      router.push({ path: '/systemManagement' });
-    }, 1000);
-  }else{
-    ElMessage.error(res);
+
+    // 3. 跳转到首页（路由守卫会自动处理后续流程：获取权限、生成菜单等）
+    // 使用 replace: true 避免浏览器历史记录中留下登录页
+    router.replace({ path: '/systemManagement' });
+
+  } catch (error: any) {
+    console.error('登录失败:', error);
+    ElMessage.error(error?.message || '登录失败，请稍后重试');
     visible.value = false;
   }
 };

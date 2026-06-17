@@ -26,6 +26,8 @@ import { viteMockServe } from 'vite-plugin-mock';
 export default defineConfig(({mode}:ConfigEnv) => {
   const viteEnv = loadEnv(mode,process.cwd());
   const { VITE_PUBLIC_PATH,VITE_MOCK_DEV_SERVER,VITE_BASE_API,VITE_APP_API_URL,NODE_ENV } = viteEnv;
+  const isDev = mode === 'development'
+  const isProd = mode === 'production'
   return {
     base:VITE_PUBLIC_PATH,
     server:{
@@ -87,10 +89,10 @@ export default defineConfig(({mode}:ConfigEnv) => {
         // 指定symbolId格式
         symbolId: 'icon-[dir]-[name]',
       }),
-      VueDevTools(),
-      eslint({
+      isDev ? VueDevTools() : null,
+      isDev ? eslint({
         include: ['src/**/*.ts', 'src/**/*.js', 'src/**/*.vue', 'src/*.ts', 'src/*.js', 'src/*.vue']
-      })
+      }) : null
     ],
     resolve: {
       alias: {
@@ -110,6 +112,9 @@ export default defineConfig(({mode}:ConfigEnv) => {
         "@wangeditor/editor-for-vue",
       ]
     },
+    esbuild: isProd ? {
+      drop: ['console', 'debugger'],
+    } : undefined,
     lintOnSave: false,
     build:{
       target: 'es2020',
@@ -123,6 +128,18 @@ export default defineConfig(({mode}:ConfigEnv) => {
             if (id.includes('node_modules/@wangeditor')) return 'wangeditor'
             if (id.includes('node_modules/ol')) return 'ol'
             if (id.includes('node_modules/codemirror')) return 'codemirror'
+            if (
+              id.includes('node_modules/vue/') ||
+              id.includes('node_modules/vue-router/') ||
+              id.includes('node_modules/pinia/')
+            ) return 'vue-vendor'
+            if (
+              id.includes('node_modules/axios/') ||
+              id.includes('node_modules/lodash-es/') ||
+              id.includes('node_modules/js-cookie/') ||
+              id.includes('node_modules/mitt/') ||
+              id.includes('node_modules/nprogress/')
+            ) return 'utils'
             if (id.includes('node_modules')) return 'vendor'
           }
         }

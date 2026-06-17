@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import * as echarts from 'echarts';
+import { echarts } from '@/utils/echarts'
 import { ringEchartsOptions, labelList } from './content.ts';
 import { onMounted, ref } from 'vue';
 

@@ -7,6 +7,11 @@ import router from './router';
 import { AuthAPI, type MenuTree } from '@/api/system/permission/auth';
 
 /**
+ * 白名单页面：不需要登录即可访问
+ */
+const WHITE_LIST = ['/login', '/blogs', '/errorPage/404', '/errorPage/403', '/errorPage/500'];
+
+/**
  * 将后端返回的 MenuTree 节点递归转换为 Vue Router 所需的 RouteRecordRaw 格式
  */
 function convertMenuToRoute(menu: MenuTree, depth = 0): any {
@@ -39,59 +44,84 @@ function convertMenuToRoute(menu: MenuTree, depth = 0): any {
 
 // 全局路由前置守卫
 router.beforeEach(async (to, _from, next) => {
-  const permissionStore = usePermissionStore();
-  const dynamicRoutes = permissionStore?.dynamicRoutes ?? [];
-
-  // 首次访问：同步加载静态路由模块（纯内存操作，极快），然后立即放行
-  if (dynamicRoutes.length === 0) {
-    NProgress.start();
-    const tsFiles = import.meta.glob('@/router/modules/*.ts', { eager: true });
-    const mergedArray: any[] = [];
-    Object.values(tsFiles).forEach((module: any) => {
-      if (module.default && Array.isArray(module.default)) {
-        mergedArray.push(...module.default);
-      }
-    });
-    const asyncRouter = permissionStore.formatDynamicRoutes(mergedArray);
-    asyncRouter.forEach((route:any) => { router.addRoute(route); });
-    permissionStore.dynamicRoutes = asyncRouter;
-    permissionStore.setRoutes(asyncRouter);
-
-    // 先放行导航（组件懒加载开始），再异步拉取后端菜单权限，不阻塞首次渲染
-    next({ ...to, replace: true });
-
-    // fire-and-forget：后端菜单获取，不影响页面展示
-    fetchMenusSilently();
-    return;
-  }
-
-  // 正常导航 — 开启进度条，直接放行
   NProgress.start();
 
-  // 路径无匹配时重定向到 404
-  if (to.matched.length === 0) {
-    next('/errorPage/404');
-    return;
-  }
+  const userStore = useUserStore();
+  const permissionStore = usePermissionStore();
 
-  next();
+  // ========== 步骤 1：判断是否有 Token（是否已登录）==========
+  const hasToken = userStore.isLoggedIn;
+
+  if (hasToken) {
+    // ========== 已登录状态 ==========
+
+    if (to.path === '/login') {
+      // 已登录但访问登录页，重定向到首页
+      next({ path: '/systemManagement', replace: true });
+      return;
+    }
+
+    // 检查是否已获取用户信息
+    const hasUserInfo = !!userStore.userInfo.id;
+
+    if (!hasUserInfo) {
+      // 有 Token 但没有用户信息，需要获取用户信息
+      try {
+        // 获取用户信息和权限
+        const userId = userStore.userInfo.id || '1'; // 临时兼容
+        const authInfo = await AuthAPI.getUserInfo(userId);
+
+        // 设置用户权限信息
+        userStore.setAuthInfo({ roles: authInfo.roles, perms: authInfo.perms });
+
+        // 获取并生成动态路由
+        const menus = await AuthAPI.getMenus(userId);
+
+        if (menus && menus.length > 0) {
+          // 转换后端菜单为路由
+          const dynamicRoutes = menus
+            .map(menu => convertMenuToRoute(menu))
+            .filter(Boolean);
+
+          // 添加动态路由
+          const formattedRoutes = permissionStore.formatDynamicRoutes(dynamicRoutes);
+          formattedRoutes.forEach((route: any) => {
+            router.addRoute(route);
+          });
+
+          // 保存路由状态
+          permissionStore.dynamicRoutes = formattedRoutes;
+          permissionStore.setRoutes(formattedRoutes);
+          permissionStore.setDynamicLoaded(true);
+        }
+
+        // 重新导航到目标页面
+        next({ ...to, replace: true });
+        return;
+      } catch (error) {
+        // 获取用户信息失败，清除登录状态
+        await userStore.logout();
+        next(`/login?redirect=${encodeURIComponent(to.path)}`);
+        return;
+      }
+    }
+
+    // 已登录且有用户信息，正常放行
+    next();
+  } else {
+    // ========== 未登录状态 ==========
+
+    if (WHITE_LIST.includes(to.path)) {
+      // 在白名单中，直接放行
+      next();
+    } else {
+      // 不在白名单中，重定向到登录页，并记录原目标地址
+      next(`/login?redirect=${encodeURIComponent(to.path)}`);
+    }
+  }
 });
 
-async function fetchMenusSilently() {
-  try {
-    const userStore = useUserStore();
-    const userId = userStore.userInfo.id;
-    const menus = await AuthAPI.getMenus(userId);
-    if (menus && menus.length > 0) {
-      const permissionStore = usePermissionStore();
-      permissionStore.setDynamicLoaded(true)
-    }
-  } catch {
-    // 静默失败，不影响页面渲染
-  }
-}
-
 router.afterEach((to) => {
-  NProgress.done()
+  NProgress.done();
   setRouteChange(to);
 });

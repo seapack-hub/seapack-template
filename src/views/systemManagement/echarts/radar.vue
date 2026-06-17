@@ -5,7 +5,7 @@
 </template>
  
 <script setup lang="ts">
-import * as echarts from 'echarts';
+import { echarts } from '@/utils/echarts'
 import {radarOption} from "./components/contens.ts";
 let ringEcharts:any=ref(null);
 const initEcharts = () => {

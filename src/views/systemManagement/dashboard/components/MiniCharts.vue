@@ -22,14 +22,14 @@
 </template>
 
 <script setup lang="ts">
-import * as echarts from 'echarts'
+import { echarts } from '@/utils/echarts'
 
 /** 图表 DOM 容器引用 */
 const chartRef = ref<HTMLDivElement>()
 /** 当前选中的天数范围（7 或 30） */
 const rangeDays = ref(7)
 /** ECharts 实例引用 */
-let chartInstance: echarts.ECharts | null = null
+let chartInstance: ReturnType<typeof echarts.init> | null = null
 
 /**
  * 生成模拟图表数据

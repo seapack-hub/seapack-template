@@ -1,17 +1,18 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 //引入uno.css
-//import 'uno.css';
+// @ts-ignore
 import 'virtual:uno.css';
-import 'element-plus/dist/index.css';
+// @ts-ignore
+import 'element-plus/es/components/message/style/css'
+// @ts-ignore
+import 'element-plus/es/components/message-box/style/css'
 //引入全局样式
+// @ts-ignore
 import './styles/index.scss';
 // 本地SVG图标
 // @ts-ignore 本地SVG图标
 import 'virtual:svg-icons-register';
-import * as ElementPlusIconsVue from '@element-plus/icons-vue';
-import ElementPlus from 'element-plus';
-import zhCn from 'element-plus/es/locale/lang/zh-cn'; // 导入中文包
 //引入pinia
 import pinia from './store';
 //引入i18n
@@ -25,15 +26,10 @@ import router from './router';
 // import {setupProdMockServer} from "../mock/mockProdServer.ts";
 // setupProdMockServer();
 const app = createApp(App);
-//注册所有图标
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component);
-}
 // 注册全局 v-permission 权限指令
 setupPermissionDirective(app);
 app.use(router)
 .use(i18n)
 .use(pinia)
-.use(ElementPlus,{locale: zhCn})
 .directive('table-shadow', vTableShadow)
 .mount('#app');

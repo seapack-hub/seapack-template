@@ -29,17 +29,22 @@ const userInfo = userStore.userInfo;
 
 /**
  * 退出登录
+ * 调用 UserStore 的 logout 方法，清除 Token、用户信息和权限状态
  */
-function logout() {
-  router.push({
-    path: '/login'
-  });
-  // ElMessage({
-  //   message:h('p', { style: 'line-height: 1; font-size: 14px' }, [
-  //     h('span', null, '暂未开发，'),
-  //     h('i', { style: 'color: teal' }, '敬请期待！'),
-  //   ]),
-  // })
+async function logout() {
+  try {
+    // 调用 store 中的登出方法（清除 Token、用户信息、权限等）
+    await userStore.logout();
+
+    // 提示用户已退出
+    ElMessage.success('已成功退出登录');
+
+    // 跳转到登录页
+    router.replace({ path: '/login' });
+  } catch (error) {
+    console.error('退出登录失败:', error);
+    ElMessage.error('退出登录失败，请稍后重试');
+  }
 }
 </script>
 

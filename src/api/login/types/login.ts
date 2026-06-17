@@ -4,12 +4,29 @@
  * @LastEditors: 曾海峰 7753230+zenghaifenga@user.noreply.gitee.com
  * @LastEditTime: 2025-05-11 13:47:47
  * @FilePath: \tsingyun-worke:\个人项目\seapackTemplate\seapack-template\src\api\login\types\login.ts
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @Description: 登录相关类型定义
  */
+
+/** 登录请求参数 */
 export interface LoginRequestData {
-  /**用户名 */
-  username: 'admin' | 'editor';
-  /**密码 */
+  /** 用户名 */
+  username: string;
+  /** 密码 */
   password: string;
-  data?:string;
+}
+
+/** 登录响应数据 */
+export interface LoginResponse {
+  /** 登录凭证 Token */
+  token: string;
+  /** 用户ID */
+  userId: number;
+  /** 用户名 */
+  username: string;
+  /** 用户昵称 */
+  nickName: string;
+  /** 邮箱 */
+  email: string;
+  /** 手机号 */
+  mobile: string;
 }

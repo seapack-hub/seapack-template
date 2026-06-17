@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import * as echarts from 'echarts';
+import { echarts } from '@/utils/echarts'
 import { histogramOption } from './components/contens.ts';
 
 // 绘制左侧面
@@ -21,6 +21,7 @@ const CubeLeft = echarts.graphic.extendShape({
     const c1 = [shape.x - 13, shape.y - 13];
     const c2 = [xAxisPoint[0] - 13, xAxisPoint[1] - 13];
     const c3 = [xAxisPoint[0], xAxisPoint[1]];
+    //@ts-ignore
     ctx.moveTo(c0[0], c0[1]).lineTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).closePath();
   }
 });
@@ -36,6 +37,8 @@ const CubeRight = echarts.graphic.extendShape({
     const c2 = [xAxisPoint[0], xAxisPoint[1]];
     const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
     const c4 = [shape.x + 18, shape.y - 9];
+
+    //@ts-ignore
     ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
   }
 });
@@ -50,6 +53,8 @@ const CubeTop = echarts.graphic.extendShape({
     const c2 = [shape.x + 18, shape.y - 9];
     const c3 = [shape.x + 5, shape.y - 22];
     const c4 = [shape.x - 13, shape.y - 13];
+
+    //@ts-ignore
     ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
   }
 });
@@ -58,7 +63,7 @@ echarts.graphic.registerShape('CubeLeft', CubeLeft);
 echarts.graphic.registerShape('CubeRight', CubeRight);
 echarts.graphic.registerShape('CubeTop', CubeTop);
 let ringEcharts: any = ref(null);
-histogramOption.series[1].renderItem = (params, api:any) => {
+histogramOption.series[1].renderItem = (_params:any, api:any) => {
     const location = api.coord([api.value(0), api.value(1)])
     var color = api.value(1) > 800 ? 'red' : new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
             offset: 0,

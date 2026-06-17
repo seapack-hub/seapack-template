@@ -5,7 +5,7 @@
 </template>
  
 <script setup lang="ts">
-import * as echarts from 'echarts';
+import { echarts } from '@/utils/echarts'
 import {option} from "./components/relationship.ts";
 let ringEcharts:any=ref(null);
 const initEcharts = () => {

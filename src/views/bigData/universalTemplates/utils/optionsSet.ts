@@ -1,5 +1,5 @@
 import type { EChartsOption } from 'echarts';
-import * as echarts from 'echarts';
+import { echarts } from '@/utils/echarts'
 //获取门店受理情况配置
 export function getStoresOptions():EChartsOption{
   return {

@@ -89,9 +89,6 @@ importers:
       seapack-f-o:
         specifier: ^1.0.3
         version: 1.0.3(xlsx@0.18.5)
-      three:
-        specifier: ^0.174.0
-        version: 0.174.0
       vite:
         specifier: ^5.4.19
         version: 5.4.21(@types/node@20.19.41)(sass@1.99.0)(terser@5.47.1)
@@ -4230,9 +4227,6 @@ packages:
     resolution: {integrity: sha512-tPbLXTI6ohPASb/1YViL428oEHu6/qv1OxqYnfaonVCFHqx4+wCd95pHrQWsL5X4pl90CTyW9piSAsS2L0VoMw==}
     engines: {node: '>=10'}
     hasBin: true
-
-  three@0.174.0:
-    resolution: {integrity: sha512-p+WG3W6Ov74alh3geCMkGK9NWuT62ee21cV3jEnun201zodVF4tCE5aZa2U122/mkLRmhJJUQmLLW1BH00uQJQ==}
 
   tiny-warning@1.0.3:
     resolution: {integrity: sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==}
@@ -8844,8 +8838,6 @@ snapshots:
       acorn: 8.16.0
       commander: 2.20.3
       source-map-support: 0.5.21
-
-  three@0.174.0: {}
 
   tiny-warning@1.0.3: {}
 
