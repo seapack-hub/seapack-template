@@ -117,6 +117,7 @@ router.beforeEach(async (to, from, next) => {
       const userId = userStore.userInfo.id;
       // 调用后端接口 /auth/menus?userId=xxx，获取当前用户有权限的菜单树
       const menus = await AuthAPI.getMenus(userId);
+      console.log('---当前用户的权限菜单---',menus);
       // 如果后端返回了菜单数据
       if (menus && menus.length > 0) {
         // 创建一个 Set 用于收集所有有权限的菜单路径

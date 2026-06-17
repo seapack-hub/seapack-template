@@ -68,7 +68,7 @@ async function loadAlerts() {
       pageNum: 1,
       pageSize: 8,
     })
-    alertList.value = res?.records ?? []
+    alertList.value = res?.list ?? []
   } catch {
     alertList.value = []
   } finally {

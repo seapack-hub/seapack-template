@@ -45,7 +45,7 @@ const cmOptions = ref({
 onMounted(async () => {
   try {
     // 方法1: 使用 import 导入原始文件
-    const module = await import('../encapsulationTable/index.vue?raw')
+    const module = await import('../encapsulationTable/index.vue')
     sourceCode.value = module.default
   } catch (error) {
     // 方法2: 使用 XMLHttpRequest 加载文件

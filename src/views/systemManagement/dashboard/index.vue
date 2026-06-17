@@ -40,6 +40,6 @@ import MiniCharts from './components/MiniCharts.vue'
 }
 
 .section-gap {
-  margin-top: 16px;
+  margin-top: 10px;
 }
 </style>

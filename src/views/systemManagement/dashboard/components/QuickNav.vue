@@ -3,7 +3,7 @@
     <template #header>
       <div class="card-header">
         <span class="card-title">快捷导航</span>
-        <el-text type="info" size="small">点击跳转至对应模块</el-text>
+        <el-text type="info">点击跳转至对应模块</el-text>
       </div>
     </template>
     <div class="nav-grid">
