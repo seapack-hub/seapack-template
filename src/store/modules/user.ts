@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { type User} from '@/api/system/baseInfo/user.ts';
 import { usePermissionStore } from '@/store/modules/permission';
 import { AuthAPI } from '@/api/system/permission/auth';
+import { setToken as setCookieToken, removeToken as removeCookieToken } from '@/utils/cache/cookies';
 /**
  * 用户状态管理
  * 职责：
@@ -39,8 +40,9 @@ export const useUserStore = defineStore('user', {
      */
     setToken(token: string) {
       this.token = token;
-      // 同时存入 localStorage，持久化
+      // 同时存入 localStorage 和 Cookie，确保 axios 请求拦截器能读取到
       localStorage.setItem('token', token);
+      setCookieToken(token);
     },
 
     /**
@@ -50,6 +52,7 @@ export const useUserStore = defineStore('user', {
       const token = localStorage.getItem('token');
       if (token) {
         this.token = token;
+        setCookieToken(token);
       }
     },
 
@@ -59,6 +62,7 @@ export const useUserStore = defineStore('user', {
     clearToken() {
       this.token = '';
       localStorage.removeItem('token');
+      removeCookieToken();
     },
 
     // ===== 用户信息操作 =====

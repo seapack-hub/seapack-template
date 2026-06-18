@@ -11,8 +11,45 @@
  */
 
 import axios, { type AxiosResponse } from 'axios';
-import { ElMessage } from 'element-plus';
-// import { getToken } from './cache/cookies';  // Token 注入功能暂未启用
+import { ElMessage, ElNotification } from 'element-plus';
+import { getToken } from './cache/cookies';
+import router from '@/router';
+
+/** 防止多个 401 响应同时触发重复跳转 */
+let isRedirectingToLogin = false;
+
+/**
+ * Token 失效统一处理：清除本地状态 + 跳转登录页
+ *
+ * 使用动态 import 避免循环依赖：
+ *   user.ts → AuthAPI → axios.ts → useUserStore（循环）
+ *   动态 import 在运行时按需加载，不产生静态依赖
+ */
+async function handleTokenExpired(message = '登录状态已过期，请重新登录') {
+  if (isRedirectingToLogin) return;
+  isRedirectingToLogin = true;
+
+  ElNotification({ title: '提示', message, type: 'warning', duration: 3000 });
+
+  // 动态加载 store，避免与 axios 产生循环依赖
+  const { useUserStore } = await import('@/store/modules/user');
+  const { usePermissionStore } = await import('@/store/modules/permission');
+
+  const userStore = useUserStore();
+  const permissionStore = usePermissionStore();
+
+  // 清除用户状态
+  userStore.clearToken();
+  userStore.clearUserInfo();
+  userStore.clearAuth();
+  permissionStore.resetPermissionState();
+
+  // 跳转登录页
+  router.push('/login');
+
+  // 延迟重置标记，防止短时间内多个 401 并发
+  setTimeout(() => { isRedirectingToLogin = false; }, 1000);
+}  
 
 /**
  * 创建并配置 axios 请求实例
@@ -32,9 +69,9 @@ function createAxios() {
   // 在请求发送之前执行，用于注入 Token、添加请求头等
   Axios.interceptors.request.use(
     (config) => {
-      // TODO: 在此处注入 Token，例如：
-      // const token = getToken()
-      // if (token) config.headers.Authorization = `Bearer ${token}`
+      
+      const token = getToken()
+      if (token) config.headers.Authorization = `Bearer ${token}`
       return config;
     },
     // 请求发送失败（如网络断开），直接透传错误
@@ -72,8 +109,7 @@ function createAxios() {
           return apiData.data;
 
         case 401:
-          // Token 过期或未登录：跳转登录页并清除本地凭据
-          // TODO: 调用 logout() 并重定向到 /login
+          handleTokenExpired(apiData.message || '登录状态已过期');
           return Promise.reject(new Error('登录状态已过期'));
 
         default:
@@ -99,7 +135,8 @@ function createAxios() {
           break;
         case 401:
           // 401 时从响应体中提取详细错误信息
-          message = error.response.data.data;
+          message = error.response?.data?.data || '登录状态已过期';
+          handleTokenExpired(message);
           break;
         case 403:
           message = '拒绝访问';
