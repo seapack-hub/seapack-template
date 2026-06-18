@@ -2,7 +2,7 @@
  * @Author: 曾海峰 zenghf@tsingyun.net
  * @Date: 2024-09-12 14:47:40
  * @LastEditors: 曾海峰 7753230+zenghaifenga@user.noreply.gitee.com
- * @LastEditTime: 2025-05-11 13:47:47
+ * @LastEditTime: 2026-06-18 10:15:28
  * @FilePath: \tsingyun-worke:\个人项目\seapackTemplate\seapack-template\src\api\login\types\login.ts
  * @Description: 登录相关类型定义
  */
@@ -23,10 +23,4 @@ export interface LoginResponse {
   userId: number;
   /** 用户名 */
   username: string;
-  /** 用户昵称 */
-  nickName?: string;
-  /** 邮箱 */
-  email?: string;
-  /** 手机号 */
-  mobile?: string;
 }

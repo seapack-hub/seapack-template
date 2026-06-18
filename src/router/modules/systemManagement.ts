@@ -1,13 +1,12 @@
 interface RouterObject {
   [key: string]: any;
 }
-const Layout = () => import('@/layout/main/index.vue');
 //系统管理模块路由
 const systemManagementRoute: Array<RouterObject> = [
   {
     path: '/systemManagement',
     name: 'systemManagement',
-    component: Layout,
+    component: () => import('@/layout/main/index.vue'),
     redirect: '/dashboard',
     show: true,
     meta: {

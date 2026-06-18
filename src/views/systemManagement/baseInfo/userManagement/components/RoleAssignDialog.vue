@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
 import { RoleAPI, type Role } from '@/api/system/permission/role'
-import UserAPI from '@/api/system/baseInfo/user'
+import { UserAPI } from '@/api/system/baseInfo/user'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ userId: number; userName: string }>()

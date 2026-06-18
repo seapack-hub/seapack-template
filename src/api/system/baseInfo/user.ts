@@ -1,13 +1,49 @@
 import { request } from "@/utils/axios.ts"
 const USER_BASE_URL = "/api/user"
 
-const UserAPI = {
+/** 用户对象 */
+export interface User {
+  //用户id
+  id: number
+  //用户名
+  username?: string
+  //邮箱
+  email?: string
+  // 手机号
+  mobile?: string
+  //昵称
+  nickname?: string
+  //性别
+  gender?: number
+  //状态
+  status?: number
+  //部门id
+  deptId?: string
+  //部门名称
+  deptName?: string
+  //创建时间
+  createTime?: Date
+
+  [key: string]: any;
+}
+
+export const UserAPI = {
   /** 分页查询用户列表（GET /api/user/page/list） */
   getPage(queryParams: UserPageQuery) {
-    return request<any, PageResult<UserPageVO[]>>({
+    return request<any, PageResult<User[]>>({
       url: `${USER_BASE_URL}/page/list`,
       method: "get",
       params: queryParams,
+    })
+  },
+  
+  /**
+   * 查询用户详情
+   */
+  getUserInfo(userId:string){
+    return request<any, User>({
+      url: `${USER_BASE_URL}/${userId}`,
+      method: "get",
     })
   },
   /** 新增用户（POST /api/user/insert） */
@@ -58,7 +94,6 @@ const UserAPI = {
     return request<any, number[]>({ url: `${USER_BASE_URL}/${id}/roles`, method: 'get' })
   },
 }
-export default UserAPI
 
 /** 登录用户信息 */
 export interface UserInfo {
@@ -79,17 +114,3 @@ export interface UserPageQuery extends PageQuery {
   endTime?: string
 }
 
-/** 用户分页对象 */
-export interface UserPageVO {
-  id: number
-  avatar?: string
-  createTime?: Date
-  deptName?: string
-  email?: string
-  gender?: number
-  mobile?: string
-  nickname?: string
-  roleNames?: string
-  status?: number
-  username?: string
-}

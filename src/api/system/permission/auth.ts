@@ -18,8 +18,9 @@ export interface UserAuthInfo {
 export interface MenuTree {
   id: number
   name: string
-  path?: string
-  component?: string
+  path: string
+  permKey: string
+  component: string
   icon?: string
   /** 节点类型（1目录 2菜单） */
   type: number

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import { User } from '@/api/types/user.ts';
+import { type User} from '@/api/system/baseInfo/user.ts';
 import { usePermissionStore } from '@/store/modules/permission';
-
+import { AuthAPI } from '@/api/system/permission/auth';
 /**
  * 用户状态管理
  * 职责：
@@ -15,16 +15,8 @@ export const useUserStore = defineStore('user', {
     // ===== Token 相关 =====
     // 用户登录凭证，存在 localStorage 中持久化
     token: '',
-
     // ===== 用户信息 =====
-    userInfo: {
-      id: '',
-      username: '',
-      nickName: '',
-      email: '',
-      mobile: '',
-    } as User,
-
+    userInfo:{} as User,
     // ===== 权限相关 =====
     // 当前用户的角色编码列表
     roles: [] as string[],
@@ -98,13 +90,7 @@ export const useUserStore = defineStore('user', {
      * 清除用户信息（登出时调用）
      */
     clearUserInfo() {
-      this.userInfo = {
-        id: '',
-        username: '',
-        nickName: '',
-        email: '',
-        mobile: '',
-      } as User;
+      this.userInfo = {} as User;
       localStorage.removeItem('userInfo');
     },
 
@@ -117,11 +103,13 @@ export const useUserStore = defineStore('user', {
     setPerms(perms: string[]) {
       this.perms = perms;
     },
+
     /** 同时设置角色和权限（登录后调用） */
     setAuthInfo(info: { roles: string[]; perms: string[] }) {
       this.roles = info.roles;
       this.perms = info.perms;
     },
+
     /** 清除权限数据（登出时调用） */
     clearAuth() {
       this.roles = [];
@@ -152,6 +140,15 @@ export const useUserStore = defineStore('user', {
       this.restoreUserInfo();
       // 3. 返回是否已登录
       return this.isLoggedIn;
+    },
+
+    //从后端获取用户角色权限
+    async fetchAuthPerms(userId:string){
+      //获取用户权限数据
+      const authInfo = await AuthAPI.getUserInfo(userId);
+      //赋值
+      this.roles = authInfo.roles;
+      this.perms = authInfo.perms;
     },
 
     /**

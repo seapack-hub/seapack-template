@@ -19,10 +19,9 @@
 import { type LoginRequestData } from '@/api/login/types/login.ts';
 import {loginVerify,getPublicKey} from "@/api/login/index.ts";
 import { RsaUtil } from "@/utils/jsencrypt.ts";
-//import { AuthAPI } from '@/api/system/permission/auth';
+import { UserAPI } from "@/api/system/baseInfo/user";
 import { useUserStore } from '@/store/modules/user';
-//import { usePermissionStore } from '@/store/modules/permission';
-import { User } from '@/api/types/user.ts';
+import { usePermissionStore } from '@/store/modules/permission'
 
 const router = useRouter();
 const props = defineProps<{
@@ -36,9 +35,10 @@ const visible = defineModel('modelValue', {
 const rsaUtil = new RsaUtil();
 const loading = ref(true);
 const userStore = useUserStore();
-//const permissionStore = usePermissionStore();
+const permissionStore = usePermissionStore();
 
 const onCaptchaSuccess = async ()=>{
+  //密码加密
   const encryptedPassword = rsaUtil.encrypt(props.loginForm.password);
   if (!encryptedPassword) {
     ElMessage.error('密码加密失败');
@@ -52,29 +52,31 @@ const onCaptchaSuccess = async ()=>{
   try {
     // 调用后端登录接口，返回 { token, userId, username, nickName, email, mobile }
     const loginRes = await loginVerify(params);
-    console.log('loginRes', loginRes);
 
     if (!loginRes || !loginRes.token) {
       ElMessage.error('登录失败：未获取到 Token');
       visible.value = false;
       return;
     }
-
     // 1. 保存 Token 到 Store 和 localStorage
     userStore.setToken(loginRes.token);
+    // 2. 根据用户ID查询用户详情信息并保存
+    const userInfo = await UserAPI.getUserInfo(String(loginRes.userId))
+    userStore.setUserInfo(userInfo);
 
-    // 2. 保存用户信息（后端返回的用户基本信息）
-    userStore.setUserInfo({
-      id: String(loginRes.userId),
-      username: loginRes.username,
-      nickName: loginRes.nickName,
-      email: loginRes.email,
-      mobile: loginRes.mobile,
-    } as User);
-
+    // 3. 调用接口，获取用户权限信息并赋值
+    userStore.fetchAuthPerms(String(loginRes.userId))
+    
+    if(loginRes.username === 'admin'){
+      //admin用户配置静态路由
+      permissionStore.fetchStaticRoute()
+    }else{
+      //调用接口获取后端动态路由
+      permissionStore.fetchBackendRoute(String(loginRes.userId))
+    }
+    
     ElMessage.success('登录成功');
     visible.value = false;
-
     // 3. 跳转到首页（路由守卫会自动处理后续流程：获取权限、生成菜单等）
     // 使用 replace: true 避免浏览器历史记录中留下登录页
     router.replace({ path: '/systemManagement' });

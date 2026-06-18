@@ -1,6 +1,13 @@
 import { defineStore } from 'pinia';
-import { RouteRecordRaw } from 'vue-router';
+import { RouteRecordRaw, RouterView} from 'vue-router';
 import { routerRecordRow } from '@/router/index.ts';
+import { AuthAPI, type MenuTree } from '@/api/system/permission/auth'
+import router from "@/router/index"
+
+//常规页面路由
+const modules = import.meta.glob('@/views/**/*.vue');
+//布局路由
+const layoutModules = import.meta.glob('@/layout/**/*.vue');
 
 /**
  * usePermissionStore —— 权限与路由状态管理
@@ -49,9 +56,6 @@ export const usePermissionStore = defineStore('permission', {
       this.activeTopMenu = val;
     },
 
-    // 格式化路由的工具函数（在下方定义，通过函数名直接引用）
-    formatDynamicRoutes,
-
     /**
      * 将格式化后的动态路由与静态路由合并，并保存到 state
      * @param newRoutes 格式化后的动态路由数组
@@ -88,6 +92,46 @@ export const usePermissionStore = defineStore('permission', {
       this.activeTopMenu = '';
       this.isDynamicLoaded = false;
     },
+
+    /**
+     * 获取后端数据配置动态路由
+     */
+    async fetchBackendRoute(userId:string){
+      //接口，获取动态路由、
+      const menuList = await AuthAPI.getMenus(userId)
+      //格式化后端路由
+      const backendRoute = formatBackendRoutes(menuList)
+      // 将格式化后的路由逐条添加到 Vue Router 实例中
+      backendRoute.forEach((route) => {
+        router.addRoute(route);
+      });
+      //设置路由
+      this.setRoutes(backendRoute)
+    },
+
+    /**
+     * 配置静态文件路由
+     */
+    async fetchStaticRoute(){
+      //静态路由未加载，加载静态路由
+      const tsFiles = import.meta.glob('@/router/modules/*.ts', { eager: true });
+      // 用于合并所有模块中导出的路由数组
+      const mergedArray: any[] = [];
+      // 遍历每个模块文件
+      Object.values(tsFiles).forEach((module: any) => {
+        // 如果模块有 default 导出且是数组，就合并进来
+        if (module.default && Array.isArray(module.default)) {
+          mergedArray.push(...module.default);
+        }
+      });
+      // 格式化路由数据（补充 name 等）
+      const staticRouter = formatDynamicRoutes(mergedArray);
+      // 将格式化后的路由逐条添加到 Vue Router 实例中
+      staticRouter.forEach((route) => {
+        router.addRoute(route);
+      });
+      this.setRoutes(staticRouter)
+    }
   }
 });
 
@@ -124,3 +168,57 @@ function formatDynamicRoutes(routes: Array<RouteRecordRaw>) {
 
   return asyncRoute;
 }
+
+/**
+ * 格式化处理后端返回的路由信息
+ */
+function formatBackendRoutes(treeList:MenuTree[]){
+  if (!treeList || !treeList.length) return [];
+  return treeList.map(node =>{
+    const route:RouteRecordRaw = {
+      path:node.path,
+      // 优先使用 permKey 作为路由 name，保证唯一性
+      name: node.permKey || node.path.replace(/\//g, ''),
+      component: null, 
+      meta: {
+        title: node.name,
+        permKey: node.permKey,
+        type: node.type
+      },
+      children: []
+    }
+    //处理映射
+    if (node.type === 1) {
+      if(node.component){
+        //布局页面，每个模块的布局页面有所差别
+        const componentPath = `/src/${node.component}.vue`;
+        if (layoutModules[componentPath]) {
+          route.component = layoutModules[componentPath];
+        } else {
+          console.warn(`[路由警告] 未找到对应组件: ${node.component}`);
+          route.component = () => import('@/views/common/errorPage/404.vue');
+        }
+      }else{
+        // 纯目录（如：基础信息）使用空占位组件，保证嵌套路由正常渲染
+        route.component = RouterView
+      }
+    }else if(node.type === 2){
+      // 菜单类型：动态匹配 views 下的组件
+      // 假设后端返回的 component 格式为 "systemManagement/user/index"
+      const componentPath = `/src/views/${node.component}.vue`;
+      if (modules[componentPath]) {
+        route.component = modules[componentPath];
+      } else {
+        console.warn(`[路由警告] 未找到对应组件: ${node.component}`);
+        route.component = () => import('@/views/common/errorPage/404.vue');
+      }
+    }
+
+    //递归处理子节点
+    if (node.children && node.children.length > 0) {
+      route.children = formatBackendRoutes(node.children);
+    } 
+    return route;
+  }).filter(Boolean)
+}
+

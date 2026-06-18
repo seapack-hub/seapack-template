@@ -78,12 +78,12 @@ import DeptTree from './components/DeptTree.vue'
 import UserFormDialog from './components/UserFormDialog.vue'
 import RoleAssignDialog from './components/RoleAssignDialog.vue'
 import { createUserColumns } from './components/UserColumns'
-import UserAPI, { type UserPageQuery, type UserPageVO } from '@/api/system/baseInfo/user.ts'
+import {UserAPI, type UserPageQuery, type User } from '@/api/system/baseInfo/user.ts'
 import { exportExcel, type ExportRequest } from '@/api/system/baseInfo/export'
 
 const queryFormRef = ref<any>(null)
 const queryParams = reactive<UserPageQuery>({ pageNum: 1, pageSize: 10 })
-const pageData = ref<UserPageVO[]>([])
+const pageData = ref<User[]>([])
 const total = ref(0)
 const loading = ref(false)
 const timeArr = ref<any>([])
