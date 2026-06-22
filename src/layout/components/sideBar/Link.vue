@@ -24,8 +24,12 @@ const props = defineProps({
 const router = useRouter();
 //添加数据
 function push() {
+  console.log('[Link] push to:', props.to);
+  // 同时用 resolve 检查路由是否存在
+  const resolved = router.resolve(props.to);
+  console.log('[Link] resolved:', resolved, 'matched:', resolved.matched.length);
   router.push(props.to).catch((err) => {
-    console.log(err);
+    console.log('[Link] push error:', err);
   });
 }
 </script>

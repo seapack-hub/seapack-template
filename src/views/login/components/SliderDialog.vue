@@ -69,10 +69,10 @@ const onCaptchaSuccess = async ()=>{
     
     if(loginRes.username === 'admin'){
       //admin用户配置静态路由
-      permissionStore.fetchStaticRoute()
+      await permissionStore.fetchStaticRoute()
     }else{
       //调用接口获取后端动态路由
-      permissionStore.fetchBackendRoute(String(loginRes.userId))
+      await permissionStore.fetchBackendRoute(String(loginRes.userId))
     }
     
     ElMessage.success('登录成功');

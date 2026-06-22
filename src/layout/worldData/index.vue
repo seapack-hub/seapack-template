@@ -37,8 +37,11 @@ const menuList = computed(() => {
   return list?.children;
 });
 
-//获取基础路径
-const basePath = computed(() => permissionStore.basePath);
+// 基础路径从当前模块路由的 path 派生，供 SideBarItem 拼接相对子路径
+const basePath = computed(() => {
+  const route = dynamicRoutes.value.find((item) => item.name === 'worldData');
+  return route?.path || '';
+});
 
 const sidebarWidth = computed(() => {
   return appStore.opened ? 'var(--sidebar-width)' : 'var(--sidebar-hide-width)';

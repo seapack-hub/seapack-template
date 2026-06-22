@@ -1,3 +1,4 @@
+import { RouterView } from 'vue-router';
 interface RouterObject {
   [key: string]: any;
 }
@@ -8,7 +9,7 @@ const mapWorldRoute:Array<RouterObject> = [
     path: "/worldData",
     name: "worldData",
     component: worldData,
-    redirect: "/baseMap",
+    redirect: { name: 'baseMap' },
     show: true,
     meta: {
       title: "home",
@@ -16,7 +17,7 @@ const mapWorldRoute:Array<RouterObject> = [
     },
     children: [
       {
-        path: "/baseMap",
+        path: "baseMap",
         name: "baseMap",
         component: () => import('@/views/worldData/openLayers/baseMap/baseMap.vue'),
         meta: {
@@ -27,10 +28,10 @@ const mapWorldRoute:Array<RouterObject> = [
       },
       //openLayers地图
       {
-        path: "/worldData/openLayers",
+        path: "openLayers",
         name: "openLayers",
-        //component: "worldData/openLayers/index",
-        component: () => import('@/views/worldData/openLayers/index.vue'),
+        component: RouterView,
+        redirect: { name: 'layerType' },
         meta: {
           title: "openLayers",
           description: "openLayers地图",
@@ -39,10 +40,10 @@ const mapWorldRoute:Array<RouterObject> = [
         children: [
           //图层类型
           {
-            path: "/worldData/openLayers/layerType/heatMap",
+            path: "layerType",
             name: "layerType",
-            //component: "worldData/openLayers/layerType/index",
-            component: () => import('@/views/worldData/openLayers/layerType/index.vue'),
+            component: RouterView,
+            redirect: { name: 'heatMap' },
             meta: {
               title: "layerType",
               description: "图层类型",
@@ -51,9 +52,8 @@ const mapWorldRoute:Array<RouterObject> = [
             children: [
               //热力图层
               {
-                path: "/worldData/openLayers/layerType/components/HeatMap",
+                path: "heatMap",
                 name: "heatMap",
-                //component: "worldData/openLayers/layerType/components/HeatMap",
                 component: () => import('@/views/worldData/openLayers/layerType/components/HeatMap.vue'),
                 meta: {
                   title: "heatMap",
@@ -63,9 +63,8 @@ const mapWorldRoute:Array<RouterObject> = [
               },
               //矢量图层
               {
-                path: "/worldData/openLayers/layerType/components/VectorMap",
+                path: "vectorMap",
                 name: "vectorMap",
-                //component: "worldData/openLayers/layerType/components/VectorMap",
                 component: () => import('@/views/worldData/openLayers/layerType/components/VectorMap.vue'),
                 meta: {
                   title: "vectorMap",
@@ -75,9 +74,8 @@ const mapWorldRoute:Array<RouterObject> = [
               },
               //切片图层
               {
-                path: "/worldData/openLayers/layerType/components/SliceMap",
+                path: "sliceMap",
                 name: "sliceMap",
-                //component: "worldData/openLayers/layerType/components/SliceMap",
                 component: () => import('@/views/worldData/openLayers/layerType/components/SliceMap.vue'),
                 meta: {
                   title: "sliceMap",
@@ -89,9 +87,8 @@ const mapWorldRoute:Array<RouterObject> = [
           },
           //标注
           {
-            path: "/worldData/openLayers/basicOperation",
+            path: "basicOperation",
             name: "marking",
-            //component: "worldData/openLayers/basicOperations/marking",
             component: () => import('@/views/worldData/openLayers/basicOperations/marking.vue'),
             meta: {
               title: "marking",
@@ -101,9 +98,8 @@ const mapWorldRoute:Array<RouterObject> = [
           },
           //测试
           {
-            path: "/worldData/openLayers/components/ceshi",
+            path: "ceshi",
             name: "ceshi",
-            //component: "worldData/openLayers/components/ceshi",
             component: () => import('@/views/worldData/openLayers/components/ceshi.vue'),
             meta: {
               title: "openLayers",
@@ -115,10 +111,10 @@ const mapWorldRoute:Array<RouterObject> = [
       },
       //3D地图
       {
-        path: "/worldData/cesium",
+        path: "cesium",
         name: "cesium",
-        //component: "worldData/cesium/index",
-        component: () => import('@/views/worldData/cesium/index.vue'),
+        component: RouterView,
+        redirect: { name: 'baseCesium' },
         meta: {
           title: "cesium",
           description: "3D地图",
@@ -127,9 +123,8 @@ const mapWorldRoute:Array<RouterObject> = [
         children: [
           //基础地图
           {
-            path: "/worldData/cesium/baseCesium",
+            path: "baseCesium",
             name: "baseCesium",
-            //component: "worldData/cesium/components/baseCesium",
             component: () => import('@/views/worldData/cesium/components/baseCesium.vue'),
             meta: {
               title: "baseCesium",
@@ -139,10 +134,10 @@ const mapWorldRoute:Array<RouterObject> = [
           },
           //相机
           {
-            path: "/worldData/cesium/camera",
+            path: "camera",
             name: "camera",
-            //component: "worldData/cesium/camera/index",
-            component: () => import('@/views/worldData/cesium/camera/index.vue'),
+            component: RouterView,
+            redirect: { name: 'cameraFly' },
             meta: {
               title: "camera",
               description: "相机操作",
@@ -151,9 +146,8 @@ const mapWorldRoute:Array<RouterObject> = [
             children: [
               //飞行动作
               {
-                path: "/worldData/cesium/camera/fly",
+                path: "fly",
                 name: "cameraFly",
-                //component: "worldData/cesium/camera/components/cameraFly",
                 component: () => import('@/views/worldData/cesium/camera/components/cameraFly.vue'),
                 meta: {
                   title: "cameraFly",
@@ -163,9 +157,8 @@ const mapWorldRoute:Array<RouterObject> = [
               },
               //移动动作
               {
-                path: "/worldData/cesium/camera/move",
+                path: "move",
                 name: "cameraMove",
-                //component: "worldData/cesium/camera/components/cameraMove",
                 component: () => import('@/views/worldData/cesium/camera/components/cameraMove.vue'),
                 meta: {
                   title: "cameraMove",
@@ -177,10 +170,10 @@ const mapWorldRoute:Array<RouterObject> = [
           },
           //实体相关
           {
-            path: "/worldData/cesium/entities",
+            path: "entities",
             name: "entities",
-            //component: "worldData/cesium/entities/index",
-            component: () => import('@/views/worldData/cesium/entities/index.vue'),
+            component: RouterView,
+            redirect: { name: 'airModel' },
             meta: {
               title: "entities",
               description: "实体相关",
@@ -189,9 +182,8 @@ const mapWorldRoute:Array<RouterObject> = [
             children: [
               //飞机模型
               {
-                path: "/worldData/cesium/entities/airModel",
+                path: "airModel",
                 name: "airModel",
-                //component: "worldData/cesium/entities/components/airModel",
                 component: () => import('@/views/worldData/cesium/entities/components/airModel.vue'),
                 meta: {
                   title: "airModel",
@@ -201,9 +193,8 @@ const mapWorldRoute:Array<RouterObject> = [
               },
               //扫描
               {
-                path: "/worldData/cesium/entities/scan",
+                path: "scan",
                 name: "scan",
-                //component: "worldData/cesium/entities/components/scan",
                 component: () => import('@/views/worldData/cesium/entities/components/scan.vue'),
                 meta: {
                   title: "scan",
@@ -215,10 +206,10 @@ const mapWorldRoute:Array<RouterObject> = [
           },
           //粒子特效
           {
-            path: "/worldData/cesium/particleEffect",
+            path: "particleEffect",
             name: "particleEffect",
-            //component: "worldData/cesium/particleEffects/index",
-            component: () => import('@/views/worldData/cesium/particleEffects/index.vue'),
+            component: RouterView,
+            redirect: { name: 'snow' },
             meta: {
               title: "particleEffect",
               description: "粒子特效",
@@ -227,9 +218,8 @@ const mapWorldRoute:Array<RouterObject> = [
             children: [
               //雪花
               {
-                path: "/worldData/cesium/particleEffect/snow",
+                path: "snow",
                 name: "snow",
-                //component: "worldData/cesium/particleEffects/components/snow",
                 component: () => import('@/views/worldData/cesium/particleEffects/components/snow.vue'),
                 meta: {
                   title: "snow",
@@ -239,9 +229,8 @@ const mapWorldRoute:Array<RouterObject> = [
               },
               //雨水
               {
-                path: "/worldData/cesium/particleEffect/rain",
+                path: "rain",
                 name: "rain",
-                //component: "worldData/cesium/particleEffects/components/rain",
                 component: () => import('@/views/worldData/cesium/particleEffects/components/rain.vue'),
                 meta: {
                   title: "rain",
@@ -253,10 +242,10 @@ const mapWorldRoute:Array<RouterObject> = [
           },
           //数据加载
           {
-            path: "/worldData/cesium/loadData",
+            path: "loadData",
             name: "loadData",
-            //component: "worldData/cesium/loadData/index",
-            component: () => import('@/views/worldData/cesium/loadData/index.vue'),
+            component: RouterView,
+            redirect: { name: 'loadGeoJSON' },
             meta: {
               title: "loadData",
               description: "数据加载",
@@ -265,9 +254,8 @@ const mapWorldRoute:Array<RouterObject> = [
             children: [
               //JSON数据
               {
-                path: "/worldData/cesium/loadData/loadGeoJSON",
+                path: "loadGeoJSON",
                 name: "loadGeoJSON",
-                //component: "worldData/cesium/loadData/components/loadGeoJSON",
                 component: () => import('@/views/worldData/cesium/loadData/components/loadGeoJSON.vue'),
                 meta: {
                   title: "loadGeoJSON",
@@ -277,9 +265,8 @@ const mapWorldRoute:Array<RouterObject> = [
               },
               //飞机轨迹
               {
-                path: "/worldData/cesium/loadData/flightTrajectory",
+                path: "flightTrajectory",
                 name: "flightTrajectory",
-                //component: "worldData/cesium/loadData/components/flightTrajectory",
                 component: () => import('@/views/worldData/cesium/loadData/components/flightTrajectory.vue'),
                 meta: {
                   title: "flightTrajectory",

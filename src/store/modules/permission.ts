@@ -101,10 +101,8 @@ export const usePermissionStore = defineStore('permission', {
       const menuList = await AuthAPI.getMenus(userId)
       //格式化后端路由
       const backendRoute = formatBackendRoutes(menuList)
-      // 将格式化后的路由逐条添加到 Vue Router 实例中
-      backendRoute.forEach((route) => {
-        router.addRoute(route);
-      });
+      // 添加完整路由树，Vue Router 内部会自动处理父子关系
+      backendRoute.forEach(route => router.addRoute(route as RouteRecordRaw));
       //设置路由
       this.setRoutes(backendRoute)
     },
@@ -126,9 +124,9 @@ export const usePermissionStore = defineStore('permission', {
       });
       // 格式化路由数据（补充 name 等）
       const staticRouter = formatDynamicRoutes(mergedArray);
-      // 将格式化后的路由逐条添加到 Vue Router 实例中
-      staticRouter.forEach((route) => {
-        router.addRoute(route);
+      // 添加完整路由树，Vue Router 内部会自动处理父子关系
+      staticRouter.forEach(route => {
+        router.addRoute(route as RouteRecordRaw);
       });
       this.setRoutes(staticRouter)
     }
@@ -221,4 +219,6 @@ function formatBackendRoutes(treeList:MenuTree[]){
     return route;
   }).filter(Boolean)
 }
+
+// addRoutesToRouter 已移除，改为 Vue Router 原生 addRoute 处理完整路由树
 

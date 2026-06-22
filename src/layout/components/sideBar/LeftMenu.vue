@@ -26,10 +26,7 @@ const route = useRoute();
 const { isTop,isLeft } = useLayoutMode();
 
 const activeMenuObj = computed(() => {
-  const { path } = route;
-  //构建正则表达式，去除模块前缀
-  const reg = new RegExp('\/[a-zA-Z0-9]*\/');
-  return path.replace(reg, '');
+  return route.path;
 });
 
 const activeTextColor = computed(() => {

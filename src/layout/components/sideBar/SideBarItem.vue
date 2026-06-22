@@ -1,8 +1,8 @@
 <template>
   <!--无子路由-->
   <template v-if="!item.children">
-    <Link :to="item.path">
-      <el-menu-item :index="item.path">
+    <Link :to="resolvePath(item.path)">
+      <el-menu-item :index="resolvePath(item.path)">
         <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
         <template #title>
           <span class="menu-text">{{ item.meta.description || '未知' }}</span>
@@ -10,8 +10,8 @@
       </el-menu-item>
     </Link>
   </template>
-  <template v-else>
-    <el-sub-menu :index="item.path">
+  <template v-else-if="item.children && item.children.length > 0">
+    <el-sub-menu :index="resolvePath(item.path)">
       <template #title>
         <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
         <span class="menu-text">{{ item.meta.description || '未知' }}</span>
@@ -20,7 +20,7 @@
         v-for="(step, index) in item.children"
         :key="index"
         :item="step"
-        :base-path="basePath"
+        :base-path="resolvePath(item.path)"
       ></side-bar-item>
     </el-sub-menu>
   </template>
@@ -28,7 +28,8 @@
 
 <script setup lang="ts">
 import Link from './Link.vue';
-defineProps({
+
+const props = defineProps({
   basePath: {
     type: String,
     default: ''
@@ -38,6 +39,16 @@ defineProps({
     default: () => {}
   }
 });
+
+function resolvePath(toPath: string): string {
+  if (!toPath) return '';
+  if (toPath.startsWith('/')) return toPath;
+  if (props.basePath) {
+    const base = props.basePath.endsWith('/') ? props.basePath.slice(0, -1) : props.basePath;
+    return `${base}/${toPath}`;
+  }
+  return toPath;
+}
 </script>
 
 <style scoped lang="scss">

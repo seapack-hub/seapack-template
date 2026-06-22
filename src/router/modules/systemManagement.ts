@@ -1,3 +1,4 @@
+import { RouterView } from 'vue-router';
 interface RouterObject {
   [key: string]: any;
 }
@@ -7,7 +8,7 @@ const systemManagementRoute: Array<RouterObject> = [
     path: '/systemManagement',
     name: 'systemManagement',
     component: () => import('@/layout/main/index.vue'),
-    redirect: '/dashboard',
+    redirect: { name: 'Dashboard' },
     show: true,
     meta: {
       title: 'home',
@@ -16,7 +17,7 @@ const systemManagementRoute: Array<RouterObject> = [
     children: [
       //首页
       {
-        path: "/dashboard",
+        path: 'dashboard',
         component: () => import("@/views/systemManagement/dashboard/index.vue"),
         name: "Dashboard",
         meta: {
@@ -29,8 +30,10 @@ const systemManagementRoute: Array<RouterObject> = [
       },
       //基础信息
       {
-        path:"/baseInfo",
-        redirect: '/user',
+        path: 'baseInfo',
+        name: 'baseInfo',
+        component: RouterView,
+        redirect: { name: 'user' },
         meta:{
           title:"baseInfo",
           description:"基础信息",
@@ -39,7 +42,7 @@ const systemManagementRoute: Array<RouterObject> = [
         children:[
           //部门管理
           {
-            path: '/dept',
+            path: 'dept',
             name: 'dept',
             component: () => import('@/views/systemManagement/baseInfo/deptManagement/index.vue'),
             meta: {
@@ -50,7 +53,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           //用户管理
           {
-            path: '/user',
+            path: 'user',
             name: 'user',
             component: () => import('@/views/systemManagement/baseInfo/userManagement/index.vue'),
             meta: {
@@ -61,7 +64,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           //行业管理
           {
-            path: '/industryManagement',
+            path: 'industryManagement',
             name: 'industryManagement',
             component: () => import('@/views/systemManagement/baseInfo/industryManagement/index.vue'),
             meta: {
@@ -72,7 +75,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           //字典设置
           {
-            path: '/dictSetting',
+            path: 'dictSetting',
             name: 'dictSetting',
             component: () => import('@/views/systemManagement/baseInfo/dictSetting/index.vue'),
             meta: {
@@ -85,8 +88,10 @@ const systemManagementRoute: Array<RouterObject> = [
       },
       //权限管理
       {
-        path:"/permission",
-        redirect: '/role',
+        path: 'permission',
+        name: 'permission',
+        component: RouterView,
+        redirect: { name: 'role' },
         meta:{
           title:"permission",
           description:"权限管理",
@@ -94,7 +99,7 @@ const systemManagementRoute: Array<RouterObject> = [
         },
         children:[
           {
-            path: '/role',
+            path: 'role',
             name: 'role',
             component: () => import('@/views/systemManagement/permission/role/index.vue'),
             meta: {
@@ -104,7 +109,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/menu',
+            path: 'menu',
             name: 'menu',
             component: () => import('@/views/systemManagement/permission/menu/index.vue'),
             meta: {
@@ -117,8 +122,10 @@ const systemManagementRoute: Array<RouterObject> = [
       },
       //基金模块
       {
-        path:"/fund",
-        redirect: '/fundBaseInfo',
+        path: 'fund',
+        name: 'fund',
+        component: RouterView,
+        redirect: { name: 'fundBaseInfo' },
         meta:{
           title:"fund",
           description:"基金模块",
@@ -127,7 +134,7 @@ const systemManagementRoute: Array<RouterObject> = [
         children:[
           //基金信息表
           {
-            path: '/fundBaseInfo',
+            path: 'fundBaseInfo',
             name: 'fundBaseInfo',
             component: () => import('@/views/systemManagement/fund/index.vue'),
             meta: {
@@ -138,7 +145,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           //基金信息表
           {
-            path: '/fundBaseInfo/detail',
+            path: 'fundBaseInfo/detail',
             name: 'fundBaseInfoDetail',
             component: () => import('@/views/systemManagement/fund/detail.vue'),
             meta: {
@@ -150,7 +157,7 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           //行业分类
           {
-            path: '/industry',
+            path: 'industry',
             name: 'industry',
             component: () => import('@/views/systemManagement/fund/Industry/index.vue'),
             meta: {
@@ -163,8 +170,10 @@ const systemManagementRoute: Array<RouterObject> = [
       },
       //股息监控
       {
-        path:"/stockManagement",
-        redirect: '/stockQuote',
+        path: 'stockManagement',
+        name: 'stockManagement',
+        component: RouterView,
+        redirect: { name: 'stockQuote' },
         meta:{
           title:"stockManagement",
           description:"股息监控",
@@ -172,7 +181,7 @@ const systemManagementRoute: Array<RouterObject> = [
         },
         children:[
           {
-            path: '/stockQuote',
+            path: 'stockQuote',
             name: 'stockQuote',
             component: () => import('@/views/systemManagement/stockManagement/stockQuote/index.vue'),
             meta: {
@@ -182,7 +191,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/stockPool',
+            path: 'stockPool',
             name: 'stockPool',
             component: () => import('@/views/systemManagement/stockManagement/stockPool/index.vue'),
             meta: {
@@ -192,7 +201,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/stockPool/detail',
+            path: 'stockPool/detail',
             name: 'stockPoolDetail',
             component: () => import('@/views/systemManagement/stockManagement/stockPool/detail.vue'),
             meta: {
@@ -202,7 +211,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/dividendData',
+            path: 'dividendData',
             name: 'dividendData',
             component: () => import('@/views/systemManagement/stockManagement/dividendData/index.vue'),
             meta: {
@@ -212,7 +221,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/dashboardView',
+            path: 'dashboardView',
             name: 'dashboardView',
             component: () => import('@/views/systemManagement/stockManagement/dashboard/index.vue'),
             meta: {
@@ -222,7 +231,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/alertHistory',
+            path: 'alertHistory',
             name: 'alertHistory',
             component: () => import('@/views/systemManagement/stockManagement/alertHistory/index.vue'),
             meta: {
@@ -235,9 +244,10 @@ const systemManagementRoute: Array<RouterObject> = [
       },
       //组件封装
       {
-        path: '/genericComponent',
+        path: 'genericComponent',
         name: 'genericComponent',
-        redirect: '/electronicSignatures',
+        component: RouterView,
+        redirect: { name: 'electronicSignatures' },
         meta: {
           title: 'genericComponent',
           description: '组件封装',
@@ -246,7 +256,7 @@ const systemManagementRoute: Array<RouterObject> = [
         children: [
           //电子签名
           {
-            path: '/electronicSignatures',
+            path: 'electronicSignatures',
             name: 'electronicSignatures',
             component: () => import('@/views/systemManagement/components/electronicSignatures/ESign.vue'),
             meta: {
@@ -256,8 +266,8 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path:"/encapsulationTable",
-            name:"encapsulationTable",
+            path: 'encapsulationTable',
+            name: 'encapsulationTable',
             component:()=> import("@/views/systemManagement/components/encapsulationTable/index.vue"),
             meta:{
               title:"encapsulationTable",
@@ -266,8 +276,8 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path:"/splitTable",
-            name:"splitTable",
+            path: 'splitTable',
+            name: 'splitTable',
             component:()=> import("@/views/systemManagement/components/splitTableCode/index.vue"),
             meta:{
               title:"splitTable",
@@ -277,8 +287,8 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           //富文本编辑器
           {
-            path:"/wang-editer",
-            name:"wangEditer",
+            path: 'wang-editer',
+            name: 'wangEditer',
             component:() => import("@/views/systemManagement/components/wangEditer/wang-editor.vue"),
             meta:{
               title: 'wangEditer',
@@ -290,9 +300,10 @@ const systemManagementRoute: Array<RouterObject> = [
       },
       //图形化管理
       {
-        path:"/graphical",
-        name:"graphical",
-        redirect: '/flowCharts',
+        path: 'graphical',
+        name: 'graphical',
+        component: RouterView,
+        redirect: { name: 'flowCharts' },
         meta:{
           title:"graphical",
           description:"图形化管理",
@@ -300,7 +311,7 @@ const systemManagementRoute: Array<RouterObject> = [
         },
         children:[
           {
-            path: '/flowCharts',
+            path: 'flowCharts',
             name: 'flowCharts',
             component:() => import("@/views/systemManagement/graphical/index.vue"),
             meta: {
@@ -313,15 +324,15 @@ const systemManagementRoute: Array<RouterObject> = [
       },
       //AI
       {
-        path:"/aiInteraction",
-        name:"aiInteraction",
-        // component:() => import("@/views/systemManagement/aiInteraction/index.vue"),
-        redirect: '/rag',
+        path: 'aiInteraction',
+        name: 'aiInteraction',
+        component: RouterView,
+        redirect: { name: 'rag' },
         children:[
           //RAG知识库
           {
-            path:"/rag",
-            name:"rag",
+            path: 'rag',
+            name: 'rag',
             component:() => import("@/views/systemManagement/aiInteraction/index.vue"),
             meta:{
               title:"rag",
@@ -331,8 +342,8 @@ const systemManagementRoute: Array<RouterObject> = [
           },
           //智能体交互
           {
-            path:"/agent",
-            name:"agent",
+            path: 'agent',
+            name: 'agent',
             component:() => import("@/views/systemManagement/aiInteraction/agent/index.vue"),
             meta:{
               title:"agent",
@@ -349,8 +360,9 @@ const systemManagementRoute: Array<RouterObject> = [
       },
       //博客文档
       {
-        path:"/doc",
-        name:"doc",
+        path: 'doc',
+        name: 'doc',
+        component: RouterView,
         redirect: "https://juejin.cn/post/7484987385665011762",
         meta: {
           title: 'document',
@@ -359,7 +371,7 @@ const systemManagementRoute: Array<RouterObject> = [
         },
         children:[
           {
-            path: "/internal-doc-1",
+            path: 'internal-doc-1',
             component: () => import("@/views/systemManagement/blogDocument/internal-doc-1.vue"),
             name: "InternalDoc-1",
             meta: {
@@ -369,7 +381,7 @@ const systemManagementRoute: Array<RouterObject> = [
             },
           },
           {
-            path: "/internal-doc-2",
+            path: 'internal-doc-2',
             component: () => import("@/views/systemManagement/blogDocument/internal-doc-2.vue"),
             name: "InternalDoc-2",
             meta: {
@@ -379,7 +391,7 @@ const systemManagementRoute: Array<RouterObject> = [
             },
           },
           {
-            path: "/internal-doc-3",
+            path: 'internal-doc-3',
             component: () => import("@/views/systemManagement/blogDocument/internal-doc-3.vue"),
             name: "InternalDoc-3",
             meta: {
@@ -389,7 +401,7 @@ const systemManagementRoute: Array<RouterObject> = [
             },
           },
           {
-            path: "/internal-doc-4",
+            path: 'internal-doc-4',
             component: () => import("@/views/systemManagement/blogDocument/internal-doc-4.vue"),
             name: "InternalDoc-4",
             meta: {
@@ -399,7 +411,7 @@ const systemManagementRoute: Array<RouterObject> = [
             },
           },
           {
-            path: "/internal-doc-5",
+            path: 'internal-doc-5',
             component: () => import("@/views/systemManagement/blogDocument/internal-doc-5.vue"),
             name: "InternalDoc-5",
             meta: {
@@ -412,9 +424,10 @@ const systemManagementRoute: Array<RouterObject> = [
       },
       //echarts图表
       {
-        path: '/echarts',
+        path: 'echarts',
         name: 'echarts',
-        redirect: '/chinaMap',
+        component: RouterView,
+        redirect: { name: 'chinaMap' },
         meta: {
           title: 'echarts',
           description: 'echarts',
@@ -423,7 +436,7 @@ const systemManagementRoute: Array<RouterObject> = [
         children:[
           //中国地图
           {
-            path: '/chinaMap',
+            path: 'chinaMap',
             name: 'chinaMap',
             component: () => import('@/views/systemManagement/echarts/chinaMap.vue'),
             meta: {
@@ -433,7 +446,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/migrationMap',
+            path: 'migrationMap',
             name: 'migrationMap',
             component: () => import('@/views/systemManagement/echarts/migrationMap.vue'),
             meta: {
@@ -443,7 +456,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/histogram',
+            path: 'histogram',
             name: 'histogram',
             component: () => import('@/views/systemManagement/echarts/histogram.vue'),
             meta: {
@@ -453,7 +466,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/relationship',
+            path: 'relationship',
             name: 'relationship',
             component: () => import('@/views/systemManagement/echarts/relationship.vue'),
             meta: {
@@ -463,7 +476,7 @@ const systemManagementRoute: Array<RouterObject> = [
             }
           },
           {
-            path: '/radar',
+            path: 'radar',
             name: 'radar',
             component: () => import('@/views/systemManagement/echarts/radar.vue'),
             meta: {

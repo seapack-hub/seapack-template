@@ -38,8 +38,11 @@ const menuList = computed(() => {
   return list?.children;
 });
 const isCollapse = computed(() => !appStore.opened);
-//获取基础路径
-const basePath = computed(() => permissionStore.basePath);
+// 基础路径从当前模块路由的 path 派生，供 SideBarItem 拼接相对子路径
+const basePath = computed(() => {
+  const route = dynamicRoutes.value.find((item: RouteRecordRaw) => item.name === 'systemManagement');
+  return route?.path || '';
+});
 </script>
 
 <style scoped lang="scss">

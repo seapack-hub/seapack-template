@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw, RouterView } from 'vue-router';
 
 //import layout from '@/layout/main/index.vue';
 
@@ -22,12 +22,12 @@ export const routerRecordRow: RouteRecordRaw[] = [
   //博客
   {
     path: "/blogsManagement",
-    //component:()=> import("@/views/blogs/index.vue"),
-    //component: ()=>import("@/layout/menuTab/index.vue"),
-    redirect: '/blogs',
+    name: "blogsManagement",
+    component: RouterView,
+    redirect: { name: 'blogs' },
     children:[
       {
-        path: "/blogs",
+        path: "blogs",
         component: () => import("@/views/blogs/index.vue"),
         meta: {
           title: '博客管理',
