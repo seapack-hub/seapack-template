@@ -23,16 +23,17 @@ class RouterPluginManager {
   async runBeforeEach(context: RouterPluginContext) {
     for (const plugin of this.plugins) {
       if (plugin.beforeEach) {
-        // 执行当前插件的前置守卫
-        await plugin.beforeEach(context)
-        
-        // 💡 核心拦截机制：
-        // 如果某个插件调用了 next(false) 或 next('/login') 进行了拦截或重定向，
-        // 后续的插件就不应该再执行了，直接跳出循环。
-        // （注：在实际工程中，通常需要重写 next 函数来捕获它的调用状态，
-        // 这里是一个简化的说明，实际使用时需配合状态标志位）
+        const result = await plugin.beforeEach(context)
+
+        // 只要有任何插件返回了拦截指令，立即停止后续插件执行并返回给 Router
+        if (result !== undefined) {
+          console.log(`[Router Plugin: ${plugin.name}] 拦截导航，返回值:`, result)
+          return result
+        }
       }
     }
+    // 所有插件都未拦截，返回 undefined 放行
+    return undefined
   }
 
   /**

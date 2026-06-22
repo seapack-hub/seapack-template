@@ -10,8 +10,8 @@ routerPluginManager.register(permissionPlugin)
 routerPluginManager.register(progressPlugin)
 
 // 全局路由前置守卫
-router.beforeEach(async (to, from, next) => {
-  await routerPluginManager.runBeforeEach({to, from, next});
+router.beforeEach(async (to, from) => {
+  await routerPluginManager.runBeforeEach({to, from});
 })
 // 后置守卫
 router.afterEach((to, from) => {

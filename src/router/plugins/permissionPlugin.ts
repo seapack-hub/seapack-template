@@ -12,47 +12,41 @@ export const permissionPlugin: RouterPlugin = {
 
   priority: 1, // 权限校验通常优先级最高
 
-  async beforeEach({to,next}){
+  async beforeEach({to}){
     
     const userStore = useUserStore()
     const permissionStore = usePermissionStore()
 
     // 1. 白名单直接放行
-    if (WHITE_LIST.includes(to.path)) {
-      return next()
-    }
-    //2 如果内存中没有 Token，尝试从 localStorage 恢复
-    //浏览器刷新会导致 Pinia 状态重置，但 localStorage 是持久化的
+    if (WHITE_LIST.includes(to.path)) return undefined
+
+    // 2. Token 校验与恢复
     if (!userStore.token) {
-      const isRestored = userStore.restoreLoginState()
-      // 如果恢复后依然没有 Token，说明用户确实未登录
+      const isRestored = userStore.restoreLoginState() // 确保此方法是同步的
       if (!isRestored) {
-        return next(`/login?redirect=${to.path}`)
+        return `/login?redirect=${to.path}` // 拦截并跳转
       }
     }
 
-    //3 有 Token，检查动态路由是否已经生成
-    if(permissionStore.isDynamicLoaded){
-      // 路由已生成，直接放行
-      return next()
-    }else{
-      try{
-        // 3. 调用接口，获取用户权限信息并赋值
-        userStore.fetchAuthPerms(String(userStore.userId));
-        //admin用户获取静态路由，其余用户获取动态路由
-        if(userStore.username){
-          permissionStore.fetchStaticRoute()
-        }else{
-          //获取后端配置的动态路由
-          permissionStore.fetchBackendRoute(String(userStore.userId))
-        }
-        //继续跳转
-        next({ ...to, replace: true })
-      }catch(err){
-        // 获取菜单失败（可能是 Token 过期或后端报错），强制登出并跳转登录页
-        await userStore.logout(false) // false 表示不调用后端登出接口
-        next(`/login?redirect=${to.path}`)
+    // 3. 动态路由加载
+    if (permissionStore.isDynamicLoaded) return undefined
+
+    try {
+      //加载用户权限
+      await userStore.fetchAuthPerms(String(userStore.userId))
+
+      if (userStore.username === 'admin') {
+        //admin用户加载静态路由
+        await permissionStore.fetchStaticRoute()
+      } else {
+        //加载动态路由
+        await permissionStore.fetchBackendRoute(String(userStore.userId))
       }
+      // 动态路由添加后，必须 replace 重新触发导航
+      return { ...to, replace: true }
+    } catch (err) {
+      await userStore.logout(false)
+      return `/login?redirect=${to.path}`
     }
 
   }

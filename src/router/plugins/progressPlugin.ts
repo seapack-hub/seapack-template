@@ -10,10 +10,9 @@ import 'nprogress/nprogress.css'
 export const progressPlugin:RouterPlugin = {
   name: "ProgressPlugin",
   priority:10,
-  beforeEach({next}){
+  beforeEach(){
     //进度条开始
     NProgress.start();
-    next()
   },
   afterEach(to,_from){
     //进度条结束

@@ -1,5 +1,5 @@
 // 引入 Vue Router 的标准类型，用于约束路由对象的格式
-import type { RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
+import type { RouteLocationNormalized, RouteLocationNormalizedLoaded, RouteLocationRaw } from 'vue-router'
 
 /**
  * 路由插件的执行上下文 (Context)
@@ -11,12 +11,6 @@ export interface RouterPluginContext {
 
   /** 当前导航正要离开的路由对象 */
   from: RouteLocationNormalizedLoaded
-  
-  /** 
-   * 控制导航行为的函数 
-   * 调用 next() 放行，调用 next('/login') 重定向，调用 next(false) 取消导航
-   */
-  next: (to?: any) => void
 }
 
 /**
@@ -38,7 +32,7 @@ export interface RouterPlugin {
    * 全局前置守卫逻辑
    * 在路由跳转前执行，通常用于权限校验、动态路由注入等
    */
-  beforeEach?: (context: RouterPluginContext) => void | Promise<void>
+  beforeEach?:  (context: RouterPluginContext) => RouteLocationRaw | boolean | void | Promise<RouteLocationRaw | boolean | void>
   
   /** 
    * 全局后置守卫逻辑
