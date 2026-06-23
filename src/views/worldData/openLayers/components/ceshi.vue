@@ -1,245 +1,139 @@
 <template>
   <div class="open-layers">
-    <!--按钮-->
     <div class="button-group">
       <el-button @click="toggleLayer">显示与隐藏</el-button>
-      <el-button :disabled="isDraw" @click="startLine">开始绘制</el-button>
+      <el-button :disabled="isDrawing" @click="startLine">开始绘制</el-button>
       <el-button @click="clearLine">清除绘制</el-button>
     </div>
-    <!--地图-->
     <div id="map" class="map-x"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-//引入样式
-import 'ol/ol.css';
-import 'ol/obj';
-/**
- * 地图实例函数-Map
- * 地图视图-View
- * 图斑-Feature
- */
-import { Map, View} from 'ol';
-import { Tile, Vector as VectorLayer } from 'ol/layer';
+import { Map, View } from 'ol';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import { XYZ, Vector as VectorSource } from 'ol/source';
-/**
- * 点-Point,
- * 线-LineString
- * 面-Polygon
- */
-//import { Point, LineString, Polygon } from 'ol/geom';
-/**
- * 样式容器-Style,
- * 填充色-Fill
- * 边线颜色-Stroke
- * 形状-Circle
- */
-import { Style,  Stroke, } from 'ol/style';
-/**
- * 比例尺-ScaleLine
- * 全屏-FullScreen
- * 鹰眼小地图-OverviewMap
- * 导览组件-ZoomToExtent
- * 缩放组件-ZoomSlider
- */
+import { Style, Stroke } from 'ol/style';
 import { ScaleLine, FullScreen, ZoomToExtent, ZoomSlider } from 'ol/control';
 import { defaults } from 'ol/control/defaults';
 import { Draw } from 'ol/interaction';
+import type Interaction from 'ol/interaction/Interaction';
 
-//初始化一个地图对象
-let map = ref(null);
-//创建一个绘制实例
-let draw = ref(null);
-//初始化一个绘制变量
-let isDraw = ref(false);
-//定义绘制的线条数据
-let lineData = ref([]);
+const map = ref<Map | null>(null);
+const draw = ref<Draw | null>(null);
+const isDrawing = ref(false);
 
-/**
- * 初始化地图
- */
+/** 初始化地图 */
 function initMap() {
-  //设置配置
-  const options = {
-    //绑定html元素
+  map.value = new Map({
     target: 'map',
-    //图层
     layers: [
-      new Tile({
+      new TileLayer({
         source: new XYZ({
-          url: 'http://t4.tianditu.com/DataServer?T=vec_w&tk=d845a99528ce08b31543c602207e873f&x={x}&y={y}&l={z}'
-        }), // 图层数据源（OSM可以在练习时使用，千万别用在真实项目！！！）
-        visible: true, //初始化是否展示图层
-        opacity: 1 // 设置图层不透明度
+          url: 'http://t4.tianditu.com/DataServer?T=vec_w&tk=d845a99528ce08b31543c602207e873f&x={x}&y={y}&l={z}',
+        }),
       }),
-      new Tile({
+      new TileLayer({
         source: new XYZ({
-          url: 'http://t4.tianditu.com/DataServer?T=cva_w&tk=d845a99528ce08b31543c602207e873f&x={x}&y={y}&l={z}'
-        }), // 图层数据源（OSM可以在练习时使用，千万别用在真实项目！！！）
-        visible: true,
-        opacity: 1 // 设置图层不透明度
-      })
-      // new Tile({
-      //   source:new XYZ({
-      //     url:'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
-      //   }), // 图层数据源（OSM可以在练习时使用，千万别用在真实项目！！！）
-      //   visible:false,
-      // }),
+          url: 'http://t4.tianditu.com/DataServer?T=cva_w&tk=d845a99528ce08b31543c602207e873f&x={x}&y={y}&l={z}',
+        }),
+      }),
     ],
-    //地图视图
     view: new View({
-      projection: 'EPSG:4326', // 坐标系，有EPSG:4326和EPSG:3857
-      center: [114.064839, 22.548857], //深圳坐标
-      zoom: 10, //// 地图缩放级别（打开页面时默认级别）
-      maxZoom: 18, // 最大缩放等级
-      minZoom: 1 // 最小缩放等级
-      // rotation: Math.PI/ 180*45, //地图旋转45度
+      projection: 'EPSG:4326',
+      center: [114.064839, 22.548857],
+      zoom: 10,
+      maxZoom: 18,
+      minZoom: 1,
     }),
-    //控制器
     controls: defaults().extend([
       new ScaleLine(),
       new FullScreen(),
-      // new OverviewMap({
-      //   layers:[
-      //     new Tile({
-      //       source:new XYZ({
-      //         url:'https://webst0{1-4}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
-      //       })
-      //     })
-      //   ],
-      //   //默认小地图打开
-      //   collapsed: false
-      // }),
-      new ZoomToExtent({
-        //定义要展示区域的4个角的坐标
-        extent: [114, 25, 156, 40]
-      }),
-      new ZoomSlider()
-    ])
-  };
-  map.value = new Map(options);
-}
-/**
- * 显示与隐藏
- */
-function toggleLayer() {
-  //获取图层组
-  let layers = map.value.getLayers();
-  const list = [layers.item(0), layers.item(1)];
-  list.forEach((item) => {
-    item.setVisible(!item.getVisible());
+      new ZoomToExtent({ extent: [114, 25, 156, 40] }),
+      new ZoomSlider(),
+    ]),
   });
 }
-/**
- * 创建点
- */
-// function createPoint(){
-//   // 创建一个点的图层，需要一个layer来放置点
-//   let pointLayer = new VectorLayer({
-//     source:new VectorSource()
-//   });
-//   const point = new Feature({
-//     //点的位置
-//     geometry:new Point([114.064839, 22.548857])
-//   });
-//   //设置点的样式信息
-//   const styleConfig = {
-//     //形状
-//     image:new Circle({
-//       radius:10,
-//       fill:new Fill({
-//         color: '#b40101'
-//       })
-//     })
-//   }
-//   point.setStyle(new Style(styleConfig));
-//   //将点添加至layer中
-//   pointLayer.getSource()?.addFeature(point);
-//   map.value.addLayer(pointLayer)
-// }
 
-/**
- * 创建线
- */
-function startLine() {
-  isDraw.value = true;
-  //创建矢量图层
-  const source = new VectorSource({
-    wrapX: false
+onMounted(initMap);
+
+onUnmounted(() => {
+  map.value?.setTarget(undefined);
+});
+
+/** 切换前两个图层的显隐 */
+function toggleLayer() {
+  const layers = map.value?.getLayers();
+  if (!layers) return;
+  [layers.item(0), layers.item(1)].forEach((layer) => {
+    if (layer) layer.setVisible(!layer.getVisible());
   });
+}
+
+/** 开始绘制线 */
+function startLine() {
+  if (!map.value) return;
+  isDrawing.value = true;
+
+  const source = new VectorSource({ wrapX: false });
   const lineLayer = new VectorLayer({
-    source: source,
-    style: new Style({
-      stroke: new Stroke({
-        color: '#14ec0e',
-        width: 2
-      })
-    })
+    source,
+    style: new Style({ stroke: new Stroke({ color: '#14ec0e', width: 2 }) }),
   });
   map.value.addLayer(lineLayer);
-  //创建绘制交互实例
+
   draw.value = new Draw({
-    source: source,
-    type: 'LineString', // 默认绘制类型为点
-    style: new Style({
-      stroke: new Stroke({
-        color: '#14ec0e',
-        width: 2
-      })
-    })
+    source,
+    type: 'LineString',
+    style: new Style({ stroke: new Stroke({ color: '#14ec0e', width: 2 }) }),
   });
 
-  //drawstart-绘制开始时调用，单击鼠标触发
-  //drawend-绘制结束时调用，双击鼠标触发
-  draw.value.on('drawend', function (event) {
-    //将线条端点位置数据存储到数组中
-    if (event.target.sketchCoords_.length > 0) {
-      lineData.value.push(event.target.sketchCoords_);
-    }
-    //停止绘制
+  draw.value.on('drawend', () => {
     removeInteraction();
   });
-  map.value.addInteraction(draw.value);
+
+  map.value.addInteraction(draw.value as unknown as Interaction);
 }
 
-/**
- * 清楚线
- */
-function clearLine() {}
+/** 清除所有绘制的线 */
+function clearLine() {
+  if (!map.value) return;
+  removeInteraction();
+  const layers = map.value.getLayers();
+  // 移除最后添加的矢量图层（即绘制图层）
+  for (let i = layers.getLength() - 1; i >= 0; i--) {
+    const layer = layers.item(i);
+    if (layer instanceof VectorLayer) {
+      map.value.removeLayer(layer);
+      break;
+    }
+  }
+}
 
-/**
- * 停止绘画
- */
+/** 移除绘制交互 */
 function removeInteraction() {
-  map.value.removeInteraction(draw.value);
-  //绘制结束
-  isDraw.value = false;
+  if (draw.value && map.value) {
+    map.value.removeInteraction(draw.value as unknown as Interaction);
+    draw.value = null;
+  }
+  isDrawing.value = false;
 }
-
-onMounted(() => {
-  initMap();
-});
 </script>
 
 <style scoped lang="scss">
 .open-layers {
   width: 100%;
   height: 100%;
-  //padding: 20px;
-  .title {
-    text-align: center;
-  }
-  .button-group {
-    height: 50px;
-    display: flex;
-    align-items: center;
-  }
+}
+.button-group {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 12px;
 }
 .map-x {
   height: calc(100% - 50px);
-  //width: calc(100% - 50px);
   width: 100%;
 }
 </style>
