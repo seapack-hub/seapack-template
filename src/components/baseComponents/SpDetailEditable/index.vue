@@ -1,75 +1,75 @@
 <template>
-<!--使用Flex布局实现水平排列，根据是否有前后缀内容动态设置间距-->
-<div
-  class="w-full flex items-center overflow-hidden"
-  :class="{ 'gap-x-5px': hasSlotContent}"
->
-  <!--支持两种前缀配置方式（$attrs.prepend和prefix），通过fixRender组件动态渲-->
-  <template v-if="($attrs as any)?.prepend?.value">
-    <fixRender v-bind="($attrs as any).prepend" />
-  </template>
-  <template v-if="prefix?.value">
-    <fixRender v-bind="prefix" />
-  </template>
-
-  <!--当没有前后缀内容时，内容区域会占据剩余所有空间-->
-  <div :class="{ 'flex-1 flex': !hasSlotContent}">
-    <!--状态切换：editable为true时渲染编辑态插槽，为false时渲染展示态模板-->
-    <slot v-if="editable" v-bind="$attrs"></slot>
-    <template v-else>
-      <!-- 字典回显：当配置了dictType时，使用专门的字典标签组件展示数据 -->
-      <div v-if="props.dictType && modelValue" class="detail-value" :class="isDetailShowTooltip ? '' : 'w-[100%]'">
-        <SpDictionaryLabel v-model="modelValue" :type="props.dictType"></SpDictionaryLabel>
-      </div>
-
-      <!-- 复选框非编辑态回显 -->
-      <SpCheckbox
-        v-else-if="props.name === 'SpCheckbox'"
-        v-model="modelValue"
-        class="detail-value detail-component"
-        :class="isDetailShowTooltip ? '' : 'w-[100%]'"
-        v-bind="props"
-        :disabled="true"
-      ></SpCheckbox>
-
-      <!-- 单选框非编辑态回显 -->
-      <div v-else-if="props.name === 'SpRadio'" class="detail-value" :class="isDetailShowTooltip ? '' : 'w-[100%]'">
-        <SpRadio v-model="modelValue" v-bind="props" :disabled="true" class="detail-component"></SpRadio>
-      </div>
-
-      <!-- 时间范围非编辑态显示 -->
-      <div v-else-if="props.name === 'ElDatePicker' && $attrs.type === 'daterange'" class="" :class="isDetailShowTooltip ? '' : 'w-[100%]'">
-        <span v-if="modelValue && modelValue?.length === 2">{{ `${modelValue[0]} ${$attrs?.rangeSeparator} ${modelValue[1]}` }}</span>
-        <span v-else>--</span>
-      </div>
-
-      <!-- 默认回显文本 -->
-      <el-skeleton v-else class="w-100%" :loading="loading" animated :throttle="500">
-        <template #template>
-          <el-skeleton-item variant="text" class="w-100% !m-0 !p-0" />
-        </template>
-        <template #default>
-          <div class="detail-value w-100% break-all text-left" :class="{ valueClass, '!w-[unset]': isDetailShowTooltip }">
-            {{ ![undefined, null, ''].includes(showValue) ? showValue : '--' }}
-          </div>
-        </template>
-      </el-skeleton>
+  <!--使用Flex布局实现水平排列，根据是否有前后缀内容动态设置间距-->
+  <div
+    class="w-full flex items-center overflow-hidden"
+    :class="{ 'gap-x-5px': hasSlotContent}"
+  >
+    <!--支持两种前缀配置方式（$attrs.prepend和prefix），通过fixRender组件动态渲-->
+    <template v-if="($attrs as any)?.prepend?.value">
+      <fixRender v-bind="($attrs as any).prepend" />
+    </template>
+    <template v-if="prefix?.value">
+      <fixRender v-bind="prefix" />
     </template>
 
-    <div v-if="isDetailShowTooltip && props?.column?.tooltipOption" class="flex items-center justify-start">
-      <el-tooltip v-bind="props?.column?.tooltipOption">
-        <SPIcon name="tips" text="[var(--el-text-color-secondary)]" class="ml-[8px]"></SPIcon>
-      </el-tooltip>
-    </div>
-  </div>
+    <!--当没有前后缀内容时，内容区域会占据剩余所有空间-->
+    <div :class="{ 'flex-1 flex': !hasSlotContent}">
+      <!--状态切换：editable为true时渲染编辑态插槽，为false时渲染展示态模板-->
+      <slot v-if="editable" v-bind="$attrs"></slot>
+      <template v-else>
+        <!-- 字典回显：当配置了dictType时，使用专门的字典标签组件展示数据 -->
+        <div v-if="props.dictType && modelValue" class="detail-value" :class="isDetailShowTooltip ? '' : 'w-[100%]'">
+          <SpDictionaryLabel v-model="modelValue" :type="props.dictType"></SpDictionaryLabel>
+        </div>
 
-  <template v-if="($attrs as any)?.suffix?.value">
-    <fixRender v-bind="($attrs as any).suffix" />
-  </template>
-  <template v-if="($attrs as any)?.append?.value">
-    <fixRender v-bind="($attrs as any).append" />
-  </template>
-</div>
+        <!-- 复选框非编辑态回显 -->
+        <SpCheckbox
+          v-else-if="props.name === 'SpCheckbox'"
+          v-model="modelValue"
+          class="detail-value detail-component"
+          :class="isDetailShowTooltip ? '' : 'w-[100%]'"
+          v-bind="props"
+          :disabled="true"
+        ></SpCheckbox>
+
+        <!-- 单选框非编辑态回显 -->
+        <div v-else-if="props.name === 'SpRadio'" class="detail-value" :class="isDetailShowTooltip ? '' : 'w-[100%]'">
+          <SpRadio v-model="modelValue" v-bind="props" :disabled="true" class="detail-component"></SpRadio>
+        </div>
+
+        <!-- 时间范围非编辑态显示 -->
+        <div v-else-if="props.name === 'ElDatePicker' && $attrs.type === 'daterange'" class="" :class="isDetailShowTooltip ? '' : 'w-[100%]'">
+          <span v-if="modelValue && modelValue?.length === 2">{{ `${modelValue[0]} ${$attrs?.rangeSeparator} ${modelValue[1]}` }}</span>
+          <span v-else>--</span>
+        </div>
+
+        <!-- 默认回显文本 -->
+        <el-skeleton v-else class="w-100%" :loading="loading" animated :throttle="500">
+          <template #template>
+            <el-skeleton-item variant="text" class="w-100% !m-0 !p-0" />
+          </template>
+          <template #default>
+            <div class="detail-value w-100% break-all text-left" :class="{ valueClass, '!w-[unset]': isDetailShowTooltip }">
+              {{ ![undefined, null, ''].includes(showValue) ? showValue : '--' }}
+            </div>
+          </template>
+        </el-skeleton>
+      </template>
+
+      <div v-if="isDetailShowTooltip && props?.column?.tooltipOption" class="flex items-center justify-start">
+        <el-tooltip v-bind="props?.column?.tooltipOption">
+          <SPIcon name="tips" text="[var(--el-text-color-secondary)]" class="ml-[8px]"></SPIcon>
+        </el-tooltip>
+      </div>
+    </div>
+
+    <template v-if="($attrs as any)?.suffix?.value">
+      <fixRender v-bind="($attrs as any).suffix" />
+    </template>
+    <template v-if="($attrs as any)?.append?.value">
+      <fixRender v-bind="($attrs as any).append" />
+    </template>
+  </div>
 </template>
 
 <script setup lang="ts">

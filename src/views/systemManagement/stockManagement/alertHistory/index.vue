@@ -17,7 +17,7 @@
 
     <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
-        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true" />
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true" />
         <div class="h-[40px] mt-10px">
           <Pagination v-model:total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
         </div>

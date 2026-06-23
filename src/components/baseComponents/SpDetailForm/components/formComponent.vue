@@ -14,8 +14,8 @@
         v-if="column.slotName"
         :name="column.slotName"
         :props="column"
-        :componentProps="column.props"
-        :formData="formData"
+        :component-props="column.props"
+        :form-data="formData"
         :editable="editable"
       ></slot>
       <SpDetailEditable
@@ -54,8 +54,8 @@
         v-if="column.slotOptions"
         :name="column?.slotOptions?.slotName"
         :props="column?.slotOptions"
-        :componentProps="column?.slotOptions.props"
-        :formData="formData"
+        :component-props="column?.slotOptions.props"
+        :form-data="formData"
         :editable="editable"
       ></slot>
     </div>

@@ -1,8 +1,8 @@
 <template>
   <div class="layout-logo-container" :class="{ collapse: props.collapse }">
     <transition name="layout-logo-fade">
-      <div class="logo-title layout-logo-text" v-if="!props.collapse">SeaPack</div>
-      <div class="logo-title layout-logo" v-else>SP</div>
+      <div v-if="!props.collapse" class="logo-title layout-logo-text">SeaPack</div>
+      <div v-else class="logo-title layout-logo">SP</div>
     </transition>
   </div>
 </template>

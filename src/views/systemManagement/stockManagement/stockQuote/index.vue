@@ -3,7 +3,7 @@
     <!-- ===== 顶部大盘指数卡片 ===== -->
     <!-- 6 个主要指数：上证、深证、创业板、科创50、沪深300、上证50 -->
     <el-row :gutter="12" class="market-indices">
-      <el-col :span="4" v-for="idx in marketIndices" :key="idx.code">
+      <el-col v-for="idx in marketIndices" :key="idx.code" :span="4">
         <el-card shadow="never" :body-style="{ padding: '12px 16px' }" class="index-card">
           <div class="index-name">{{ idx.name }}</div>
           <div class="index-price" :class="changeClass(idx.change)">{{ idx.price.toFixed(2) }}</div>
@@ -70,10 +70,10 @@
         <!-- 表格主体 + 分页 -->
         <div class="flex-1 flex flex-col justify-between border">
           <!-- SpTable 表格组件：列配置由 createStockQuoteColumns() 生成 -->
-          <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true">
+          <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
             <!-- 涨跌幅插槽：>0 红色 / <0 绿色 / =0 灰色 -->
             <template #changePercent>
-              <el-table-column label="涨跌幅" minWidth="90px" align="right" slotName="changePercent">
+              <el-table-column label="涨跌幅" min-width="90px" align="right" slot-name="changePercent">
                 <template #default="{ row }">
                   <span :class="changeClass(row.changePercent)">
                     {{ row.changePercent > 0 ? '+' : '' }}{{ row.changePercent?.toFixed(2) }}%
@@ -83,7 +83,7 @@
             </template>
             <!-- 股息率插槽：按数值分色（绿≥5% / 蓝≥4% / 黄≥3% / 灰<3%） -->
             <template #dividendYield>
-              <el-table-column label="股息率" minWidth="90px" align="right" slotName="dividendYield">
+              <el-table-column label="股息率" min-width="90px" align="right" slot-name="dividendYield">
                 <template #default="{ row }">
                   <span :class="yieldLevelClass(row.dividendYield)">{{ row.dividendYield?.toFixed(2) }}%</span>
                 </template>
@@ -91,7 +91,7 @@
             </template>
             <!-- 动态股息率插槽：同上分色规则 -->
             <template #dynamicYield>
-              <el-table-column label="动态股息率" minWidth="100px" align="right" slotName="dynamicYield">
+              <el-table-column label="动态股息率" min-width="100px" align="right" slot-name="dynamicYield">
                 <template #default="{ row }">
                   <span :class="yieldLevelClass(row.dynamicYield)">{{ row.dynamicYield?.toFixed(2) }}%</span>
                 </template>
@@ -99,7 +99,7 @@
             </template>
             <!-- 开盘价插槽：琥珀色文字 + 暖色底纹 -->
             <template #openPrice>
-              <el-table-column label="开盘" minWidth="85px" align="right" slotName="openPrice" :cell-style="cellOpen">
+              <el-table-column label="开盘" min-width="85px" align="right" slot-name="openPrice" :cell-style="cellOpen">
                 <template #default="{ row }">
                   <span class="price-open">{{ row.openPrice?.toFixed(2) }}</span>
                 </template>
@@ -107,7 +107,7 @@
             </template>
             <!-- 最高价插槽：红色文字 + 浅红底纹 -->
             <template #highPrice>
-              <el-table-column label="最高" minWidth="85px" align="right" slotName="highPrice" :cell-style="cellHigh">
+              <el-table-column label="最高" min-width="85px" align="right" slot-name="highPrice" :cell-style="cellHigh">
                 <template #default="{ row }">
                   <span class="price-high">{{ row.highPrice?.toFixed(2) }}</span>
                 </template>
@@ -115,7 +115,7 @@
             </template>
             <!-- 最低价插槽：绿色文字 + 浅绿底纹 -->
             <template #lowPrice>
-              <el-table-column label="最低" minWidth="85px" align="right" slotName="lowPrice" :cell-style="cellLow">
+              <el-table-column label="最低" min-width="85px" align="right" slot-name="lowPrice" :cell-style="cellLow">
                 <template #default="{ row }">
                   <span class="price-low">{{ row.lowPrice?.toFixed(2) }}</span>
                 </template>

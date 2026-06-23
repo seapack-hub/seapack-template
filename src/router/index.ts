@@ -40,6 +40,8 @@ export const routerRecordRow: RouteRecordRaw[] = [
   {
     path: '/errorPage',
     name: 'errorPage',
+    component: RouterView,
+    redirect: { name: '401' },
     meta: {
       title: '错误界面',
       icon: 'security'

@@ -33,7 +33,7 @@ export const useSettingsStore = defineStore('settings', () => {
     const refValue = ref(value);
     // state 的类型是 SettingsStore（映射类型），
     // 动态索引赋值时 TypeScript 无法推断具体类型，故使用 @ts-ignore 绕过
-    // @ts-ignore
+    // @ts-expect-error dynamic index on mapped type SettingsStore
     state[key] = refValue;
 
     /**

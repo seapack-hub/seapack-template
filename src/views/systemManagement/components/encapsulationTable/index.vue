@@ -1,5 +1,5 @@
 <template>
-  <SpTable height="100%" :columns="tableColumns" :data="tableData" :showIndex="true"></SpTable>
+  <SpTable height="100%" :columns="tableColumns" :data="tableData" :show-index="true"></SpTable>
 </template>
 
 <script setup lang="ts">

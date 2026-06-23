@@ -1,5 +1,4 @@
 import type { RouterPlugin } from './types'
-// @ts-ignore
 import NProgress from 'nprogress'
 import { setRouteChange } from '@/hooks/useRouteListener.ts';
 import 'nprogress/nprogress.css'

@@ -5,16 +5,16 @@
         <el-button type="success" icon="plus" @click="openFormDialog()">新增顶级目录</el-button>
       </div>
       <div class="flex-1 overflow-auto border">
-        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" row-key="id" :tree-props="{ children: 'children' }" :showIndex="true" default-expand-all>
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" row-key="id" :tree-props="{ children: 'children' }" :show-index="true" default-expand-all>
           <template #type>
-            <el-table-column label="资源类型" minWidth="100px" align="center" slotName="type">
+            <el-table-column label="资源类型" min-width="100px" align="center" slot-name="type">
               <template #default="{ row }">
                 <span>{{ typeLabel(row.type) }}</span>
               </template>
             </el-table-column>
           </template>
           <template #status>
-            <el-table-column label="状态" minWidth="80px" align="center" slotName="status">
+            <el-table-column label="状态" min-width="80px" align="center" slot-name="status">
               <template #default="{ row }">
                 <el-tag :type="row.status == 1 ? 'success' : 'danger'">{{ row.status == 1 ? '正常' : '禁用' }}</el-tag>
               </template>
@@ -24,7 +24,7 @@
       </div>
     </el-card>
 
-    <MenuFormDialog v-model:visible="formVisible" v-model:isEdit="formIsEdit" v-model:form="formData" v-model:parentName="parentName" @confirm="onFormConfirm" />
+    <MenuFormDialog v-model:visible="formVisible" v-model:is-edit="formIsEdit" v-model:form="formData" v-model:parent-name="parentName" @confirm="onFormConfirm" />
   </div>
 </template>
 

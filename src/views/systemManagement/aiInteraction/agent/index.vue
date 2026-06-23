@@ -7,15 +7,15 @@
           v-model="userInput"
           placeholder="请输入任务..."
           size="large"
-          @keyup.enter="handleStart"
           :disabled="isGenerating"
+          @keyup.enter="handleStart"
         >
           <template #append>
             <el-button
               type="primary"
-              @click="handleStart"
               :loading="isGenerating"
               icon="Promotion"
+              @click="handleStart"
             >
               {{ isGenerating ? '生成中...' : '开始生成' }}
             </el-button>
@@ -25,7 +25,7 @@
     </el-card>
 
     <!-- 进度与结果展示区 -->
-    <el-card shadow="never" class="result-section flex-[1] flex flex-col" v-if="hasStarted">
+    <el-card v-if="hasStarted" shadow="never" class="result-section flex-[1] flex flex-col">
       <div class="status-header box-border border-b border-gray-300 pb-4">
         <h3>任务执行进度</h3>
         <el-steps :active="currentStepIndex" finish-status="success" simple>
@@ -38,7 +38,7 @@
       <el-divider />
 
       <!-- 实时日志输出区，绑定 ref 用于自动滚动 -->
-      <div class="console-output flex-1 bg-[#f8f9fa] rounded p-15px overflow-y-auto font-[Consolas,monospace] leading-1.6 whitespace-pre-wrap" ref="outputContainer">
+      <div ref="outputContainer" class="console-output flex-1 bg-[#f8f9fa] rounded p-15px overflow-y-auto font-[Consolas,monospace] leading-1.6 whitespace-pre-wrap">
         <div
           v-for="(log, index) in logs"
           :key="index"
@@ -57,7 +57,7 @@
         </div>
       </div>
     </el-card>
-    <el-card shadow="never" class="result-section flex-[1]" v-else>
+    <el-card v-else shadow="never" class="result-section flex-[1]">
       <div class="status-header">
         <span>暂无任务</span>
       </div>

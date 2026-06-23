@@ -12,7 +12,7 @@
  */
 
 import CacheKey from '@/constants/cache-key';
-// @ts-ignore
+// @ts-expect-error js-cookie has no default export declaration
 import Cookies from 'js-cookie';
 
 /** 从 Cookie 中读取登录令牌 */

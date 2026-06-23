@@ -19,8 +19,8 @@ export interface SearchParamType {
   component: string; //element-plus组件名称，如el-input,el-select等
   props: SearchPropsType; //组件默认参数配置
   cascaderProps?: object;
-  render?: Function;
-  formatParams?: Function; //自定义输出
+  render?: (...args: any[]) => any;
+  formatParams?: (...args: any[]) => any; //自定义输出
   modelValue?: Record<string, any> | undefined; //自定义组件绑定值
   options?: Array<{ label: string; value: string; id?: string }>; //字典值,el-select使用
 }
@@ -49,8 +49,8 @@ interface columnsType {
 //表格select选择项参数
 interface TableSelectType {
   show: boolean;
-  onSelectionChange: Function;
-  onCurrentChange: Function;
+  onSelectionChange: (...args: any[]) => any;
+  onCurrentChange: (...args: any[]) => any;
 }
 
 //接口函数类型
@@ -59,14 +59,14 @@ interface PromiseFunction {
 }
 
 //定义返回值数组元素为数字或含有render函数的对象 的函数类型
-type NumberArrayFunction = () => Array<number | { render: Function }>;
+type NumberArrayFunction = () => Array<number | { render: (...args: any[]) => any }>;
 
 //操作列类型
 interface OperateType {
   useOperate: boolean; //是否使用操作列
   minWidth: number; //操作列最小宽度
   operates: NumberArrayFunction;
-  onClick: Function; //点击函数
+  onClick: (...args: any[]) => any; //点击函数
 }
 
 //操作按钮值类型
@@ -80,7 +80,7 @@ export interface ConfigType {
   search: Array<SearchParamType>; //查询参数列表
   index?: number; //表格列序号
   select?: TableSelectType; //表格列勾选
-  tableProps?: Object; //表格默认参数
+  tableProps?: object; //表格默认参数
   columns?: Array<columnsType>; //表格列数据
   table?: TableErrorInfoType; //表格为空时错误信息
   page?: PageInfoType; //分页参数

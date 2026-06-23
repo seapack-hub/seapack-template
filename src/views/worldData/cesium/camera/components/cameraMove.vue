@@ -2,9 +2,11 @@
   <div class="camera-move">
     <!-- -->
     <div class="button-group">
-      <el-button type="primary" v-for="(item, index) in operateGroup" :key="index" @click="buttonClick(item.value)">{{
-        item.label
-      }}</el-button>
+      <el-button v-for="(item, index) in operateGroup" :key="index" type="primary" @click="buttonClick(item.value)">
+        {{
+          item.label
+        }}
+      </el-button>
     </div>
     <div id="cesium-camera-move"></div>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col border-[#e8e8e8] border-solid border-1 gap-10 p-x-10 p-y-20 box-border">
     <div class="h-[50px] flex items-center justify-center gap-10">
-      <el-icon ><Folder /></el-icon>
+      <el-icon><Folder /></el-icon>
       <span class="font-bold text-gray-800">我的知识库</span>
     </div>
     <!-- 文件上传卡片 -->
@@ -43,7 +43,8 @@
 
     <!-- 知识库列表 -->
     <el-scrollbar class="flex-1 min-h-0">
-      <div class="p-1"> <!-- 包裹层防止 tag 贴边 -->
+      <div class="p-1">
+        <!-- 包裹层防止 tag 贴边 -->
         <div v-if="namespaceList.length === 0" class="text-gray-400 italic text-center mt-4">
           暂无数据
         </div>
@@ -54,10 +55,10 @@
           :type="ns === currentNamespace ? 'primary' : 'info'"
           :effect="ns === currentNamespace ? 'dark' : 'plain'"
           @click="selectNamespace(ns)"
-          >
+        >
           {{ ns }}
         </el-tag>
-        </div>
+      </div>
     </el-scrollbar>
     <el-button type="primary" @click="handleSend">调用智能体</el-button>
   </div>

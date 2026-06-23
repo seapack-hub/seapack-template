@@ -1,18 +1,18 @@
 <template>
   <el-form :model="model" :inline="true" @keyup.enter="$emit('search')">
     <el-form-item label="关键字">
-      <el-input v-model="model.keyword" placeholder="股票代码/名称" clearable style="width: 180px" />
+      <el-input :model-value="model.keyword" placeholder="股票代码/名称" clearable style="width: 180px" @update:model-value="emit('update:model', { ...model, keyword: $event })" />
     </el-form-item>
     <el-form-item label="分红年度">
-      <el-date-picker v-model="model.year" type="year" placeholder="全部" clearable style="width: 160px" value-format="YYYY" />
+      <el-date-picker :model-value="model.year" type="year" placeholder="全部" clearable style="width: 160px" value-format="YYYY" @update:model-value="emit('update:model', { ...model, year: $event })" />
     </el-form-item>
     <el-form-item label="分红类型">
-      <el-select v-model="model.dividendType" placeholder="全部" clearable style="width: 160px">
+      <el-select :model-value="model.dividendType" placeholder="全部" clearable style="width: 160px" @update:model-value="emit('update:model', { ...model, dividendType: $event })">
         <el-option v-for="opt in typeOpts" :key="opt.dictCode" :label="opt.dictName" :value="opt.dictCode" />
       </el-select>
     </el-form-item>
     <el-form-item label="实施状态">
-      <el-select v-model="model.status" placeholder="全部" clearable style="width: 160px">
+      <el-select :model-value="model.status" placeholder="全部" clearable style="width: 160px" @update:model-value="emit('update:model', { ...model, status: $event })">
         <el-option v-for="opt in statusOpts" :key="opt.dictCode" :label="opt.dictName" :value="opt.dictCode" />
       </el-select>
     </el-form-item>
@@ -27,7 +27,7 @@
 import { useDividendDict } from './useDividendDict'
 
 defineProps<{ model: any }>()
-defineEmits<{ search: []; reset: [] }>()
+const emit = defineEmits<{ search: []; reset: []; 'update:model': [value: any] }>()
 
 const { typeOpts, statusOpts, load } = useDividendDict()
 load()

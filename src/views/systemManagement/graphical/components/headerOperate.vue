@@ -13,7 +13,9 @@
         :color="canUndo ? '#409EFF' : '#8f8f8f'"
         :class="{ 'is-disabled': !canUndo }"
         @click="undo"
-      ><RefreshLeft /></el-icon>
+      >
+        <RefreshLeft />
+      </el-icon>
     </el-tooltip>
     <el-tooltip class="item" content="重做" effect="dark" placement="top">
       <el-icon 
@@ -22,7 +24,9 @@
         :class="{ 'is-disabled': !canRedo }"
         style="cursor: pointer" 
         @click="redo"
-      ><RefreshRight /></el-icon>
+      >
+        <RefreshRight />
+      </el-icon>
     </el-tooltip>
     <el-tooltip class="item" content="下载" effect="dark" placement="top">
       <el-icon :size="20" color="#8f8f8f" style="cursor: pointer" @click="exportPhone"><Download /></el-icon>

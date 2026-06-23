@@ -3,7 +3,7 @@
     <el-card shadow="never" class="info-card">
       <template #header><span class="card-title">标的概况</span></template>
       <el-row :gutter="24">
-        <el-col :span="6" v-for="item in overview" :key="item.label">
+        <el-col v-for="item in overview" :key="item.label" :span="6">
           <div class="info-item">
             <span class="info-label">{{ item.label }}</span>
             <span class="info-value">{{ item.value ?? '-' }}</span>
@@ -14,7 +14,7 @@
     <el-card shadow="never" class="info-card mt-16px">
       <template #header><span class="card-title">交易参数</span></template>
       <el-row :gutter="24">
-        <el-col :span="6" v-for="item in trading" :key="item.label">
+        <el-col v-for="item in trading" :key="item.label" :span="6">
           <div class="info-item">
             <span class="info-label">{{ item.label }}</span>
             <span class="info-value" :class="item.class">{{ item.value ?? '-' }}</span>

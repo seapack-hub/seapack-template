@@ -3,7 +3,7 @@
     <!-- 聊天头部 -->
     <el-header class="!h-[60px] flex items-center justify-center gap-20 flex-shrink-0">
       <h2 class="font-bold text-blue-500">AI大模型 RAG 助手</h2>
-      <el-button type="primary" @click="handleClear" :icon="Delete">清空会话</el-button>
+      <el-button type="primary" :icon="Delete" @click="handleClear">清空会话</el-button>
     </el-header>
     <!-- 消息列表 -->
     <el-main class="flex-1 overflow-y-auto p-6 scroll-smooth ">
@@ -47,16 +47,16 @@
           type="textarea"
           :rows="3"
           placeholder="请输入您的问题（支持Shift+Enter换行）..."
-          @keyup.enter="handleEnter"
           :disabled="store.loading"
           resize="none"
+          @keyup.enter="handleEnter"
         />
         <div class="w-[100px] flex justify-end mt-2">
           <el-button
             type="primary"
             :loading="store.loading"
-            @click="handleSend"
             size="default"
+            @click="handleSend"
           >
             {{ store.loading ? '生成中...' : '发送提问' }}
           </el-button>

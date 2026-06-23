@@ -14,14 +14,14 @@
   >
     <el-collapse v-if="collapseOption?.list?.length" v-model="activeNames" v-bind="collapseOption" v-on="collapseOption?.event ?? {}">
       <el-collapse-item v-for="item in collapseOption.list" :key="item.name" v-bind="item">
-        <DetailItem v-model="formData" v-bind="$attrs" :formColumns="item.formColumns" :column :columnVal :editable>
+        <DetailItem v-model="formData" v-bind="$attrs" :form-columns="item.formColumns" :column :column-val :editable>
           <template v-for="(_, name) in $slots" :key="name" #[name]="scope">
             <slot :name="name" v-bind="scope"></slot>
           </template>
         </DetailItem>
       </el-collapse-item>
     </el-collapse>
-    <DetailItem v-else v-model="formData" v-bind="$attrs" :formColumns :column :columnVal :editable>
+    <DetailItem v-else v-model="formData" v-bind="$attrs" :form-columns :column :column-val :editable>
       <template v-for="(_, name) in $slots" :key="name" #[name]="scope">
         <slot :name="name" v-bind="scope"></slot>
       </template>

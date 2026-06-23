@@ -4,11 +4,11 @@
     v-bind="{...$attrs,border:true}"
     ref="SpTableRef"
     v-loading="loading"
+    v-table-shadow
     element-loading-text="Loading..."
     :header-row-style="rowStyle"
     :header-cell-style="{ ...headerCellStyle }"
     :row-style="rowStyle"
-    v-table-shadow
     :cell-style="{ ...cellStyle }"
     stripe
   >

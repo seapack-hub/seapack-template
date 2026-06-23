@@ -23,9 +23,9 @@
         <el-button type="success" icon="plus" @click="openFormDialog()">新增</el-button>
       </div>
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
-        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true">
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
           <template #status>
-            <el-table-column label="状态" minWidth="80px" align="center" slotName="status">
+            <el-table-column label="状态" min-width="80px" align="center" slot-name="status">
               <template #default="{ row }">
                 <el-tag :type="row.status == 1 ? 'success' : 'danger'">{{ row.status == 1 ? '正常' : '禁用' }}</el-tag>
               </template>
@@ -38,7 +38,7 @@
       </div>
     </el-card>
 
-    <RoleFormDialog v-model:visible="formVisible" v-model:isEdit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
+    <RoleFormDialog v-model:visible="formVisible" v-model:is-edit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
     <PermissionAssignDrawer v-model:visible="drawerVisible" :role-id="drawerRoleId" :role-name="drawerRoleName" @refresh="handleQuery" />
   </div>
 </template>

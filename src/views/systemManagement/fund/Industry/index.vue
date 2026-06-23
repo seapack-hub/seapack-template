@@ -1,5 +1,5 @@
 <template>
-   <div class="app-container w-100% h-100% flex flex-col">
+  <div class="app-container w-100% h-100% flex flex-col">
     <!--查询条件-->
     <div class="search-bar h-[50px]">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
@@ -34,15 +34,15 @@
     </div>
     <el-card class="el-card-main flex-1 flex-col gap-10px" shadow="never">
       <el-table 
-       class="flex-1" 
-       v-loading="loading"
-       :data="tableData"
-       border
-       lazy
-       row-key="industryId"
-       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+        v-loading="loading" 
+        class="flex-1"
+        :data="tableData"
+        border
+        lazy
+        row-key="industryId"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
-       <template
+        <template
           v-for="item in tableColumns" :key="item.prop"
         > 
           <el-table-column 
@@ -55,13 +55,14 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column v-else
-              v-bind="{ align: 'left',fixed: 'right', ...item }"
+          <el-table-column
+            v-else
+            v-bind="{ align: 'left',fixed: 'right', ...item }"
           ></el-table-column>
-       </template>
+        </template>
       </el-table>
     </el-card>
-   </div>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,5 @@
 <template>
-  <el-card shadow="never" class="finance-card" v-loading="loading" element-loading-text="加载中...">
+  <el-card v-loading="loading" shadow="never" class="finance-card" element-loading-text="加载中...">
     <el-tabs v-model="activeTab" @tab-change="onTabChange">
       <el-tab-pane label="资产负债表" name="balance" lazy>
         <div class="tab-content">

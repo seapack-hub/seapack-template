@@ -12,10 +12,10 @@
       </div>
       <!-- 表格 + 分页 -->
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
-        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true">
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
           <!-- 分红类型 el-tag：颜色从 dict tagType 映射读取，无映射则默认 primary -->
           <template #dividendType>
-            <el-table-column label="分红类型" minWidth="120px" align="center" slotName="dividendType">
+            <el-table-column label="分红类型" min-width="120px" align="center" slot-name="dividendType">
               <template #default="{ row }">
                 <el-tag :type="typeTagMap[row.dividendType] as any || 'primary'" size="small" effect="light">
                   {{ dictName(typeOpts, row.dividendType) }}
@@ -25,7 +25,7 @@
           </template>
           <!-- 实施状态彩色徽章：颜色根据 dict 配置显示 -->
           <template #status>
-            <el-table-column label="实施状态" minWidth="130px" align="center" slotName="status">
+            <el-table-column label="实施状态" min-width="130px" align="center" slot-name="status">
               <template #default="{ row }">
                 <span :class="['badge', statusClassMap[row.status] || 'badge-yellow']">
                   {{ dictName(statusOpts, row.status) }}
@@ -40,7 +40,7 @@
       </div>
     </el-card>
     <!-- 新增/编辑弹框 -->
-    <DividendFormDialog v-model:visible="dialogVisible" v-model:isEdit="dialogIsEdit" v-model:form="dialogForm" @confirm="onDialogConfirm" />
+    <DividendFormDialog v-model:visible="dialogVisible" v-model:is-edit="dialogIsEdit" v-model:form="dialogForm" @confirm="onDialogConfirm" />
   </div>
 </template>
 

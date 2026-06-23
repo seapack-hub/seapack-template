@@ -3,7 +3,7 @@
     <div id="ring"></div>
 
     <div class="item-list">
-      <div class="item" v-for="(item, index) in list" :key="index">
+      <div v-for="(item, index) in list" :key="index" class="item">
         <div class="item-left">
           <div class="item-border" :style="`background:${item.color}`"></div>
           <div class="item-text">{{ item.label }}</div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="dividend-tab" v-loading="loading" element-loading-text="加载中...">
+  <div v-loading="loading" class="dividend-tab" element-loading-text="加载中...">
     <el-row :gutter="16">
       <el-col :span="12">
         <el-card shadow="never">
@@ -10,9 +10,9 @@
       <el-col :span="12">
         <el-card shadow="never" class="list-card">
           <template #header><span class="card-title">分红明细</span></template>
-          <SpTable :loading="loading" :columns="columns" :data="list" :showIndex="false" max-height="400">
+          <SpTable :loading="loading" :columns="columns" :data="list" :show-index="false" max-height="400">
             <template #dividendType>
-              <el-table-column label="分红类型" minWidth="90px" align="center" slotName="dividendType">
+              <el-table-column label="分红类型" min-width="90px" align="center" slot-name="dividendType">
                 <template #default="{ row }">
                   <el-tag :type="dividendTypeTagMap[row.dividendType] as any || 'primary'" size="small" effect="light">
                     {{ dividendTypeFmt(null, null, row.dividendType) }}
@@ -21,7 +21,7 @@
               </el-table-column>
             </template>
             <template #status>
-              <el-table-column label="状态" minWidth="80px" align="center" slotName="status">
+              <el-table-column label="状态" min-width="80px" align="center" slot-name="status">
                 <template #default="{ row }">
                   <span :class="['badge', dividendStatusClassMap[row.status] || 'badge-yellow']">
                     {{ statusShortFmt(null, null, row.status) }}

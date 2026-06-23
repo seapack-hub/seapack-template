@@ -24,14 +24,14 @@
       </div>
 
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
-        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true" @selection-change="handleSelectionChange" />
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true" @selection-change="handleSelectionChange" />
         <div class="h-[40px] mt-10px">
           <Pagination v-model:total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
         </div>
       </div>
     </el-card>
 
-    <DictDialog v-model:visible="dialogVisible" v-model:isEdit="dialogIsEdit" v-model:form="dialogForm" @confirm="onDialogConfirm" />
+    <DictDialog v-model:visible="dialogVisible" v-model:is-edit="dialogIsEdit" v-model:form="dialogForm" @confirm="onDialogConfirm" />
   </div>
 </template>
 

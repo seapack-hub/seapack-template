@@ -3,7 +3,7 @@
     <!--按钮-->
     <div class="button-group">
       <el-button @click="toggleLayer">显示与隐藏</el-button>
-      <el-button @click="startLine" :disabled="isDraw">开始绘制</el-button>
+      <el-button :disabled="isDraw" @click="startLine">开始绘制</el-button>
       <el-button @click="clearLine">清除绘制</el-button>
     </div>
     <!--地图-->

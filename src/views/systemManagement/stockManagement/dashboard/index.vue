@@ -28,16 +28,16 @@
       </div>
 
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
-        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true">
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
           <template #isActive>
-            <el-table-column label="状态" minWidth="80px" align="center" slotName="isActive">
+            <el-table-column label="状态" min-width="80px" align="center" slot-name="isActive">
               <template #default="{ row }">
                 <el-switch :model-value="row.isActive === 1" @change="onToggle(row)" />
               </template>
             </el-table-column>
           </template>
           <template #operate>
-            <el-table-column label="操作" width="200px" align="center" slotName="operate">
+            <el-table-column label="操作" width="200px" align="center" slot-name="operate">
               <template #default="{ row }">
                 <el-button link type="primary" size="small" @click="onThreshold(row)">设置阈值</el-button>
                 <el-button link type="danger" size="small" @click="onDelete(row)">删除</el-button>
@@ -52,8 +52,10 @@
     </el-card>
 
     <AddStockDialog v-model:visible="addVisible" @refresh="fetchData" />
-    <ThresholdDrawer v-model:visible="drawerVisible" :monitor-id="drawerMonitorId"
-      :stock-code="drawerStockCode" :stock-name="drawerStockName" @refresh="fetchData" />
+    <ThresholdDrawer
+      v-model:visible="drawerVisible" :monitor-id="drawerMonitorId"
+      :stock-code="drawerStockCode" :stock-name="drawerStockName" @refresh="fetchData"
+    />
   </div>
 </template>
 

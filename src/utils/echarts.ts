@@ -48,7 +48,7 @@ let echartsGLLoaded = false
 // 3D 图表较少使用，切到对应页面时再异步加载 echarts-gl
 export async function ensureEchartsGL() {
   if (echartsGLLoaded) return
-  //@ts-ignore
+  // @ts-expect-error echarts-gl has no type declarations
   await import('echarts-gl')
   echartsGLLoaded = true
 }

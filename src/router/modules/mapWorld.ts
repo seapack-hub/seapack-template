@@ -1,7 +1,8 @@
-import { RouterView } from 'vue-router';
-interface RouterObject {
-  [key: string]: any;
-}
+import { RouterView, type RouteRecordRaw } from 'vue-router';
+type RouterObject = RouteRecordRaw & {
+  show?: boolean;
+  children?: RouterObject[];
+};
 const worldData = () => import('@/layout/worldData/index.vue');
 const mapWorldRoute:Array<RouterObject> = [
   //地图世界

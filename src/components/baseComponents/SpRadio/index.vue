@@ -1,14 +1,18 @@
 <template>
   <el-radio-group v-model="radio" v-bind="$attrs" v-loading="loading">
     <template v-if="type === 'radio'">
-      <el-radio v-for="item in data as any[]" :key="item[valueKey]" :value="item[valueKey]" v-bind="formatItem ? formatItem(item) : item">{{
-        item[labelKey]
-      }}</el-radio>
+      <el-radio v-for="item in data as any[]" :key="item[valueKey]" :value="item[valueKey]" v-bind="formatItem ? formatItem(item) : item">
+        {{
+          item[labelKey]
+        }}
+      </el-radio>
     </template>
     <template v-else-if="type === 'button'">
-      <el-radio-button v-for="item in data as any[]" :key="item[valueKey]" :value="item[valueKey]" v-bind="formatItem ? formatItem(item) : item">{{
-        item[labelKey]
-      }}</el-radio-button>
+      <el-radio-button v-for="item in data as any[]" :key="item[valueKey]" :value="item[valueKey]" v-bind="formatItem ? formatItem(item) : item">
+        {{
+          item[labelKey]
+        }}
+      </el-radio-button>
     </template>
   </el-radio-group>
 </template>

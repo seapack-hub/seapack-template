@@ -1,6 +1,8 @@
-interface RouterObject {
-  [key: string]: any;
-}
+import type { RouteRecordRaw } from 'vue-router';
+type RouterObject = RouteRecordRaw & {
+  show?: boolean;
+  children?: RouterObject[];
+};
 const bigDataRoute:Array<RouterObject> = [
   //通用大屏模板
   {

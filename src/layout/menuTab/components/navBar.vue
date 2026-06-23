@@ -4,9 +4,9 @@
       <div class="blogs-name">烈风逍遥的博客</div>
       <div class="item-list">
         <div
-          class="item"
           v-for="(item, index) in itemList"
           :key="index"
+          class="item"
           :class="{ isActive: activeValue === index }"
           tabindex="0"
           @click="tabClick(item, index)"

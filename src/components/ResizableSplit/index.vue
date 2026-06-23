@@ -1,15 +1,15 @@
 <template>
-  <div class="split-container flex h-100% w-100% border-1px border-color-#ddd" ref="containerRef">
+  <div ref="containerRef" class="split-container flex h-100% w-100% border-1px border-color-#ddd">
     <!--左侧：实时预览模板-->
-    <div class="left-panel h-100% w-50% overflow-auto" ref="leftPanelRef">
+    <div ref="leftPanelRef" class="left-panel h-100% w-50% overflow-auto">
       <slot name="leftPanel"></slot>
     </div>
 
     <!--可拖拽的分隔线-->
-    <div class="splitter w-4 bg-gray-200 cursor-col-resize hover:bg-blue-200" ref="splitterRef" @mousedown="startDrag"></div>
+    <div ref="splitterRef" class="splitter w-4 bg-gray-200 cursor-col-resize hover:bg-blue-200" @mousedown="startDrag"></div>
 
     <!--右侧：代码编辑器面板-->
-    <div class="right-panel h-100% flex-1 overflow-auto" ref="rightPannel">
+    <div ref="rightPannel" class="right-panel h-100% flex-1 overflow-auto">
       <slot name="rightPanel"></slot>
     </div>
   </div>

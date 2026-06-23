@@ -14,7 +14,7 @@
       <div class="section">
         <div class="section-title">
           阈值设置
-          <el-button type="primary" link icon="plus" size="small" @click="addRow" style="margin-left:8px">新增一行</el-button>
+          <el-button type="primary" link icon="plus" size="small" style="margin-left:8px" @click="addRow">新增一行</el-button>
         </div>
         <div class="threshold-rows">
           <div v-for="(row, i) in thresholdRows" :key="i" class="threshold-row">
@@ -25,7 +25,7 @@
             </el-select>
             <el-input-number v-model="row.rate" :min="0.1" :max="99.9" :step="0.5" :precision="1" style="width:110px" size="small" />
             <span class="rate-suffix">%</span>
-            <el-button :icon="Delete" circle size="small" type="danger" plain @click="removeRow(i)" :disabled="thresholdRows.length <= 1" />
+            <el-button :icon="Delete" circle size="small" type="danger" plain :disabled="thresholdRows.length <= 1" @click="removeRow(i)" />
           </div>
         </div>
       </div>

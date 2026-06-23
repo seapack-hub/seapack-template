@@ -30,9 +30,9 @@
 
       <!-- SpTable + 分页 -->
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
-        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true">
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
           <template #deptLevel>
-            <el-table-column label="部门层级" minWidth="90px" align="center" slotName="deptLevel">
+            <el-table-column label="部门层级" min-width="90px" align="center" slot-name="deptLevel">
               <template #default="{ row }">
                 <el-tag :type="({ '1': 'primary', '2': 'success', '3': 'warning' } as any)[row.deptLevel] || 'info'" size="small" effect="light">
                   {{ { '1': '一级', '2': '二级', '3': '三级' }[row.deptLevel] || row.deptLevel }}
@@ -47,7 +47,7 @@
       </div>
     </el-card>
 
-    <DeptFormDialog v-model:visible="formVisible" v-model:isEdit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
+    <DeptFormDialog v-model:visible="formVisible" v-model:is-edit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
   </div>
 </template>
 

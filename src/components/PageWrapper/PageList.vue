@@ -1,7 +1,7 @@
 <template>
   <div class="page-list">
     <!--查询部分-->
-    <div class="page-list__search" v-if="slots?.search || innerConfig.search.length > 0">
+    <div v-if="slots?.search || innerConfig.search.length > 0" class="page-list__search">
       <!--筛选条件-->
       <div :class="['search-container']">
         <!--具名插槽search:可以使用默认值，也可自定义传入-->
@@ -10,9 +10,9 @@
             <!--下拉选择框-->
             <el-select
               v-if="item.component === 'el-select'"
-              size="large"
               v-bind="item.props"
               v-model="item.props.modelValue"
+              size="large"
             >
               <el-option
                 v-for="step in item.options"
@@ -24,9 +24,9 @@
             <!--级联下拉选择框-->
             <el-cascader
               v-else-if="item.component === 'el-cascader'"
-              size="large"
               v-bind="item.props"
               v-model="item.props.modelValue"
+              size="large"
               :props="item.cascaderProps"
               :options="item.options"
               collapse-tags-tooltip
@@ -34,33 +34,33 @@
             <!--render自定义组件-->
             <CustomCom
               v-else-if="item.render"
+              v-bind="item.props"
+              v-model="item.props.modelValue"
               size="large"
               :vnode="item.render"
               :value="item.modelValue"
-              v-bind="item.props"
-              v-model="item.props.modelValue"
             ></CustomCom>
             <!--el-input和其他-->
             <component
-              v-else
               :is="item.component || 'el-input'"
-              size="large"
+              v-else
               v-bind="item.props"
               v-model="item.props.modelValue"
+              size="large"
             ></component>
           </template>
         </slot>
       </div>
       <!--查询操作-->
       <div class="search-feature">
-        <el-link type="primary" :underline="false" v-if="showToggleButton" @click="onSearchExpand">
+        <el-link v-if="showToggleButton" type="primary" :underline="false" @click="onSearchExpand">
           {{ isExpanded ? '收起筛选' : '更多筛选' }}
           <el-icon class="">
             <arrow-down v-if="!isExpanded" />
             <arrow-up v-else />
           </el-icon>
         </el-link>
-        <el-button type="primary" @click="onSearch()" :style="{ marginLeft: '12px' }"> 查询 </el-button>
+        <el-button type="primary" :style="{ marginLeft: '12px' }" @click="onSearch()"> 查询 </el-button>
         <el-button
           :style="{
             color: '#0083ff',
@@ -74,7 +74,7 @@
       </div>
     </div>
     <!--方法插槽-->
-    <div class="page-list__function" v-if="slots?.function">
+    <div v-if="slots?.function" class="page-list__function">
       <slot name="function"></slot>
     </div>
     <!--页面主体-->
@@ -82,8 +82,8 @@
       <!--表格-->
       <el-table
         ref="multipleTableRef"
-        stripe
         v-loading="loading"
+        stripe
         v-bind="innerConfig.tableProps"
         :data="data.list"
         @current-change="handleCurrentChange"
@@ -172,7 +172,7 @@ import { mergeWith } from 'lodash-es';
 import { useLoading, useOperateTypeEnum } from '@/hooks/useGlobal.ts';
 import { ConfigType, SearchParamType, OperateButtonType } from './types.ts';
 import { withDefaults } from 'vue';
-import { type AxiosResponse } from 'axios';
+import type { AxiosResponse } from 'axios';
 const { loading, showLoading, cancelLoading } = useLoading();
 const { updateType, deleteType, detailType, importType, exportType } = useOperateTypeEnum();
 //定义Props接口

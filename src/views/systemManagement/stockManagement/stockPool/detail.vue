@@ -1,7 +1,7 @@
 <template>
   <!-- 股票详情页：基本信息 / 分红 / K 线 / 财务 四个 Tab -->
   <div class="detail-container flex flex-col">
-    <PageHeader :title="stockName" :edit="false" backText="返回" @cancel="goBack" />
+    <PageHeader :title="stockName" :edit="false" back-text="返回" @cancel="goBack" />
 
     <el-tabs v-model="activeTab" class="detail-tabs flex-1">
       <!-- 标的概况 + 交易参数 -->
@@ -10,11 +10,11 @@
       </el-tab-pane>
       <!-- 历年分红走势图 + 分红明细表 -->
       <el-tab-pane label="分红" name="dividend" lazy>
-        <StockDividendTab :stockCode="stockInfo.stockCode" />
+        <StockDividendTab :stock-code="stockInfo.stockCode" />
       </el-tab-pane>
       <!-- K 线图 + 日期筛选 + 行情概要 -->
       <el-tab-pane label="历史行情" name="price" lazy>
-        <StockChartTab :stockCode="stockInfo.stockCode" />
+        <StockChartTab :stock-code="stockInfo.stockCode" />
       </el-tab-pane>
       <!-- 三大财务报表：资产负债表 / 利润表 / 现金流量表 -->
       <el-tab-pane label="财务数据" name="finance" lazy>

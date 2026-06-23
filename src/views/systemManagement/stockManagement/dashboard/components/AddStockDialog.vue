@@ -22,7 +22,7 @@
     </el-form>
     <template #footer>
       <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" :loading="submitting" @click="onSubmit" :disabled="!form.stockCode">确认添加</el-button>
+      <el-button type="primary" :loading="submitting" :disabled="!form.stockCode" @click="onSubmit">确认添加</el-button>
     </template>
   </el-dialog>
 </template>

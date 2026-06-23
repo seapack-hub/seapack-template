@@ -55,9 +55,9 @@
         </div>
         <!-- 表格主体 + 分页 -->
         <div class="flex-1 flex flex-col justify-between overflow-hidden border">
-          <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true">
+          <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
             <template #stockName>
-              <el-table-column label="股票名称" minWidth="140px" slotName="stockName">
+              <el-table-column label="股票名称" min-width="140px" slot-name="stockName">
                 <template #default="{ row }">
                   <span class="stock-name-link" @click="openEastMoney(row.stockCode)">{{ row.stockName }}</span>
                 </template>
@@ -72,7 +72,7 @@
     </div>
 
     <!-- 新增/编辑弹框 -->
-    <StockPoolFormDialog v-model:visible="formVisible" v-model:isEdit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
+    <StockPoolFormDialog v-model:visible="formVisible" v-model:is-edit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
     <!-- 批量导入弹框 -->
     <StockPoolBatchDialog v-model:visible="batchVisible" @confirm="onBatchConfirm" />
   </div>

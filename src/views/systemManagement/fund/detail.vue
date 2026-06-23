@@ -3,8 +3,8 @@
     <PageHeader
       v-model="editable"
       :title="!editable ? '详情' : detailId ? '编辑' : '新增'"
-      :backText="'返回'"
-      :customCancel="true"
+      :back-text="'返回'"
+      :custom-cancel="true"
       @edit="editable = true"
       @save="handleSave"
       @cancel="handleCancel"
@@ -14,9 +14,9 @@
       <SpDetailForm 
         ref="detailFormRef" 
         v-model="formData" 
-        :formColumns 
+        :form-columns 
         :editable 
-        labelWidth="120" 
+        label-width="120" 
         :column="2"
         :scroll-to-error="false"
       ></SpDetailForm>

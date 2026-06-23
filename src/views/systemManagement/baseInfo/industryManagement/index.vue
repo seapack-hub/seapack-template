@@ -1,6 +1,5 @@
 <template>
   <div class="app-container w-100% h-100% flex flex-col">
-
     <!-- 搜索栏 -->
     <div class="search-bar h-[50px]">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
@@ -36,10 +35,10 @@
 
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
         <!-- 行业列表表格 -->
-        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :showIndex="true" @selection-change="handleSelectionChange">
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true" @selection-change="handleSelectionChange">
           <!-- 层级列（插槽渲染，el-tag 颜色区分一级/二级） -->
           <template #nodeLevel>
-            <el-table-column label="层级" minWidth="100px" align="center" slotName="nodeLevel">
+            <el-table-column label="层级" min-width="100px" align="center" slot-name="nodeLevel">
               <template #default="{ row }">
                 <el-tag :type="row.nodeLevel === 1 ? 'primary' : 'success'" size="small">
                   {{ row.nodeLevel === 1 ? '一级行业' : '二级行业' }}
@@ -55,7 +54,7 @@
       </div>
     </el-card>
     <!-- 新增/编辑弹框 -->
-    <IndustrySectorDialog v-model:visible="dialogVisible" v-model:isEdit="dialogIsEdit" v-model:form="dialogForm" @confirm="onDialogConfirm" />
+    <IndustrySectorDialog v-model:visible="dialogVisible" v-model:is-edit="dialogIsEdit" v-model:form="dialogForm" @confirm="onDialogConfirm" />
   </div>
 </template>
 

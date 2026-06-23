@@ -5,7 +5,7 @@
         <template v-if="column?.vIFHandler ? column.vIFHandler(formData) : true">
           <SpTitle v-if="column.type === 'title'" v-bind="column.props"> </SpTitle>
           <div v-else-if="column.type === 'empty'"></div>
-          <slot v-else-if="column.type === 'slot'" :name="column.value" :props="column" :componentProps="column.props" :formData="formData"></slot>
+          <slot v-else-if="column.type === 'slot'" :name="column.value" :props="column" :component-props="column.props" :form-data="formData"></slot>
           <FormComponent
             v-else-if="column.type !== 'empty'"
             v-model="formData"

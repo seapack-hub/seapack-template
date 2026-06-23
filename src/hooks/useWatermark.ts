@@ -9,7 +9,6 @@
  */
 
 import { type Ref, onBeforeUnmount, ref } from 'vue';
-// @ts-ignore
 import { debounce } from 'lodash-es';
 
 /**

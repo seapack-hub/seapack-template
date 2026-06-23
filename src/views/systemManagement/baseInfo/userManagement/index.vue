@@ -45,14 +45,14 @@
           <div class="table-wrapper">
             <SpTable :loading="loading" :columns="columns" :data="pageData" @selection-change="handleSelectionChange">
               <template #gender>
-                <el-table-column label="性别" minWidth="70px" align="center" slotName="gender">
+                <el-table-column label="性别" min-width="70px" align="center" slot-name="gender">
                   <template #default="{ row }">
                     <el-tag :type="row.gender == 1 ? 'success' : 'info'">{{ row.gender == 1 ? '男' : '女' }}</el-tag>
                   </template>
                 </el-table-column>
               </template>
               <template #status>
-                <el-table-column label="状态" minWidth="80px" align="center" slotName="status">
+                <el-table-column label="状态" min-width="80px" align="center" slot-name="status">
                   <template #default="{ row }">
                     <el-tag :type="row.status == 1 ? 'success' : 'danger'">{{ row.status == 1 ? '正常' : '禁用' }}</el-tag>
                   </template>
@@ -68,7 +68,7 @@
       </el-col>
     </el-row>
 
-    <UserFormDialog v-model:visible="formVisible" v-model:isEdit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
+    <UserFormDialog v-model:visible="formVisible" v-model:is-edit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
     <RoleAssignDialog v-model:visible="roleVisible" :user-id="roleUserId" :user-name="roleUserName" @refresh="handleQuery" />
   </div>
 </template>

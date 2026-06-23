@@ -1,7 +1,8 @@
-import { RouterView } from 'vue-router';
-interface RouterObject {
-  [key: string]: any;
-}
+import { RouterView, type RouteRecordRaw } from 'vue-router';
+type RouterObject = RouteRecordRaw & {
+  show?: boolean;
+  children?: RouterObject[];
+};
 //系统管理模块路由
 const systemManagementRoute: Array<RouterObject> = [
   {

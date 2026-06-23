@@ -5,22 +5,22 @@
       <el-tabs v-model="activeName" class="demo-tabs">
         <el-tab-pane label="节点" name="node">
           <div class="node-config">
-            <el-form :model="nodeForm" ref="nodeFormRef" label-width="50px">
+            <el-form ref="nodeFormRef" :model="nodeForm" label-width="50px">
               <el-form-item label="标题">
                 <el-input 
                   v-model="nodeForm.name" 
-                  @change="(val) => updateNodeAttr('name', val)"
-                  placeholder="节点名称" 
+                  placeholder="节点名称"
+                  @change="(val) => updateNodeAttr('name', val)" 
                 />
               </el-form-item>
               <el-form-item label="字号">
                 <el-input-number 
                   v-model="nodeForm.fontSize" 
-                  @change="(val) => updateNodeAttr('fontSize', val)"
-                  controls-position="right" 
+                  controls-position="right"
                   placeholder="字号" 
                   :min="8" 
-                  :max="72"
+                  :max="72" 
+                  @change="(val) => updateNodeAttr('fontSize', val)"
                 />
               </el-form-item>
               <el-form-item label="文字">  
@@ -46,7 +46,7 @@
         </el-tab-pane>
         <el-tab-pane label="线条" name="edge">
           <div class="edge-config">
-            <el-form :model="edgeForm" ref="edgeFormRef" label-width="50px">
+            <el-form ref="edgeFormRef" :model="edgeForm" label-width="50px">
               <el-form-item label="线型">
                 <el-select 
                   v-model="edgeForm.handleLine" 
@@ -77,8 +77,8 @@
               <el-form-item label="文本" prop="text">
                 <el-input 
                   v-model="edgeForm.text" 
-                  @change="(val) => updateEdgeAttr('text', val)" 
                   placeholder="请输入文本" 
+                  @change="(val) => updateEdgeAttr('text', val)" 
                 />
               </el-form-item>
             </el-form>
@@ -92,7 +92,6 @@
   <transition name="btn-fade">
     <el-button v-show="isOpen" class="absolute top-50% right-[5px] -translate-y-1/2 z-20 toggle-btn" :icon="DArrowLeft" circle @click="togglePanel" />
   </transition>
-  
 </template>
 
 <script setup lang="ts">

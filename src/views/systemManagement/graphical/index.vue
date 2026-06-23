@@ -1,14 +1,14 @@
 <template>
   <div class="graphical-body h-100% w-100% flex flex-col">
-    <HeaderOperate class="header-operate h-[35px]" :graph="graph as Graph"/>
+    <HeaderOperate class="header-operate h-[35px]" :graph="graph as Graph" />
     <div class="graphical-main relative flex-1 w-100% flex align-center overflow-x-hidden">
-      <div class="sidebar-stencil relative h-100% w-[260px]" ref="stencilRef"></div>
-      <div class="flow-chart-container h-100% flex-1 overflow-auto" ref="containerRef"></div>
+      <div ref="stencilRef" class="sidebar-stencil relative h-100% w-[260px]"></div>
+      <div ref="containerRef" class="flow-chart-container h-100% flex-1 overflow-auto"></div>
       <GraphConfig 
         class="graph-config" 
         :node="curNode as Node"
         :edge="curEdge as Edge"
-        :isNode="isNode"
+        :is-node="isNode"
       />
     </div>
   </div>

@@ -3,8 +3,8 @@
     <div v-if="list && list?.length">
       <template v-for="(item, index) in list" :key="index">
         <el-tag v-if="item.showStyle" :type="item.showStyle" v-bind="$attrs" :class="index > 0 ? `m-l-[8px] ${customClass}` : customClass">
-          {{ item?.[props.labelKey] ?? modelValue ?? '--' }}</el-tag
-        >
+          {{ item?.[props.labelKey] ?? modelValue ?? '--' }}
+        </el-tag>
         <el-tag
           v-else-if="item.showColor"
           :color="item.showColor"
@@ -12,8 +12,8 @@
           :class="index > 0 ? `m-l-[8px] ${customClass}` : customClass"
           style="--el-color-primary: #fff"
         >
-          {{ item?.[props.labelKey] ?? modelValue ?? '--' }}</el-tag
-        >
+          {{ item?.[props.labelKey] ?? modelValue ?? '--' }}
+        </el-tag>
         <span v-else :class="customClass">{{ index > 0 ? '，' : '' }}{{ item?.[props.labelKey] ?? '--' }}</span>
       </template>
     </div>

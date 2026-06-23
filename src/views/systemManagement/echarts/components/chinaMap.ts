@@ -1,143 +1,184 @@
-import zhongguo from '../mapInfo/chinaMap/data-china.json';
-import hainan from '../mapInfo/chinaMap/data-hainan.json';
-import xizang from '../mapInfo/chinaMap/data-xizang.json';
-import zhejiang from '../mapInfo/chinaMap/data-zhejiang.json';
-import yunnan from '../mapInfo/chinaMap/data-yunnan.json';
-import xinjiang from '../mapInfo/chinaMap/data-xinjiang.json';
-import tianjin from '../mapInfo/chinaMap/data-tianjin.json';
-import sichuan from '../mapInfo/chinaMap/data-sichuan.json';
-import shanxi from '../mapInfo/chinaMap/data-shanxi.json';
-import shangxi from '../mapInfo/chinaMap/data-shangxi.json';
-import shanghai from '../mapInfo/chinaMap/data-shanghai.json';
-import shangdong from '../mapInfo/chinaMap/data-shangdong.json';
-import qinghai from '../mapInfo/chinaMap/data-qinghai.json';
-import ningxia from '../mapInfo/chinaMap/data-ningxia.json';
-import neimenggu from '../mapInfo/chinaMap/data-neimenggu.json';
-import liaoning from '../mapInfo/chinaMap/data-liaoning.json';
-import jilin from '../mapInfo/chinaMap/data-jilin.json';
-import jiangxi from '../mapInfo/chinaMap/data-jiangxi.json';
-import jiangsu from '../mapInfo/chinaMap/data-jiangsu.json';
-import hunan from '../mapInfo/chinaMap/data-hunan.json';
-import hubei from '../mapInfo/chinaMap/data-hubei.json';
-import henan from '../mapInfo/chinaMap/data-henan.json';
-import heilongjiang from '../mapInfo/chinaMap/data-heilongjiang.json';
-import hebei from '../mapInfo/chinaMap/data-hebei.json';
-import guizhou from '../mapInfo/chinaMap/data-guizhou.json';
-import guangxi from '../mapInfo/chinaMap/data-guangxi.json';
-import guangdong from '../mapInfo/chinaMap/data-guangdong.json';
-import gansu from '../mapInfo/chinaMap/data-gansu.json';
-import chongqing from '../mapInfo/chinaMap/data-chongqing.json';
-import aomen from '../mapInfo/chinaMap/data-aomen.json';
-import anhui from '../mapInfo/chinaMap/data-anhui.json';
-import beijing from '../mapInfo/chinaMap/data-beijing.json';
-import fujian from '../mapInfo/chinaMap/data-fujian.json';
-import xianggang from '../mapInfo/chinaMap/data-xianggang.json';
+import _zhongguo from '../mapInfo/chinaMap/data-china.json';
+import _hainan from '../mapInfo/chinaMap/data-hainan.json';
+import _xizang from '../mapInfo/chinaMap/data-xizang.json';
+import _zhejiang from '../mapInfo/chinaMap/data-zhejiang.json';
+import _yunnan from '../mapInfo/chinaMap/data-yunnan.json';
+import _xinjiang from '../mapInfo/chinaMap/data-xinjiang.json';
+import _tianjin from '../mapInfo/chinaMap/data-tianjin.json';
+import _sichuan from '../mapInfo/chinaMap/data-sichuan.json';
+import _shanxi from '../mapInfo/chinaMap/data-shanxi.json';
+import _shangxi from '../mapInfo/chinaMap/data-shangxi.json';
+import _shanghai from '../mapInfo/chinaMap/data-shanghai.json';
+import _shangdong from '../mapInfo/chinaMap/data-shangdong.json';
+import _qinghai from '../mapInfo/chinaMap/data-qinghai.json';
+import _ningxia from '../mapInfo/chinaMap/data-ningxia.json';
+import _neimenggu from '../mapInfo/chinaMap/data-neimenggu.json';
+import _liaoning from '../mapInfo/chinaMap/data-liaoning.json';
+import _jilin from '../mapInfo/chinaMap/data-jilin.json';
+import _jiangxi from '../mapInfo/chinaMap/data-jiangxi.json';
+import _jiangsu from '../mapInfo/chinaMap/data-jiangsu.json';
+import _hunan from '../mapInfo/chinaMap/data-hunan.json';
+import _hubei from '../mapInfo/chinaMap/data-hubei.json';
+import _henan from '../mapInfo/chinaMap/data-henan.json';
+import _heilongjiang from '../mapInfo/chinaMap/data-heilongjiang.json';
+import _hebei from '../mapInfo/chinaMap/data-hebei.json';
+import _guizhou from '../mapInfo/chinaMap/data-guizhou.json';
+import _guangxi from '../mapInfo/chinaMap/data-guangxi.json';
+import _guangdong from '../mapInfo/chinaMap/data-guangdong.json';
+import _gansu from '../mapInfo/chinaMap/data-gansu.json';
+import _chongqing from '../mapInfo/chinaMap/data-chongqing.json';
+import _aomen from '../mapInfo/chinaMap/data-aomen.json';
+import _anhui from '../mapInfo/chinaMap/data-anhui.json';
+import _beijing from '../mapInfo/chinaMap/data-beijing.json';
+import _fujian from '../mapInfo/chinaMap/data-fujian.json';
+import _xianggang from '../mapInfo/chinaMap/data-xianggang.json';
 
-let curGeoJson = {};
-const opt = {
-  mapName: 'china', // 地图展示
-  goDown: false, // 是否下钻
-  bgColor: '#404a59', // 画布背景色
-  activeArea: [], // 区域高亮,同echarts配置项
-  data: [],
-  // 下钻回调(点击的地图名、实例对象option、实例对象)
-  callback: function (name, option, instance) {}
+/** GeoJSON data for ECharts map registration: usage: echarts.registerMap(provinceName, mapData[name]) */
+export const mapData: Record<string, any> = {
+  zhongguo: _zhongguo,
+  hainan: _hainan,
+  xizang: _xizang,
+  zhejiang: _zhejiang,
+  yunnan: _yunnan,
+  xinjiang: _xinjiang,
+  tianjin: _tianjin,
+  sichuan: _sichuan,
+  shanxi: _shanxi,
+  shangxi: _shangxi,
+  shanghai: _shanghai,
+  shangdong: _shangdong,
+  qinghai: _qinghai,
+  ningxia: _ningxia,
+  neimenggu: _neimenggu,
+  liaoning: _liaoning,
+  jilin: _jilin,
+  jiangxi: _jiangxi,
+  jiangsu: _jiangsu,
+  hunan: _hunan,
+  hubei: _hubei,
+  henan: _henan,
+  heilongjiang: _heilongjiang,
+  hebei: _hebei,
+  guizhou: _guizhou,
+  guangxi: _guangxi,
+  guangdong: _guangdong,
+  gansu: _gansu,
+  chongqing: _chongqing,
+  aomen: _aomen,
+  anhui: _anhui,
+  beijing: _beijing,
+  fujian: _fujian,
+  xianggang: _xianggang
 };
+
+const opt = {
+  mapName: 'china',
+  goDown: false,
+  bgColor: '#404a59',
+  activeArea: [] as (string | { name: string; areaColor?: string; showLabel?: boolean })[],
+  data: [] as any[],
+  callback: function (_name: string, _option: any, _instance: any) {}
+};
+
 const pos = {
   leftPlus: 115,
   leftCur: 150,
   left: 198,
   top: 50
 };
-// style
+
 const style = {
-  font: '18px "Microsoft YaHei", sans-serif',
+  font: '18px "Microsoft YaHei", sans-serif' as const,
   textColor: '#eee',
   lineColor: 'rgba(147, 235, 248, .8)'
 };
-const cityMap = {
-  中国: zhongguo,
-  上海: shanghai,
-  河北: hebei,
-  山西: shangxi,
-  内蒙古: neimenggu,
-  辽宁: liaoning,
-  吉林: jilin,
-  黑龙江: heilongjiang,
-  江苏: jiangsu,
-  浙江: zhejiang,
-  安徽: anhui,
-  福建: fujian,
-  江西: jiangxi,
-  山东: shangdong,
-  河南: henan,
-  湖北: hubei,
-  湖南: hunan,
-  广东: guangdong,
-  广西: guangxi,
-  海南: hainan,
-  四川: sichuan,
-  贵州: guizhou,
-  云南: yunnan,
-  西藏: xizang,
-  陕西: shanxi,
-  甘肃: gansu,
-  青海: qinghai,
-  宁夏: ningxia,
-  新疆: xinjiang,
-  北京: beijing,
-  天津: tianjin,
-  重庆: chongqing,
-  香港: xianggang,
-  澳门: aomen
+
+const cityToPinyin: Record<string, string> = {
+  中国: 'zhongguo',
+  上海: 'shanghai',
+  河北: 'hebei',
+  山西: 'shangxi',
+  内蒙古: 'neimenggu',
+  辽宁: 'liaoning',
+  吉林: 'jilin',
+  黑龙江: 'heilongjiang',
+  江苏: 'jiangsu',
+  浙江: 'zhejiang',
+  安徽: 'anhui',
+  福建: 'fujian',
+  江西: 'jiangxi',
+  山东: 'shangdong',
+  河南: 'henan',
+  湖北: 'hubei',
+  湖南: 'hunan',
+  广东: 'guangdong',
+  广西: 'guangxi',
+  海南: 'hainan',
+  四川: 'sichuan',
+  贵州: 'guizhou',
+  云南: 'yunnan',
+  西藏: 'xizang',
+  陕西: 'shanxi',
+  甘肃: 'gansu',
+  青海: 'qinghai',
+  宁夏: 'ningxia',
+  新疆: 'xinjiang',
+  北京: 'beijing',
+  天津: 'tianjin',
+  重庆: 'chongqing',
+  香港: 'xianggang',
+  澳门: 'aomen'
 };
+
+const geoCoordMap: Record<string, [number, number]> = {};
 
 let name = [opt.mapName];
 let idx = 0;
-let line = [
+const line: [number, number][] = [
   [0, 0],
   [8, 11],
   [0, 22]
 ];
-let handleEvents = {
-  /**
-   * i 实例对象
-   * o option
-   * n 地图名
-   **/
-  resetOption: function (i, o, n) {
-    let breadcrumb = this.createBreadcrumb(n);
-    let j = name.indexOf(n);
-    let l = o.graphic.length;
+
+interface BreadcrumbData {
+  city?: string;
+  name?: string;
+  value?: number;
+  crew?: string;
+  company?: string;
+  position?: string;
+  region?: string;
+}
+
+let chart: any = null;
+let option: any = null;
+
+const handleEvents = {
+  resetOption(i: any, o: any, n: string) {
+    const breadcrumb = this.createBreadcrumb(n);
+    const j = name.indexOf(n);
+    const l = o.graphic.length;
     if (j < 0) {
       o.graphic.push(breadcrumb);
       o.graphic[0].children[0].shape.x2 = 145;
       o.graphic[0].children[1].shape.x2 = 145;
       if (o.graphic.length > 2) {
-        let cityData = [];
-        let cityJson;
+        const cityData: BreadcrumbData[] = [];
         for (let x = 0; x < opt.data.length; x++) {
           if (n === opt.data[x].city) {
-            [opt.data[x]].forEach((index, data)=> {
-              cityJson = {
-                city: data.city,
-                name: data.name,
-                value: data.value,
-                crew: data.crew,
-                company: data.company,
-                position: data.position,
-                region: data.region
-              };
-              cityData.push(cityJson);
+            const item = opt.data[x];
+            cityData.push({
+              city: item.city,
+              name: item.name,
+              value: item.value,
+              crew: item.crew,
+              company: item.company,
+              position: item.position,
+              region: item.region
             });
           }
         }
-
-        if (cityData != null) {
-          o.series[0].data = handleEvents.initSeriesData(cityData);
-        } else {
-          o.series[0].data = [];
-        }
+        o.series[0].data = cityData.length > 0 ? handleEvents.initSeriesData(cityData) : [];
       }
       name.push(n);
       idx++;
@@ -157,53 +198,14 @@ let handleEvents = {
     o.geo.zoom = 0.4;
     i.clear();
     i.setOption(o);
-    this.zoomAnimation();
+    handleEvents.zoomAnimation();
     opt.callback(n, o, i);
   },
 
-  /**
-   * name 地图名
-   **/
-  createBreadcrumb: function (name) {
-    let cityToPinyin = {
-      中国: 'zhongguo',
-      上海: 'shanghai',
-      河北: 'hebei',
-      山西: 'shangxi',
-      内蒙古: 'neimenggu',
-      辽宁: 'liaoning',
-      吉林: 'jilin',
-      黑龙江: 'heilongjiang',
-      江苏: 'jiangsu',
-      浙江: 'zhejiang',
-      安徽: 'anhui',
-      福建: 'fujian',
-      江西: 'jiangxi',
-      山东: 'shangdong',
-      河南: 'henan',
-      湖北: 'hubei',
-      湖南: 'hunan',
-      广东: 'guangdong',
-      广西: 'guangxi',
-      海南: 'hainan',
-      四川: 'sichuan',
-      贵州: 'guizhou',
-      云南: 'yunnan',
-      西藏: 'xizang',
-      陕西: 'shanxi',
-      甘肃: 'gansu',
-      青海: 'qinghai',
-      宁夏: 'ningxia',
-      新疆: 'xinjiang',
-      北京: 'beijing',
-      天津: 'tianjin',
-      重庆: 'chongqing',
-      香港: 'xianggang',
-      澳门: 'aomen'
-    };
-    let breadcrumb = {
+  createBreadcrumb(n: string) {
+    const breadcrumb = {
       type: 'group',
-      id: name,
+      id: n,
       left: pos.leftCur + pos.leftPlus,
       top: pos.top + 3,
       children: [
@@ -216,12 +218,10 @@ let handleEvents = {
           },
           style: {
             stroke: '#fff',
-            key: name
-            // lineWidth: 2,
+            key: n
           },
-          onclick: function () {
-            let name = this.style.key;
-            handleEvents.resetOption(chart, option, name);
+          onclick: function (this: any) {
+            handleEvents.resetOption(chart, option, this.style.key);
           }
         },
         {
@@ -229,14 +229,13 @@ let handleEvents = {
           left: -68,
           top: 'middle',
           style: {
-            text: name,
+            text: n,
             textAlign: 'center',
             fill: style.textColor,
             font: style.font
           },
-          onclick: function () {
-            let name = this.style.text;
-            handleEvents.resetOption(chart, option, name);
+          onclick: function (this: any) {
+            handleEvents.resetOption(chart, option, this.style.text);
           }
         },
         {
@@ -244,35 +243,31 @@ let handleEvents = {
           left: -68,
           top: 10,
           style: {
-            name: name,
-            text: cityToPinyin[name] ? cityToPinyin[name].toUpperCase() : '',
+            name: n,
+            text: cityToPinyin[n] ? cityToPinyin[n].toUpperCase() : '',
             textAlign: 'center',
             fill: style.textColor,
             font: '12px "Microsoft YaHei", sans-serif'
           },
-          onclick: function () {
-            // console.log(this.style);
-            let name = this.style.name;
-            handleEvents.resetOption(chart, option, name);
+          onclick: function (this: any) {
+            handleEvents.resetOption(chart, option, this.style.name);
           }
         }
       ]
     };
 
     pos.leftCur += pos.leftPlus;
-
     return breadcrumb;
   },
 
-  // 设置effectscatter
-  initSeriesData: function (data) {
-    let temp = [];
+  initSeriesData(data: BreadcrumbData[]) {
+    const temp: any[] = [];
     for (let i = 0; i < data.length; i++) {
-      let geoCoord = geoCoordMap[data[i].name];
+      const geoCoord = geoCoordMap[data[i].name!];
       if (geoCoord) {
         temp.push({
           name: data[i].name,
-          value: geoCoord.concat(data[i].value),
+          value: geoCoord.concat(data[i].value ?? 0),
           crew: data[i].crew,
           company: data[i].company,
           position: data[i].position,
@@ -282,27 +277,25 @@ let handleEvents = {
     }
     return temp;
   },
-  zoomAnimation: function () {
-    let count = null;
-    let zoom = function (per) {
+
+  zoomAnimation() {
+    let count: number | null = null;
+    const zoom = (per: number) => {
       if (!count) count = per;
       count = count + per;
-      // console.log(per,count);
       chart.setOption({
         geo: {
           zoom: count
         }
       });
-      if (count < 1)
-        window.requestAnimationFrame(function () {
-          zoom(0.2);
-        });
+      if (count < 1) {
+        window.requestAnimationFrame(() => zoom(0.2));
+      }
     };
-    window.requestAnimationFrame(function () {
-      zoom(0.2);
-    });
+    window.requestAnimationFrame(() => zoom(0.2));
   }
 };
+
 export const chinaOption = {
   backgroundColor: opt.bgColor,
   tooltip: {
@@ -314,7 +307,7 @@ export const chinaOption = {
     triggerOn: 'mousemove',
     enterable: true,
     position: ['60%', '70%'],
-    formatter: function (params, ticket, callback) {
+    formatter: function (params: any) {
       return (
         '简称：' +
         params.data.name +
@@ -387,9 +380,8 @@ export const chinaOption = {
             stroke: 'transparent',
             key: name[0]
           },
-          onclick: function () {
-            let name = this.style.key;
-            handleEvents.resetOption(chart, option, name);
+          onclick: function (this: any) {
+            handleEvents.resetOption(chart, option, this.style.key);
           }
         },
         {
@@ -428,79 +420,58 @@ export const chinaOption = {
     roam: true,
     zoom: 1,
     label: {
-      normal: {
-        show: true,
-        textStyle: {
-          color: '#fff'
-        }
-      },
-      emphasis: {
-        textStyle: {
-          color: '#fff'
-        }
-      }
+      show: true,
+      color: '#fff'
     },
-    itemStyle: {
-      normal: {
-        borderColor: 'rgba(147, 235, 248, 1)',
-        borderWidth: 1,
-        areaColor: {
-          type: 'radial',
-          x: 0.5,
-          y: 0.5,
-          r: 0.8,
-          colorStops: [
-            {
-              offset: 0,
-              color: 'rgba(147, 235, 248, 0)' // 0% 处的颜色
-            },
-            {
-              offset: 1,
-              color: 'rgba(147, 235, 248, .2)' // 100% 处的颜色
-            }
-          ],
-          globalCoord: false // 缺省为 false
-        },
-        shadowColor: 'rgba(128, 217, 248, 1)',
-        // shadowColor: 'rgba(255, 255, 255, 1)',
-        shadowOffsetX: -2,
-        shadowOffsetY: 2,
-        shadowBlur: 10
+    emphasis: {
+      label: {
+        color: '#fff'
       },
-      emphasis: {
+      itemStyle: {
         areaColor: '#389BB7',
         borderWidth: 0
       }
+    },
+    itemStyle: {
+      borderColor: 'rgba(147, 235, 248, 1)',
+      borderWidth: 1,
+      areaColor: {
+        type: 'radial',
+        x: 0.5,
+        y: 0.5,
+        r: 0.8,
+        colorStops: [
+          { offset: 0, color: 'rgba(147, 235, 248, 0)' },
+          { offset: 1, color: 'rgba(147, 235, 248, .2)' }
+        ],
+        globalCoord: false
+      },
+      shadowColor: 'rgba(128, 217, 248, 1)',
+      shadowOffsetX: -2,
+      shadowOffsetY: 2,
+      shadowBlur: 10
     },
     regions: opt.activeArea.map(function (item) {
       if (typeof item !== 'string') {
         return {
           name: item.name,
           itemStyle: {
-            normal: {
-              areaColor: item.areaColor || '#389BB7'
-            }
+            areaColor: item.areaColor || '#389BB7',
+            borderColor: '#91e6ff'
           },
           label: {
-            normal: {
-              show: item.showLabel,
-              textStyle: {
-                color: '#fff'
-              }
-            }
-          }
-        };
-      } else {
-        return {
-          name: item,
-          itemStyle: {
-            normal: {
-              borderColor: '#91e6ff',
-              areaColor: '#389BB7'
-            }
+            show: item.showLabel,
+            color: '#fff'
           }
         };
       }
+      return {
+        name: item,
+        itemStyle: {
+          borderColor: '#91e6ff',
+          areaColor: '#389BB7'
+        }
+      };
     })
   },
   series: [
@@ -515,11 +486,9 @@ export const chinaOption = {
       },
       hoverAnimation: true,
       itemStyle: {
-        normal: {
-          color: '#FFC848',
-          shadowBlur: 10,
-          shadowColor: '#333'
-        }
+        color: '#FFC848',
+        shadowBlur: 10,
+        shadowColor: '#333'
       },
       data: handleEvents.initSeriesData(opt.data)
     }

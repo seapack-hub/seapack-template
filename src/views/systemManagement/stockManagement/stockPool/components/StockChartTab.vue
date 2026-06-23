@@ -1,17 +1,21 @@
 <template>
-  <div class="chart-tab" v-loading="loading" element-loading-text="加载中...">
+  <div v-loading="loading" class="chart-tab" element-loading-text="加载中...">
     <el-card shadow="never" class="filter-card">
       <el-form :inline="true" class="filter-form h-[40px]">
         <el-form-item label="开始日期">
-          <el-date-picker v-model="startDate" type="date" placeholder="选择开始日期" value-format="YYYY-MM-DD"
-            :disabled-date="d => endVal && d > endVal" />
+          <el-date-picker
+            v-model="startDate" type="date" placeholder="选择开始日期" value-format="YYYY-MM-DD"
+            :disabled-date="d => endVal && d > endVal"
+          />
         </el-form-item>
         <el-form-item label="结束日期">
-          <el-date-picker v-model="endDate" type="date" placeholder="选择结束日期" value-format="YYYY-MM-DD"
-            :disabled-date="d => startVal && d < startVal" />
+          <el-date-picker
+            v-model="endDate" type="date" placeholder="选择结束日期" value-format="YYYY-MM-DD"
+            :disabled-date="d => startVal && d < startVal"
+          />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleQuery" :loading="loading">查询</el-button>
+          <el-button type="primary" :loading="loading" @click="handleQuery">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -25,8 +29,6 @@
         </el-card>
       </el-col>
     </el-row>
-
-
   </div>
 </template>
 
