@@ -1,4 +1,4 @@
- let geoCoordMap = {
+ let geoCoordMap: Record<string, number[]> = {
      '上海': [121.4648,31.2891],
      '东莞': [113.8953,22.901],
      '东营': [118.7073,37.5513],
@@ -156,13 +156,12 @@
  
  let planePath = 'path://M1705.06,1318.313v-89.254l-319.9-221.799l0.073-208.063c0.521-84.662-26.629-121.796-63.961-121.491c-37.332-0.305-64.482,36.829-63.961,121.491l0.073,208.063l-319.9,221.799v89.254l330.343-157.288l12.238,241.308l-134.449,92.931l0.531,42.034l175.125-42.917l175.125,42.917l0.531-42.034l-134.449-92.931l12.238-241.308L1705.06,1318.313z';
  
- let convertData = function (data) {
-     console.log(data);
-     let res = [];
-     for (let i = 0; i < data.length; i++) {
-         let dataItem = data[i];
-         let fromCoord = geoCoordMap[dataItem[0].name];
-         let toCoord = geoCoordMap[dataItem[1].name];
+  let convertData = function (data: { name: string; value?: number }[][]) {
+      let res: { fromName: string; toName: string; coords: number[][]; value?: number }[] = [];
+      for (let i = 0; i < data.length; i++) {
+          let dataItem = data[i];
+          let fromCoord = geoCoordMap[dataItem[0].name];
+          let toCoord = geoCoordMap[dataItem[1].name];
          if (fromCoord && toCoord) {
              res.push({
                  fromName: dataItem[0].name,
@@ -176,7 +175,7 @@
  };
  
  let color = ['#a6c84c', '#ffa022', '#46bee9'];
- let series = [];
+ let series: any[] = [];
  [['北京', BJData], ['上海', SHData], ['广州', GZData]].forEach(function (item, i) {
      //console.log(item,i);
      series.push({
@@ -190,71 +189,62 @@
              color: '#fff',
              symbolSize: 3
          },
-         lineStyle: {
-             normal: {
-                 color: color[i],
-                 width: 0,
-                 curveness: 0.2
-             }
-         },
-         data: convertData(item[1])
-     },
-     {
-         name: item[0] + ' Top10',
-         type: 'lines',
-         zlevel: 2,
-         symbol: ['none', 'arrow'],
-         symbolSize: 10,
-         effect: {
-             show: true,
-             period: 6,
-             trailLength: 0,
-             symbol: planePath,
-             symbolSize: 15
-         },
-         lineStyle: {
-             normal: {
-                 color: color[i],
-                 width: 1,
-                 opacity: 0.6,
-                 curveness: 0.2
-             }
-         },
-         data: convertData(item[1])
-     },
-     {
-         name: item[0] + ' Top10',
-         type: 'effectScatter',
-         coordinateSystem: 'geo',
-         zlevel: 2,
-         rippleEffect: {
-             brushType: 'stroke'
-         },
-         label: {
-             normal: {
-                 show: true,
-                 position: 'right',
-                 formatter: '{b}'
-             }
-         },
-         symbolSize: function (val) {
-             return val[2] / 8;
-         },
-         itemStyle: {
-             normal: {
-                 color: color[i]
-             }
-         },
-         data: item[1].map(function (dataItem) {
-             return {
-                 name: dataItem[1].name,
-                 value: geoCoordMap[dataItem[1].name].concat([dataItem[1].value])
+          lineStyle: {
+              color: color[i],
+              width: 0,
+              curveness: 0.2
+          },
+          data: convertData(item[1] as { name: string }[][])
+      },
+      {
+          name: item[0] + ' Top10',
+          type: 'lines',
+          zlevel: 2,
+          symbol: ['none', 'arrow'],
+          symbolSize: 10,
+          effect: {
+              show: true,
+              period: 6,
+              trailLength: 0,
+              symbol: planePath,
+              symbolSize: 15
+          },
+          lineStyle: {
+              color: color[i],
+              width: 1,
+              opacity: 0.6,
+              curveness: 0.2
+          },
+          data: convertData(item[1] as { name: string }[][])
+      },
+      {
+          name: item[0] + ' Top10',
+          type: 'effectScatter',
+          coordinateSystem: 'geo',
+          zlevel: 2,
+          rippleEffect: {
+              brushType: 'stroke'
+          },
+          label: {
+              show: true,
+              position: 'right',
+              formatter: '{b}'
+          },
+          symbolSize: function (val: number[]) {
+              return val[2] / 8;
+          },
+          itemStyle: {
+              color: color[i]
+          },
+          data: (item[1] as { name: string; value?: number }[][]).map(function (dataItem) {
+              return {
+                  name: dataItem[1].name,
+                  value: geoCoordMap[dataItem[1].name]?.concat([dataItem[1].value ?? 0])
              };
          })
      });
  });
- console.log(series);
- 
+  
  export const option = {
      backgroundColor: '#404a59',
      title : {
@@ -267,7 +257,7 @@
      },
      tooltip : {
          trigger: 'item',
-         formatter:function(params){
+          formatter: function (params: { seriesType: string; data: Record<string, any>; name: string }) {
              if(params.seriesType=="effectScatter") {
                  return "线路："+params.data.name+""+params.data.value[2];
              }else if(params.seriesType=="lines"){
@@ -287,24 +277,25 @@
          },
          selectedMode: 'multiple',
      },
-     geo: {
-         map: 'china',
-         label: {
-             emphasis: {
-                 show: true,
-                 color:'#fff'
-             }
-         },
-         roam: true,
-         itemStyle: {
-             normal: {
-                 areaColor: '#323c48',
-                 borderColor: '#404a59'
-             },
-             emphasis: {
-                 areaColor: '#2a333d'
-             }
-         }
-     },
+      geo: {
+          map: 'china',
+          label: {
+              show: false,
+              emphasis: {
+                  show: true,
+                  color:'#fff'
+              }
+          },
+          roam: true,
+          itemStyle: {
+              areaColor: '#323c48',
+              borderColor: '#404a59'
+          },
+          emphasis: {
+              itemStyle: {
+                  areaColor: '#2a333d'
+              }
+          }
+      },
      series: series
  };

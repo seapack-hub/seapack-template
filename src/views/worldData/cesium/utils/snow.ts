@@ -14,7 +14,7 @@ export default class SnowEffect {
   snowSize?: number;
   snowSpeed?: number;
   viewer: Cesium.Viewer;
-  snowStage: Cesium.PostProcessStage;
+  snowStage!: Cesium.PostProcessStage;
   /**
    * 构造器
    * @param {*} viewer 视图
@@ -24,11 +24,8 @@ export default class SnowEffect {
     //视图为空，抛出异常
     if (!viewer) throw new Error('new viewer object');
     options = options || {};
-    //defaultValue:如果未定义，则返回第一个参数，否则返回第二个参数 ;❄️大小，最好小于0.02
-    //雪花大小
-    this.snowSize = Cesium.defaultValue(options.snowSize, 0.02);
-    //雪花飘落速度
-    this.snowSpeed = Cesium.defaultValue(options.snowSpeed, 60.0);
+    this.snowSize = options.snowSize ?? 0.02;
+    this.snowSpeed = options.snowSpeed ?? 60.0;
     this.viewer = viewer;
     this.init();
   }

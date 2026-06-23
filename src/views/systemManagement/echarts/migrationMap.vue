@@ -7,9 +7,9 @@
 import { echarts } from '@/utils/echarts'
 import {option} from "./components/migrationMap.ts";
 import chinaJson from "./mapInfo/chinaMap/data-china.json";
-let ringEcharts:any=ref(null);
+const ringEcharts = ref<echarts.ECharts | null>(null);
 
-//@ts-ignore
+// @ts-expect-error chinaJson 的类型与 registerMap 期望的类型不严格匹配
 echarts.registerMap('china', chinaJson);
 
 const initEcharts = () => {

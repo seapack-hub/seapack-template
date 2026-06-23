@@ -2,7 +2,7 @@
   <el-dropdown trigger="hover">
     <div class="user-info">
       <SPIcon name="user" size="20px"></SPIcon>
-      <span class="span-user">{{ userInfo?.username || '海峰' }}</span>
+      <span class="span-user">{{ userInfo?.username || '--' }}</span>
     </div>
     <template #dropdown>
       <el-dropdown-menu>
@@ -42,6 +42,7 @@ async function logout() {
     // 跳转到登录页
     router.replace({ path: '/login' });
   } catch (error) {
+    router.replace({ path: '/errorPage' });
     console.error('退出登录失败:', error);
     ElMessage.error('退出登录失败，请稍后重试');
   }

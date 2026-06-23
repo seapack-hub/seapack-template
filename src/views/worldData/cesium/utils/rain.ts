@@ -14,7 +14,7 @@ export default class RainEffect {
   rainSize?: number;
   //雨点速度
   rainSpeed?: number;
-  rainStage: Cesium.PostProcessStage;
+  rainStage!: Cesium.PostProcessStage;
   viewer: Cesium.Viewer;
 
   /**
@@ -25,9 +25,9 @@ export default class RainEffect {
   constructor(viewer: Viewer, options: RainOption) {
     if (!viewer) throw new Error('no viewer object!');
     options = options || {};
-    this.tiltAngle = Cesium.defaultValue(options.tiltAngle, -0.5);
-    this.rainSize = Cesium.defaultValue(options.rainSize, 0.3);
-    this.rainSpeed = Cesium.defaultValue(options.rainSpeed, 60.0);
+    this.tiltAngle = options.tiltAngle ?? -0.5;
+    this.rainSize = options.rainSize ?? 0.3;
+    this.rainSpeed = options.rainSpeed ?? 60.0;
     this.viewer = viewer;
     this.init();
   }
