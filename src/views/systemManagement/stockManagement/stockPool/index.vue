@@ -121,7 +121,7 @@ function openEastMoney(code: string) {
 const columns = createStockPoolColumns({
   onDetail(row) {
     router.push({
-      path: '/stockPool/detail',
+      name: 'stockPoolDetail',
       query: {
         stockName: row.stockName,
         stockCode: row.stockCode

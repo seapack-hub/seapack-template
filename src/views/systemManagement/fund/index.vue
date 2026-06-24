@@ -121,7 +121,7 @@ const tableColumns = ref([
         renderType: 'link',
         click: ({ row }: any) => {
           router.push({
-            path:"/fundBaseInfo/detail",
+            name: 'fundBaseInfoDetail',
             query:{
               id:row.fundCode,
             }
@@ -153,7 +153,7 @@ const handleResetQuery = ()=>{
 //新增
 const toAdd = ()=>{
   router.push({
-    path:"/fundBaseInfo/detail",
+    name: 'fundBaseInfoDetail',
     query:{
       id:"",
     }

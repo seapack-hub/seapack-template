@@ -35,13 +35,13 @@
       <!-- 右侧：快速操作按钮组 -->
       <div class="welcome-right">
         <div class="quick-actions">
-          <el-button type="primary" :icon="DataAnalysis" @click="router.push('/stockQuote')">
+          <el-button type="primary" :icon="DataAnalysis" @click="router.push({ name: 'stockQuote' })">
             股票行情
           </el-button>
-          <el-button type="success" :icon="User" @click="router.push('/user')">
+          <el-button type="success" :icon="User" @click="router.push({ name: 'user' })">
             用户管理
           </el-button>
-          <el-button type="warning" :icon="Setting" @click="router.push('/role')">
+          <el-button type="warning" :icon="Setting" @click="router.push({ name: 'role' })">
             系统设置
           </el-button>
         </div>

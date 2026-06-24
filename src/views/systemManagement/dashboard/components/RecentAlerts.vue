@@ -9,7 +9,7 @@
     <template #header>
       <div class="card-header">
         <span class="card-title">最近告警</span>
-        <el-button type="primary" link @click="router.push('/alertHistory')">
+        <el-button type="primary" link @click="router.push({ name: 'alertHistory' })">
           查看全部 <el-icon><ArrowRight /></el-icon>
         </el-button>
       </div>

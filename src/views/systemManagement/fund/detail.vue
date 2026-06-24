@@ -175,7 +175,7 @@ const handleSave = async ()=>{
  */
 const handleCancel = ()=>{
   //跳转
-  router.push({path:"/fundBaseInfo"});
+  router.push({ name: 'fundBaseInfo' });
 }
 
 /**

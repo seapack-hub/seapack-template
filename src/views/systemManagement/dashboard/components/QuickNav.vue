@@ -61,19 +61,19 @@ interface NavItem {
 
 /** 导航数据集：涵盖用户管理、权限、股票、基金、AI、博客等模块 */
 const navList = ref<NavItem[]>([
-  { label: '用户管理', desc: '系统用户', path: '/user', icon: 'user', color: '#409eff', bgColor: 'rgba(64,158,255,0.08)' },
-  { label: '角色管理', desc: '权限角色', path: '/role', icon: 'role', color: '#67c23a', bgColor: 'rgba(103,194,58,0.08)' },
-  { label: '菜单权限', desc: '菜单配置', path: '/menu', icon: 'menu', color: '#e6a23c', bgColor: 'rgba(230,162,60,0.08)' },
-  { label: '股票行情', desc: '实时数据', path: '/stockQuote', icon: 'trend-charts', color: '#f56c6c', bgColor: 'rgba(245,108,108,0.08)' },
-  { label: '股票池', desc: '监控管理', path: '/stockPool', icon: 'fund-info', color: '#909399', bgColor: 'rgba(144,147,153,0.08)' },
-  { label: '告警历史', desc: '告警记录', path: '/alertHistory', icon: 'histogram', color: '#f56c6c', bgColor: 'rgba(245,108,108,0.08)' },
-  { label: '基金信息', desc: '基金数据', path: '/fundBaseInfo', icon: 'fund', color: '#67c23a', bgColor: 'rgba(103,194,58,0.08)' },
-  { label: 'RAG知识库', desc: 'AI智能', path: '/rag', icon: 'rag', color: '#9b59b6', bgColor: 'rgba(155,89,182,0.08)' },
-  { label: '智能体', desc: 'AI交互', path: '/agent', icon: 'agent', color: '#e91e63', bgColor: 'rgba(233,30,99,0.08)' },
-  { label: '流程图', desc: '可视化', path: '/flowCharts', icon: 'flow-chart', color: '#00bcd4', bgColor: 'rgba(0,188,212,0.08)' },
+  { label: '用户管理', desc: '系统用户', path: 'user', icon: 'user', color: '#409eff', bgColor: 'rgba(64,158,255,0.08)' },
+  { label: '角色管理', desc: '权限角色', path: 'role', icon: 'role', color: '#67c23a', bgColor: 'rgba(103,194,58,0.08)' },
+  { label: '菜单权限', desc: '菜单配置', path: 'menu', icon: 'menu', color: '#e6a23c', bgColor: 'rgba(230,162,60,0.08)' },
+  { label: '股票行情', desc: '实时数据', path: 'stockQuote', icon: 'trend-charts', color: '#f56c6c', bgColor: 'rgba(245,108,108,0.08)' },
+  { label: '股票池', desc: '监控管理', path: 'stockPool', icon: 'fund-info', color: '#909399', bgColor: 'rgba(144,147,153,0.08)' },
+  { label: '告警历史', desc: '告警记录', path: 'alertHistory', icon: 'histogram', color: '#f56c6c', bgColor: 'rgba(245,108,108,0.08)' },
+  { label: '基金信息', desc: '基金数据', path: 'fundBaseInfo', icon: 'fund', color: '#67c23a', bgColor: 'rgba(103,194,58,0.08)' },
+  { label: 'RAG知识库', desc: 'AI智能', path: 'rag', icon: 'rag', color: '#9b59b6', bgColor: 'rgba(155,89,182,0.08)' },
+  { label: '智能体', desc: 'AI交互', path: 'agent', icon: 'agent', color: '#e91e63', bgColor: 'rgba(233,30,99,0.08)' },
+  { label: '流程图', desc: '可视化', path: 'flowCharts', icon: 'flow-chart', color: '#00bcd4', bgColor: 'rgba(0,188,212,0.08)' },
   { label: '地图世界', desc: 'GIS地图', path: '/worldData', icon: 'gis', color: '#3f51b5', bgColor: 'rgba(63,81,181,0.08)', external: true },
   { label: '大数据屏', desc: '数据展示', path: '/universalTemplate', icon: 'basic-dashboard', color: '#ff9800', bgColor: 'rgba(255,152,0,0.08)', external: true },
-  { label: '个人博客', desc: '博客系统', path: '/blogs', icon: 'blogs', color: '#009688', bgColor: 'rgba(0,150,136,0.08)', external: true },
+  { label: '个人博客', desc: '博客系统', path: '/blogsManagement/blogs', icon: 'blogs', color: '#009688', bgColor: 'rgba(0,150,136,0.08)', external: true },
 ])
 
 /**
@@ -86,8 +86,8 @@ function handleNavigate(path: string, external?: boolean) {
     // 外部链接：新窗口打开
     window.open(path, '_blank')
   } else {
-    // 内部路由：Vue Router 跳转
-    router.push(path)
+    // 内部路由：使用命名路由跳转
+    router.push({ name: path })
   }
 }
 </script>
