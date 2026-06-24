@@ -5,41 +5,40 @@
  */
 
 import { RouteRecordRaw } from 'vue-router';
+
 /**
- * 过滤需要在侧边栏 / 导航中显示的路由
+ * 过滤需要在侧边栏中显示的路由，支持权限过滤
  *
  * 过滤规则：
- *   1. 路由的 meta.hidden 为 true 时隐藏（直接移除）
- *   2. 有子路由时递归过滤子路由
- *   3. 如果所有子路由都被过滤掉（空数组），父级也应隐藏
- *   4. 将过滤后的可见子路由重新赋值给父级的 children
+ *   1. meta.hidden 为 true 时隐藏
+ *   2. 提供了 perms 时，检查 meta.permKey 是否在权限列表中
+ *   3. isAdmin 时跳过 permKey 检查
+ *   4. 递归处理子路由，子路由全部隐藏时父级也隐藏
  *
- * @param routes 原始路由列表（通常是合并后的完整路由表）
- * @returns 仅包含可见路由的列表，可直接用于侧边栏渲染
+ * @param routes 原始路由列表
+ * @param perms  当前用户的权限标识列表（可选），不传则不进行权限过滤
+ * @param isAdmin 是否为管理员（可选），为 true 时跳过权限检查
  */
-export function filterVisibleRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
+export function filterVisibleRoutes(
+  routes: RouteRecordRaw[],
+  perms?: string[],
+  isAdmin = false,
+): RouteRecordRaw[] {
   return routes.filter((route) => {
-    // 1. 如果当前路由在 meta 中标记为 hidden，直接过滤掉
-    if (route.meta?.hidden) {
-      return false;
+    if (route.meta?.hidden) return false;
+
+    // 权限检查
+    if (!isAdmin && perms && route.meta?.permKey) {
+      if (!perms.includes(route.meta.permKey as string)) return false;
     }
 
-    // 2. 如果存在子路由，递归过滤子路由
+    // 递归处理子路由
     if (route.children && route.children.length > 0) {
-      const visibleChildren = filterVisibleRoutes(route.children);
-
-      // 3. 如果子路由全部被过滤掉（空数组），父级也应该隐藏
-      //    这个场景常见于：目录下所有菜单都对当前用户不可见
-      if (visibleChildren.length === 0) {
-        return false;
-      }
-
-      // 4. 将过滤后的可见子路由赋值回父级 route 的 children
-      //    这样侧边栏渲染时只显示子节点中可见的部分
+      const visibleChildren = filterVisibleRoutes(route.children, perms, isAdmin);
+      if (visibleChildren.length === 0) return false;
       route.children = visibleChildren;
     }
 
-    // 5. 通过以上所有检查，保留该路由
     return true;
   });
 }

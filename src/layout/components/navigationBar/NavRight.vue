@@ -1,56 +1,84 @@
 <template>
   <div class="nav-right">
-    <!--导航栏设置-->
     <div class="setting-navigation">
-      <!--返回主屏幕-->
+      <!-- 模块切换下拉 -->
+      <el-dropdown trigger="click" @command="switchModule">
+        <el-button text bg size="small" class="module-switcher-btn">
+          <el-icon style="margin-right:4px"><Grid /></el-icon>
+          {{ currentModuleTitle }}
+          <el-icon style="margin-left:4px"><ArrowDown /></el-icon>
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-item
+            v-for="mod in accessibleModules"
+            :key="mod.key"
+            :command="mod.path"
+            :disabled="mod.key === activeModule"
+          >
+            <el-icon style="margin-right:6px"><component :is="mod.icon" /></el-icon>
+            {{ mod.title }}
+          </el-dropdown-item>
+        </template>
+      </el-dropdown>
+
+      <!-- 返回主屏幕 -->
       <el-tooltip class="item" content="主屏幕" effect="light" placement="top">
         <SPIcon class="setting-item" name="to-home" size="20px" @click="jumpToLink('/menuTab')"></SPIcon>
       </el-tooltip>
-      <el-tooltip class="item" content="3D系统" effect="light" placement="top">
-        <SPIcon class="setting-item" name="3D-layers" size="20px" @click="jumpToLink('/worldData')"></SPIcon>
-      </el-tooltip>
-      <el-tooltip class="item" content="GIS系统" effect="light" placement="top">
-        <SPIcon class="setting-item" name="gis" size="20px" @click="jumpToLink('/universalTemplate')"></SPIcon>
-      </el-tooltip>
-      <el-tooltip class="item" content="博客" effect="light" placement="top">
-        <SPIcon class="setting-item" name="blogs" size="20px" @click="jumpToLink('/blogsManagement')"></SPIcon>
-      </el-tooltip>
-      <!--消息通知-->
+      <!-- 消息通知 -->
       <el-tooltip class="item" content="消息通知" effect="light" placement="top">
         <SPIcon class="setting-item" name="message-notify" size="20px"></SPIcon>
       </el-tooltip>
-      <!--全屏设置-->
+      <!-- 全屏设置 -->
       <el-tooltip class="item" content="全屏设置" effect="light" placement="top">
         <SPIcon :name="isFullscreen ? 'fullscreen-shrink' : 'fullscreen-expand'" size="20px" @click="toggle"></SPIcon>
       </el-tooltip>
-      <!--语言设置-->
+      <!-- 语言设置 -->
       <changeLanguage></changeLanguage>
-
-      <!--用户-->
+      <!-- 用户 -->
       <loginUser></loginUser>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useFullscreen } from '@vueuse/core';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/store/modules/user';
+import { MODULE_DEFS } from '@/config/modules';
+import { Grid, ArrowDown } from '@element-plus/icons-vue';
 
 const router = useRouter();
-/**
- * VueUse全屏
- */
+const userStore = useUserStore();
 const { isFullscreen, toggle } = useFullscreen();
-/**
- * 路由跳转
- * @param path
- */
+
+// admin 全部可见，非 admin 根据 permKey 过滤
+const accessibleModules = computed(() => {
+  if (userStore.username === 'admin') return MODULE_DEFS
+  const perms = userStore.perms ?? []
+  return MODULE_DEFS.filter(m => !m.permKey || perms.includes(m.permKey))
+})
+
+const activeModule = computed(() => {
+  const path = router.currentRoute.value.path
+  // 取路径第一段做模块匹配
+  const seg = path.split('/')[1]
+  const found = MODULE_DEFS.find(m => m.key === seg || m.path.startsWith('/' + seg))
+  return found?.key ?? ''
+})
+
+const currentModuleTitle = computed(() => {
+  const found = MODULE_DEFS.find(m => m.key === activeModule.value)
+  return found?.title ?? '切换模块'
+})
+
+function switchModule(path: string) {
+  router.push(path)
+}
+
 function jumpToLink(path: string) {
-  if (path) {
-    router.push({
-      path: path
-    });
-  }
+  router.push(path)
 }
 </script>
 
@@ -67,5 +95,8 @@ function jumpToLink(path: string) {
       margin-bottom: 5px;
     }
   }
+}
+.module-switcher-btn {
+  font-size: 13px;
 }
 </style>

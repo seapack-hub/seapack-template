@@ -14,7 +14,8 @@ const mapWorldRoute:Array<RouterObject> = [
     show: true,
     meta: {
       title: "home",
-      description: "数据世界"
+      description: "数据世界",
+      icon: "gis"
     },
     children: [
       {
@@ -24,7 +25,8 @@ const mapWorldRoute:Array<RouterObject> = [
         meta: {
           title: "baseMap",
           description: "基础地图",
-          icon: "base-map"
+          icon: "base-map",
+          permKey: 'world:basemap:view',
         }
       },
       //openLayers地图
@@ -59,7 +61,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "heatMap",
                   description: "热力图层",
-                  icon: "hot-map"
+                  icon: "hot-map",
+                  permKey: 'world:openlayers:heatmap:view',
                 }
               },
               //矢量图层
@@ -70,7 +73,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "vectorMap",
                   description: "矢量图层",
-                  icon: "vector-map"
+                  icon: "vector-map",
+                  permKey: 'world:openlayers:vectormap:view',
                 }
               },
               //切片图层
@@ -81,7 +85,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "sliceMap",
                   description: "切片图层",
-                  icon: "slice-map"
+                  icon: "slice-map",
+                  permKey: 'world:openlayers:slicemap:view',
                 }
               }
             ]
@@ -94,7 +99,8 @@ const mapWorldRoute:Array<RouterObject> = [
             meta: {
               title: "marking",
               description: "标注",
-              icon: "openlayers"
+              icon: "openlayers",
+              permKey: 'world:openlayers:marking:view',
             }
           },
           //测试
@@ -105,7 +111,8 @@ const mapWorldRoute:Array<RouterObject> = [
             meta: {
               title: "openLayers",
               description: "测试",
-              icon: "openlayers"
+              icon: "openlayers",
+              permKey: 'world:openlayers:ceshi:view',
             }
           }
         ]
@@ -130,7 +137,8 @@ const mapWorldRoute:Array<RouterObject> = [
             meta: {
               title: "baseCesium",
               description: "3D基础",
-              icon: "cesium"
+              icon: "cesium",
+              permKey: 'world:cesium:basecesium:view',
             }
           },
           //相机
@@ -153,7 +161,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "cameraFly",
                   description: "飞行动作",
-                  icon: "fly"
+                  icon: "fly",
+                  permKey: 'world:cesium:camerafly:view',
                 }
               },
               //移动动作
@@ -164,7 +173,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "cameraMove",
                   description: "移动动作",
-                  icon: "move"
+                  icon: "move",
+                  permKey: 'world:cesium:cameramove:view',
                 }
               }
             ]
@@ -189,7 +199,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "airModel",
                   description: "飞机模型",
-                  icon: "air"
+                  icon: "air",
+                  permKey: 'world:cesium:airmodel:view',
                 }
               },
               //扫描
@@ -200,7 +211,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "scan",
                   description: "扫描",
-                  icon: "scan"
+                  icon: "scan",
+                  permKey: 'world:cesium:scan:view',
                 }
               }
             ]
@@ -225,7 +237,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "snow",
                   description: "雪花",
-                  icon: "snow"
+                  icon: "snow",
+                  permKey: 'world:cesium:snow:view',
                 }
               },
               //雨水
@@ -236,7 +249,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "rain",
                   description: "雨水",
-                  icon: "rain"
+                  icon: "rain",
+                  permKey: 'world:cesium:rain:view',
                 }
               }
             ]
@@ -261,7 +275,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "loadGeoJSON",
                   description: "JSON数据",
-                  icon: "geojson"
+                  icon: "geojson",
+                  permKey: 'world:cesium:loadgeojson:view',
                 }
               },
               //飞机轨迹
@@ -272,7 +287,8 @@ const mapWorldRoute:Array<RouterObject> = [
                 meta: {
                   title: "flightTrajectory",
                   description: "飞机轨迹",
-                  icon: "flightTrajectory"
+                  icon: "flightTrajectory",
+                  permKey: 'world:cesium:flighttrajectory:view',
                 }
               }
             ]

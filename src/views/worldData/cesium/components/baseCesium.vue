@@ -55,25 +55,6 @@ function initCesium() {
     }
   });
 
-  //设置材质
-  //颜色
-  // let materail = new Cesium.Material.fromType("Color",{
-  //   color: Cesium.Color.AQUA.withAlpha(0.5),
-  // })
-  //图片
-  // let material = new Cesium.Material.fromType("Image",{
-  //   image:new URL("@/views/worldData/cesium/images/cattle.png",import.meta.url).href,
-  //   repeat:new Cesium.Cartesian2(2.0,1.0)
-  // })
-  // let material = new Cesium.Material.fromType("DiffuseMap",{
-  //   image:new URL("@/views/worldData/cesium/images/cattle.png",import.meta.url).href,
-  // })
-  // let material = new Cesium.Material.fromType("Grid", {
-  //   color: Cesium.Color.AQUA.withAlpha(0.5),
-  //   cellAlpha: 0.2,
-  //   lineCount: new Cesium.Cartesian2(4, 4),
-  //   lineThickness: new Cesium.Cartesian2(2.0, 2.0),
-  // });
   let material = new Cesium.Material.fromType('Water', {
     baseWaterColor: Cesium.Color.AQUA.withAlpha(0.5),
     distortion: 0.25,

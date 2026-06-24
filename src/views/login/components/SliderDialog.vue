@@ -67,19 +67,13 @@ const onCaptchaSuccess = async ()=>{
     // 3. 调用接口，获取用户权限信息并赋值
     userStore.fetchAuthPerms(String(loginRes.userId))
     
-    if(loginRes.username === 'admin'){
-      //admin用户配置静态路由
-      await permissionStore.fetchStaticRoute()
-    }else{
-      //调用接口获取后端动态路由
-      await permissionStore.fetchBackendRoute(String(loginRes.userId))
-    }
-    
+    // 路由已在启动时全量加载，只需收集列表供侧边栏使用
+    permissionStore.collectRoutes()
+
     ElMessage.success('登录成功');
     visible.value = false;
-    // 3. 跳转到首页（路由守卫会自动处理后续流程：获取权限、生成菜单等）
-    // 使用 replace: true 避免浏览器历史记录中留下登录页
-    router.replace({ path: '/systemManagement' });
+    // 跳转到工作台模块选择页
+    router.replace({ path: '/menuTab' });
 
   } catch (error: any) {
     console.error('登录失败:', error);

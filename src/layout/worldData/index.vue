@@ -1,8 +1,6 @@
 <template>
-  <!--设置全屏-->
   <el-container style="width: 100vw; height: 100vh">
     <el-aside width="collapse">
-      <!--顶部图标-->
       <Logo :collapse="isCollapse"></Logo>
       <LeftMenu :base-path="basePath" :menu-list="menuList" :collapse="isCollapse"></LeftMenu>
     </el-aside>
@@ -22,26 +20,38 @@ import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { NavigationBar,Logo } from '@/layout/components';
 import LeftMenu from '@/layout/components/sideBar/LeftMenu.vue';
-//引入路由
 import { usePermissionStore } from '@/store/modules/permission.ts';
+import { useUserStore } from '@/store/modules/user.ts';
 import { useAppStore } from '@/store/modules/app.ts';
+import { filterVisibleRoutes } from '@/utils/routeUtils.ts';
+import { MODULE_ROUTE_NAMES } from '@/config/modules';
+import { useRoute } from 'vue-router';
 
 const permissionStore = usePermissionStore();
+const userStore = useUserStore();
+const route = useRoute();
 const { dynamicRoutes } = storeToRefs(permissionStore);
 
 const appStore = useAppStore();
 const isCollapse = computed(() => !appStore.opened);
-//获取菜单列表
+
+const currentModuleName = computed(() => {
+  return MODULE_ROUTE_NAMES.find(name => route.path.startsWith('/' + name))
+})
+
+const currentModuleRoute = computed(() => {
+  if (!currentModuleName.value) return undefined
+  return (dynamicRoutes.value as any[]).find((r: any) => r.name === currentModuleName.value)
+})
+
 const menuList = computed(() => {
-  const list = dynamicRoutes.value.find((item) => item.name === 'worldData');
-  return list?.children;
+  const children = (currentModuleRoute.value?.children as any[]) || []
+  return filterVisibleRoutes(children, userStore.perms, userStore.username === 'admin');
 });
 
-// 基础路径从当前模块路由的 path 派生，供 SideBarItem 拼接相对子路径
 const basePath = computed(() => {
-  const route = dynamicRoutes.value.find((item) => item.name === 'worldData');
-  return route?.path || '';
-});
+  return currentModuleRoute.value?.path || ''
+})
 
 const sidebarWidth = computed(() => {
   return appStore.opened ? 'var(--sidebar-width)' : 'var(--sidebar-hide-width)';
@@ -63,7 +73,6 @@ const sidebarWidth = computed(() => {
 
 .el-aside {
   width: v-bind(sidebarWidth);
-  //设置平滑过渡效果，监听宽度变化，平滑5秒
   transition-property: width;
   transition-duration: 0.5s;
   background-color: var(--sidebar-menu-bg-color);

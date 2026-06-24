@@ -1,16 +1,16 @@
 <template>
-  <!--无子路由-->
-  <template v-if="!item.children">
+  <!--无子路由（或 children 为空数组，如 RouteRecordNormalized 结构）-->
+  <template v-if="!item.children?.length">
     <Link :to="resolvePath(item.path)">
       <el-menu-item :index="resolvePath(item.path)">
-        <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
+        <SPIcon :name="item.meta?.icon" size="20px"></SPIcon>
         <template #title>
-          <span class="menu-text">{{ item.meta.description || '未知' }}</span>
+          <span class="menu-text">{{ item.meta?.description || '未知' }}</span>
         </template>
       </el-menu-item>
     </Link>
   </template>
-  <template v-else-if="item.children && item.children.length > 0">
+  <template v-else>
     <el-sub-menu :index="resolvePath(item.path)">
       <template #title>
         <SPIcon :name="item.meta.icon" size="20px"></SPIcon>

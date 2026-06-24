@@ -13,7 +13,8 @@ const systemManagementRoute: Array<RouterObject> = [
     show: true,
     meta: {
       title: 'home',
-      description: '系统管理'
+      description: '系统管理',
+      icon: 'system'
     },
     children: [
       //首页
@@ -27,6 +28,7 @@ const systemManagementRoute: Array<RouterObject> = [
           icon: "home",
           affix: true,
           keepAlive: true,
+          permKey: 'system:dashboard:view',
         },
       },
       //基础信息
@@ -49,8 +51,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'dept',
               description: '部门管理',
-              icon: 'dept'
-            }
+              icon: 'dept',
+              permKey: 'system:dept:view',
+            },
           },
           //用户管理
           {
@@ -60,8 +63,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'user',
               description: '用户管理',
-              icon: 'user'
-            }
+              icon: 'user',
+              permKey: 'system:user:view',
+            },
           },
           //行业管理
           {
@@ -71,8 +75,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'industryManagement',
               description: '行业管理',
-              icon: 'industry'
-            }
+              icon: 'industry',
+              permKey: 'system:industry:view',
+            },
           },
           //字典设置
           {
@@ -82,8 +87,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'dictSetting',
               description: '字典设置',
-              icon: 'dict'
-            }
+              icon: 'dict',
+              permKey: 'system:dict:view',
+            },
           },
         ]
       },
@@ -106,8 +112,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'role',
               description: '角色管理',
-              icon: 'role'
-            }
+              icon: 'role',
+              permKey: 'system:role:view',
+            },
           },
           {
             path: 'menu',
@@ -116,8 +123,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'menu',
               description: '菜单权限',
-              icon: 'menu'
-            }
+              icon: 'menu',
+              permKey: 'system:menu:view',
+            },
           },
         ]
       },
@@ -141,8 +149,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'fundBaseInfo',
               description: '基金信息',
-              icon: 'fund-info'
-            }
+              icon: 'fund-info',
+              permKey: 'system:fund:view',
+            },
           },
           //基金信息表
           {
@@ -151,10 +160,10 @@ const systemManagementRoute: Array<RouterObject> = [
             component: () => import('@/views/systemManagement/fund/detail.vue'),
             meta: {
               title: 'fundBaseInfoDetail',
-              hidden: true,
               description: '基金信息详情',
-              icon: 'fund-info'
-            }
+              icon: 'fund-info',
+              permKey: 'system:fund:detail',
+            },
           },
           //行业分类
           {
@@ -164,8 +173,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'industry',
               description: '行业分类',
-              icon: 'industry'
-            }
+              icon: 'industry',
+              permKey: 'system:fund:industry:view',
+            },
           },
         ]
       },
@@ -188,8 +198,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'stockQuote',
               description: '股票实时行情',
-              icon: 'trend-charts'
-            }
+              icon: 'trend-charts',
+              permKey: 'system:stock:quote:view',
+            },
           },
           {
             path: 'stockPool',
@@ -198,8 +209,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'stockPool',
               description: '股票池管理',
-              icon: 'fund-info'
-            }
+              icon: 'fund-info',
+              permKey: 'system:stock:pool:view',
+            },
           },
           {
             path: 'stockPool/detail',
@@ -218,8 +230,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'dividendData',
               description: '分红数据维护',
-              icon: 'pie-chart'
-            }
+              icon: 'pie-chart',
+              permKey: 'system:stock:dividend:view',
+            },
           },
           {
             path: 'dashboardView',
@@ -228,8 +241,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'dashboardView',
               description: '股票监控池',
-              icon: 'home'
-            }
+              icon: 'home',
+              permKey: 'system:stock:dashboard:view',
+            },
           },
           {
             path: 'alertHistory',
@@ -238,8 +252,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'alertHistory',
               description: '告警历史记录',
-              icon: 'histogram'
-            }
+              icon: 'histogram',
+              permKey: 'system:stock:alert:view',
+            },
           }
         ]
       },
@@ -263,8 +278,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'electronicSignatures',
               description: '电子签名',
-              icon: 'e-sign'
-            }
+              icon: 'e-sign',
+              permKey: 'system:component:esign:view',
+            },
           },
           {
             path: 'encapsulationTable',
@@ -272,9 +288,10 @@ const systemManagementRoute: Array<RouterObject> = [
             component:()=> import("@/views/systemManagement/components/encapsulationTable/index.vue"),
             meta:{
               title:"encapsulationTable",
-              description:"表格封装",
-              icon:"encapsulation-table"
-            }
+              description: "表格封装",
+              icon:"encapsulation-table",
+              permKey: 'system:component:table:view',
+            },
           },
           {
             path: 'splitTable',
@@ -282,9 +299,10 @@ const systemManagementRoute: Array<RouterObject> = [
             component:()=> import("@/views/systemManagement/components/splitTableCode/index.vue"),
             meta:{
               title:"splitTable",
-              description:"表格封装",
-              icon:"encapsulation-table"
-            }
+              description: "表格封装",
+              icon:"encapsulation-table",
+              permKey: 'system:component:splitTable:view',
+            },
           },
           //富文本编辑器
           {
@@ -294,8 +312,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta:{
               title: 'wangEditer',
               description: '富文本编辑器',
-              icon: 'wang-editer'
-            }
+              icon: 'wang-editer',
+              permKey: 'system:component:editor:view',
+            },
           },
         ]
       },
@@ -318,8 +337,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'flowCharts',
               description: '流程图',
-              icon: 'flow-chart'
-            }
+              icon: 'flow-chart',
+              permKey: 'system:graphical:flow:view',
+            },
           },
         ]
       },
@@ -337,9 +357,10 @@ const systemManagementRoute: Array<RouterObject> = [
             component:() => import("@/views/systemManagement/aiInteraction/index.vue"),
             meta:{
               title:"rag",
-              description:"RAG知识库",
-              icon:"rag"
-            }
+              description: "RAG知识库",
+              icon:"rag",
+              permKey: 'system:ai:rag:view',
+            },
           },
           //智能体交互
           {
@@ -348,9 +369,10 @@ const systemManagementRoute: Array<RouterObject> = [
             component:() => import("@/views/systemManagement/aiInteraction/agent/index.vue"),
             meta:{
               title:"agent",
-              description:"智能体交互",
-              icon:"agent"
-            }
+              description: "智能体交互",
+              icon:"agent",
+              permKey: 'system:ai:agent:view',
+            },
           },
         ],
         meta:{
@@ -378,7 +400,8 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: "InternalDoc-1",
               description: '实现电子签名',
-              icon: "document"
+              icon: "document",
+              permKey: 'system:doc:*:view',
             },
           },
           {
@@ -388,7 +411,8 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: "InternalDoc-2",
               description: '实现水印',
-              icon: "document"
+              icon: "document",
+              permKey: 'system:doc:*:view',
             },
           },
           {
@@ -398,7 +422,8 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: "InternalDoc-3",
               description: '封装SVG图标',
-              icon: "document"
+              icon: "document",
+              permKey: 'system:doc:*:view',
             },
           },
           {
@@ -408,7 +433,8 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: "InternalDoc-4",
               description: 'JS原型链详解',
-              icon: "document"
+              icon: "document",
+              permKey: 'system:doc:*:view',
             },
           },
           {
@@ -418,7 +444,8 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: "InternalDoc-5",
               description: '模板引擎详解',
-              icon: "document"
+              icon: "document",
+              permKey: 'system:doc:*:view',
             },
           },
         ]
@@ -443,8 +470,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'chinaMap',
               description: '中国地图',
-              icon: 'china-map'
-            }
+              icon: 'china-map',
+              permKey: 'system:echarts:china:view',
+            },
           },
           {
             path: 'migrationMap',
@@ -453,8 +481,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'migrationMap',
               description: '迁徙地图',
-              icon: 'migration-map'
-            }
+              icon: 'migration-map',
+              permKey: 'system:echarts:migration:view',
+            },
           },
           {
             path: 'histogram',
@@ -463,8 +492,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'histogram',
               description: '柱状图',
-              icon: 'histogram'
-            }
+              icon: 'histogram',
+              permKey: 'system:echarts:histogram:view',
+            },
           },
           {
             path: 'relationship',
@@ -473,8 +503,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'relationship',
               description: '人物关系',
-              icon: 'histogram'
-            }
+              icon: 'histogram',
+              permKey: 'system:echarts:relationship:view',
+            },
           },
           {
             path: 'radar',
@@ -483,8 +514,9 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'radar',
               description: '雷达图',
-              icon: 'radar'
-            }
+              icon: 'radar',
+              permKey: 'system:echarts:radar:view',
+            },
           },
         ]
       }
