@@ -92,6 +92,9 @@ const router = createRouter({
   routes: routerRecordRow as RouteRecordRaw[]
 });
 
+// 缓存原始模块路由定义（供 collectRoutes 和 sidebar 使用，避免 router.getRoutes() 标准化后结构丢失）
+let rawModuleRoutes: RouteRecordRaw[] = [];
+
 // 启动时全量加载所有模块路由，使导航永不因路由未注册而失败
 export function initAllRoutes() {
   const modules = import.meta.glob('@/router/modules/*.ts', { eager: true })
@@ -101,9 +104,18 @@ export function initAllRoutes() {
         if (!router.hasRoute(route.name as string)) {
           router.addRoute(route)
         }
+        // 缓存原始路由定义（只存顶级模块路由）
+        if (route.name && !rawModuleRoutes.some(r => r.name === route.name)) {
+          rawModuleRoutes.push(route)
+        }
       })
     }
   })
+}
+
+// 获取缓存的原始模块路由定义
+export function getRawModuleRoutes(): RouteRecordRaw[] {
+  return rawModuleRoutes;
 }
 
 export default router;

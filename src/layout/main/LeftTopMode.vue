@@ -42,10 +42,21 @@ const currentModuleName = computed(() => {
   return MODULE_ROUTE_NAMES.find(name => route.path.startsWith('/' + name))
 })
 
-// 当前模块在 dynamicRoutes 中的完整路由记录
+// 当前模块在 dynamicRoutes 或 route.matched 中的完整路由记录
 const currentModuleRoute = computed(() => {
   if (!currentModuleName.value) return undefined
-  return dynamicRoutes.value.find((item: RouteRecordRaw) => item.name === currentModuleName.value)
+
+  // 优先从 route.matched 中查找（Vue Router 自身维护的记录，保证 children 结构完整）
+  const matched = route.matched
+  for (let i = 0; i < matched.length; i++) {
+    if (matched[i].name === currentModuleName.value) {
+      return matched[i] as unknown as RouteRecordRaw
+    }
+  }
+
+  // 降级：从 dynamicRoutes 中查找
+  const fromDynamic = dynamicRoutes.value.find((item: RouteRecordRaw) => item.name === currentModuleName.value)
+  return fromDynamic
 })
 
 // 基础路径 = 当前模块的 path，用于拼接子路由的完整路径

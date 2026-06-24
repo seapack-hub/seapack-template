@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { RouteRecordRaw } from 'vue-router';
-import { routerRecordRow } from '@/router/index.ts';
+import { routerRecordRow, getRawModuleRoutes } from '@/router/index.ts';
 import router from "@/router/index"
 import { MODULE_ROUTE_NAMES } from '@/config/modules'
 
@@ -57,10 +57,20 @@ export const usePermissionStore = defineStore('permission', {
     // 从已加载的路由中收集所有顶级模块路由，供侧边栏使用
     collectRoutes() {
       const allRoutes: RouteRecordRaw[] = []
+
+      // 使用 router/index.ts 中缓存的原始路由定义（与 initAllRoutes 同源，保证 children 结构完整）
+      const moduleRoutes = getRawModuleRoutes()
       MODULE_ROUTE_NAMES.forEach(name => {
-        const r = router.getRoutes().find(route => route.name === name)
-        if (r) allRoutes.push(r as unknown as RouteRecordRaw)
+        const route = moduleRoutes.find(r => r.name === name)
+        if (route) allRoutes.push(route)
       })
+
+      // 补充静态路由中定义的模块（如 blogsManagement）
+      const staticModuleRoutes = routerRecordRow.filter(
+        r => r.name && MODULE_ROUTE_NAMES.includes(r.name as string) && !allRoutes.some(existing => existing.name === r.name)
+      )
+      allRoutes.push(...(staticModuleRoutes as RouteRecordRaw[]))
+
       this.setRoutes(allRoutes)
     }
   }

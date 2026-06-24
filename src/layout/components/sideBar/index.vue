@@ -2,6 +2,13 @@
   <div class="side-bar">
     <Logo :collapse="isCollapse"></Logo>
     <left-menu :base-path="basePath" :menu-list="menuList" :collapse="isCollapse"></left-menu>
+    <!-- DEV: 调试信息 -->
+    <div v-if="showDebug" class="debug-info">
+      <div>模块: {{ currentModuleName }}</div>
+      <div>路由数: {{ dynamicRoutes.length }}</div>
+      <div>子项数: {{ currentModuleRoute?.children?.length ?? '无' }}</div>
+      <div>菜单项: {{ menuList.length }}</div>
+    </div>
   </div>
 </template>
 
@@ -28,10 +35,21 @@ const currentModuleName = computed(() => {
   return MODULE_ROUTE_NAMES.find(name => route.path.startsWith('/' + name))
 })
 
-// 当前模块在 dynamicRoutes 中的完整路由记录
+// 当前模块在 dynamicRoutes 或 route.matched 中的完整路由记录
 const currentModuleRoute = computed(() => {
   if (!currentModuleName.value) return undefined
-  return (dynamicRoutes.value as RouteRecordRaw[]).find(r => r.name === currentModuleName.value)
+
+  // 优先从 route.matched 中查找（Vue Router 自身维护的记录，保证 children 结构完整）
+  const matched = route.matched
+  for (let i = 0; i < matched.length; i++) {
+    if (matched[i].name === currentModuleName.value) {
+      return matched[i] as unknown as RouteRecordRaw
+    }
+  }
+
+  // 降级：从 dynamicRoutes 中查找
+  const fromDynamic = (dynamicRoutes.value as RouteRecordRaw[]).find(r => r.name === currentModuleName.value)
+  return fromDynamic
 })
 
 // 侧边栏只展示当前模块的子路由（跳过模块本身那一级）
@@ -46,6 +64,9 @@ const basePath = computed(() => {
 })
 
 const isCollapse = computed(() => !appStore.opened);
+
+// DEV: 非生产环境显示调试面板
+const showDebug = computed(() => !import.meta.env.PROD);
 </script>
 
 <style scoped lang="scss">
@@ -62,5 +83,18 @@ const isCollapse = computed(() => !appStore.opened);
     font-size: 30px;
     line-height: 60px;
   }
+}
+.debug-info {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.8);
+  color: #0f0;
+  font-size: 12px;
+  padding: 8px;
+  line-height: 1.5;
+  font-family: monospace;
+  white-space: pre-line;
 }
 </style>
