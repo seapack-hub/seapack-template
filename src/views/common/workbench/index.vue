@@ -37,6 +37,7 @@ import { MODULE_DEFS } from '@/config/modules'
 const router = useRouter()
 const userStore = useUserStore()
 
+// 各模块对应的 SVG 图标名（对应 src/assets/icons/ 下的文件）
 const moduleIcons: Record<string, string> = {
   systemManagement: 'system',
   worldData: 'gis',
@@ -44,6 +45,7 @@ const moduleIcons: Record<string, string> = {
   blogsManagement: 'blogs',
 }
 
+// 各模块中文描述
 const moduleDescs: Record<string, string> = {
   systemManagement: '用户、部门、菜单权限、系统配置等管理功能',
   worldData: 'OpenLayers / Cesium 二三维地图展示与交互',
@@ -51,12 +53,14 @@ const moduleDescs: Record<string, string> = {
   blogsManagement: '博客阅读与管理',
 }
 
+// 当前用户有权限访问的模块列表（admin 全部可见）
 const accessibleModules = computed(() => {
   if (userStore.username === 'admin') return MODULE_DEFS
   const perms = userStore.perms ?? []
   return MODULE_DEFS.filter(m => !m.permKey || perms.includes(m.permKey))
 })
 
+// 点击卡片跳转到该模块的默认入口
 function enterModule(mod: typeof MODULE_DEFS[number]) {
   router.push({ path: mod.path })
 }

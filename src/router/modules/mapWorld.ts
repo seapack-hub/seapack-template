@@ -15,7 +15,7 @@ const mapWorldRoute:Array<RouterObject> = [
     meta: {
       title: "home",
       description: "数据世界",
-      icon: "gis"
+      icon: "gis" // collapse 模式侧边栏显示此图标
     },
     children: [
       {

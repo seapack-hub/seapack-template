@@ -14,7 +14,7 @@ const systemManagementRoute: Array<RouterObject> = [
     meta: {
       title: 'home',
       description: '系统管理',
-      icon: 'system'
+      icon: 'system' // collapse 模式侧边栏显示此图标
     },
     children: [
       //首页
@@ -162,6 +162,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'fundBaseInfoDetail',
               description: '基金信息详情',
               icon: 'fund-info',
+              hidden: true,
               permKey: 'system:fund:detail',
             },
           },

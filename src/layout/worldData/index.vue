@@ -35,20 +35,24 @@ const { dynamicRoutes } = storeToRefs(permissionStore);
 const appStore = useAppStore();
 const isCollapse = computed(() => !appStore.opened);
 
+// 根据当前路由路径第一段匹配所属模块名
 const currentModuleName = computed(() => {
   return MODULE_ROUTE_NAMES.find(name => route.path.startsWith('/' + name))
 })
 
+// 当前模块在 dynamicRoutes 中的完整路由记录
 const currentModuleRoute = computed(() => {
   if (!currentModuleName.value) return undefined
   return (dynamicRoutes.value as any[]).find((r: any) => r.name === currentModuleName.value)
 })
 
+// 侧边栏只展示当前模块的子路由（跳过模块本身那一级）
 const menuList = computed(() => {
   const children = (currentModuleRoute.value?.children as any[]) || []
   return filterVisibleRoutes(children, userStore.perms, userStore.username === 'admin');
 });
 
+// 基础路径 = 当前模块的 path，用于拼接子路由的完整路径
 const basePath = computed(() => {
   return currentModuleRoute.value?.path || ''
 })

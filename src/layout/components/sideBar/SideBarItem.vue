@@ -1,5 +1,8 @@
 <template>
-  <!--无子路由（或 children 为空数组，如 RouteRecordNormalized 结构）-->
+  <!--
+    叶子路由：children 为 undefined（原始 RouteRecordRaw）或 []（RouteRecordNormalized）均视为无子路由
+    使用 ?.length 兼容两种结构：undefined?.length → undefined → !undefined → true；[].length → 0 → !0 → true
+  -->
   <template v-if="!item.children?.length">
     <Link :to="resolvePath(item.path)">
       <el-menu-item :index="resolvePath(item.path)">
