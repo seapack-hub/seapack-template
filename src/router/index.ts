@@ -84,6 +84,11 @@ export const routerRecordRow: RouteRecordRaw[] = [
   {
     path: '/bigScreen',
     redirect: '/bigData/bigScreen'
+  },
+  // 兜底：未匹配到任何路由时跳转 404 错误页
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/errorPage/404'
   }
 ];
 const base: string = '';
