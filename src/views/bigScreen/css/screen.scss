@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+}
+
+.screen-fade-enter-active,
+.screen-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.screen-fade-enter-from,
+.screen-fade-leave-to {
+  opacity: 0;
+}
+
+@keyframes screenBorderGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes screenNumberUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes screenScanLine {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}

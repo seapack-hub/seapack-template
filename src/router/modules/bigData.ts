@@ -13,6 +13,16 @@ const bigDataRoute:Array<RouterObject> = [
       title: "universalTemplate",
       description: "通用大屏模板",
     }
+  },
+  // DataV智慧运营大屏
+  {
+    path:"/bigScreen",
+    name:"bigScreen",
+    component:()=> import("@/views/bigScreen/index.vue"),
+    meta:{
+      title: "bigScreen",
+      description: "智慧运营大数据中心",
+    }
   }
 ];
 
