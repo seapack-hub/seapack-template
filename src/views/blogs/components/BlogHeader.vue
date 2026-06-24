@@ -6,7 +6,7 @@
         <span class="logo-sub">技术博客</span>
       </div>
       <nav class="header-nav">
-        <a class="nav-link active">首页</a>
+        <a class="nav-link active" @click="goHome">首页</a>
         <a class="nav-link" href="https://juejin.cn/user/2071912223613783" target="_blank">
           <el-icon><Connection /></el-icon>
           掘金主页
@@ -18,6 +18,13 @@
 
 <script setup lang="ts">
 import { Connection } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function goHome() {
+  router.push('/menuTab')
+}
 </script>
 
 <style lang="scss" scoped>
