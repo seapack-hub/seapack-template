@@ -146,8 +146,7 @@ async function handleDelete(sessionId: string) {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #fafafa;
-  border-right: 1px solid #e8e8e8;
+  background: white;
 }
 
 .sidebar-header {

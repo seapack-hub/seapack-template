@@ -1,21 +1,15 @@
 <template>
-  <!-- AI 交互主布局：三栏结构 [会话侧边栏] [知识库面板] [对话界面] -->
-  <el-container class="ai-layout">
-    <!-- 左侧：会话列表 -->
-    <el-aside width="260px" class="panel">
+  <div class="ai-layout">
+    <div class="panel panel-session">
       <SessionSidebar />
-    </el-aside>
-
-    <!-- 中间：知识库与上传 -->
-    <el-aside width="320px" class="panel panel-border">
+    </div>
+    <div class="panel panel-knowledge">
       <KnowledgeBase />
-    </el-aside>
-
-    <!-- 右侧：聊天界面 -->
-    <el-container direction="vertical" class="chat-panel">
+    </div>
+    <div class="panel panel-chat">
       <ChatInterface />
-    </el-container>
-  </el-container>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -26,10 +20,10 @@ import ChatInterface from './components/ChatInterface.vue';
 
 <style scoped lang="scss">
 .ai-layout {
+  display: flex;
   height: 100%;
   width: 100%;
   overflow: hidden;
-  font-family: sans-serif;
 }
 
 .panel {
@@ -38,13 +32,19 @@ import ChatInterface from './components/ChatInterface.vue';
   background: white;
 }
 
-.panel-border {
+.panel-session {
+  width: 260px;
+  flex-shrink: 0;
   border-right: 1px solid #e8e8e8;
 }
 
-.chat-panel {
+.panel-knowledge {
+  width: 320px;
+  flex-shrink: 0;
+  border-right: 1px solid #e8e8e8;
+}
+
+.panel-chat {
   flex: 1;
-  overflow: hidden;
-  background: white;
 }
 </style>

@@ -1,12 +1,13 @@
 <template>
-  <div class="h-full flex flex-col border-[#e8e8e8] border-solid border-1 gap-10 p-x-10 p-y-20 box-border">
-    <div class="h-[50px] flex items-center justify-center gap-10">
+  <div class="knowledge-base">
+    <!-- 标题 -->
+    <div class="kb-header">
       <el-icon><Folder /></el-icon>
-      <span class="font-bold text-gray-800">我的知识库</span>
+      <span class="kb-title">我的知识库</span>
     </div>
-    <!-- 文件上传卡片 -->
-    <div class="h-[220px] mb-6 border-dashed border-2 border-blue-100 bg-blue-50/30">    
-      <!-- Element Plus 上传组件 -->
+
+    <!-- 文件上传区 -->
+    <div class="kb-upload">
       <el-upload
         ref="uploadRef"
         class="upload-wrapper"
@@ -18,147 +19,255 @@
         accept=".txt,.pdf,.doc,.docx"
         :disabled="uploading"
       >
-        <el-icon class="el-icon--upload text-blue-500"><upload-filled /></el-icon>
+        <el-icon class="el-icon--upload" :size="32"><upload-filled /></el-icon>
         <div class="el-upload__text">
           拖拽文件到这里，或 <em>点击选择</em>
         </div>
         <template #tip>
-          <div class="el-upload__tip text-center">
-            支持格式：TXT, PDF, DOC, DOCX
-          </div>
+          <div class="upload-tip">支持 TXT / PDF / DOC / DOCX</div>
         </template>
       </el-upload>
 
-      <!-- 命名空间选择 -->
-      <div class="mt-4 flex items-center p-r-10">
-        <el-text size="small" class="mr-2 w-[130px] text-right">知识库空间：</el-text>
+      <div class="namespace-row">
         <el-input
           v-model="currentNamespace"
-          placeholder="请输入知识库空间"
-          size="small"
-          @keyup.enter="handleSend"
-        />
+          placeholder="输入知识库空间名称"
+          size="default"
+          clearable
+        >
+          <template #prepend>空间</template>
+        </el-input>
       </div>
     </div>
 
-    <!-- 知识库列表 -->
-    <el-scrollbar class="flex-1 min-h-0">
-      <div class="p-1">
-        <!-- 包裹层防止 tag 贴边 -->
-        <div v-if="namespaceList.length === 0" class="text-gray-400 italic text-center mt-4">
-          暂无数据
+    <!-- 知识库空间列表 -->
+    <div class="kb-namespace-section">
+      <div class="section-header">
+        <span class="section-title">已有空间</span>
+        <el-tag size="small" type="info" effect="plain">{{ namespaceList.length }}</el-tag>
+      </div>
+      <el-scrollbar class="namespace-scroll" max-height="280px">
+        <div v-if="namespaceList.length === 0" class="empty-tip">
+          <el-icon :size="20" color="#c0c4cc"><FolderDelete /></el-icon>
+          <span>暂无空间数据</span>
         </div>
-        <el-tag
+        <div
           v-for="ns in namespaceList"
           :key="ns"
-          class="m-1 cursor-pointer hover:scale-105 transition-transform"
-          :type="ns === currentNamespace ? 'primary' : 'info'"
-          :effect="ns === currentNamespace ? 'dark' : 'plain'"
+          class="namespace-item"
+          :class="{ active: ns === currentNamespace }"
           @click="selectNamespace(ns)"
         >
-          {{ ns }}
-        </el-tag>
-      </div>
-    </el-scrollbar>
-    <el-button type="primary" @click="handleSend">调用智能体</el-button>
+          <el-icon :size="16" :color="ns === currentNamespace ? '#409eff' : '#909399'">
+            <FolderOpened />
+          </el-icon>
+          <span class="namespace-name">{{ ns }}</span>
+          <el-tag v-if="ns === currentNamespace" size="small" type="primary" effect="dark">当前</el-tag>
+        </div>
+      </el-scrollbar>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {Folder, UploadFilled } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox, ElScrollbar, UploadInstance, UploadProps } from 'element-plus'
+import { ref, watch, onMounted } from 'vue'
+import { Folder, UploadFilled, FolderDelete, FolderOpened } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox, UploadInstance, UploadProps } from 'element-plus'
 import { useChatStore } from '@/store/modules/chat'
 import { ragApi } from '@/api/ai/rag'
-import emitter from '@/utils/bus';
-import { agentApi } from '@/api/ai/agent';
+import emitter from '@/utils/bus'
 
 const uploadRef = ref<UploadInstance>()
 const store = useChatStore()
 
-const currentNamespace = ref('') // 默认命名空间
-const namespaceList = ref<string[]>([]) // Mock数据
-const uploading = ref(false) // 新增：上传状态
+const currentNamespace = ref('')
+const namespaceList = ref<string[]>([])
+const uploading = ref(false)
 
-// --- 文件上传逻辑 ---
-// 文件改变时的钩子
 const onFileChange: UploadProps['onChange'] = async (file) => {
-  // 1. 校验命名空间
   if (!currentNamespace.value.trim()) {
-    ElMessage.warning('请先输入或选择“知识库空间”')
-    uploadRef.value?.clearFiles() // 清空文件选择
+    ElMessage.warning('请先输入知识库空间名称')
+    uploadRef.value?.clearFiles()
     return
   }
-
-  // 2. 校验文件对象是否存在
   if (!file.raw) {
     ElMessage.error('文件读取失败，请重新选择')
     return
   }
 
-  uploading.value = true // 开始上传
-
+  uploading.value = true
   const formData = new FormData()
   formData.append('file', file.raw!)
   formData.append('namespace', currentNamespace.value)
   try {
-    // 这里假设你有一个专门的 upload API
-    await ragApi.ingestFile(formData);
+    await ragApi.ingestFile(formData)
     ElMessage.success(`《${file.name}》上传成功！`)
     store.addMessage({
       role: 'assistant',
-      content: `✅ **文件入库成功**\n\n文件名：${file.name}\n空间：${currentNamespace.value}\n\n您可以开始提问了。`
+      content: `文件 **${file.name}** 已入库（空间：${currentNamespace.value}）。您可以开始提问了。`
     })
-    uploadRef.value?.clearFiles() // 清空选择
-    //加载知识库列表
+    uploadRef.value?.clearFiles()
     fetchNamespaces()
   } catch (err: any) {
     ElMessage.error(`上传失败: ${err.message}`)
-  }finally {
-    uploading.value = false // 无论成功失败，结束上传状态
+  } finally {
+    uploading.value = false
   }
 }
 
-// 处理文件超出限制
 const handleExceed: UploadProps['onExceed'] = () => {
-  ElMessageBox.alert('只允许同时上传一个文件，请先删除再上传新文件。', '警告', { type: 'warning' })
+  ElMessageBox.alert('只允许同时上传一个文件，请先删除再上传新文件。', '提示', { type: 'warning' })
 }
 
-const handleSend = async () => {
-  //发送到主页面
-  const res = await agentApi.callAgent({task:'帮我搜集一下武汉2026年的购房政策并生成报告,文件下载地址为D:/test.docx'})
-  console.log('===',res);
-  
-  //ElMessage.success(res)
-}
-
-// 1. 获取知识库列表
 const fetchNamespaces = async () => {
-  namespaceList.value = await ragApi.getNamespaces();
-};
+  namespaceList.value = await ragApi.getNamespaces()
+}
 
-// 2. 切换命名空间
 const selectNamespace = (ns: string) => {
   currentNamespace.value = ns
-  ElMessage.info(`切换到空间: ${ns}`)
+  ElMessage.info(`已切换到空间: ${ns}`)
 }
-// 监听命名空间变化
+
 watch(() => currentNamespace.value, (newVal) => {
   emitter.emit('update-namespace', newVal)
 })
 
-// 初始化时获取知识库列表
 onMounted(() => {
   fetchNamespaces()
 })
 </script>
 
-<style lang="scss" scoped>
-/* 修复 Element Plus 上传组件在 Card 中的一些边距问题 */
-:deep(.el-upload-dragger) {
-  background-color: transparent;
-  border: none;
-  box-shadow: none;
+<style scoped lang="scss">
+.knowledge-base {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.kb-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.kb-upload {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: #f8faff;
+  border: 1px solid #e6f0ff;
+  border-radius: 10px;
+}
+
+.upload-wrapper {
   width: 100%;
-  padding: 10px 0;
+
+  :deep(.el-upload-dragger) {
+    background: transparent;
+    border: 1px dashed #c0d8ff;
+    border-radius: 8px;
+    padding: 18px 0;
+    width: 100%;
+
+    &:hover {
+      border-color: #409eff;
+    }
+
+    .el-icon--upload {
+      margin-bottom: 6px;
+    }
+  }
+}
+
+.upload-tip {
+  font-size: 12px;
+  color: #909399;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.namespace-row {
+  width: 100%;
+
+  :deep(.el-input-group__prepend) {
+    background: #ecf5ff;
+    color: #409eff;
+    border-color: #c6e2ff;
+    font-size: 12px;
+    width: 50px;
+    text-align: center;
+  }
+}
+
+.kb-namespace-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #606266;
+}
+
+.namespace-scroll {
+  flex: 1;
+
+  .empty-tip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 32px 0;
+    color: #c0c4cc;
+    font-size: 13px;
+  }
+}
+
+.namespace-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  margin-bottom: 2px;
+
+  &:hover {
+    background-color: #f0f5ff;
+  }
+
+  &.active {
+    background-color: #ecf5ff;
+  }
+}
+
+.namespace-name {
+  flex: 1;
+  font-size: 13px;
+  color: #303133;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
