@@ -156,6 +156,7 @@ export const useUserStore = defineStore('user', {
     async fetchAuthPerms(userId:string){
       //获取用户权限数据
       const authInfo = await AuthAPI.getUserInfo(userId);
+      console.log('--权限信息--',authInfo);
       //赋值
       this.roles = authInfo.roles;
       this.perms = authInfo.perms;

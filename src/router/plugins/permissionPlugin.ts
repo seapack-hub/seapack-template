@@ -18,6 +18,8 @@ export const permissionPlugin: RouterPlugin = {
     // 2. Token 校验与恢复
     if (!userStore.token) {
       const isRestored = userStore.restoreLoginState()
+      //获取按钮权限数据
+      await userStore.fetchAuthPerms(String(userStore.userId))
       if (!isRestored) {
         return `/login?redirect=${to.path}`
       }
@@ -25,6 +27,9 @@ export const permissionPlugin: RouterPlugin = {
 
     // 3. admin 跳过所有权限检查
     if (userStore.username === 'admin') return undefined
+
+    // 4. 其他用户获取菜单权限
+
 
     // 4. 权限标识检查：如果路由声明了 permKey，校验用户是否拥有
     const permKey = to.meta?.permKey as string | undefined

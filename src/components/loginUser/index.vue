@@ -2,7 +2,7 @@
   <el-dropdown trigger="hover">
     <div class="user-info">
       <SPIcon name="user" size="20px"></SPIcon>
-      <span class="span-user">{{ userInfo?.username || '--' }}</span>
+      <span class="span-user">{{ userInfo?.userName || '--' }}</span>
     </div>
     <template #dropdown>
       <el-dropdown-menu>
