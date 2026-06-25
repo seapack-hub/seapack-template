@@ -53,7 +53,9 @@ const currentModuleRoute = computed(() => {
 })
 
 // 侧边栏只展示当前模块的子路由（跳过模块本身那一级）
+// dynamicRoutesLoaded 为 false 时返回空，避免 collectRoutes 尚未完成时错误渲染
 const menuList = computed(() => {
+  if (!permissionStore.dynamicRoutesLoaded) return []
   const children = (currentModuleRoute.value?.children as RouteRecordRaw[]) || []
   return filterVisibleRoutes(children, userStore.perms, userStore.username === 'admin');
 });

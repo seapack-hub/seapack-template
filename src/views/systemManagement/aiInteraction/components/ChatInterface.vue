@@ -1,197 +1,278 @@
 <template>
-  <div class="flex flex-col gap-10 h-full border-[#e8e8e8] border-solid border-1 relative">
-    <!-- 聊天头部 -->
-    <el-header class="!h-[60px] flex items-center justify-center gap-20 flex-shrink-0">
-      <h2 class="font-bold text-blue-500">AI大模型 RAG 助手</h2>
-      <el-button type="primary" :icon="Delete" @click="handleClear">清空会话</el-button>
+  <div class="chat-interface">
+    <!-- 头部 -->
+    <el-header class="chat-header">
+      <div class="header-left">
+        <h2 class="header-title">AI 大模型对话</h2>
+        <el-tag v-if="store.tokenCount > 0" size="small" type="info" effect="plain">
+          {{ store.tokenCount }} tokens
+        </el-tag>
+      </div>
+      <div class="header-actions">
+        <!-- 系统提示词设置 -->
+        <el-popover placement="bottom-end" :width="400" trigger="click" @show="fetchSystemPrompt">
+          <template #reference>
+            <el-button text :icon="Setting">
+              {{ systemPromptShort }}
+            </el-button>
+          </template>
+          <div class="system-prompt-editor">
+            <h4 class="editor-title">系统提示词（System Prompt）</h4>
+            <p class="editor-desc">设置 AI 助手的角色和行为规则</p>
+            <el-input
+              v-model="editSystemPrompt"
+              type="textarea"
+              :rows="6"
+              placeholder="例如：你是一个专业的前端开发工程师..."
+            />
+            <div class="editor-actions">
+              <el-button @click="resetSystemPrompt">恢复默认</el-button>
+              <el-button type="primary" @click="saveSystemPrompt">保存</el-button>
+            </div>
+          </div>
+        </el-popover>
+        <el-button text :icon="Delete" @click="handleClear">清空会话</el-button>
+      </div>
     </el-header>
+
     <!-- 消息列表 -->
-    <el-main class="flex-1 overflow-y-auto p-6 scroll-smooth ">
-      <el-scrollbar ref="scrollbarRef" class="h-full">
-        <div class="space-y-4">
-          <!-- 消息项 -->
+    <el-main class="chat-messages">
+      <el-scrollbar ref="scrollbarRef" class="message-scrollbar" view-class="message-view">
+        <div class="message-list">
+          <div v-if="store.messages.length === 0" class="empty-state">
+            <el-icon :size="48" color="#dcdfe6"><ChatLineSquare /></el-icon>
+            <p>开始一段新对话</p>
+            <p class="empty-hint">输入问题后按 Enter 发送，或按 🎤 使用语音输入</p>
+          </div>
+
           <div
             v-for="(msg, index) in store.messages"
             :key="index"
             class="message-item"
+            :class="msg.role === 'user' ? 'message-user' : 'message-assistant'"
           >
-            <el-card
-              :class="msg.role === 'user' ? 'bg-blue-50 border-blue-100' : 'bg-white border-gray-100'"
-              shadow="never"
-            >
+            <el-card shadow="never" :class="msg.role === 'user' ? 'card-user' : 'card-assistant'">
               <template #header>
-                <span class="font-medium" :class="msg.role === 'user' ? 'text-blue-600' : 'text-green-600'">
-                  {{ msg.role === 'user' ? '👤 用户' : '🤖 AI大模型' }}
-                </span>
+                <div class="message-header">
+                  <span class="role-tag">{{ msg.role === 'user' ? '👤 用户' : '🤖 AI 助手' }}</span>
+                  <span v-if="msg.role === 'assistant' && index === store.messages.length - 1 && store.loading" class="streaming-indicator">正在生成...</span>
+                </div>
               </template>
-              <div class="markdown-body" v-html="renderMarkdown(msg.content)"></div>
+              <div class="markdown-body" v-html="renderMarkdown(msg.content)" />
             </el-card>
           </div>
 
-          <!-- 加载状态 -->
-          <el-card v-if="store.loading" class="bg-gray-50 border-gray-100" shadow="never">
-            <div class="flex items-center text-gray-500">
-              <el-icon class="mr-2" :animation="true"><Loading /></el-icon>
-              正在检索知识库并思考...
-            </div>
-          </el-card>
+          <div v-if="store.loading && store.messages[store.messages.length - 1]?.role === 'user'" class="loading-skeleton">
+            <el-card shadow="never" class="card-assistant">
+              <template #header><span class="role-tag">🤖 AI 助手</span></template>
+              <el-skeleton animated>
+                <template #template>
+                  <el-skeleton-item variant="text" style="width: 60%" />
+                  <el-skeleton-item variant="text" style="width: 80%" />
+                  <el-skeleton-item variant="text" style="width: 40%" />
+                </template>
+              </el-skeleton>
+            </el-card>
+          </div>
         </div>
       </el-scrollbar>
     </el-main>
+
     <!-- 输入区域 -->
-    <el-footer class="bg-white !h-[100px] border-[#e8e8e8] border-solid border-1 p-4 flex items-center">
-      <div class="w-full flex justify-between items-center">
+    <el-footer class="chat-footer">
+      <div class="input-area">
         <el-input
           v-model="inputText"
-          class="flex-1"
+          class="chat-input"
           type="textarea"
           :rows="3"
-          placeholder="请输入您的问题（支持Shift+Enter换行）..."
+          placeholder="请输入您的问题（Enter 发送，Shift+Enter 换行）..."
           :disabled="store.loading"
           resize="none"
           @keyup.enter="handleEnter"
         />
-        <div class="w-[100px] flex justify-end mt-2">
-          <el-button
-            type="primary"
-            :loading="store.loading"
-            size="default"
-            @click="handleSend"
-          >
-            {{ store.loading ? '生成中...' : '发送提问' }}
+        <div class="input-actions">
+          <el-tooltip :content="voiceTooltip" placement="top">
+            <el-button
+              v-if="voice.isSupported"
+              :type="voice.status === 'listening' ? 'danger' : 'default'"
+              :icon="Microphone"
+              circle
+              @click="voice.toggle"
+            />
+            <el-tooltip v-else content="当前浏览器不支持语音输入" placement="top">
+              <el-button :icon="Microphone" circle disabled />
+            </el-tooltip>
+          </el-tooltip>
+          <el-button type="primary" :loading="store.loading" :icon="Promotion" @click="handleSend">
+            {{ store.loading ? '生成中...' : '发送' }}
           </el-button>
         </div>
       </div>
     </el-footer>
+
+    <VoiceInputTip
+      :status="voice.status"
+      :interim-text="voice.interimText"
+      :error-message="voice.errorMessage"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { Delete } from '@element-plus/icons-vue'
-import { useChatStore } from '@/store/modules/chat'
-import { streamChat } from '@/api/ai/index.ts'
-// @ts-ignore  // 忽略类型检查，解决缺少声明文件的问题
-import MarkdownIt from 'markdown-it'
+import { ref, watch, nextTick, onMounted } from 'vue';
+import { Delete, Setting, Promotion, Microphone, ChatLineSquare } from '@element-plus/icons-vue';
+import { useChatStore } from '@/store/modules/chat';
+import { streamChat } from '@/api/ai/index';
+import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import VoiceInputTip from './VoiceInputTip.vue';
 import emitter from '@/utils/bus';
+// @ts-ignore
+import MarkdownIt from 'markdown-it';
+import { ElMessageBox, ElMessage } from 'element-plus';
 
-const namespace = ref('');
-// 初始化 Markdown 解析器
-const md = new MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true
-})
+const store = useChatStore();
 
-const store = useChatStore()
-const inputText = ref('')
-const messageContainer = ref<HTMLElement | null>(null);
+const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
 
-//渲染 Markdown
-const renderMarkdown = (text:string) =>{
+function renderMarkdown(text: string): string {
   return md.render(text);
 }
 
-//自动滚动到底部
-const scrollToBottom = ()=>{
-  nextTick(()=>{
-    if(messageContainer.value){
-      messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-    }
-  })
+const inputText = ref('');
+const scrollbarRef = ref();
+
+// ===== 系统提示词编辑 =====
+const editSystemPrompt = ref('');
+const systemPromptShort = ref('提示词');
+
+function fetchSystemPrompt() {
+  editSystemPrompt.value = store.systemPrompt;
+  systemPromptShort.value = store.systemPrompt.length > 10
+    ? store.systemPrompt.slice(0, 10) + '...'
+    : store.systemPrompt;
 }
 
-// 监听消息列表变化，自动滚动
-watch(() => store.messages.length, scrollToBottom);
-
-//处理回车发送
-const handleEnter = (e: KeyboardEvent)=>{
-  if (!e.shiftKey) {
-    handleSend()
-  }
+function saveSystemPrompt() {
+  store.systemPrompt = editSystemPrompt.value;
+  ElMessage.success('系统提示词已更新');
+  systemPromptShort.value = store.systemPrompt.length > 10
+    ? store.systemPrompt.slice(0, 10) + '...'
+    : store.systemPrompt;
 }
 
-// 发送消息核心逻辑
-const handleSend = async ()=>{
+function resetSystemPrompt() {
+  editSystemPrompt.value = '你是一个智能助手，请基于提供的上下文准确回答用户问题。';
+}
+
+// ===== 语音输入 =====
+const voice = useSpeechRecognition({
+  onResult: (text: string) => {
+    inputText.value = text;
+    nextTick(() => {
+      const textarea = document.querySelector('.chat-input textarea');
+      if (textarea) (textarea as HTMLTextAreaElement).focus();
+    });
+  },
+  onError: (error: string) => { ElMessage.error(error); },
+});
+
+const voiceTooltip = ref('语音输入');
+watch(() => voice.status, (status) => {
+  const tips: Record<string, string> = {
+    idle: '点击开始语音输入',
+    listening: '点击停止录音',
+    recognizing: '正在识别...',
+    error: voice.errorMessage.value,
+  };
+  voiceTooltip.value = tips[status] || '语音输入';
+});
+
+// ===== 消息发送 =====
+function handleEnter(e: KeyboardEvent) {
+  if (!e.shiftKey) { e.preventDefault(); handleSend(); }
+}
+
+async function handleSend() {
   const text = inputText.value.trim();
-  if(!text || store.loading) return;
+  if (!text || store.loading) return;
 
-  //添加用户消息
-  store.addMessage({role:"user",content:text});
-  inputText.value = "";
+  store.addMessage({ role: 'user', content: text });
+  inputText.value = '';
   store.loading = true;
+  store.addMessage({ role: 'assistant', content: '' });
 
-  //预设一个空的AI消息，用于接收流式数据
-  store.addMessage({role:"assistant",content:""});
+  const contextMessages = store.getContextMessages();
 
-  //调用API 注意：这里发送的是除了最后一条空消息之外的所有历史
-  const history = store.messages.slice(0,-1);
   await streamChat(
-    history,
-    // onChunk: 收到文本片段
-    (text)=>store.updateLastMessage(text),
-    // onDone: 完成
-    ()=>{ store.loading = false},
-    // onError: 报错
-    (err)=>{
-      store.updateLastMessage(`\n\n[错误: ${err.message}]`)
-      store.loading = false
+    contextMessages,
+    (chunk) => store.updateLastMessage(chunk),
+    () => { store.loading = false; },
+    (err) => {
+      store.updateLastMessage(`\n\n[错误: ${err.message}]`);
+      store.loading = false;
     },
-    //传递命名空间
-    namespace.value,
-  )
+    store.currentSession?.namespace || '',
+  );
 }
 
-// 清空会话
-const handleClear = () => {
-  store.clearHistory()
-  ElMessageBox.confirm('会话已清空', '提示', { type: 'info' })
+function handleClear() {
+  ElMessageBox.confirm('确定清空当前会话的所有消息吗？', '提示', { type: 'info' })
+    .then(() => { store.clearMessages(); ElMessage.success('会话已清空'); })
+    .catch(() => {});
 }
 
-// 设置命名空间
-const setNamespace = (ns: string) => {
-  namespace.value = ns;
+// ===== 自动滚动 =====
+watch(() => store.messages.length, () => {
+  nextTick(() => {
+    const scrollWrap = scrollbarRef.value?.wrapRef;
+    if (scrollWrap) { scrollWrap.scrollTop = scrollWrap.scrollHeight; }
+  });
+});
+
+// ===== 命名空间监听 =====
+function setNamespace(ns: string) {
+  if (store.currentSession) { store.currentSession.namespace = ns; }
 }
 
 onMounted(() => {
-  // 订阅事件
+  store.ensureSession();
   emitter.on('update-namespace', setNamespace);
-})
-
-onUnmounted(() => {
-  // 取消订阅事件
-  emitter.off('update-namespace', setNamespace);
-})
+});
 </script>
 
-<style lang="scss" scoped>
-// 消息气泡圆角
-.message-item {
-  :deep(.el-card) {
-    border-radius: 12px;
-    border-width: 1px;
-  }
-  :deep(.el-card__header) {
-    background: transparent;
-    padding: 10px 16px;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-  }
+<style scoped lang="scss">
+.chat-interface { height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.chat-header { height: 60px !important; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid #e8e8e8; flex-shrink: 0; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.header-title { font-size: 16px; font-weight: 600; color: #303133; margin: 0; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.system-prompt-editor { padding: 8px; }
+.editor-title { margin: 0 0 4px; font-size: 14px; color: #303133; }
+.editor-desc { margin: 0 0 12px; font-size: 12px; color: #909399; }
+.editor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+.chat-messages { flex: 1; padding: 0; overflow: hidden; }
+.message-scrollbar { height: 100%; }
+.message-view { padding: 20px; }
+.message-list { max-width: 800px; margin: 0 auto; }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0; color: #909399; gap: 8px; }
+.empty-hint { font-size: 12px; color: #c0c4cc; }
+.message-item { margin-bottom: 16px; }
+.message-header { display: flex; align-items: center; justify-content: space-between; }
+.role-tag { font-size: 13px; font-weight: 500; }
+.streaming-indicator { font-size: 12px; color: #409eff; animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+.card-user { border: 1px solid #e6f0ff; border-radius: 12px; :deep(.el-card__header) { background: #f5f9ff; border-bottom: none; padding: 10px 16px; } }
+.card-assistant { border: 1px solid #f0f0f0; border-radius: 12px; :deep(.el-card__header) { background: #fafafa; border-bottom: none; padding: 10px 16px; } }
+:deep(.markdown-body) { font-size: 14px; line-height: 1.7; color: #303133;
+  code { background-color: #f1f2f4; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 13px; }
+  pre { background-color: #f6f8fa; padding: 16px; border-radius: 8px; overflow: auto; border: 1px solid #eaeaea; margin: 12px 0; code { background: none; padding: 0; } }
+  p { margin: 8px 0; } ul, ol { padding-left: 20px; }
+  blockquote { border-left: 4px solid #409eff; padding-left: 12px; color: #606266; margin: 12px 0; }
 }
-
-// Markdown 样式微调
-:deep(.markdown-body) {
-  font-size: 14px;
-  code {
-    background-color: #f1f2f4;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-  }
-  pre {
-    background-color: #f6f8fa;
-    padding: 16px;
-    border-radius: 8px;
-    overflow: auto;
-    border: 1px solid #eaeaea;
-  }
-}
+.chat-footer { height: auto !important; padding: 12px 20px; border-top: 1px solid #e8e8e8; background: white; flex-shrink: 0; }
+.input-area { max-width: 800px; margin: 0 auto; }
+.chat-input { :deep(textarea) { border-radius: 8px; resize: none; } }
+.input-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 8px; }
+.loading-skeleton { margin-bottom: 16px; }
 </style>

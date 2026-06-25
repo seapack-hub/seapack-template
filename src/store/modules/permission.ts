@@ -20,6 +20,8 @@ export const usePermissionStore = defineStore('permission', {
     routesHierarchy: <any[]>[],
     activeTopMenu: <string>'',
     isDynamicLoaded: false,
+    // 标记 collectRoutes 是否已完成（用于区分"尚未加载"和"加载后为空"）
+    dynamicRoutesLoaded: false,
   }),
 
   actions: {
@@ -52,6 +54,7 @@ export const usePermissionStore = defineStore('permission', {
       this.dynamicRoutes = [];
       this.routes = [];
       this.isDynamicLoaded = false;
+      this.dynamicRoutesLoaded = false;
     },
 
     // 从已加载的路由中收集所有顶级模块路由，供侧边栏使用
@@ -72,6 +75,7 @@ export const usePermissionStore = defineStore('permission', {
       allRoutes.push(...(staticModuleRoutes as RouteRecordRaw[]))
 
       this.setRoutes(allRoutes)
+      this.dynamicRoutesLoaded = true
     }
   }
 });

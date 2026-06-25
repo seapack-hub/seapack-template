@@ -375,6 +375,18 @@ const systemManagementRoute: Array<RouterObject> = [
               permKey: 'system:ai:agent:view',
             },
           },
+          //图片生成
+          {
+            path: 'image',
+            name: 'imageGeneration',
+            component:() => import("@/views/systemManagement/aiInteraction/imageGeneration/index.vue"),
+            meta:{
+              title:"imageGeneration",
+              description: "图片生成",
+              icon:"image",
+              permKey: 'system:ai:image:view',
+            },
+          },
         ],
         meta:{
           title:"aiInteraction",
