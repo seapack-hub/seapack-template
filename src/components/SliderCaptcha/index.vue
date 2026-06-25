@@ -64,7 +64,8 @@
 </template>
 
 <script setup lang="ts">
-import { getSlideVerifyImg} from "@/api/login/index"
+import { getSlideVerifyImg } from "@/api/login/index"
+import type { CaptchaData } from "@/api/login/index"
 
 interface TrackPoint {
   x: number;
@@ -98,7 +99,7 @@ const fillPercentage = computed(() => {
 const initCaptcha = async () => {
   try {
     loading.value = true;
-    const data = await getSlideVerifyImg();
+    const data = await getSlideVerifyImg() as unknown as CaptchaData;
     bgImage.value = data.bgImage;
     sliderImage.value = data.sliderImage;
     token.value = data.token;

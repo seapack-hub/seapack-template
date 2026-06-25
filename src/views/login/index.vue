@@ -91,6 +91,7 @@ const handleLogin = () => {
     if (valid) {
       showCaptcha.value = true;
     } else {
+      // eslint-disable-next-line no-console
       console.error('表单校验不通过', fields);
     }
   });

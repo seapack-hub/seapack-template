@@ -201,8 +201,8 @@ const handleQuery = async () => {
     const res = await StockInfoAPI.page(query.value)
     tableData.value = res.list; 
     total.value = res.total
-  } catch(err) {
-    console.log(err);
+  } catch {
+    // 静默处理
   } finally { 
     loading.value = false 
   }

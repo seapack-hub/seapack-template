@@ -46,7 +46,6 @@ const tipLineWidth = computed(() => {
 });
 const props = defineProps({
   menuList: {
-    required: true,
     default: () => [],
     type: Array<RouteRecordRaw>
   },
@@ -59,7 +58,7 @@ const props = defineProps({
     required: true
   }
 });
-console.log('---props.menuList--',props.menuList);
+
 
 //计算展示的菜单
 const showMeanList = computed(()=>{

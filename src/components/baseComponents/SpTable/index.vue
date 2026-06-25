@@ -55,10 +55,10 @@
             v-else-if="item.type === 'expand'"
             v-bind="{...{fixed:'left'},...item}"
           >
-            <template #default="props">
+            <template #default="expandScope">
               <slot
                 name="expand"
-                :props
+                :props="expandScope"
               ></slot>
             </template>
           </el-table-column>

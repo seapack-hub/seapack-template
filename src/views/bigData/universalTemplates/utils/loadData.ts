@@ -64,6 +64,7 @@ export const loadJsonData = async (url:string, viewer:Cesium.Viewer)=>{
       })
     }
   }catch(err){
+    // eslint-disable-next-line no-console
     console.error('加载Json数据失败:', err);
   }
 

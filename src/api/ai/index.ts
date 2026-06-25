@@ -70,6 +70,7 @@ export async function streamChat(
             }
           } catch (e) {
             // 忽略非 JSON 的心跳包或解析错误
+            // eslint-disable-next-line no-console
             console.warn('解析失败:', e, jsonString);
           }
         }

@@ -41,7 +41,7 @@ function flightTrajectory() {
   // console.log(planeData);
   viewer.timeline.zoomTo(startJulianDate, stopJulianDate);
 
-  console.log('---飞行数据--', planeData);
+
   planeData.forEach((dataPoint, i) => {
     // 当前点的时间
     const time = Cesium.JulianDate.addSeconds(startJulianDate, i * timeStepInSeconds, new Cesium.JulianDate());
@@ -61,7 +61,7 @@ function flightTrajectory() {
     // });
   });
 
-  console.log('--||节点--', positionProperty);
+
   // 创建飞机
   const planeEntity = viewer.entities.add({
     availability: new Cesium.TimeIntervalCollection([

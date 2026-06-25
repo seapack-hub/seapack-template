@@ -2,14 +2,11 @@ import { createApp } from 'vue';
 import App from './App.vue';
 //引入uno.css
 import 'virtual:uno.css';
-// @ts-expect-error: side-effect import
 import 'element-plus/es/components/message/style/css'
-// @ts-expect-error: side-effect import
 import 'element-plus/es/components/message-box/style/css'
 //引入全局样式
 import './styles/index.scss';
 // 本地SVG图标
-// @ts-expect-error: virtual module
 import 'virtual:svg-icons-register';
 //引入pinia
 import pinia from './store';

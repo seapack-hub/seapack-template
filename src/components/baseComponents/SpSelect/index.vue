@@ -45,7 +45,8 @@ const props = defineProps({
   },
   //接口参数
   methodParams: {
-    type: null as any
+    type: null as any,
+    default: null
   },
   //立即调用
   immediate: {

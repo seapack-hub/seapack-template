@@ -67,7 +67,7 @@ import ThresholdDrawer from './components/ThresholdDrawer.vue'
 
 const userStore = useUserStore()
 
-const query = ref<UserStockMonitorQuery>({ userId: userStore.userInfo.id!, pageNum: 1, pageSize: 10, stockCode: '', stockName: '', isActive: undefined })
+const query = ref<UserStockMonitorQuery>({ userId: String(userStore.userInfo.id!), pageNum: 1, pageSize: 10, stockCode: '', stockName: '', isActive: undefined })
 const loading = ref(false)
 const tableData = ref<UserStockMonitorVO[]>([])
 const total = ref(0)

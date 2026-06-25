@@ -51,8 +51,7 @@ export const IndustrySectorAPI = {
   },
   /** 新增行业节点（id 自增，无需传入） */
   insert(data: Partial<IndustrySector>) {
-    const { id, ...rest } = data as any
-    return request<any, any>({ url: '/api/industrySector/insert', method: 'post', data: rest })
+    return request<any, any>({ url: '/api/industrySector/insert', method: 'post', data })
   },
   /** 更新行业节点 */
   update(data: IndustrySector) {

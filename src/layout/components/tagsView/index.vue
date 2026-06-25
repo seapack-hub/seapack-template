@@ -4,7 +4,7 @@
       <RouterLink
         v-for="(tag, index) in tagsViewStore.visitedViews"
         :key="index"
-        :to="tag.path"
+        :to="tag.path || ''"
         class="tags-view-item"
         :class="{ active: isActive(tag) }"
         @contextmenu.prevent="openMenu(tag, $event)"
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { type RouteLocationNormalized, type RouteRecordRaw, RouterLink, useRoute, useRouter } from 'vue-router';
 import { type TagsView, useTagsViewStore } from '@/store/modules/tags-view.ts';
 import { usePermissionStore } from '@/store/modules/permission.ts';

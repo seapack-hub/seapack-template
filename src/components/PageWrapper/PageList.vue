@@ -103,26 +103,26 @@
         <template v-for="item in innerConfig.columns" :key="item.prop">
           <!--render函数自定义节点-->
           <el-table-column v-if="item.render" v-bind="item">
-            <template #default="scope">
-              <custom-com :vnode="item.render" :scope="scope" />
+            <template #default="colScope">
+              <custom-com :vnode="item.render" :scope="colScope" />
             </template>
           </el-table-column>
           <el-table-column v-else-if="item.map" v-bind="item" show-overflow-tooltip>
-            <template #default="scope">
-              <span>{{ item.map[scope.row[item.prop]] }}</span>
+            <template #default="colScope">
+              <span>{{ item.map[colScope.row[item.prop]] }}</span>
             </template>
           </el-table-column>
           <!--自定义展示格式-->
           <el-table-column v-else-if="item.formatter" v-bind="item" show-overflow-tooltip>
-            <template #default="scope">
-              <span>{{ item.formatter(scope.row[item.prop], item.props, item) || '-' }}</span>
+            <template #default="colScope">
+              <span>{{ item.formatter(colScope.row[item.prop], item.props, item) || '-' }}</span>
             </template>
           </el-table-column>
           <!--普通列-->
           <el-table-column v-else v-bind="item" show-overflow-tooltip>
-            <template #default="scope">
+            <template #default="colScope">
               <span>
-                {{ scope.row[item.prop] || scope.row[item.prop] == 0 ? scope.row[item.prop] + '' || '--' : '--' }}
+                {{ colScope.row[item.prop] || colScope.row[item.prop] == 0 ? colScope.row[item.prop] + '' || '--' : '--' }}
               </span>
             </template>
           </el-table-column>
@@ -130,16 +130,16 @@
         <!--操作列-->
         <template v-if="innerConfig.operate?.useOperate">
           <el-table-column label="操作" fixed="right" :min-width="innerConfig.operate.minWidth">
-            <template #default="scope">
+            <template #default="rowScope">
               <template v-for="item in innerConfig.operate.operates()" :key="item">
                 <el-button
                   v-if="Object.keys(operateMap).includes(item.toString())"
                   type="primary"
                   link
-                  @click="onOperate(operateMap[item as keyof typeof operateMap], scope)"
+                  @click="onOperate(operateMap[item as keyof typeof operateMap], rowScope)"
                 ></el-button>
                 <!--render函数自定义节点-->
-                <custom-com v-else-if="typeof item === 'object' && item.render" :vnode="item.render" :scope="scope" />
+                <custom-com v-else-if="typeof item === 'object' && item.render" :vnode="item.render" :scope="rowScope" />
               </template>
             </template>
           </el-table-column>
@@ -178,7 +178,7 @@ const { updateType, deleteType, detailType, importType, exportType } = useOperat
 //定义Props接口
 interface DefaultProps {
   config: ConfigType;
-  fit: boolean;
+  fit?: boolean;
 }
 //定义表格项接口
 interface ListItemType {
@@ -225,7 +225,7 @@ const defaultConfig: ConfigType = {
   }
 };
 //设置默认查询参数
-const queryParams = defineModel('queryParams');
+const queryParams = defineModel<any>('queryParams');
 //定义表格变量
 const data = ref({
   list: [],

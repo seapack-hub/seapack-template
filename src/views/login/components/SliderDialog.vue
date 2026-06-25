@@ -76,6 +76,7 @@ const onCaptchaSuccess = async ()=>{
     router.replace({ path: '/menuTab' });
 
   } catch (error: any) {
+    // eslint-disable-next-line no-console
     console.error('登录失败:', error);
     ElMessage.error(error?.message || '登录失败，请稍后重试');
     visible.value = false;

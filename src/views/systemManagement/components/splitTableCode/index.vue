@@ -66,8 +66,7 @@ const loadSourceCode = () => {
 }
 
 // 当代码变化时的处理函数
-const onCodeChange = (newCode: string) => {
-  console.log('代码已更改:', newCode)
+const onCodeChange = (_newCode: string) => {
   // 这里可以添加更复杂的逻辑，比如通过动态编译执行新代码
 }
 </script>

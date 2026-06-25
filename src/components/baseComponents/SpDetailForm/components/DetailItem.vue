@@ -1,17 +1,17 @@
 <template>
   <SpDetailLayout :column :padding class="p-x-[var(--padding-l)]">
     <slot name="components">
-      <template v-for="column in formList" :key="column.prop">
-        <template v-if="column?.vIFHandler ? column.vIFHandler(formData) : true">
-          <SpTitle v-if="column.type === 'title'" v-bind="column.props"> </SpTitle>
-          <div v-else-if="column.type === 'empty'"></div>
-          <slot v-else-if="column.type === 'slot'" :name="column.value" :props="column" :component-props="column.props" :form-data="formData"></slot>
+      <template v-for="col in formList" :key="col.prop">
+        <template v-if="col?.vIFHandler ? col.vIFHandler(formData) : true">
+          <SpTitle v-if="col.type === 'title'" v-bind="col.props"> </SpTitle>
+          <div v-else-if="col.type === 'empty'"></div>
+          <slot v-else-if="col.type === 'slot'" :name="col.value" :props="col" :component-props="col.props" :form-data="formData"></slot>
           <FormComponent
-            v-else-if="column.type !== 'empty'"
+            v-else-if="col.type !== 'empty'"
             v-model="formData"
             :editable
-            :column
-            :style="{ marginBottom: column.style?.marginBottom ? column.style?.marginBottom : '20px' }"
+            :column="col"
+            :style="{ marginBottom: col.style?.marginBottom ? col.style?.marginBottom : '20px' }"
           >
             <template v-for="(_, name) in $slots" :key="name" #[name]="scope">
               <slot :name="name" v-bind="scope"></slot>

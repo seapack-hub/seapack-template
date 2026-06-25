@@ -54,7 +54,7 @@ export const exportExcel = async (
     window.URL.revokeObjectURL(url);
     options?.onSuccess?.();
     ElMessage.success('导出成功');
-  }catch(err){
+  }catch{
     options?.loading?.(false);
   }
 

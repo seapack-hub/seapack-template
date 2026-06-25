@@ -126,7 +126,7 @@ function createAxios() {
       const status = error.response?.status || 500;
       let message = '请求异常';
 
-      console.log('--err--', error);
+
 
       // 根据 HTTP 状态码给出对应的中文提示
       switch (status) {

@@ -203,7 +203,7 @@ export const histogramOption = {
   series: [
     {
       type: 'custom',
-      renderItem: function (params:any, api:any) {
+      renderItem: function (_params:any, api:any) {
         const location = api.coord([api.value(0), api.value(1)]);
         return {
           type: 'group',
@@ -393,7 +393,7 @@ export const radarOption = {
             label: {
                 normal: {
                     show: true,
-                    formatter: (params) => {
+                    formatter: (params: any) => {
                         return params.value;
                     },
                     color: '#fff',

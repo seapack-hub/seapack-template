@@ -1,7 +1,6 @@
 import { RouterView, type RouteRecordRaw } from 'vue-router';
 
 type RouterObject = RouteRecordRaw & {
-  show?: boolean;
   children?: RouterObject[];
 };
 

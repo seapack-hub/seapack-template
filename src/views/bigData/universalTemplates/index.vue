@@ -77,33 +77,33 @@ const initCesium = async () => {
 }
 
 // ========== 定位到武汉 ==========
-const flyToWuhan = (): Promise<void> => {
-  return new Promise((resolve) => {
-    if (!viewer.value) return resolve()
-    
-    viewer.value.camera.flyTo({
-      destination: Cesium.Cartesian3.fromDegrees(
-        WUHAN_CENTER.lon,
-        WUHAN_CENTER.lat,
-        WUHAN_CENTER.height
-      ),
-      orientation: {
-        heading: Cesium.Math.toRadians(0),   // 方向角
-        pitch: Cesium.Math.toRadians(-60),   // 俯仰角（-90为垂直向下，-60有立体感）
-        roll: 0.0
-      },
-      duration: 2.5,
-      complete: () => {
-        currentLocation.value = { 
-          lon: WUHAN_CENTER.lon, 
-          lat: WUHAN_CENTER.lat,
-          district: '江岸区（市中心）' 
-        }
-        resolve()
-      }
-    })
-  })
-}
+// const flyToWuhan = (): Promise<void> => {
+//   return new Promise((resolve) => {
+//     if (!viewer.value) return resolve()
+//     
+//     viewer.value.camera.flyTo({
+//       destination: Cesium.Cartesian3.fromDegrees(
+//         WUHAN_CENTER.lon,
+//         WUHAN_CENTER.lat,
+//         WUHAN_CENTER.height
+//       ),
+//       orientation: {
+//         heading: Cesium.Math.toRadians(0),   // 方向角
+//         pitch: Cesium.Math.toRadians(-60),   // 俯仰角（-90为垂直向下，-60有立体感）
+//         roll: 0.0
+//       },
+//       duration: 2.5,
+//       complete: () => {
+//         currentLocation.value = { 
+//           lon: WUHAN_CENTER.lon, 
+//           lat: WUHAN_CENTER.lat,
+//           district: '江岸区（市中心）' 
+//         }
+//         resolve()
+//       }
+//     })
+//   })
+// }
 
 
 onMounted(()=>{

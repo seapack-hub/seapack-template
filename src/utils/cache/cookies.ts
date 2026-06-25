@@ -22,7 +22,7 @@ export const getToken = () => {
 
 /** 将登录令牌写入 Cookie（默认不设过期时间，随浏览器会话结束而清除） */
 export const setToken = (token: string) => {
-  Cookies.set(CacheKey.TOKEN, token);
+  Cookies.set(CacheKey.TOKEN, token, { secure: import.meta.env.PROD, sameSite: 'Strict' });
 };
 
 /** 从 Cookie 中移除登录令牌（登出时调用） */

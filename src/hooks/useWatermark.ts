@@ -72,6 +72,7 @@ export function useWatermark(parentEl: Ref<HTMLElement | null> = bodyEl) {
   const setWatermark = (text: string, config: Partial<DefaultConfig> = {}) => {
     // 容器未挂载时给出警告并提前返回
     if (!parentEl.value) {
+      // eslint-disable-next-line no-console
       console.warn('请在 DOM 挂载完成后再调用 setWatermark 方法设置水印');
       return;
     }
@@ -97,6 +98,7 @@ export function useWatermark(parentEl: Ref<HTMLElement | null> = bodyEl) {
       parentEl.value.removeChild(watermarkEl);
     } catch {
       // 在无防御模式下，用户可能已在控制台手动删除了该元素
+      // eslint-disable-next-line no-console
       console.warn('水印元素已不存在，请重新创建');
     } finally {
       // 清空引用，允许 GC 回收

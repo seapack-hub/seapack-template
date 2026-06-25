@@ -58,6 +58,7 @@
                   <span v-if="msg.role === 'assistant' && index === store.messages.length - 1 && store.loading" class="streaming-indicator">正在生成...</span>
                 </div>
               </template>
+              <!-- eslint-disable-next-line vue/no-v-html -- MarkdownIt 已关闭 html 渲染，无 XSS 风险 -->
               <div class="markdown-body" v-html="renderMarkdown(msg.content)" />
             </el-card>
           </div>
@@ -133,7 +134,7 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 
 const store = useChatStore();
 
-const md = new MarkdownIt({ html: true, linkify: true, typographer: true });
+const md = new MarkdownIt({ html: false, linkify: true, typographer: true });
 
 function renderMarkdown(text: string): string {
   return md.render(text);

@@ -43,6 +43,7 @@ async function logout() {
     router.replace({ path: '/login' });
   } catch (error) {
     router.replace({ path: '/errorPage' });
+    // eslint-disable-next-line no-console
     console.error('退出登录失败:', error);
     ElMessage.error('退出登录失败，请稍后重试');
   }

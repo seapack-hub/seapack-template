@@ -1,4 +1,19 @@
 import { type AxiosResponse } from 'axios';
+
+// MyBatis-Plus 分页返回体
+export interface PageListType<T, K = any> {
+  list: T[];
+  total: number;
+  size: number;
+  current: number;
+  orders: K[];
+  optimizeCountSql: boolean;
+  isSearchCount: boolean;
+  hitCount: boolean;
+  countId: string;
+  maxLimit: number;
+}
+
 //常用查询组件(el-input,el-select...)参数
 interface SearchPropsType {
   modelValue?: string; //组件绑定值

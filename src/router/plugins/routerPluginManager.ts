@@ -27,6 +27,7 @@ class RouterPluginManager {
 
         // 只要有任何插件返回了拦截指令，立即停止后续插件执行并返回给 Router
         if (result !== undefined) {
+          // eslint-disable-next-line no-console
           console.log(`[Router Plugin: ${plugin.name}] 拦截导航，返回值:`, result)
           return result
         }

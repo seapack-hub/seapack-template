@@ -120,7 +120,8 @@ const props = defineProps({
     default: null
   },
   methodParams: {
-    type: null as any
+    type: null as any,
+    default: null
   },
   immediate: {
     type: Boolean,

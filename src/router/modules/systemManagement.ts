@@ -1,6 +1,5 @@
 import { RouterView, type RouteRecordRaw } from 'vue-router';
 type RouterObject = RouteRecordRaw & {
-  show?: boolean;
   children?: RouterObject[];
 };
 //系统管理模块路由
@@ -10,7 +9,6 @@ const systemManagementRoute: Array<RouterObject> = [
     name: 'systemManagement',
     component: () => import('@/layout/main/index.vue'),
     redirect: { name: 'Dashboard' },
-    show: true,
     meta: {
       title: 'home',
       description: '系统管理',

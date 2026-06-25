@@ -93,6 +93,7 @@ const handleQuery = async ()=>{
     const res = await industryApi.getDimIndustryByKeyword(queryParams.value);
     tableData.value = Array.isArray(res) ? res : [];
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("查询行业失败:", error);
     tableData.value = [];
   } finally {

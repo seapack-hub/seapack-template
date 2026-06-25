@@ -71,7 +71,7 @@ async function onSubmit() {
   if (!form.value.stockCode) return
   submitting.value = true
   try {
-    await UserStockMonitorAPI.add(userStore.userInfo.id!, form.value.stockCode, form.value.remark)
+    await UserStockMonitorAPI.add(String(userStore.userInfo.id!), form.value.stockCode, form.value.remark)
     ElMessage.success('添加成功')
     visible.value = false
     emit('refresh')

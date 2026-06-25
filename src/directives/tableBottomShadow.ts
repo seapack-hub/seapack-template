@@ -135,6 +135,7 @@ function initShadow(el: HTMLElementWithCleanup, binding: DirectiveBinding<Shadow
     const scrollWrapper = el.querySelector<HTMLElement>('.el-scrollbar__wrap')
 
     if (!scrollWrapper) {
+      // eslint-disable-next-line no-console
       console.warn('[v-table-shadow] 未找到 .el-scrollbar__wrap，请确认是 el-table 且设置了 height')
       return
     }

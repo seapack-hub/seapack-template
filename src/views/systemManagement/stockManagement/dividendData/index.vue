@@ -73,7 +73,6 @@ const dialogForm = ref<any>({})
 const columns = createDividendColumns({
   onEdit(row) {
     dialogIsEdit.value = true;
-    console.log('--row--',row);
     dialogForm.value = {
       ...row ,
       year: String(row.year)

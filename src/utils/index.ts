@@ -38,6 +38,7 @@ export const getCssVariableValue = (cssVariableName: string) => {
     // 从 :root（document.documentElement）上读取 CSS 变量的计算值
     cssVariableValue = getComputedStyle(document.documentElement).getPropertyValue(cssVariableName);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
   }
   return cssVariableValue;

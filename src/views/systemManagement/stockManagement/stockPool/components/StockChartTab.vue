@@ -5,13 +5,13 @@
         <el-form-item label="开始日期">
           <el-date-picker
             v-model="startDate" type="date" placeholder="选择开始日期" value-format="YYYY-MM-DD"
-            :disabled-date="d => endVal && d > endVal"
+            :disabled-date="(d: Date) => endVal && d > endVal"
           />
         </el-form-item>
         <el-form-item label="结束日期">
           <el-date-picker
             v-model="endDate" type="date" placeholder="选择结束日期" value-format="YYYY-MM-DD"
-            :disabled-date="d => startVal && d < startVal"
+            :disabled-date="(d: Date) => startVal && d < startVal"
           />
         </el-form-item>
         <el-form-item>

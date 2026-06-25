@@ -39,8 +39,7 @@ export const DictAPI = {
   },
   /** 新增字典 */
   insert(data: Partial<Dict>) {
-    const { id, ...rest } = data as any
-    return request<any, any>({ url: `${USER_BASE_URL}/dict/insert`, method: 'post', data: rest })
+    return request<any, any>({ url: `${USER_BASE_URL}/dict/insert`, method: 'post', data })
   },
   /** 更新字典 */
   update(data: Dict) {

@@ -95,16 +95,6 @@ export const UserAPI = {
   },
 }
 
-/** 登录用户信息 */
-export interface UserInfo {
-  userId?: number
-  username?: string
-  nickname?: string
-  avatar?: string
-  roles: string[]
-  perms: string[]
-}
-
 /** 用户分页查询参数 */
 export interface UserPageQuery extends PageQuery {
   keywords?: string

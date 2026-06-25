@@ -14,9 +14,6 @@ import { ref, computed } from 'vue';
 import type { ChatMessage } from '@/api/ai/index';
 import { countMessagesTokens, trimContext } from '@/utils/tokenCounter';
 
-/** 单条消息的角色类型 */
-type MessageRole = 'user' | 'assistant' | 'system';
-
 /** 会话数据结构 */
 export interface Session {
   /** 会话唯一标识（UUID） */
@@ -269,7 +266,7 @@ export const useChatStore = defineStore(
     // 持久化：自动保存 sessions 和 currentSessionId 到 localStorage
     persist: {
       // 只持久化 sessions 和 currentSessionId，loading 不持久化
-      pick: ['sessions', 'currentSessionId'],
+      paths: ['sessions', 'currentSessionId'],
     },
   },
 );

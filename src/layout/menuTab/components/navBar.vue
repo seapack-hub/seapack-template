@@ -47,9 +47,8 @@ itemList.value = [
 const activeValue = ref(0);
 
 /** tab点击事件*/
-const tabClick = (item: ItemType, index: number) => {
+const tabClick = (_item: ItemType, index: number) => {
   activeValue.value = index;
-  console.log(item);
 };
 
 /**

@@ -131,6 +131,7 @@ async function reverseGeocode(lng: number, lat: number) {
       addMarker(lng, lat, data.regeocode.formatted_address);
     }
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('逆地理编码失败:', error);
   }
 }

@@ -35,7 +35,7 @@
             <el-table-column label="部门层级" min-width="90px" align="center" slot-name="deptLevel">
               <template #default="{ row }">
                 <el-tag :type="({ '1': 'primary', '2': 'success', '3': 'warning' } as any)[row.deptLevel] || 'info'" size="small" effect="light">
-                  {{ { '1': '一级', '2': '二级', '3': '三级' }[row.deptLevel] || row.deptLevel }}
+                  {{ ({ '1': '一级', '2': '二级', '3': '三级' } as Record<string, string>)[row.deptLevel] || row.deptLevel }}
                 </el-tag>
               </template>
             </el-table-column>

@@ -102,6 +102,7 @@ export function useChatStream(options: UseChatStreamOptions) {
         const data = JSON.parse(event.data);
         handleStreamData(data);
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error('解析流数据失败:', e);
       }
     };
