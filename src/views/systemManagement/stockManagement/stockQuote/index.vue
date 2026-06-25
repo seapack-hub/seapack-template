@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page-container">
     <!-- ===== 顶部大盘指数卡片 ===== -->
     <!-- 6 个主要指数：上证、深证、创业板、科创50、沪深300、上证50 -->
@@ -134,9 +134,9 @@
 
 <script setup lang="ts">
 /* ========== API 和工具 ========== */
-import { StockMarketQuoteAPI, type StockMarketQuoteDto, type StockMarketQuoteQuery } from '@/api/system/stock/stockMarketQuote/stockMarketQuote.ts'
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
-import { getDictByType } from '@/api/system/baseInfo/dict.ts'
+import { StockMarketQuoteAPI, type StockMarketQuoteDto, type StockMarketQuoteQuery } from '@/api/system/stockMarketQuote.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector.ts'
+import { getDictByType } from '@/api/system/dict.ts'
 import { createStockQuoteColumns } from '../components/columns'
 import { yieldLevelClass } from '../components/shared'
 

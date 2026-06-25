@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page-container">
     <el-card shadow="never" class="flex-1 flex flex-col el-card-main">
       <div class="header">
@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { UserStockMonitorAPI, type UserStockMonitorVO, type UserStockMonitorQuery } from '@/api/system/stock/stockMonitor/userStockMonitor.ts'
+import { UserStockMonitorAPI, type UserStockMonitorVO, type UserStockMonitorQuery } from '@/api/system/userStockMonitor.ts'
 import { useUserStore } from '@/store/modules/user'
 import AddStockDialog from './components/AddStockDialog.vue'
 import ThresholdDrawer from './components/ThresholdDrawer.vue'

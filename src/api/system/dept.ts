@@ -40,7 +40,7 @@ export interface DeptPageQuery extends PageQuery {
   parentDeptId?: number
 }
 
-const DeptAPI = {
+export const DeptAPI = {
   /** 分页查询部门列表 */
   getPage(query: DeptPageQuery) {
     return request<any, PageResult<DeptVO[]>>({
@@ -80,5 +80,3 @@ const DeptAPI = {
     return request<any, void>({ url: `${DEPT_BASE_URL}/delete/${deptId}`, method: "delete" })
   },
 }
-
-export default DeptAPI

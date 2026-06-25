@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 
-import { getDictByType } from '@/api/system/baseInfo/dict.ts'
+import { getDictByType } from '@/api/system/dict.ts'
 /**
  * 定义并导出字典管理Store
  */

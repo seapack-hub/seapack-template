@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-container">
     <el-row :gutter="20" class="row-style">
       <!-- 左侧部门树 -->
@@ -78,8 +78,8 @@ import DeptTree from './components/DeptTree.vue'
 import UserFormDialog from './components/UserFormDialog.vue'
 import RoleAssignDialog from './components/RoleAssignDialog.vue'
 import { createUserColumns } from './components/UserColumns'
-import {UserAPI, type UserPageQuery, type User } from '@/api/system/baseInfo/user.ts'
-import { exportExcel, type ExportRequest } from '@/api/system/baseInfo/export'
+import {UserAPI, type UserPageQuery, type User } from '@/api/system/user.ts'
+import { exportExcel, type ExportRequest } from '@/api/system/export'
 
 const queryFormRef = ref<any>(null)
 const queryParams = reactive<UserPageQuery>({ pageNum: 1, pageSize: 10 })

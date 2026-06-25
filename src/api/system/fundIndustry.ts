@@ -13,7 +13,7 @@ export type DimIndustryTree = {
   children: DimIndustryTree[],
 }
 
-const industryApi = {
+export const industryApi = {
   //查询所有行业数据
   getAllDimIndustry(){
     return request<any,DimIndustryTree>({
@@ -47,4 +47,3 @@ const industryApi = {
     });
   }
 }
-export default industryApi;

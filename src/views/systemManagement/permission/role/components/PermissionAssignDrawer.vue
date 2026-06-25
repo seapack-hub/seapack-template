@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-drawer v-model="visible" :title="`分配权限 - ${roleName}`" size="420px" @closed="onClosed">
     <div class="h-full flex flex-col">
       <div class="flex-1 overflow-auto">
@@ -23,8 +23,8 @@
 
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { PermissionAPI, type PermissionTree } from '@/api/system/permission/permission'
-import { RoleAPI } from '@/api/system/permission/role'
+import { PermissionAPI, type PermissionTree } from '@/api/system/permission'
+import { RoleAPI } from '@/api/system/role'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ roleId: number; roleName: string }>()

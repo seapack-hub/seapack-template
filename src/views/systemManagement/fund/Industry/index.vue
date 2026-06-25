@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-container w-100% h-100% flex flex-col">
     <!--查询条件-->
     <div class="search-bar h-[50px]">
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import industryApi, { DimIndustryTree } from "@/api/system/fund/industry.ts";
+import { industryApi, DimIndustryTree } from "@/api/system/fundIndustry.ts";
 import { debounce } from 'lodash-es';
 const queryParams = ref({
   keyword:""

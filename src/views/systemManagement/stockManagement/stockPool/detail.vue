@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <!-- 股票详情页：基本信息 / 分红 / K 线 / 财务 四个 Tab -->
   <div class="detail-container flex flex-col">
     <PageHeader :title="stockName" :edit="false" back-text="返回" @cancel="goBack" />
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { InstrumentAPI } from '@/api/system/stock/stockPool/instrument.ts'
+import { InstrumentAPI } from '@/api/system/instrument.ts'
 import { generateMockFinance } from './components/detailShared'
 import StockInfoTab from './components/StockInfoTab.vue'
 import StockChartTab from './components/StockChartTab.vue'

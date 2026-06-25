@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page-container">
     <!-- ===== 左侧行业树 + 右侧表格 ===== -->
     <div class="flex-1 flex gap-10px overflow-hidden">
@@ -79,10 +79,10 @@
 </template>
 
 <script setup lang="ts">
-import { StockInfoAPI } from '@/api/system/stock/stockPool/stockPool.ts'
-import type { StockInfo } from '@/api/system/stock/stockPool/stockPool.ts'
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
-import { getDictByType } from '@/api/system/baseInfo/dict.ts'
+import { StockInfoAPI } from '@/api/system/stockPool.ts'
+import type { StockInfo } from '@/api/system/stockPool.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector.ts'
+import { getDictByType } from '@/api/system/dict.ts'
 import { createStockPoolColumns } from '../components/columns'
 import StockPoolFormDialog from './components/StockPoolFormDialog.vue'
 import StockPoolBatchDialog from './components/StockPoolBatchDialog.vue'

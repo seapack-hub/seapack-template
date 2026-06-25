@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia';
-import { type User} from '@/api/system/baseInfo/user.ts';
+﻿import { defineStore } from 'pinia';
+import { type User} from '@/api/system/user.ts';
 import { usePermissionStore } from '@/store/modules/permission';
-import { AuthAPI } from '@/api/system/permission/auth';
+import { AuthAPI } from '@/api/system/auth';
 import { setToken as setCookieToken, removeToken as removeCookieToken } from '@/utils/cache/cookies';
 /**
  * 用户状态管理

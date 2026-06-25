@@ -1,6 +1,6 @@
 import { request } from "@/utils/axios.ts";
 const USER_BASE_URL = "/api/fundBaseInfo";
-const FundBaseInfoAPI = {
+export const FundBaseInfoAPI = {
   //分页查询基金列表
   getFundBaseInfoList(queryParams:FundPageQuery){
     // 从参数中解构出分页字段和查询条件对象
@@ -44,7 +44,6 @@ const FundBaseInfoAPI = {
     })
   },
 };
-export default FundBaseInfoAPI;
 
 export interface FundPageQuery extends PageQuery{
   //关键字搜索

@@ -1,4 +1,4 @@
-<!-- 部门树 -->
+﻿<!-- 部门树 -->
 <template>
   <el-card
     shadow="never"
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import DeptAPI ,{DeptVO} from "@/api/system/baseInfo/dept.ts";
+import { DeptAPI, DeptVO } from "@/api/system/dept.ts";
 const props = defineProps({
   modelValue: {
     type: [Number],

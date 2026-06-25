@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <!-- 行业分类新增/编辑弹框（defineModel 双向绑定父组件状态） -->
   <el-dialog v-model="visible" :title="isEdit ? '编辑行业' : '新增行业'" width="500px" @closed="onClosed">
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="100px">
@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector.ts'
 
 // ===== 双向绑定（父组件通过 v-model 控制） =====
 const visible = defineModel<boolean>('visible', { required: true })

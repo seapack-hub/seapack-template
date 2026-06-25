@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-container w-100% h-100% flex flex-col">
     <!-- 搜索栏 -->
     <div class="search-bar h-[50px]">
@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import DeptAPI, { type DeptVO, type DeptPageQuery } from '@/api/system/baseInfo/dept'
+import { DeptAPI, type DeptVO, type DeptPageQuery } from '@/api/system/dept'
 import { createDeptColumns } from './components/DeptColumns'
 import DeptFormDialog from './components/DeptFormDialog.vue'
 

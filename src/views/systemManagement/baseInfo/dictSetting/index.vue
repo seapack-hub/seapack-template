@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="app-container w-100% h-100% flex flex-col">
     <div class="search-bar h-[50px]">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { DictAPI, type Dict } from '@/api/system/baseInfo/dict.ts'
+import { DictAPI, type Dict } from '@/api/system/dict.ts'
 import DictDialog from './components/DictDialog.vue'
 
 const queryFormRef = ref()
