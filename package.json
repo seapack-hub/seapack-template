@@ -9,7 +9,8 @@
     "preview": "vite preview --port 4444 --mode preview --debug",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "lint:eslint": "eslint --cache --max-warnings 0 {src,mock}/**/*.{js,vue,ts,tsx,jsx} --fix",
-    "i": "pnpm install"
+    "i": "pnpm install",
+    "prepare": "husky"
   },
   "dependencies": {
     "@antv/x6": "^3.1.6",
@@ -63,6 +64,8 @@
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-vue": "^10.0.0",
     "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.5",
     "mockjs": "^1.1.0",
     "prettier": "^3.5.3",
     "sass": "^1.74.1",
@@ -80,5 +83,13 @@
     "vue-i18n": "^9.12.1",
     "vue-router": "^4.5.0",
     "vue-tsc": "^2.0.6"
+  },
+  "lint-staged": {
+    "*.{vue,js,ts,tsx,jsx}": [
+      "eslint --fix"
+    ],
+    "*.{scss,css}": [
+      "prettier --write"
+    ]
   }
 }

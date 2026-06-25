@@ -15,17 +15,15 @@ import UnoCSS from 'unocss/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 //引入地图组件
 import cesium from 'vite-plugin-cesium'
-//@ts-ignore
-//import eslintPlugin from 'vite-plugin-eslint'
 import eslint from 'vite-plugin-eslint';
-import { type ConfigEnv, type UserConfigExport, loadEnv } from 'vite';
+import { type ConfigEnv, loadEnv } from 'vite';
 
 //引入mock服务
 //import mockDevServerPlugin from 'vite-plugin-mock-dev-server'
 import { viteMockServe } from 'vite-plugin-mock';
 export default defineConfig(({mode}:ConfigEnv) => {
   const viteEnv = loadEnv(mode,process.cwd());
-  const { VITE_PUBLIC_PATH,VITE_MOCK_DEV_SERVER,VITE_BASE_API,VITE_APP_API_URL,NODE_ENV } = viteEnv;
+  const { VITE_PUBLIC_PATH, VITE_MOCK_DEV_SERVER, VITE_APP_API_URL } = viteEnv;
   const isDev = mode === 'development'
   const isProd = mode === 'production'
   return {

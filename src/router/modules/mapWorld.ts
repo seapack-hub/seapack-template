@@ -10,7 +10,6 @@ const mapWorldRoute:Array<RouterObject> = [
     name: "worldData",
     component: worldData,
     redirect: { name: 'baseMap' },
-    show: true,
     meta: {
       title: "home",
       description: "数据世界",
