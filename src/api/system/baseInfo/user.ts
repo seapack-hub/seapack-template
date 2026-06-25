@@ -6,13 +6,13 @@ export interface User {
   //用户id
   id: number
   //用户名
-  username?: string
+  userName?: string
   //邮箱
   email?: string
   // 手机号
   mobile?: string
   //昵称
-  nickname?: string
+  nickName?: string
   //性别
   gender?: number
   //状态

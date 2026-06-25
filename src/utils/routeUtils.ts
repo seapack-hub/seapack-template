@@ -31,14 +31,12 @@ export function filterVisibleRoutes(
     if (!isAdmin && perms && route.meta?.permKey) {
       if (!perms.includes(route.meta.permKey as string)) return false;
     }
-
     // 递归处理子路由
     if (route.children && route.children.length > 0) {
       const visibleChildren = filterVisibleRoutes(route.children, perms, isAdmin);
       if (visibleChildren.length === 0) return false;
       route.children = visibleChildren;
     }
-
     return true;
   });
 }

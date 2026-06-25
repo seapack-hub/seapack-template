@@ -26,11 +26,17 @@ export const useUserStore = defineStore('user', {
   }),
   getters: {
     // 是否已登录（有 Token）
-    isLoggedIn: (state) => !!state.token,
-    // 当前用户名
-    username: (state) => state.userInfo.username,
-    // 当前用户ID
-    userId: (state) => state.userInfo.id,
+    isLoggedIn(state) {
+      return !!state.token
+    },
+    // 用户名（对应后端 userInfo.userName）
+    username(state) {
+      return state.userInfo?.userName ?? ''
+    },
+    // 用户 ID（对应后端 userInfo.id）
+    userId(state) {
+      return state.userInfo?.id ?? ''
+    },
   },
   actions: {
     // ===== Token 操作 =====

@@ -2,13 +2,6 @@
   <div class="side-bar">
     <Logo :collapse="isCollapse"></Logo>
     <left-menu :base-path="basePath" :menu-list="menuList" :collapse="isCollapse"></left-menu>
-    <!-- DEV: 调试信息 -->
-    <div v-if="showDebug" class="debug-info">
-      <div>模块: {{ currentModuleName }}</div>
-      <div>路由数: {{ dynamicRoutes.length }}</div>
-      <div>子项数: {{ currentModuleRoute?.children?.length ?? '无' }}</div>
-      <div>菜单项: {{ menuList.length }}</div>
-    </div>
   </div>
 </template>
 
@@ -66,9 +59,6 @@ const basePath = computed(() => {
 })
 
 const isCollapse = computed(() => !appStore.opened);
-
-// DEV: 非生产环境显示调试面板
-const showDebug = computed(() => !import.meta.env.PROD);
 </script>
 
 <style scoped lang="scss">
