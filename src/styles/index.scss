@@ -21,15 +21,15 @@ body {
   min-width: 320px;
   min-height: 100vh;
 
-    //--级联选择框-单选---------------------------------
-  .el-cascader__dropdown{
-    .el-cascader-panel{
-      .el-cascader-menu{
+  //--级联选择框-单选---------------------------------
+  .el-cascader__dropdown {
+    .el-cascader-panel {
+      .el-cascader-menu {
         min-width: 220px;
-        .el-cascader-menu__wrap{
+        .el-cascader-menu__wrap {
           height: 224px;
-          .el-cascader-node{
-            .el-cascader-node__label{
+          .el-cascader-node {
+            .el-cascader-node__label {
               padding: 0 8px 0 10px;
             }
           }
@@ -38,19 +38,19 @@ body {
     }
   }
   /* 隐藏原左侧图标区域的默认 padding/margin（可选） */
-  .el-cascader__dropdown .el-cascader-node{
+  .el-cascader__dropdown .el-cascader-node {
     position: relative;
     .el-cascader-node__prefix {
       position: absolute;
       margin-right: 0;
       margin-left: auto; /* 让它靠右 */
-      right:10px;
+      right: 10px;
     }
   }
 }
 
 #app {
+  width: 100%;
   margin: 0 auto;
   padding: 0;
 }
-

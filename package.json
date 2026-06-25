@@ -7,8 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --port 4444 --mode preview --debug",
-    "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
-    "lint:eslint": "eslint --cache --max-warnings 0 {src,mock}/**/*.{js,vue,ts,tsx,jsx} --fix",
+    "lint": "eslint src mock --fix",
+    "lint:ci": "eslint src mock --cache --max-warnings 0",
+    "typecheck": "vue-tsc --noEmit",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "reinstall": "node -e \"require('fs').rmSync('node_modules',{recursive:true,force:true})\" && pnpm install",
     "i": "pnpm install",
     "prepare": "husky"
   },
