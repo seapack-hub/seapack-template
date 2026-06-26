@@ -58,7 +58,7 @@ function initCesium() {
   let material = new Cesium.Material.fromType('Water', {
     baseWaterColor: Cesium.Color.AQUA.withAlpha(0.5),
     distortion: 0.25,
-    normalMap: new URL('@/views/worldData/cesium/images/waterNormals.jpg', import.meta.url).href
+    normalMap: new URL('@/views/gis3d/cesium/images/waterNormals.jpg', import.meta.url).href
   });
   //3设置外观
   // let appearance = new Cesium.MaterialAppearance({

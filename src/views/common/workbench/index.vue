@@ -53,23 +53,38 @@ const userStore = useUserStore()
 
 const moduleIcons: Record<string, string> = {
   systemManagement: 'system',
-  worldData: 'gis',
-  bigData: 'basic-dashboard',
+  gis2d: '2D-layers',
+  gis3d: '3D-layers',
+  bigScreen: 'screen',
+  universalTemplate: 'basic-dashboard',
   blogsManagement: 'blogs',
+  stockFund: 'trend-charts',
+  aiModule: 'ai-interaction',
+  devTools: 'tool',
 }
 
 const moduleColors: Record<string, string> = {
   systemManagement: '#409EFF',
-  worldData: '#00BFA5',
-  bigData: '#FF6D00',
+  gis2d: '#26A69A',
+  gis3d: '#7E57C2',
+  bigScreen: '#FF6D00',
+  universalTemplate: '#F06292',
   blogsManagement: '#E040FB',
+  stockFund: '#F44336',
+  aiModule: '#9C27B0',
+  devTools: '#607D8B',
 }
 
 const moduleDescs: Record<string, string> = {
   systemManagement: '用户、部门、菜单权限、系统配置等管理功能',
-  worldData: 'OpenLayers / Cesium 二三维地图展示与交互',
-  bigData: '智慧大屏与通用模板数据可视化',
+  gis2d: 'OpenLayers 二维地图展示与交互',
+  gis3d: 'Cesium 三维GIS地图与特效',
+  bigScreen: '智慧运营数据可视化大屏',
+  universalTemplate: '通用大屏模板（Cesium 三维）',
   blogsManagement: '博客阅读与管理',
+  stockFund: '股票行情、基金信息与行业分类',
+  aiModule: 'RAG知识库、智能体交互、图片生成',
+  devTools: '组件封装、图形化、ECharts图表',
 }
 
 const accessibleModules = computed(() => {
@@ -77,8 +92,14 @@ const accessibleModules = computed(() => {
   return MODULE_DEFS.filter(m => !m.permKey || userStore.menuPermKeys.includes(m.permKey))
 })
 
+const TAB_MODULES = ['bigScreen', 'universalTemplate']
+
 function enterModule(mod: typeof MODULE_DEFS[number]) {
-  router.push({ path: mod.path })
+  if (TAB_MODULES.includes(mod.key)) {
+    window.open(mod.path, '_blank')
+  } else {
+    router.push({ path: mod.path })
+  }
 }
 </script>
 

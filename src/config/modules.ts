@@ -8,10 +8,15 @@ export interface ModuleDef {
 }
 
 export const MODULE_DEFS: ModuleDef[] = [
-  { key: 'systemManagement', path: '/systemManagement/dashboard', title: '系统管理', icon: 'setting'},
-  { key: 'worldData', path: '/worldData/baseMap', title: '数据世界', icon: 'map'},
-  { key: 'bigData', path: '/bigData/bigScreen', title: '数据大屏', icon: 'screen'},
-  { key: 'blogsManagement', path: '/blogsManagement/blogs', title: '博客', icon: 'blog' },
+  { key: 'systemManagement', path: '/systemManagement/dashboard', title: '系统管理', icon: 'setting', permKey: 'systemManagement' },
+  { key: 'gis2d', path: '/gis2d/baseMap', title: '二维地图', icon: '2D-layers', permKey: 'gis2d' },
+  { key: 'gis3d', path: '/gis3d/baseCesium', title: '三维GIS', icon: '3D-layers', permKey: 'gis3d' },
+  { key: 'bigScreen', path: '/bigScreen', title: '智慧运营大屏', icon: 'screen', permKey: 'bigScreen' },
+  { key: 'universalTemplate', path: '/universalTemplate', title: '通用大屏模板', icon: 'basic-dashboard', permKey: 'universalTemplate' },
+  { key: 'blogsManagement', path: '/blogsManagement/blogs', title: '博客', icon: 'blog', permKey: 'blogsManagement' },
+  { key: 'stockFund', path: '/stockFund/stock/stockQuote', title: '股票基金', icon: 'trend-charts', permKey: 'stockFund' },
+  { key: 'aiModule', path: '/aiModule/rag', title: 'AI交互', icon: 'ai-interaction', permKey: 'aiModule' },
+  { key: 'devTools', path: '/devTools/genericComponent', title: '开发工具', icon: 'tool', permKey: 'devTools' },
 ]
 
 // 需要全量加载的模块路由 name，用于 startup 注册和 logout 清理
@@ -19,6 +24,6 @@ export const MODULE_ROUTE_NAMES = MODULE_DEFS.map(m => m.key)
 
 // 兼容旧路径 → 新路径的重定向映射
 export const OLD_PATH_REDIRECTS: Record<string, string> = {
-  '/universalTemplate': '/bigData/universalTemplate',
-  '/bigScreen': '/bigData/bigScreen',
+  '/bigData/universalTemplate': '/universalTemplate',
+  '/bigData/bigScreen': '/bigScreen',
 }

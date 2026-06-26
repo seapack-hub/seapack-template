@@ -31,20 +31,21 @@ export function filterVisibleRoutes(
   perms?: string[],
   isAdmin = false,
 ): RouteRecordRaw[] {
-  return routes.filter((route) => {
-    if (route.meta?.hidden) return false;
+  return routes.reduce<RouteRecordRaw[]>((acc, route) => {
+    if (route.meta?.hidden) return acc;
 
-    // 权限检查：空字符串 permKey 视为无权限要求，公开访问
     const routePermKey = getValidPermKey(route)
     if (!isAdmin && perms && routePermKey) {
-      if (!perms.includes(routePermKey)) return false;
+      if (!perms.includes(routePermKey)) return acc;
     }
-    // 递归处理子路由
+
+    let visibleChildren: RouteRecordRaw[] | undefined
     if (route.children && route.children.length > 0) {
-      const visibleChildren = filterVisibleRoutes(route.children, perms, isAdmin);
-      if (visibleChildren.length === 0) return false;
-      route.children = visibleChildren;
+      visibleChildren = filterVisibleRoutes(route.children, perms, isAdmin)
+      if (visibleChildren.length === 0) return acc
     }
-    return true;
-  });
+
+    acc.push({ ...route, children: visibleChildren })
+    return acc
+  }, [])
 }

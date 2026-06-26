@@ -75,16 +75,6 @@ export const routerRecordRow: RouteRecordRaw[] = [
       }
     ]
   },
-  // 旧路径兼容重定向
-  //通用模板大屏
-  {
-    path: '/universalTemplate',
-    redirect: '/bigData/universalTemplate'
-  },
-  {
-    path: '/bigScreen',
-    redirect: '/bigData/bigScreen'
-  },
   // 兜底：未匹配到任何路由时跳转 404 错误页
   {
     path: '/:pathMatch(.*)*',

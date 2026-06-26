@@ -10,7 +10,7 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
-import chinaData from '@/views/worldData/GeoJSON/China.json';
+import chinaData from '@/views/gis2d/GeoJSON/China.json';
 
 const map = ref<Map | null>(null);
 

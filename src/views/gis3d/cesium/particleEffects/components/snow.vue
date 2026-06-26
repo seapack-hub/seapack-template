@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, nextTick } from 'vue';
-import SnowEffect from '@/views/worldData/cesium/utils/snow.ts';
+import SnowEffect from '@/views/gis3d/cesium/utils/snow.ts';
 import { useCesiumStore } from '@/store/modules/cesium';
 const cesiumStore = useCesiumStore();
 let snow: any = null;

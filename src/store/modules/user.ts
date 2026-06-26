@@ -168,14 +168,12 @@ export const useUserStore = defineStore('user', {
     async fetchAuthPerms(userId:string){
       //获取用户权限数据
       const authInfo = await AuthAPI.getUserInfo(userId);
-      console.log('--权限信息--',authInfo);
       //赋值
       this.roles = authInfo.roles;
       this.perms = authInfo.perms;
 
       //获取用户权限菜单（已过滤的菜单树）
       const menu = await AuthAPI.getMenus(userId);
-      console.log('--菜单信息--',menu);
       this.menuTree = menu;
 
       // 重新收集路由，恢复 dynamicRoutesLoaded，刷新侧边栏

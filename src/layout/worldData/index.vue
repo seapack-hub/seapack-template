@@ -60,7 +60,7 @@ const currentModuleRoute = computed(() => {
 // 侧边栏只展示当前模块的子路由（跳过模块本身那一级）
 const menuList = computed(() => {
   const children = (currentModuleRoute.value?.children as any[]) || []
-  return filterVisibleRoutes(children, userStore.perms, userStore.username === 'admin');
+  return filterVisibleRoutes(children, userStore.menuPermKeys, userStore.username === 'admin');
 });
 
 // 基础路径 = 当前模块的 path，用于拼接子路由的完整路径

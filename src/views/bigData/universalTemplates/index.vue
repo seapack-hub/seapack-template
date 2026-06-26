@@ -1,15 +1,30 @@
 <template>
   <div class="gis-container relative h-100vh w-100% bg-[#0a0e17]">
+    <div class="back-home-btn" title="返回主页" @click="goHome">
+      <el-icon size="20"><HomeFilled /></el-icon>
+    </div>
     <!-- Cesium渲染容器 -->
     <div ref="cesiumContainerRef" class="cesiumContainer h-100% w-100%"></div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { HomeFilled } from '@element-plus/icons-vue'
 //import Head from "./components/head.vue";
 //import Left from "./components/Left.vue";
 import * as Cesium from 'cesium';
 import { loadJsonData } from "./utils/loadData.ts"
+
+const router = useRouter()
+function goHome() {
+  const homeUrl = `${window.location.origin}/menuTab`
+  if (window.opener) {
+    window.close()
+  } else {
+    window.location.href = homeUrl
+  }
+}
 
 const cesiumContainerRef = ref<HTMLElement | null>(null);
 const viewer = ref<Cesium.Viewer | null>(null);
@@ -131,6 +146,23 @@ onUnmounted(() => {
 </style>
 
 <style lang="scss" scoped>
+.back-home-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 9999;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover { background: rgba(0, 0, 0, 0.7); }
+}
 .universal-templates{
   color:#666;
   font-size: 10px;

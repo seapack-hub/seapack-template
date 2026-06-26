@@ -1,46 +1,32 @@
-import { RouterView, type RouteRecordRaw } from 'vue-router';
+import { type RouteRecordRaw } from 'vue-router';
 
 type RouterObject = RouteRecordRaw & {
   children?: RouterObject[];
 };
 
-const bigDataRoute: Array<RouterObject> = [
+const bigDataRoutes: Array<RouterObject> = [
   {
-    path: '/bigData',
-    name: 'bigData',
-    component: RouterView,
-    redirect: { name: 'bigScreen' },
+    path: '/bigScreen',
+    name: 'bigScreen',
+    component: () => import('@/views/bigScreen/index.vue'),
     meta: {
-      title: 'bigData',
-      description: '数据大屏',
+      title: 'bigScreen',
+      description: '智慧运营大屏',
       icon: 'screen',
-      permKey: 'bigData',
+      permKey: 'bigScreen',
     },
-    children: [
-      {
-        path: 'bigScreen',
-        name: 'bigScreen',
-        component: () => import('@/views/bigScreen/index.vue'),
-        meta: {
-          title: 'bigScreen',
-          description: '智慧运营大屏',
-          icon: 'screen',
-          permKey: 'bigScreen',
-        },
-      },
-      {
-        path: 'universalTemplate',
-        name: 'universalTemplate',
-        component: () => import('@/views/bigData/universalTemplates/index.vue'),
-        meta: {
-          title: 'universalTemplate',
-          description: '通用大屏模板',
-          icon: 'screen',
-          permKey: 'universalTemplate',
-        },
-      },
-    ],
+  },
+  {
+    path: '/universalTemplate',
+    name: 'universalTemplate',
+    component: () => import('@/views/bigData/universalTemplates/index.vue'),
+    meta: {
+      title: 'universalTemplate',
+      description: '通用大屏模板',
+      icon: 'basic-dashboard',
+      permKey: 'universalTemplate',
+    },
   },
 ];
 
-export default bigDataRoute;
+export default bigDataRoutes;

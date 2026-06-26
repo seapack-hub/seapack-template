@@ -1,6 +1,9 @@
 <template>
   <!-- DataV 智慧运营大屏总入口 -->
   <div class="big-screen-root">
+    <div class="back-home-btn" title="返回主页" @click="goHome">
+      <el-icon size="20"><HomeFilled /></el-icon>
+    </div>
     <!-- 自适应缩放容器：固定 1920x1080 设计稿，自动适配任意分辨率 -->
     <ScreenFrame :theme="currentTheme" :design-width="1920" :design-height="1080">
       <!-- ========== 顶栏：标题 + 时钟 + 主题切换 ========== -->
@@ -92,6 +95,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { HomeFilled } from '@element-plus/icons-vue'
 import type { EChartsOption } from 'echarts'
 import ScreenFrame from './layout/ScreenFrame.vue'
 import DecorationBorder from './components/DecorationBorder.vue'
@@ -259,6 +264,16 @@ useAutoRefresh(() => {
     ...tableData.value.slice(0, -3),
   ]
 }, 10000)
+
+const router = useRouter()
+function goHome() {
+  const homeUrl = `${window.location.origin}/menuTab`
+  if (window.opener) {
+    window.close()
+  } else {
+    window.location.href = homeUrl
+  }
+}
 </script>
 
 <style lang="scss">
@@ -268,6 +283,24 @@ useAutoRefresh(() => {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+}
+
+.back-home-btn {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 9999;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+  &:hover { background: rgba(0, 0, 0, 0.7); }
 }
 
 // ===== 顶栏 =====

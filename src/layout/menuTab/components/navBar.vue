@@ -18,8 +18,8 @@
     </div>
     <div class="menuTab-nav-bar-right">
       <SPIcon name="houtai" size="20px" @click="jumpToLink('/systemManagement')"></SPIcon>
-      <SPIcon name="2D-layers" size="20px" @click="jumpToLink('/worldData')"></SPIcon>
-      <SPIcon name="3D-layers" size="20px" @click="jumpToLink('/worldData')"></SPIcon>
+      <SPIcon name="2D-layers" size="20px" @click="jumpToLink('/gis2d')"></SPIcon>
+      <SPIcon name="3D-layers" size="20px" @click="jumpToLink('/gis3d')"></SPIcon>
     </div>
   </div>
 </template>
