@@ -32,17 +32,20 @@
           </p>
         </div>
       </div>
-      <!-- 右侧：快速操作按钮组 -->
+      <!-- 右侧：系统管理快捷入口 -->
       <div class="welcome-right">
         <div class="quick-actions">
-          <el-button type="primary" :icon="DataAnalysis" @click="router.push({ name: 'stockQuote' })">
-            股票行情
-          </el-button>
-          <el-button type="success" :icon="User" @click="router.push({ name: 'user' })">
+          <el-button type="primary" :icon="User" @click="handleNavigate('user')">
             用户管理
           </el-button>
-          <el-button type="warning" :icon="Setting" @click="router.push({ name: 'role' })">
-            系统设置
+          <el-button type="success" :icon="Lock" @click="handleNavigate('role')">
+            角色权限
+          </el-button>
+          <el-button type="warning" :icon="OfficeBuilding" @click="handleNavigate('dept')">
+            部门管理
+          </el-button>
+          <el-button type="info" :icon="Collection" @click="handleNavigate('dictSetting')">
+            字典设置
           </el-button>
         </div>
       </div>
@@ -55,11 +58,19 @@
  * 欢迎横幅脚本
  * 计算动态问候语、格式化当前日期和星期
  */
-import { DataAnalysis, User, Setting, Check } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
+import { User, Lock, OfficeBuilding, Collection, Check } from '@element-plus/icons-vue'
+import { useRoutePermission } from '@/hooks/useRoutePermission'
 
-/** Vue Router 实例，供按钮点击跳转使用 */
-const router = useRouter()
+/** 路由权限校验组合式函数 */
+const { navigateWithPermission } = useRoutePermission()
+
+/**
+ * 带权限校验的按钮点击跳转
+ * @param routeName 目标路由 name
+ */
+function handleNavigate(routeName: string) {
+  navigateWithPermission(routeName)
+}
 
 /** 当前时间对象，用于计算问候语 */
 const now = new Date()

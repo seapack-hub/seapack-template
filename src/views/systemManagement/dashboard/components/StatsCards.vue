@@ -1,7 +1,6 @@
 <!-- ============================================================
   StatsCards 统计卡片组件
-  以网格卡片形式展��用户总数、角色数量、监控股票等核心业务指标，
-  每项指标包含图标、数值、变动趋势（较昨日百分比）。
+  展示系统管理核心指标：用户、角色、部门、菜单权限、字典数量等。
   ============================================================ -->
 <template>
   <!-- 统计卡片响应式栅格布局：xs=2列, sm=3列, md=6列 -->
@@ -45,16 +44,21 @@
 
 <script setup lang="ts">
 import { Top, Bottom } from '@element-plus/icons-vue'
+import { UserAPI } from '@/api/system/baseInfo/user'
+import { RoleAPI } from '@/api/system/permission/role'
+import { DeptAPI } from '@/api/system/baseInfo/dept'
+import { PermissionAPI } from '@/api/system/permission/permission'
+import { DictAPI } from '@/api/system/baseInfo/dict'
 
 /**
  * 统计卡片数据结构
  * @property key - 唯一标识
- * @property label - 指标名称（如"用户总数"）
- * @property value - 当前数值（默认 "--" 表示待加载）
+ * @property label - 指标名称
+ * @property value - 当前数值
  * @property icon - SPIcon 图标名称
- * @property color - 主题颜色（文字 + 图标色）
- * @property bgColor - 图标背景色（半透明）
- * @property trend - 较昨日变化百分比（正数上涨，负数下跌）
+ * @property color - 主题颜色
+ * @property bgColor - 图标背景色
+ * @property trend - 较昨日变化百分比
  */
 interface StatsItem {
   key: string
@@ -66,15 +70,62 @@ interface StatsItem {
   trend: number
 }
 
-/** 统计卡片数据集，共 6 项核心指标 */
+/** 系统管理核心指标 */
 const statsList = ref<StatsItem[]>([
-  { key: 'users', label: '用户总数', value: '--', icon: 'user', color: '#409eff', bgColor: 'rgba(64,158,255,0.1)', trend: 12.5 },
-  { key: 'roles', label: '角色数量', value: '--', icon: 'role', color: '#67c23a', bgColor: 'rgba(103,194,58,0.1)', trend: 5.2 },
-  { key: 'stocks', label: '监控股票', value: '--', icon: 'trend-charts', color: '#e6a23c', bgColor: 'rgba(230,162,60,0.1)', trend: -3.1 },
-  { key: 'alerts', label: '今日告警', value: '--', icon: 'histogram', color: '#f56c6c', bgColor: 'rgba(245,108,108,0.1)', trend: 8.7 },
-  { key: 'funds', label: '基金数量', value: '--', icon: 'fund', color: '#909399', bgColor: 'rgba(144,147,153,0.1)', trend: 2.0 },
-  { key: 'depts', label: '部门总数', value: '--', icon: 'dept', color: '#9b59b6', bgColor: 'rgba(155,89,182,0.1)', trend: 0 },
+  { key: 'users', label: '用户总数', value: '--', icon: 'user', color: '#409eff', bgColor: 'rgba(64,158,255,0.1)', trend: 0 },
+  { key: 'roles', label: '角色数量', value: '--', icon: 'role', color: '#67c23a', bgColor: 'rgba(103,194,58,0.1)', trend: 0 },
+  { key: 'depts', label: '部门总数', value: '--', icon: 'dept', color: '#e6a23c', bgColor: 'rgba(230,162,60,0.1)', trend: 0 },
+  { key: 'menus', label: '菜单权限', value: '--', icon: 'menu', color: '#9b59b6', bgColor: 'rgba(155,89,182,0.1)', trend: 0 },
+  { key: 'dicts', label: '字典数量', value: '--', icon: 'dict', color: '#f56c6c', bgColor: 'rgba(245,108,108,0.1)', trend: 0 },
+  { key: 'online', label: '在线用户', value: '--', icon: 'monitor', color: '#00bcd4', bgColor: 'rgba(0,188,212,0.1)', trend: 0 },
 ])
+
+/**
+ * 计算权限树节点总数（目录 + 菜单 + 按钮）
+ */
+function countPermissions(list: any[]): number {
+  return list.reduce((sum, node) => {
+    const self = 1
+    const children = node.children?.length ? countPermissions(node.children) : 0
+    return sum + self + children
+  }, 0)
+}
+
+/**
+ * 加载系统管理核心指标数据
+ */
+async function loadStats() {
+  try {
+    const [userRes, roleRes, deptRes, permRes, dictRes] = await Promise.allSettled([
+      UserAPI.getPage({ pageNum: 1, pageSize: 1 }),
+      RoleAPI.page({ pageNum: 1, pageSize: 1 }),
+      DeptAPI.getPage({ pageNum: 1, pageSize: 1 }),
+      PermissionAPI.getTree(),
+      DictAPI.getList({ pageNum: 1, pageSize: 1 }),
+    ])
+
+    const map: Record<string, number> = {
+      users: userRes.status === 'fulfilled' ? (userRes.value?.total ?? 0) : 0,
+      roles: roleRes.status === 'fulfilled' ? (roleRes.value?.total ?? 0) : 0,
+      depts: deptRes.status === 'fulfilled' ? (deptRes.value?.total ?? 0) : 0,
+      menus: permRes.status === 'fulfilled' ? countPermissions(permRes.value ?? []) : 0,
+      dicts: dictRes.status === 'fulfilled' ? (dictRes.value?.total ?? 0) : 0,
+      online: 0,
+    }
+
+    statsList.value.forEach((item) => {
+      item.value = map[item.key] ?? '--'
+      // 模拟较昨日趋势（后续可对接真实统计接口）
+      item.trend = item.key === 'online' ? 0 : Number((Math.random() * 10 - 2).toFixed(1))
+    })
+  } catch {
+    // 任一接口异常时不阻塞页面
+  }
+}
+
+onMounted(() => {
+  loadStats()
+})
 </script>
 
 <style lang="scss" scoped>
