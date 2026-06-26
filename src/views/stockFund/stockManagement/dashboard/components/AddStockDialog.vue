@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <!-- 添加监控股票弹框：搜索选股 + 选填备注 -->
   <el-dialog v-model="visible" title="添加监控股票" width="500px" @closed="onClosed">
     <el-form :model="form" label-width="80px">
@@ -28,8 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { StockInfoAPI } from '@/api/system/stockPool.ts'
-import { UserStockMonitorAPI } from '@/api/system/userStockMonitor.ts'
+import { StockInfoAPI } from '@/api/stockFund/stock/stockPool.ts'
+import { UserStockMonitorAPI } from '@/api/stockFund/stock/userStockMonitor.ts'
 import { useUserStore } from '@/store/modules/user'
 
 const userStore = useUserStore()

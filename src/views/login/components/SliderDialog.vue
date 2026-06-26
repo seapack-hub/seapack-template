@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-dialog
     v-model="visible"
     width="370px"
@@ -19,7 +19,7 @@
 import { type LoginRequestData } from '@/api/login/types/login.ts';
 import {loginVerify,getPublicKey} from "@/api/login/index.ts";
 import { RsaUtil } from "@/utils/jsencrypt.ts";
-import { UserAPI } from "@/api/system/user";
+import { UserAPI } from "@/api/system/baseInfo/user";
 import { useUserStore } from '@/store/modules/user';
 import { usePermissionStore } from '@/store/modules/permission'
 

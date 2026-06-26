@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { ArrowRight } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
-import { AlertLogAPI, type AlertLogDto } from '@/api/system/alertLog'
+import { AlertLogAPI, type AlertLogDto } from '@/api/stockFund/stock/alertLog'
 import { useUserStore } from '@/store/modules/user'
 
 const router = useRouter()

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex flex-col items-center h-full overflow-hidden
+    class="home-container relative flex flex-col items-center h-full overflow-hidden
            margin-[-20px] p-20
            bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] via-[#0f3448] to-[#0a1628]"
   >
@@ -63,6 +63,10 @@ function navigateTo(path: string) {
 </script>
 
 <style scoped lang="scss">
+.home-container {
+  box-sizing: border-box;
+}
+
 .orb {
   position: absolute;
   border-radius: 50%;

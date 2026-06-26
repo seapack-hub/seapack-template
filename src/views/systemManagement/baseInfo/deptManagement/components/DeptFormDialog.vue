@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-dialog v-model="visible" :title="isEdit ? '编辑部门' : '新增部门'" width="480px" @closed="onClosed">
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="100px" label-suffix="：">
       <el-form-item label="部门名称" prop="deptName">
@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { DeptAPI } from '@/api/system/dept'
+import { DeptAPI } from '@/api/system/baseInfo/dept'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { required: true })

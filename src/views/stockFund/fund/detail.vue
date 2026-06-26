@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="h-100% w-100% flex flex-col">
     <PageHeader
       v-model="editable"
@@ -26,8 +26,8 @@
 
 <script setup lang="ts">
 import { useTemplateRef } from "vue";
-import { getDictByType } from "@/api/system/dict.ts";
-import { FundBaseInfoAPI, FundBaseInfo } from "@/api/system/fund.ts";
+import { getDictByType } from "@/api/system/baseInfo/dict.ts";
+import { FundBaseInfoAPI, FundBaseInfo } from "@/api/stockFund/fund/fund.ts";
 import { useRouter,useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 

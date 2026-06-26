@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="page-container">
     <el-card shadow="never" class="flex-1 flex flex-col el-card-main">
       <!-- 搜索区域：关键字 + 年度 + 分红类型 + 实施状态 -->
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { StockDividendAPI } from '@/api/system/stockDividend.ts'
+import { StockDividendAPI } from '@/api/stockFund/stock/stockDividend.ts'
 import { createDividendColumns } from '../components/columns'
 import { useDividendDict } from './components/useDividendDict'
 import DividendSearch from './components/DividendSearch.vue'

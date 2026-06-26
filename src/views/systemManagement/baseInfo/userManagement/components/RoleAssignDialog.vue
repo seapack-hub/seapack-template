@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-dialog v-model="visible" :title="`分配角色 - ${userName}`" width="460px">
     <el-checkbox-group v-model="checkedRoleIds">
       <div class="flex flex-col gap-12px">
@@ -18,8 +18,8 @@
 
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import { RoleAPI, type Role } from '@/api/system/role'
-import { UserAPI } from '@/api/system/user'
+import { RoleAPI, type Role } from '@/api/system/permission/role'
+import { UserAPI } from '@/api/system/baseInfo/user'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ userId: number; userName: string }>()

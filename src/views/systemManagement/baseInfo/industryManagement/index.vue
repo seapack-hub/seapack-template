@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-container w-100% h-100% flex flex-col">
     <!-- 搜索栏 -->
     <div class="search-bar h-[50px]">
@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
 import IndustrySectorDialog from './components/IndustrySectorDialog.vue'
 
 // ===== 查询状态 =====

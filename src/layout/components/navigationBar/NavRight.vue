@@ -16,8 +16,7 @@
               :command="mod.path"
               :disabled="mod.key === activeModule"
             >
-              <SPIcon :name="mod.icon" size="16px" />
-              {{ mod.title }}
+              <span class="module-title">{{ mod.title }}</span>
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>

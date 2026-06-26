@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-dialog v-model="visible" :title="`阈值配置 - ${stockName} (${stockCode})`" width="550px" @open="loadThresholds" @closed="onClosed">
     <div class="dialog-body">
       <div class="section">
@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { Delete } from '@element-plus/icons-vue'
-import { UserStockMonitorAPI } from '@/api/system/userStockMonitor.ts'
+import { UserStockMonitorAPI } from '@/api/stockFund/stock/userStockMonitor.ts'
 import { useUserStore } from '@/store/modules/user'
 
 const userStore = useUserStore()

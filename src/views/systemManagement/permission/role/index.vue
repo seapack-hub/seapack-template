@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-container w-100% h-100% flex flex-col">
     <div class="search-bar h-[50px]">
       <el-form ref="queryFormRef" :model="queryParams" :inline="true">
@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { ElMessageBox } from 'element-plus'
-import { RoleAPI, type Role, type RoleQuery } from '@/api/system/role'
+import { RoleAPI, type Role, type RoleQuery } from '@/api/system/permission/role'
 import { createRoleColumns } from './components/roleColumns'
 import RoleFormDialog from './components/RoleFormDialog.vue'
 import PermissionAssignDrawer from './components/PermissionAssignDrawer.vue'

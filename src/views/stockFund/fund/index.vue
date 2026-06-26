@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-container w-100% h-100% flex flex-col">
     <!--查询条件-->
     <div class="search-bar h-[50px]">
@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { FundBaseInfoAPI, FundPageQuery } from '@/api/system/fund.ts';
+import { FundBaseInfoAPI, FundPageQuery } from '@/api/stockFund/fund/fund.ts';
 import { ExportHeader,ExportRequest, exportExcel} from '@/api/system/export.ts';
 import { useRouter } from 'vue-router'
 

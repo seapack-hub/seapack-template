@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-dialog v-model="visible" :title="isEdit ? '编辑分红' : '新增分红'" width="560px" @closed="onClosed">
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="130px">
       <el-form-item label="股票代码" prop="stockCode">
@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { StockInfoAPI } from '@/api/system/stockPool.ts'
+import { StockInfoAPI } from '@/api/stockFund/stock/stockPool.ts'
 import { useDividendDict } from './useDividendDict'
 
 const visible = defineModel<boolean>('visible', { required: true })

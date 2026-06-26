@@ -1,7 +1,7 @@
-﻿import { defineStore } from 'pinia';
-import { type User} from '@/api/system/user.ts';
+import { defineStore } from 'pinia';
+import { type User} from '@/api/system/baseInfo/user.ts';
 import { usePermissionStore } from '@/store/modules/permission';
-import { AuthAPI, type MenuTree } from '@/api/system/auth';
+import { AuthAPI, type MenuTree } from '@/api/system/permission/auth';
 import CacheKey from '@/constants/cache-key';
 /**
  * 用户状态管理

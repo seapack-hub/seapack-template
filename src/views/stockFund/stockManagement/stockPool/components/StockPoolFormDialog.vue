@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <!-- 股票池新增/编辑弹框 -->
   <el-dialog v-model="visible" :title="isEdit ? '编辑股票' : '新增股票'" width="480px" @closed="onClosed">
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="100px">
@@ -41,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { IndustrySectorAPI, type IndustrySector } from '@/api/system/industrySector.ts'
-import { getDictByType } from '@/api/system/dict.ts'
+import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
+import { getDictByType } from '@/api/system/baseInfo/dict.ts'
 
 const exchangeOptions = ref<any[]>([])
 

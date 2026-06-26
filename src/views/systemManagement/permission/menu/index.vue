@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="app-container w-100% h-100% flex flex-col">
     <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
       <div class="table-toolbar">
@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { ElMessageBox, ElMessage } from 'element-plus'
-import { PermissionAPI, type Permission } from '@/api/system/permission'
+import { PermissionAPI, type Permission } from '@/api/system/permission/permission'
 import { createMenuColumns } from './components/menuColumns'
 import MenuFormDialog from './components/MenuFormDialog.vue'
 

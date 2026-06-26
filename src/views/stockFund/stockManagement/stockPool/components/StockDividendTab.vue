@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div v-loading="loading" class="dividend-tab" element-loading-text="加载中...">
     <el-row :gutter="16">
       <el-col :span="12">
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { StockDividendAPI } from '@/api/system/stockDividend.ts'
+import { StockDividendAPI } from '@/api/stockFund/stock/stockDividend.ts'
 import { createDividendDetailColumns } from '../../components/columns'
 import { dividendTypeFmt, statusShortFmt, dividendTypeTagMap, dividendStatusClassMap, sharesFmt } from '../../components/shared'
 import { buildDividendChartOption } from './detailShared'

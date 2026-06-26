@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div v-loading="loading" class="chart-tab" element-loading-text="加载中...">
     <el-card shadow="never" class="filter-card">
       <el-form :inline="true" class="filter-form h-[40px]">
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { StockDailyAPI } from '@/api/system/instrument.ts'
+import { StockDailyAPI } from '@/api/stockFund/stock/instrument.ts'
 import { buildKLineChartOption } from './detailShared'
 
 function formatDate(d: Date): string {
