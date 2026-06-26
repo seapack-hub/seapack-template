@@ -14,7 +14,7 @@ export const MODULE_DEFS: ModuleDef[] = [
   { key: 'bigScreen', path: '/bigScreen', title: '智慧运营大屏', icon: 'screen', permKey: 'bigScreen' },
   { key: 'universalTemplate', path: '/universalTemplate', title: '通用大屏模板', icon: 'basic-dashboard', permKey: 'universalTemplate' },
   { key: 'blogsManagement', path: '/blogsManagement/blogs', title: '博客', icon: 'blog', permKey: 'blogsManagement' },
-  { key: 'stockFund', path: '/stockFund/stock/stockQuote', title: '股票基金', icon: 'trend-charts', permKey: 'stockFund' },
+  { key: 'stockFund', path: '/stockFund/workbench', title: '股票基金', icon: 'trend-charts', permKey: 'stockFund' },
   { key: 'aiModule', path: '/aiModule/rag', title: 'AI交互', icon: 'ai-interaction', permKey: 'aiModule' },
   { key: 'devTools', path: '/devTools/genericComponent', title: '开发工具', icon: 'tool', permKey: 'devTools' },
 ]

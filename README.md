@@ -33,30 +33,49 @@
 - **角色管理** — 角色增删改查，支持 el-tree 分配菜单/按钮权限
 - **菜单权限** — 树形表格维护目录/菜单/按钮节点，支持递归删除、动态表单
 - **字典设置** — 字典类型与数据项管理（如交易所、分红类型等）
-- **行业管理** — 行业分类树形结构维护
+- **行业管理** — 行业分类 CRUD（基础信息）
+- **行业分类** — 基金行业树形查询展示
 
-### 股息监控（金融模块）
+### 股票基金
 - **股票实时行情** — 大盘指数面板 + 行业树筛选 + 实时行情分页表格
 - **股票池管理** — 股票池增删改查，关联行业/交易所字典
 - **股票详情** — 基本信息、K 线图、分红图表、历史行情、财务数据
 - **分红数据维护** — 分红记录 CRUD，对接后端 stock_dividend 表
 - **股票监控池** — 可配置阈值规则的股票监控面板
 - **告警历史** — 告警日志记录及筛选查询
+- **基金信息** — 基金数据查询与详情
+- **行业分类** — 基金行业树形结构浏览
 
-### GIS 地图
-- **OpenLayers** — 底图切换、矢量/热力/瓦片图层、标注绘制
-- **Cesium 3D** — 相机飞行、粒子特效（雨雪）、实体模型、GeoJSON 加载、航迹回放
+### 二维地图
+- **基础地图** — 高德底图 + 搜索定位 + 逆地理编码
+- **图层类型** — 热力图层、矢量图层、切片图层
+- **标注** — 地图标注绘制
+
+### 三维GIS
+- **3D 基础** — Cesium 场景初始化
+- **相机操作** — 飞行动作、移动动作
+- **实体相关** — 飞机模型、扫描效果
+- **粒子特效** — 雨雪效果
+- **数据加载** — GeoJSON 加载、飞机航迹回放
 
 ### 数据可视化
-- **大屏看板** — 全屏大数据展示模板
+- **智慧运营大屏** — 全屏大数据展示看板（多主题切换）
+- **通用大屏模板** — Cesium 三维地球大屏模板
 - **ECharts 图表** — 中国地图、迁徙图、柱状图、关系图、雷达图
+
+### AI 交互
+- **RAG 知识库** — 知识库问答
+- **智能体交互** — Agent 对话
+- **图片生成** — AI 图片生成
+
+### 开发工具
+- **组件封装** — 电子签名、表格封装、富文本编辑器
+- **图形化管理** — 流程图设计（AntV X6）
+- **ECharts 图表** — 中国地图、迁徙图、柱状图、关系图、雷达图
+- **开发文档** — 博客技术文章展示
 
 ### 其他
 - **博客系统** — 文章分类、作者信息、公告展示
-- **流程编辑器** — 基于 AntV X6 的流程图设计
-- **AI 交互** — RAG 知识库问答 + Agent 对话
-- **富文本编辑** — WangEditor 集成
-- **代码预览** — CodeMirror 代码高亮展示
 - **滑块验证** — 登录滑块/滑动拼图验证码
 
 ---
@@ -65,66 +84,74 @@
 
 ```
 seapack-template/
-├── public/                       # 静态资源（3D模型、GeoJSON、图片）
+├── public/                       # 静态资源
 ├── mock/                         # Mock 数据
 ├── src/
 │   ├── api/                      # 接口层
-│   │   ├── login/                #   登录
+│   │   ├── login/                #   登录相关
 │   │   ├── file/                 #   文件上传
-│   │   ├── ai/                   #   AI 相关接口
-│   │   ├── system/               #   系统管理接口
-│   │   │   ├── baseInfo/         #     基础信息（用户/部门/字典/行业）
-│   │   │   ├── permission/       #     权限管理（角色/菜单/认证）
-│   │   │   ├── stock/            #     股票股息相关
-│   │   │   ├── fund/             #     基金
-│   │   │   └── alertLog.ts       #     告警日志
-│   │   └── types/                #   通用类型定义
-│   ├── assets/                   # 静态资源（SVG图标、图片、JSON）
+│   │   ├── ai/                   #   AI 接口（RAG / Agent / 图片生成）
+│   │   └── system/               #   系统管理接口（用户/部门/角色/菜单/
+│   │                               │   字典/行业/股票/基金/告警等）
+│   ├── assets/
+│   │   └── icons/                #   SVG 图标库（90+ 自定义图标）
 │   ├── components/               # 公共组件
-│   │   ├── baseCharts/           #   图表封装
-│   │   ├── baseComponents/       #   基础组件库
-│   │   │   ├── SpTable/          #     表格组件（插槽式扩展）
-│   │   │   ├── Pagination/       #     分页组件
-│   │   │   ├── SpIcon/           #     图标
-│   │   │   └── ……
-│   │   ├── PageHeader/           #   页面头部
+│   │   ├── baseCharts/           #   ECharts 封装
+│   │   ├── baseComponents/       #   基础组件（SpTable / SpIcon / Breadcrumb…）
+│   │   ├── changeLanguage/       #   语言切换
+│   │   ├── loginUser/            #   用户信息下拉
+│   │   ├── PageWrapper/          #   页面包装器
+│   │   ├── ResizableSplit/       #   可拖拽分割面板
+│   │   ├── SliderCaptcha/        #   滑块验证码
 │   │   └── WangEditor/           #   富文本编辑器
-│   ├── config/                   # 应用配置
-│   ├── constants/                # 常量/枚举
-│   ├── directives/               # 自定义指令
+│   ├── config/                   # 应用配置（模块定义、布局配置等）
+│   ├── constants/                # 常量定义
+│   ├── directives/               # 自定义指令（权限、表格阴影）
 │   ├── hooks/                    # 组合式函数
 │   ├── layout/                   # 布局组件
 │   │   ├── main/                 #   主布局（左/上/左上三种模式）
-│   │   ├── sideBar/              #   侧边栏
-│   │   ├── navigationBar/        #   顶部导航
-│   │   ├── tagsView/             #   多标签页
-│   │   └── settings/             #   右侧设置面板
+│   │   ├── worldData/            #   地图 / GIS 布局（独立侧边栏）
+│   │   ├── components/           #   布局子组件（侧栏、导航栏、标签页）
+│   │   └── menuTab/              #   菜单导航栏
 │   ├── locales/                  # 国际化（zh-CN / en / zh-TW）
 │   ├── router/                   # 路由配置
-│   │   └── modules/              #   路由模块
-│   │       ├── systemManagement.ts  # 系统管理路由
-│   │       ├── mapWorld.ts          # GIS 地图路由
-│   │       └── bigData.ts           # 大数据屏路由
+│   │   ├── modules/              #   路由模块（按功能拆分）
+│   │   │   ├── systemManagement.ts  # 系统管理
+│   │   │   ├── stockFund.ts         # 股票基金
+│   │   │   ├── aiModule.ts          # AI 交互
+│   │   │   ├── devTools.ts          # 开发工具
+│   │   │   ├── gis2d.ts             # 二维地图
+│   │   │   ├── gis3d.ts             # 三维 GIS
+│   │   │   └── bigData.ts           # 数据大屏
+│   │   ├── plugins/              #   路由插件（权限、进度条）
+│   │   └── index.ts              #   路由实例 + 全量加载
 │   ├── store/                    # Pinia 状态管理
 │   │   └── modules/
-│   │       ├── user.ts           #   用户信息
-│   │       ├── permission.ts     #   路由权限
-│   │       ├── app.ts            #   应用状态（语言、侧栏）
+│   │       ├── user.ts           #   用户信息 + 权限菜单树
+│   │       ├── permission.ts     #   路由收集 + 动态路由
+│   │       ├── app.ts            #   应用状态（语言、侧栏折叠）
 │   │       ├── settings.ts       #   布局设置
 │   │       ├── tags-view.ts      #   多标签页状态
 │   │       ├── dictionary.ts     #   字典缓存
+│   │       ├── cesium.ts         #   Cesium Viewer 实例
 │   │       └── chat.ts           #   AI 对话
 │   ├── styles/                   # 全局样式
 │   ├── utils/                    # 工具函数
-│   │   ├── axios.ts              #   Axios 封装（拦截器）
-│   │   ├── cache/                #   缓存工具（cookie / localStorage）
-│   │   └── validate.ts           #   校验工具
+│   │   ├── axios.ts              #   Axios 封装（拦截器 + token）
+│   │   ├── routeUtils.ts         #   路由过滤工具
+│   │   ├── echarts.ts            #   ECharts 按需导入
+│   │   └── ...
 │   └── views/                    # 页面视图
-│       ├── systemManagement/     #   系统管理页面
-│       ├── worldData/            #   GIS 地图页面
-│       ├── bigData/              #   大数据屏页面
-│       ├── blogs/                #   博客页面
-│       ├── login/                #   登录页面
+│       ├── systemManagement/     #   系统管理（dashboard / baseInfo / permission）
+│       ├── stockFund/            #   股票基金（stockManagement / fund）
+│       ├── aiModule/             #   AI 交互（aiInteraction）
+│       ├── devTools/             #   开发工具（components / graphical / echarts / blogDocument）
+│       ├── gis2d/                #   二维地图（openLayers / GeoJSON）
+│       ├── gis3d/                #   三维 GIS（cesium）
+│       ├── bigScreen/            #   智慧运营大屏
+│       ├── bigData/              #   通用大屏模板
+│       ├── blogs/                #   博客
+│       ├── login/                #   登录
 │       ├── common/               #   公共页面（工作台、错误页）
 │       └── funGame/              #   趣味游戏
 ├── .env / .env.development       # 环境变量

@@ -8,7 +8,7 @@ const stockFundRoute: Array<RouterObject> = [
     path: '/stockFund',
     name: 'stockFund',
     component: () => import('@/layout/main/index.vue'),
-    redirect: { name: 'stockQuote' },
+    redirect: { name: 'stockFundWorkbench' },
     meta: {
       title: 'stockFund',
       description: '股票基金',
@@ -16,6 +16,18 @@ const stockFundRoute: Array<RouterObject> = [
       permKey: 'stockFund',
     },
     children: [
+      //工作台
+      {
+        path: 'workbench',
+        name: 'stockFundWorkbench',
+        component: () => import('@/views/stockFund/workbench/index.vue'),
+        meta: {
+          title: 'stockFundWorkbench',
+          description: '工作台',
+          icon: 'home',
+          permKey: 'stockFundWorkbench',
+        },
+      },
       //股票
       {
         path: 'stock',

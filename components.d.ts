@@ -71,6 +71,7 @@ declare module 'vue' {
     ElTree: typeof import('element-plus/es')['ElTree']
     ElTreeSelect: typeof import('element-plus/es')['ElTreeSelect']
     ElUpload: typeof import('element-plus/es')['ElUpload']
+    FeatureCard: typeof import('./src/components/baseComponents/FeatureCard/index.vue')['default']
     FixRender: typeof import('./src/components/baseComponents/SpDetailEditable/components/fixRender.vue')['default']
     FormComponent: typeof import('./src/components/baseComponents/SpDetailForm/components/formComponent.vue')['default']
     LoginUser: typeof import('./src/components/loginUser/index.vue')['default']

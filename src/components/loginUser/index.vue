@@ -68,10 +68,7 @@ async function logout() {
   border-radius: 20px;
   cursor: pointer;
   transition: background 0.2s;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
+  outline: none;
 }
 
 .user-avatar {
@@ -112,6 +109,27 @@ async function logout() {
 .user-dropdown-popper {
   padding: 0 !important;
   min-width: 200px;
+}
+
+.el-dropdown {
+  border: none !important;
+  outline: none !important;
+}
+
+.el-dropdown:focus-visible {
+  outline: none;
+}
+
+.el-dropdown:focus {
+  outline: none;
+}
+
+.el-tooltip__trigger:focus-visible {
+  outline: none;
+}
+
+.el-tooltip__trigger:focus {
+  outline: none;
 }
 
 .user-dropdown-menu {
@@ -164,12 +182,6 @@ async function logout() {
 
     .el-icon {
       font-size: 15px;
-    }
-  }
-
-  .logout-item {
-    &:hover {
-      background-color: var(--el-color-danger-light-9) !important;
     }
   }
 }
