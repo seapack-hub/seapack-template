@@ -16,14 +16,14 @@ const systemManagementRoute: Array<RouterObject> = [
       permKey: 'systemManagement',
     },
     children: [
-      //首页
+      //工作台
       {
         path: 'dashboard',
         component: () => import("@/views/systemManagement/dashboard/index.vue"),
         name: "Dashboard",
         meta: {
           title: "dashboard",
-          description: '首页',
+          description: '工作台',
           icon: "home",
           affix: true,
           keepAlive: true,

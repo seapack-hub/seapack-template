@@ -23,8 +23,10 @@ const devToolsRoute: Array<RouterObject> = [
         component: () => import('@/views/devTools/workbench/index.vue'),
         meta: {
           title: 'devToolsWorkbench',
-          description: '开发工具工作台',
+          description: '工作台',
           icon: 'tool',
+          affix: true,
+          keepAlive: true,
           permKey: 'devToolsWorkbench',
         },
       },

@@ -25,6 +25,8 @@ const stockFundRoute: Array<RouterObject> = [
           title: 'stockFundWorkbench',
           description: '工作台',
           icon: 'home',
+          affix: true,
+          keepAlive: true,
           permKey: 'stockFundWorkbench',
         },
       },
