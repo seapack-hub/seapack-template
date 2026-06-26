@@ -16,7 +16,7 @@ export const MODULE_DEFS: ModuleDef[] = [
   { key: 'blogsManagement', path: '/blogsManagement/blogs', title: '博客', icon: 'blog', permKey: 'blogsManagement' },
   { key: 'stockFund', path: '/stockFund/workbench', title: '股票基金', icon: 'trend-charts', permKey: 'stockFund' },
   { key: 'aiModule', path: '/aiModule/rag', title: 'AI交互', icon: 'ai-interaction', permKey: 'aiModule' },
-  { key: 'devTools', path: '/devTools/genericComponent', title: '开发工具', icon: 'tool', permKey: 'devTools' },
+  { key: 'devTools', path: '/devTools/workbench', title: '开发工具', icon: 'tool', permKey: 'devTools' },
 ]
 
 // 需要全量加载的模块路由 name，用于 startup 注册和 logout 清理

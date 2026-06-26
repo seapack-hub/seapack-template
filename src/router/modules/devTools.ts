@@ -8,7 +8,7 @@ const devToolsRoute: Array<RouterObject> = [
     path: '/devTools',
     name: 'devTools',
     component: () => import('@/layout/main/index.vue'),
-    redirect: { name: 'electronicSignatures' },
+    redirect: { name: 'devToolsWorkbench' },
     meta: {
       title: 'devTools',
       description: '开发工具',
@@ -16,6 +16,18 @@ const devToolsRoute: Array<RouterObject> = [
       permKey: 'devTools',
     },
     children: [
+      //工作台
+      {
+        path: 'workbench',
+        name: 'devToolsWorkbench',
+        component: () => import('@/views/devTools/workbench/index.vue'),
+        meta: {
+          title: 'devToolsWorkbench',
+          description: '开发工具工作台',
+          icon: 'tool',
+          permKey: 'devToolsWorkbench',
+        },
+      },
       //组件封装
       {
         path: 'genericComponent',
