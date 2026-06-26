@@ -1,40 +1,53 @@
 <template>
   <div class="nav-right">
-    <div class="setting-navigation">
+    <div class="nav-actions">
       <!-- 模块切换下拉 -->
       <el-dropdown trigger="click" @command="switchModule">
-        <el-button text bg size="small" class="module-switcher-btn">
-          <el-icon style="margin-right:4px"><Grid /></el-icon>
-          {{ currentModuleTitle }}
-          <el-icon style="margin-left:4px"><ArrowDown /></el-icon>
-        </el-button>
+        <div class="module-switcher">
+          <el-icon class="module-icon"><Grid /></el-icon>
+          <span class="module-label">{{ currentModuleTitle }}</span>
+          <el-icon class="module-arrow"><ArrowDown /></el-icon>
+        </div>
         <template #dropdown>
-          <el-dropdown-item
-            v-for="mod in accessibleModules"
-            :key="mod.key"
-            :command="mod.path"
-            :disabled="mod.key === activeModule"
-          >
-            <el-icon style="margin-right:6px"><component :is="mod.icon" /></el-icon>
-            {{ mod.title }}
-          </el-dropdown-item>
+          <el-dropdown-menu>
+            <el-dropdown-item
+              v-for="mod in accessibleModules"
+              :key="mod.key"
+              :command="mod.path"
+              :disabled="mod.key === activeModule"
+            >
+              <el-icon><component :is="mod.icon" /></el-icon>
+              {{ mod.title }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
         </template>
       </el-dropdown>
 
-      <!-- 返回主屏幕 -->
-      <el-tooltip class="item" content="主屏幕" effect="light" placement="top">
-        <SPIcon class="setting-item" name="to-home" size="20px" @click="jumpToLink('/menuTab')"></SPIcon>
+      <div class="action-divider"></div>
+
+      <!-- 工具按钮 -->
+      <el-tooltip content="主屏幕" placement="bottom" :show-after="300">
+        <div class="icon-btn" @click="jumpToLink('/menuTab')">
+          <SPIcon name="to-home" size="18px" />
+        </div>
       </el-tooltip>
-      <!-- 消息通知 -->
-      <el-tooltip class="item" content="消息通知" effect="light" placement="top">
-        <SPIcon class="setting-item" name="message-notify" size="20px"></SPIcon>
+
+      <el-tooltip content="消息通知" placement="bottom" :show-after="300">
+        <div class="icon-btn">
+          <SPIcon name="message-notify" size="18px" />
+        </div>
       </el-tooltip>
-      <!-- 全屏设置 -->
-      <el-tooltip class="item" content="全屏设置" effect="light" placement="top">
-        <SPIcon :name="isFullscreen ? 'fullscreen-shrink' : 'fullscreen-expand'" size="20px" @click="toggle"></SPIcon>
+
+      <el-tooltip :content="isFullscreen ? '退出全屏' : '全屏'" placement="bottom" :show-after="300">
+        <div class="icon-btn" @click="toggle">
+          <SPIcon :name="isFullscreen ? 'fullscreen-shrink' : 'fullscreen-expand'" size="18px" />
+        </div>
       </el-tooltip>
-      <!-- 语言设置 -->
+
       <changeLanguage></changeLanguage>
+
+      <div class="action-divider"></div>
+
       <!-- 用户 -->
       <loginUser></loginUser>
     </div>
@@ -53,7 +66,6 @@ const router = useRouter();
 const userStore = useUserStore();
 const { isFullscreen, toggle } = useFullscreen();
 
-// admin 全部可见，非 admin 根据菜单树 permKey 过滤
 const accessibleModules = computed(() => {
   if (userStore.username === 'admin') return MODULE_DEFS
   return MODULE_DEFS.filter(m => !m.permKey || userStore.menuPermKeys.includes(m.permKey))
@@ -61,7 +73,6 @@ const accessibleModules = computed(() => {
 
 const activeModule = computed(() => {
   const path = router.currentRoute.value.path
-  // 取路径第一段做模块匹配
   const seg = path.split('/')[1]
   const found = MODULE_DEFS.find(m => m.key === seg || m.path.startsWith('/' + seg))
   return found?.key ?? ''
@@ -84,18 +95,81 @@ function jumpToLink(path: string) {
 <style scoped lang="scss">
 .nav-right {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  .setting-navigation {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    .setting-item {
-      margin-bottom: 5px;
-    }
+  height: 100%;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+
+/* ── 模块切换器 ── */
+.module-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 13px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
   }
 }
-.module-switcher-btn {
-  font-size: 13px;
+
+.module-icon {
+  font-size: 16px;
+  color: var(--el-color-primary);
+}
+
+.module-label {
+  color: var(--el-text-color-primary);
+  font-weight: 500;
+}
+
+.module-arrow {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  transition: transform 0.2s;
+
+  .module-switcher:hover & {
+    transform: rotate(180deg);
+  }
+}
+
+/* ── 分割线 ── */
+.action-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--el-border-color-light);
+  margin: 0 4px;
+}
+
+/* ── 图标按钮 ── */
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  color: var(--el-text-color-secondary);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--el-text-color-primary);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 </style>
