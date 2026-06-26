@@ -26,6 +26,15 @@ export const features: FeatureItem[] = [
     stat: '实时',
   },
   {
+    name: 'aiStockAnalysis',
+    title: 'AI 个股诊断',
+    desc: '输入股票代码 · AI 自动调用行情/分红/K线工具 · 生成个股分析报告',
+    icon: 'ai-interaction',
+    route: '/stockFund/aiStockAnalysis',
+    color: '#9C27B0',
+    stat: 'AI',
+  },
+  {
     name: 'stockPool',
     title: '股票池管理',
     desc: '自选股票池增删改查 · 关联行业/交易所',

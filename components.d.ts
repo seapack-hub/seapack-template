@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AiAnalysisResult: typeof import('./src/components/ai/AiAnalysisResult.vue')['default']
     BaseCharts: typeof import('./src/components/baseCharts/index.vue')['default']
     Breadcrumb: typeof import('./src/components/baseComponents/Breadcrumb/index.vue')['default']
     ChangeLanguage: typeof import('./src/components/changeLanguage/index.vue')['default']
@@ -21,6 +22,7 @@ declare module 'vue' {
     ElCascader: typeof import('element-plus/es')['ElCascader']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElCheckboxGroup: typeof import('element-plus/es')['ElCheckboxGroup']
+    ElCheckTag: typeof import('element-plus/es')['ElCheckTag']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']

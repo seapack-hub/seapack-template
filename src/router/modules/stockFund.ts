@@ -30,6 +30,19 @@ const stockFundRoute: Array<RouterObject> = [
           permKey: 'stockFundWorkbench',
         },
       },
+      //AI个股诊断
+      {
+        path: 'aiStockAnalysis',
+        name: 'aiStockAnalysis',
+        component: () => import('@/views/stockFund/aiStockAnalysis/index.vue'),
+        meta: {
+          title: 'aiStockAnalysis',
+          description: 'AI个股诊断',
+          icon: 'ai-interaction',
+          keepAlive: true,
+          permKey: 'aiStockAnalysis',
+        },
+      },
       //股票
       {
         path: 'stock',
