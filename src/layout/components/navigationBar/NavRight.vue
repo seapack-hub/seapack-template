@@ -53,11 +53,10 @@ const router = useRouter();
 const userStore = useUserStore();
 const { isFullscreen, toggle } = useFullscreen();
 
-// admin 全部可见，非 admin 根据 permKey 过滤
+// admin 全部可见，非 admin 根据菜单树 permKey 过滤
 const accessibleModules = computed(() => {
   if (userStore.username === 'admin') return MODULE_DEFS
-  const perms = userStore.perms ?? []
-  return MODULE_DEFS.filter(m => !m.permKey || perms.includes(m.permKey))
+  return MODULE_DEFS.filter(m => !m.permKey || userStore.menuPermKeys.includes(m.permKey))
 })
 
 const activeModule = computed(() => {

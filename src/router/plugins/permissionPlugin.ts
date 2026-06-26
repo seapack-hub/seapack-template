@@ -4,6 +4,14 @@ import { useUserStore } from '@/store/modules/user'
 // 白名单页面：不需要登录即可访问
 const WHITE_LIST = ['/login', '/blogs', '/errorPage/401', '/errorPage/403', '/errorPage/404', '/errorPage/500']
 
+/** 获取有效的 permKey，空字符串视为无权限要求 */
+function getValidPermKey(meta: Record<string, unknown> | undefined): string | undefined {
+  const key = meta?.permKey as string | undefined
+  if (!key) return undefined
+  const trimmed = key.trim()
+  return trimmed || undefined
+}
+
 // 权限验证插件：检查 token 和权限标识
 export const permissionPlugin: RouterPlugin = {
   name: 'PermissionPlugin',
@@ -28,14 +36,11 @@ export const permissionPlugin: RouterPlugin = {
     // 3. admin 跳过所有权限检查
     if (userStore.username === 'admin') return undefined
 
-    // 4. 其他用户获取菜单权限
-
-
-    // 4. 权限标识检查：如果路由声明了 permKey，校验用户是否拥有
-    const permKey = to.meta?.permKey as string | undefined
+    // 4. 权限标识检查：从后端菜单树（getMenus）提取 permKey 作为数据源
+    //    空字符串 permKey 视为无权限要求，公开访问
+    const permKey = getValidPermKey(to.meta as Record<string, unknown>)
     if (permKey) {
-      const userPerms = userStore.perms ?? []
-      if (!userPerms.includes(permKey)) {
+      if (!userStore.menuPermKeys.includes(permKey)) {
         return '/errorPage/403'
       }
     }

@@ -12,7 +12,8 @@ const systemManagementRoute: Array<RouterObject> = [
     meta: {
       title: 'home',
       description: '系统管理',
-      icon: 'system' // collapse 模式侧边栏显示此图标
+      icon: 'system', // collapse 模式侧边栏显示此图标
+      permKey: 'systemManagement',
     },
     children: [
       //首页
@@ -26,7 +27,7 @@ const systemManagementRoute: Array<RouterObject> = [
           icon: "home",
           affix: true,
           keepAlive: true,
-          permKey: 'system:dashboard:view',
+          permKey: 'dashboard',
         },
       },
       //基础信息
@@ -38,7 +39,8 @@ const systemManagementRoute: Array<RouterObject> = [
         meta:{
           title:"baseInfo",
           description:"基础信息",
-          icon:"system"
+          icon:"system",
+          permKey: 'baseInfo',
         },
         children:[
           //部门管理
@@ -50,7 +52,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'dept',
               description: '部门管理',
               icon: 'dept',
-              permKey: 'system:dept:view',
+              permKey: 'dept',
             },
           },
           //用户管理
@@ -62,7 +64,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'user',
               description: '用户管理',
               icon: 'user',
-              permKey: 'system:user:view',
+              permKey: 'user',
             },
           },
           //行业管理
@@ -74,7 +76,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'industryManagement',
               description: '行业管理',
               icon: 'industry',
-              permKey: 'system:industry:view',
+              permKey: 'industryManagement',
             },
           },
           //字典设置
@@ -86,7 +88,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'dictSetting',
               description: '字典设置',
               icon: 'dict',
-              permKey: 'system:dict:view',
+              permKey: 'dictSetting',
             },
           },
         ]
@@ -100,7 +102,8 @@ const systemManagementRoute: Array<RouterObject> = [
         meta:{
           title:"permission",
           description:"权限管理",
-          icon:"permission"
+          icon:"permission",
+          permKey: 'permission',
         },
         children:[
           {
@@ -111,7 +114,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'role',
               description: '角色管理',
               icon: 'role',
-              permKey: 'system:role:view',
+              permKey: 'role',
             },
           },
           {
@@ -122,7 +125,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'menu',
               description: '菜单权限',
               icon: 'menu',
-              permKey: 'system:menu:view',
+              permKey: 'menu',
             },
           },
         ]
@@ -136,7 +139,8 @@ const systemManagementRoute: Array<RouterObject> = [
         meta:{
           title:"fund",
           description:"基金模块",
-          icon:"fund"
+          icon:"fund",
+          permKey: 'fund',
         },
         children:[
           //基金信息表
@@ -148,10 +152,10 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'fundBaseInfo',
               description: '基金信息',
               icon: 'fund-info',
-              permKey: 'system:fund:view',
+              permKey: 'fundBaseInfo',
             },
           },
-          //基金信息表
+          //基金信息详情
           {
             path: 'fundBaseInfo/detail',
             name: 'fundBaseInfoDetail',
@@ -161,7 +165,7 @@ const systemManagementRoute: Array<RouterObject> = [
               description: '基金信息详情',
               icon: 'fund-info',
               hidden: true,
-              permKey: 'system:fund:detail',
+              permKey: 'fundBaseInfoDetail',
             },
           },
           //行业分类
@@ -173,7 +177,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'industry',
               description: '行业分类',
               icon: 'industry',
-              permKey: 'system:fund:industry:view',
+              permKey: 'industry',
             },
           },
         ]
@@ -187,7 +191,8 @@ const systemManagementRoute: Array<RouterObject> = [
         meta:{
           title:"stockManagement",
           description:"股息监控",
-          icon:"trend-charts"
+          icon:"trend-charts",
+          permKey: 'stockManagement',
         },
         children:[
           {
@@ -198,7 +203,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'stockQuote',
               description: '股票实时行情',
               icon: 'trend-charts',
-              permKey: 'system:stock:quote:view',
+              permKey: 'stockQuote',
             },
           },
           {
@@ -209,7 +214,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'stockPool',
               description: '股票池管理',
               icon: 'fund-info',
-              permKey: 'system:stock:pool:view',
+              permKey: 'stockPool',
             },
           },
           {
@@ -220,6 +225,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'stockPoolDetail',
               description: '股票详情',
               hidden: true,
+              permKey: 'stockPoolDetail',
             }
           },
           {
@@ -230,7 +236,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'dividendData',
               description: '分红数据维护',
               icon: 'pie-chart',
-              permKey: 'system:stock:dividend:view',
+              permKey: 'dividendData',
             },
           },
           {
@@ -241,7 +247,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'dashboardView',
               description: '股票监控池',
               icon: 'home',
-              permKey: 'system:stock:dashboard:view',
+              permKey: 'dashboardView',
             },
           },
           {
@@ -252,7 +258,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'alertHistory',
               description: '告警历史记录',
               icon: 'histogram',
-              permKey: 'system:stock:alert:view',
+              permKey: 'alertHistory',
             },
           }
         ]
@@ -266,7 +272,8 @@ const systemManagementRoute: Array<RouterObject> = [
         meta: {
           title: 'genericComponent',
           description: '组件封装',
-          icon: 'generic-com'
+          icon: 'generic-com',
+          permKey: 'genericComponent',
         },
         children: [
           //电子签名
@@ -278,7 +285,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'electronicSignatures',
               description: '电子签名',
               icon: 'e-sign',
-              permKey: 'system:component:esign:view',
+              permKey: 'electronicSignatures',
             },
           },
           {
@@ -289,7 +296,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title:"encapsulationTable",
               description: "表格封装",
               icon:"encapsulation-table",
-              permKey: 'system:component:table:view',
+              permKey: 'encapsulationTable',
             },
           },
           {
@@ -300,7 +307,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title:"splitTable",
               description: "表格封装",
               icon:"encapsulation-table",
-              permKey: 'system:component:splitTable:view',
+              permKey: 'splitTable',
             },
           },
           //富文本编辑器
@@ -312,7 +319,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'wangEditer',
               description: '富文本编辑器',
               icon: 'wang-editer',
-              permKey: 'system:component:editor:view',
+              permKey: 'wangEditer',
             },
           },
         ]
@@ -326,7 +333,8 @@ const systemManagementRoute: Array<RouterObject> = [
         meta:{
           title:"graphical",
           description:"图形化管理",
-          icon:"graphical"
+          icon:"graphical",
+          permKey: 'graphical',
         },
         children:[
           {
@@ -337,7 +345,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'flowCharts',
               description: '流程图',
               icon: 'flow-chart',
-              permKey: 'system:graphical:flow:view',
+              permKey: 'flowCharts',
             },
           },
         ]
@@ -358,7 +366,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title:"rag",
               description: "RAG知识库",
               icon:"rag",
-              permKey: 'system:ai:rag:view',
+              permKey: 'rag',
             },
           },
           //智能体交互
@@ -370,7 +378,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title:"agent",
               description: "智能体交互",
               icon:"agent",
-              permKey: 'system:ai:agent:view',
+              permKey: 'agent',
             },
           },
           //图片生成
@@ -382,14 +390,15 @@ const systemManagementRoute: Array<RouterObject> = [
               title:"imageGeneration",
               description: "图片生成",
               icon:"image",
-              permKey: 'system:ai:image:view',
+              permKey: 'imageGeneration',
             },
           },
         ],
         meta:{
           title:"aiInteraction",
           description: '人工智能',
-          icon:"ai-interaction"
+          icon:"ai-interaction",
+          permKey: 'aiInteraction',
         }
       },
       //博客文档
@@ -401,7 +410,8 @@ const systemManagementRoute: Array<RouterObject> = [
         meta: {
           title: 'document',
           description: '博客文档',
-          icon: 'document'
+          icon: 'document',
+          permKey: 'doc',
         },
         children:[
           {
@@ -412,7 +422,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: "InternalDoc-1",
               description: '实现电子签名',
               icon: "document",
-              permKey: 'system:doc:*:view',
+              permKey: 'internalDoc1',
             },
           },
           {
@@ -423,7 +433,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: "InternalDoc-2",
               description: '实现水印',
               icon: "document",
-              permKey: 'system:doc:*:view',
+              permKey: 'internalDoc2',
             },
           },
           {
@@ -434,7 +444,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: "InternalDoc-3",
               description: '封装SVG图标',
               icon: "document",
-              permKey: 'system:doc:*:view',
+              permKey: 'internalDoc3',
             },
           },
           {
@@ -445,7 +455,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: "InternalDoc-4",
               description: 'JS原型链详解',
               icon: "document",
-              permKey: 'system:doc:*:view',
+              permKey: 'internalDoc4',
             },
           },
           {
@@ -456,7 +466,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: "InternalDoc-5",
               description: '模板引擎详解',
               icon: "document",
-              permKey: 'system:doc:*:view',
+              permKey: 'internalDoc5',
             },
           },
         ]
@@ -471,6 +481,7 @@ const systemManagementRoute: Array<RouterObject> = [
           title: 'echarts',
           description: 'echarts',
           icon: 'pie-chart',
+          permKey: 'echarts',
         },
         children:[
           //中国地图
@@ -482,7 +493,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'chinaMap',
               description: '中国地图',
               icon: 'china-map',
-              permKey: 'system:echarts:china:view',
+              permKey: 'chinaMap',
             },
           },
           {
@@ -493,7 +504,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'migrationMap',
               description: '迁徙地图',
               icon: 'migration-map',
-              permKey: 'system:echarts:migration:view',
+              permKey: 'migrationMap',
             },
           },
           {
@@ -504,7 +515,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'histogram',
               description: '柱状图',
               icon: 'histogram',
-              permKey: 'system:echarts:histogram:view',
+              permKey: 'histogram',
             },
           },
           {
@@ -515,7 +526,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'relationship',
               description: '人物关系',
               icon: 'histogram',
-              permKey: 'system:echarts:relationship:view',
+              permKey: 'relationship',
             },
           },
           {
@@ -526,7 +537,7 @@ const systemManagementRoute: Array<RouterObject> = [
               title: 'radar',
               description: '雷达图',
               icon: 'radar',
-              permKey: 'system:echarts:radar:view',
+              permKey: 'radar',
             },
           },
         ]

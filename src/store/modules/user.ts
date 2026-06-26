@@ -1,7 +1,7 @@
 ﻿import { defineStore } from 'pinia';
 import { type User} from '@/api/system/user.ts';
 import { usePermissionStore } from '@/store/modules/permission';
-import { AuthAPI } from '@/api/system/auth';
+import { AuthAPI, type MenuTree } from '@/api/system/auth';
 import { setToken as setCookieToken, removeToken as removeCookieToken } from '@/utils/cache/cookies';
 /**
  * 用户状态管理
@@ -23,6 +23,8 @@ export const useUserStore = defineStore('user', {
     roles: [] as string[],
     // 当前用户的权限标识符集合，如 ['user:add', 'role:delete']
     perms: [] as string[],
+    // 后端返回的已过滤菜单树（getMenus 结果），用作权限守卫的真实数据源
+    menuTree: [] as MenuTree[],
   }),
   getters: {
     // 是否已登录（有 Token）
@@ -36,6 +38,19 @@ export const useUserStore = defineStore('user', {
     // 用户 ID（对应后端 userInfo.id）
     userId(state) {
       return state.userInfo?.id ?? ''
+    },
+    // 从菜单树中提取所有非空 permKey，用作路由守卫的权限判定数据源
+    menuPermKeys(state): string[] {
+      const keys = new Set<string>()
+      function walk(nodes: MenuTree[]) {
+        for (const node of nodes) {
+          const k = node.permKey?.trim()
+          if (k) keys.add(k)
+          if (node.children?.length) walk(node.children)
+        }
+      }
+      walk(state.menuTree)
+      return Array.from(keys)
     },
   },
   actions: {
@@ -124,6 +139,7 @@ export const useUserStore = defineStore('user', {
     clearAuth() {
       this.roles = [];
       this.perms = [];
+      this.menuTree = [];
     },
 
     // ===== 登录/登出完整流程 =====
@@ -160,6 +176,11 @@ export const useUserStore = defineStore('user', {
       //赋值
       this.roles = authInfo.roles;
       this.perms = authInfo.perms;
+
+      //获取用户权限菜单（已过滤的菜单树）
+      const menu = await AuthAPI.getMenus(userId);
+      console.log('--菜单信息--',menu);
+      this.menuTree = menu;
     },
 
     /**

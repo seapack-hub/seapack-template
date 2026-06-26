@@ -50,7 +50,7 @@ const currentModuleRoute = computed(() => {
 const menuList = computed(() => {
   if (!permissionStore.dynamicRoutesLoaded) return []
   const children = (currentModuleRoute.value?.children as RouteRecordRaw[]) || []
-  return filterVisibleRoutes(children, userStore.perms, userStore.username === 'admin');
+  return filterVisibleRoutes(children, userStore.menuPermKeys, userStore.username === 'admin');
 });
 
 // 基础路径 = 当前模块的 path，用于拼接子路由的完整路径

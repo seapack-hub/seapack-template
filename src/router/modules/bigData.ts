@@ -14,6 +14,7 @@ const bigDataRoute: Array<RouterObject> = [
       title: 'bigData',
       description: '数据大屏',
       icon: 'screen',
+      permKey: 'bigData',
     },
     children: [
       {
@@ -24,7 +25,7 @@ const bigDataRoute: Array<RouterObject> = [
           title: 'bigScreen',
           description: '智慧运营大屏',
           icon: 'screen',
-          permKey: 'bigdata:screen:view',
+          permKey: 'bigScreen',
         },
       },
       {
@@ -35,7 +36,7 @@ const bigDataRoute: Array<RouterObject> = [
           title: 'universalTemplate',
           description: '通用大屏模板',
           icon: 'screen',
-          permKey: 'bigdata:template:view',
+          permKey: 'universalTemplate',
         },
       },
     ],

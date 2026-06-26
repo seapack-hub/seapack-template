@@ -74,8 +74,7 @@ const moduleDescs: Record<string, string> = {
 
 const accessibleModules = computed(() => {
   if (userStore.username === 'admin') return MODULE_DEFS
-  const perms = userStore.perms ?? []
-  return MODULE_DEFS.filter(m => !m.permKey || perms.includes(m.permKey))
+  return MODULE_DEFS.filter(m => !m.permKey || userStore.menuPermKeys.includes(m.permKey))
 })
 
 function enterModule(mod: typeof MODULE_DEFS[number]) {

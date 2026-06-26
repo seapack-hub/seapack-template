@@ -13,7 +13,8 @@ const mapWorldRoute:Array<RouterObject> = [
     meta: {
       title: "home",
       description: "数据世界",
-      icon: "gis" // collapse 模式侧边栏显示此图标
+      icon: "gis", // collapse 模式侧边栏显示此图标
+      permKey: 'worldData',
     },
     children: [
       {
@@ -24,7 +25,7 @@ const mapWorldRoute:Array<RouterObject> = [
           title: "baseMap",
           description: "基础地图",
           icon: "base-map",
-          permKey: 'world:basemap:view',
+          permKey: 'baseMap',
         }
       },
       //openLayers地图
@@ -36,7 +37,8 @@ const mapWorldRoute:Array<RouterObject> = [
         meta: {
           title: "openLayers",
           description: "openLayers地图",
-          icon: "openlayers"
+          icon: "openlayers",
+          permKey: 'openLayers',
         },
         children: [
           //图层类型
@@ -48,7 +50,8 @@ const mapWorldRoute:Array<RouterObject> = [
             meta: {
               title: "layerType",
               description: "图层类型",
-              icon: "layer-type"
+              icon: "layer-type",
+              permKey: 'layerType',
             },
             children: [
               //热力图层
@@ -60,7 +63,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "heatMap",
                   description: "热力图层",
                   icon: "hot-map",
-                  permKey: 'world:openlayers:heatmap:view',
+                  permKey: 'heatMap',
                 }
               },
               //矢量图层
@@ -72,7 +75,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "vectorMap",
                   description: "矢量图层",
                   icon: "vector-map",
-                  permKey: 'world:openlayers:vectormap:view',
+                  permKey: 'vectorMap',
                 }
               },
               //切片图层
@@ -84,7 +87,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "sliceMap",
                   description: "切片图层",
                   icon: "slice-map",
-                  permKey: 'world:openlayers:slicemap:view',
+                  permKey: 'sliceMap',
                 }
               }
             ]
@@ -98,7 +101,7 @@ const mapWorldRoute:Array<RouterObject> = [
               title: "marking",
               description: "标注",
               icon: "openlayers",
-              permKey: 'world:openlayers:marking:view',
+              permKey: 'marking',
             }
           },
           //测试
@@ -110,7 +113,7 @@ const mapWorldRoute:Array<RouterObject> = [
               title: "openLayers",
               description: "测试",
               icon: "openlayers",
-              permKey: 'world:openlayers:ceshi:view',
+              permKey: 'ceshi',
             }
           }
         ]
@@ -124,7 +127,8 @@ const mapWorldRoute:Array<RouterObject> = [
         meta: {
           title: "cesium",
           description: "3D地图",
-          icon: "cesium"
+          icon: "cesium",
+          permKey: 'cesium',
         },
         children: [
           //基础地图
@@ -136,7 +140,7 @@ const mapWorldRoute:Array<RouterObject> = [
               title: "baseCesium",
               description: "3D基础",
               icon: "cesium",
-              permKey: 'world:cesium:basecesium:view',
+              permKey: 'baseCesium',
             }
           },
           //相机
@@ -148,7 +152,8 @@ const mapWorldRoute:Array<RouterObject> = [
             meta: {
               title: "camera",
               description: "相机操作",
-              icon: "camera"
+              icon: "camera",
+              permKey: 'camera',
             },
             children: [
               //飞行动作
@@ -160,7 +165,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "cameraFly",
                   description: "飞行动作",
                   icon: "fly",
-                  permKey: 'world:cesium:camerafly:view',
+                  permKey: 'cameraFly',
                 }
               },
               //移动动作
@@ -172,7 +177,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "cameraMove",
                   description: "移动动作",
                   icon: "move",
-                  permKey: 'world:cesium:cameramove:view',
+                  permKey: 'cameraMove',
                 }
               }
             ]
@@ -186,7 +191,8 @@ const mapWorldRoute:Array<RouterObject> = [
             meta: {
               title: "entities",
               description: "实体相关",
-              icon: "entities"
+              icon: "entities",
+              permKey: 'entities',
             },
             children: [
               //飞机模型
@@ -198,7 +204,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "airModel",
                   description: "飞机模型",
                   icon: "air",
-                  permKey: 'world:cesium:airmodel:view',
+                  permKey: 'airModel',
                 }
               },
               //扫描
@@ -210,7 +216,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "scan",
                   description: "扫描",
                   icon: "scan",
-                  permKey: 'world:cesium:scan:view',
+                  permKey: 'scan',
                 }
               }
             ]
@@ -224,7 +230,8 @@ const mapWorldRoute:Array<RouterObject> = [
             meta: {
               title: "particleEffect",
               description: "粒子特效",
-              icon: "particle-effects"
+              icon: "particle-effects",
+              permKey: 'particleEffect',
             },
             children: [
               //雪花
@@ -236,7 +243,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "snow",
                   description: "雪花",
                   icon: "snow",
-                  permKey: 'world:cesium:snow:view',
+                  permKey: 'snow',
                 }
               },
               //雨水
@@ -248,7 +255,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "rain",
                   description: "雨水",
                   icon: "rain",
-                  permKey: 'world:cesium:rain:view',
+                  permKey: 'rain',
                 }
               }
             ]
@@ -262,7 +269,8 @@ const mapWorldRoute:Array<RouterObject> = [
             meta: {
               title: "loadData",
               description: "数据加载",
-              icon: "load"
+              icon: "load",
+              permKey: 'loadData',
             },
             children: [
               //JSON数据
@@ -274,7 +282,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "loadGeoJSON",
                   description: "JSON数据",
                   icon: "geojson",
-                  permKey: 'world:cesium:loadgeojson:view',
+                  permKey: 'loadGeoJSON',
                 }
               },
               //飞机轨迹
@@ -286,7 +294,7 @@ const mapWorldRoute:Array<RouterObject> = [
                   title: "flightTrajectory",
                   description: "飞机轨迹",
                   icon: "flightTrajectory",
-                  permKey: 'world:cesium:flighttrajectory:view',
+                  permKey: 'flightTrajectory',
                 }
               }
             ]

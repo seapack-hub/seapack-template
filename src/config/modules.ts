@@ -8,9 +8,9 @@ export interface ModuleDef {
 }
 
 export const MODULE_DEFS: ModuleDef[] = [
-  { key: 'systemManagement', path: '/systemManagement/dashboard', title: '系统管理', icon: 'setting' },
-  { key: 'worldData', path: '/worldData/baseMap', title: '数据世界', icon: 'map' },
-  { key: 'bigData', path: '/bigData/bigScreen', title: '数据大屏', icon: 'screen' },
+  { key: 'systemManagement', path: '/systemManagement/dashboard', title: '系统管理', icon: 'setting'},
+  { key: 'worldData', path: '/worldData/baseMap', title: '数据世界', icon: 'map'},
+  { key: 'bigData', path: '/bigData/bigScreen', title: '数据大屏', icon: 'screen'},
   { key: 'blogsManagement', path: '/blogsManagement/blogs', title: '博客', icon: 'blog' },
 ]
 
