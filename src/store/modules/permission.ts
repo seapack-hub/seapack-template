@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
-import { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
 import { routerRecordRow, getRawModuleRoutes } from '@/router/index.ts';
-import router from "@/router/index"
 import { MODULE_ROUTE_NAMES } from '@/config/modules'
 
 /**
@@ -39,7 +38,7 @@ export const usePermissionStore = defineStore('permission', {
       this.isDynamicLoaded = val;
     },
 
-    // 登出时清理路由状态，移除模块路由防止旧路由残留
+    // 登出时清理路由状态（保留路由注册，路由守卫会拦截未授权访问）
     resetPermissionState() {
       this.basePath = '';
       this.currentModules = '';
@@ -47,10 +46,6 @@ export const usePermissionStore = defineStore('permission', {
       this.mixLeftMenu = [];
       this.routesHierarchy = [];
       this.activeTopMenu = '';
-      // 移除所有模块路由
-      MODULE_ROUTE_NAMES.forEach(name => {
-        if (router.hasRoute(name)) router.removeRoute(name)
-      })
       this.dynamicRoutes = [];
       this.routes = [];
       this.isDynamicLoaded = false;

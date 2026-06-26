@@ -2,7 +2,7 @@
 import { type User} from '@/api/system/user.ts';
 import { usePermissionStore } from '@/store/modules/permission';
 import { AuthAPI, type MenuTree } from '@/api/system/auth';
-import { setToken as setCookieToken, removeToken as removeCookieToken } from '@/utils/cache/cookies';
+import CacheKey from '@/constants/cache-key';
 /**
  * 用户状态管理
  * 职责：
@@ -61,19 +61,16 @@ export const useUserStore = defineStore('user', {
      */
     setToken(token: string) {
       this.token = token;
-      // 同时存入 localStorage 和 Cookie，确保 axios 请求拦截器能读取到
-      localStorage.setItem('token', token);
-      setCookieToken(token);
+      localStorage.setItem(CacheKey.TOKEN, token);
     },
 
     /**
      * 从 localStorage 恢复 Token（页面刷新后调用）
      */
     restoreToken() {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem(CacheKey.TOKEN);
       if (token) {
         this.token = token;
-        setCookieToken(token);
       }
     },
 
@@ -82,8 +79,7 @@ export const useUserStore = defineStore('user', {
      */
     clearToken() {
       this.token = '';
-      localStorage.removeItem('token');
-      removeCookieToken();
+      localStorage.removeItem(CacheKey.TOKEN);
     },
 
     // ===== 用户信息操作 =====
@@ -181,6 +177,10 @@ export const useUserStore = defineStore('user', {
       const menu = await AuthAPI.getMenus(userId);
       console.log('--菜单信息--',menu);
       this.menuTree = menu;
+
+      // 重新收集路由，恢复 dynamicRoutesLoaded，刷新侧边栏
+      const permissionStore = usePermissionStore()
+      permissionStore.collectRoutes()
     },
 
     /**

@@ -12,7 +12,7 @@
 
 import axios, { type AxiosResponse } from 'axios';
 import { ElMessage, ElNotification } from 'element-plus';
-import { getToken } from './cache/cookies';
+import CacheKey from '@/constants/cache-key';
 import router from '@/router';
 
 /** 防止多个 401 响应同时触发重复跳转 */
@@ -70,7 +70,7 @@ function createAxios() {
   Axios.interceptors.request.use(
     (config) => {
       
-      const token = getToken()
+      const token = localStorage.getItem(CacheKey.TOKEN)
       if (token) config.headers.Authorization = `Bearer ${token}`
       return config;
     },

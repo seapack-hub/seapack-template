@@ -47,9 +47,6 @@ importers:
       element-plus:
         specifier: ^2.6.1
         version: 2.14.0(vue@3.5.34(typescript@5.9.3))
-      js-cookie:
-        specifier: ^3.0.5
-        version: 3.0.7
       jsencrypt:
         specifier: ^3.5.4
         version: 3.5.4
@@ -3130,10 +3127,6 @@ packages:
 
   js-base64@2.6.4:
     resolution: {integrity: sha512-pZe//GGmwJndub7ZghVHz7vjb2LgC1m8B07Au3eYqeqv9emhESByMXxaEgkUkEqJe87oBbSniGYoQNIBklc7IQ==}
-
-  js-cookie@3.0.7:
-    resolution: {integrity: sha512-z/wZZgDrkNV1eA0ULjM/F9/50Ya8fbzgKneSpoPsXSGd0KnpdtHfOZWK+GcwLk+EZbS4F9RBhU+K2RgzuDaItw==}
-    engines: {node: '>=20'}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -7561,8 +7554,6 @@ snapshots:
   jiti@2.7.0: {}
 
   js-base64@2.6.4: {}
-
-  js-cookie@3.0.7: {}
 
   js-tokens@4.0.0: {}
 
