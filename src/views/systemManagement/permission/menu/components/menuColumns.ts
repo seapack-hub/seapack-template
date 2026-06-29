@@ -12,9 +12,9 @@ export function createMenuColumns(handlers: MenuColumnHandlers) {
     {
       label: '资源类型', prop: 'type', minWidth: '100px', align: 'center', slotName: 'type',
     },
-    { label: '路由路径', prop: 'path', minWidth: '150px' },
-    { label: '组件路径', prop: 'component', minWidth: '180px' },
-    { label: '排序', prop: 'sortOrder', minWidth: '60px', align: 'center' },
+    { label: '路由路径', prop: 'path', minWidth: '200px' },
+    // { label: '组件路径', prop: 'component', minWidth: '180px' },
+    // { label: '排序', prop: 'sortOrder', minWidth: '60px', align: 'center' },
     {
       label: '状态', prop: 'status', minWidth: '80px', align: 'center', slotName: 'status',
     },

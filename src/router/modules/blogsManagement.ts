@@ -65,13 +65,14 @@ const blogsManagementRoute: Array<RouterObject> = [
             },
           },
           {
-            path: 'create',
+            path: 'articleCreate',
             name: 'articleCreate',
             component: () => import('@/views/blogs/admin/ArticleEdit.vue'),
             meta: {
               title: 'articleCreate',
               description: '文章创作',
               icon: 'article-create',
+              permKey: 'articleCreate',
             },
           },
           {

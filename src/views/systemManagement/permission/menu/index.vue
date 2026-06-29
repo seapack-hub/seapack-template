@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { ElMessageBox, ElMessage } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { PermissionAPI, type Permission } from '@/api/system/permission/permission'
 import { createMenuColumns } from './components/menuColumns'
 import MenuFormDialog from './components/MenuFormDialog.vue'
@@ -39,12 +39,10 @@ const tableData = ref<Permission[]>([])
 
 const columns = createMenuColumns({
   onEdit(row) { openFormDialog(row) },
-  onDelete(row) {
-    ElMessageBox.confirm(`确认删除【${row.name}】及所有子项？`, '警告', { type: 'warning' }).then(async () => {
+  async onDelete(row) {
       await PermissionAPI.delete(row.id)
       ElMessage.success('删除成功')
-      fetchTree()
-    }).catch(() => {})
+      await fetchTree()
   },
   onAddChild(row) {
     formData.value = { name: '', type: 2, path: '', component: '', permKey: '', sortOrder: 0, status: 1, parentId: row.id }

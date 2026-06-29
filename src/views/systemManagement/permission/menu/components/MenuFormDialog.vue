@@ -14,9 +14,6 @@
       <el-form-item v-if="form.type !== 3" label="路由路径" prop="path">
         <el-input v-model="form.path" placeholder="如 /user" />
       </el-form-item>
-      <el-form-item v-if="form.type !== 3" label="组件路径" prop="component">
-        <el-input v-model="form.component" placeholder="如 system/user/index.vue" />
-      </el-form-item>
       <el-form-item label="权限标识" prop="permKey">
         <el-input v-model="form.permKey" placeholder="如 sys:user:edit" />
       </el-form-item>
