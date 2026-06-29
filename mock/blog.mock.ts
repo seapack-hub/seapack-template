@@ -28,7 +28,7 @@ let maxProjectId = 3
 export default [
   // ===== 文章接口 =====
   {
-    url: '/api/blogs/articles',
+    url: '/api/blog/articles',
     method: 'GET',
     response: ({ query }) => {
       let list = [...articles]
@@ -38,10 +38,15 @@ export default [
       if (query.status !== undefined && query.status !== '') {
         list = list.filter(a => a.status === Number(query.status))
       }
+      if (query.isTop !== undefined && query.isTop !== '') {
+        list = list.filter(a => a.isTop === Number(query.isTop))
+      }
       if (query.keyword) {
         const kw = query.keyword.toLowerCase()
         list = list.filter(a => a.title.toLowerCase().includes(kw) || a.summary.toLowerCase().includes(kw))
       }
+      // 后端按 isTop DESC, createTime DESC 排序（置顶优先）
+      list.sort((a, b) => b.isTop - a.isTop || new Date(b.createTime).getTime() - new Date(a.createTime).getTime())
       const pageNum = Number(query.pageNum) || 1
       const pageSize = Number(query.pageSize) || 10
       const start = (pageNum - 1) * pageSize
@@ -50,7 +55,7 @@ export default [
     }
   },
   {
-    url: '/api/blogs/articles/:id',
+    url: '/api/blog/articles/:id',
     method: 'GET',
     response: ({ params }) => {
       const article = articles.find(a => a.id === Number(params.id))
@@ -59,7 +64,7 @@ export default [
     }
   },
   {
-    url: '/api/blogs/articles',
+    url: '/api/blog/articles',
     method: 'POST',
     response: ({ body }) => {
       maxArticleId++
@@ -69,7 +74,7 @@ export default [
     }
   },
   {
-    url: '/api/blogs/articles/:id',
+    url: '/api/blog/articles/:id',
     method: 'PUT',
     response: ({ params, body }) => {
       const idx = articles.findIndex(a => a.id === Number(params.id))
@@ -80,7 +85,7 @@ export default [
     }
   },
   {
-    url: '/api/blogs/articles/:id',
+    url: '/api/blog/articles/:id',
     method: 'DELETE',
     response: ({ params }) => {
       const idx = articles.findIndex(a => a.id === Number(params.id))
@@ -92,14 +97,37 @@ export default [
 
   // ===== 项目接口 =====
   {
-    url: '/api/blogs/projects',
+    url: '/api/blog/projects',
     method: 'GET',
-    response: () => {
-      return { code: 0, data: projects.filter(p => p.status === 1), msg: '成功' }
+    response: ({ query }) => {
+      let list = [...projects]
+      if (query.status !== undefined && query.status !== '') {
+        list = list.filter(p => p.status === Number(query.status))
+      }
+      if (query.keyword) {
+        const kw = query.keyword.toLowerCase()
+        list = list.filter(p => p.name.toLowerCase().includes(kw) || p.description.toLowerCase().includes(kw))
+      }
+      // 按 sort ASC 排序
+      list.sort((a, b) => a.sort - b.sort)
+      const pageNum = Number(query.pageNum) || 1
+      const pageSize = Number(query.pageSize) || 10
+      const start = (pageNum - 1) * pageSize
+      const paged = list.slice(start, start + pageSize)
+      return { code: 0, data: { list: paged, total: list.length }, msg: '成功' }
     }
   },
   {
-    url: '/api/blogs/projects',
+    url: '/api/blog/projects/:id',
+    method: 'GET',
+    response: ({ params }) => {
+      const project = projects.find(p => p.id === Number(params.id))
+      if (!project) return { code: 404, data: null, msg: '项目不存在' }
+      return { code: 0, data: project, msg: '成功' }
+    }
+  },
+  {
+    url: '/api/blog/projects',
     method: 'POST',
     response: ({ body }) => {
       maxProjectId++
@@ -109,7 +137,7 @@ export default [
     }
   },
   {
-    url: '/api/blogs/projects/:id',
+    url: '/api/blog/projects/:id',
     method: 'PUT',
     response: ({ params, body }) => {
       const idx = projects.findIndex(p => p.id === Number(params.id))
@@ -120,7 +148,7 @@ export default [
     }
   },
   {
-    url: '/api/blogs/projects/:id',
+    url: '/api/blog/projects/:id',
     method: 'DELETE',
     response: ({ params }) => {
       const idx = projects.findIndex(p => p.id === Number(params.id))

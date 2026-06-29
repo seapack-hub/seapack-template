@@ -3,13 +3,13 @@
  *
  * 职责：
  *   1. 管理文章列表状态（分页、加载、分类筛选）
- *   2. 管理项目列表状态
+ *   2. 管理项目列表状态（分页）
  *   3. 提供文章的增删改查方法
  */
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { ArticleAPI, type Article, type ArticleQuery } from '@/api/blogs/article.ts'
-import { ProjectAPI, type Project } from '@/api/blogs/project.ts'
+import { ProjectAPI, type Project, type ProjectQuery } from '@/api/blogs/project.ts'
 
 export const useBlogStore = defineStore('blog', () => {
 
@@ -21,7 +21,9 @@ export const useBlogStore = defineStore('blog', () => {
 
   // ===== 项目状态 =====
   const projects = ref<Project[]>([])           // 项目列表
+  const projectsTotal = ref(0)                  // 项目总数
   const projectsLoading = ref(false)
+  const projectQuery = ref<ProjectQuery>({ pageNum: 1, pageSize: 99 })
 
   /** 当前文章列表（仅读） */
   const articleList = computed(() => articles.value)
@@ -68,24 +70,35 @@ export const useBlogStore = defineStore('blog', () => {
     await fetchArticles()
   }
 
-  /** 获取项目列表 */
-  async function fetchProjects() {
+  /** 获取项目列表（分页，按 sort ASC 排序） */
+  async function fetchProjects(params?: ProjectQuery) {
     projectsLoading.value = true
     try {
-      const res = await ProjectAPI.getList()
-      projects.value = res || []
+      if (params) projectQuery.value = { ...projectQuery.value, ...params }
+      const res = await ProjectAPI.getPage(projectQuery.value)
+      projects.value = res.list || []
+      projectsTotal.value = res.total || 0
     } finally {
       projectsLoading.value = false
     }
   }
 
-  /** 切换页码 */
+  /** 根据 ID 获取项目详情 */
+  async function fetchProjectById(id: number): Promise<Project | null> {
+    try {
+      return await ProjectAPI.getDetail(id)
+    } catch {
+      return null
+    }
+  }
+
+  /** 切换文章页码 */
   function setPage(pageNum: number) {
     query.value.pageNum = pageNum
     fetchArticles()
   }
 
-  /** 切换分类筛选 */
+  /** 切换文章分类筛选 */
   function setCategory(category: string) {
     query.value.category = category
     query.value.pageNum = 1
@@ -93,10 +106,23 @@ export const useBlogStore = defineStore('blog', () => {
   }
 
   return {
-    articles, total, loading, query,
-    articleList, projects, projectsLoading, projectList,
-    fetchArticles, fetchArticleById,
-    createArticle, updateArticle, deleteArticle,
-    fetchProjects, setPage, setCategory,
+    articles, 
+    total, 
+    loading, 
+    query,
+    articleList,
+    projects, 
+    projectsTotal, 
+    projectsLoading, 
+    projectList,
+    fetchArticles, 
+    fetchArticleById,
+    createArticle, 
+    updateArticle, 
+    deleteArticle,
+    fetchProjects, 
+    fetchProjectById,
+    setPage, 
+    setCategory,
   }
 })

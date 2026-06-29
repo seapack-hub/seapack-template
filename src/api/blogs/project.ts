@@ -1,10 +1,11 @@
 /**
  * 博客项目 API 层
  * 提供开源项目的增删改查接口
+ * 后端路径：/api/blog/projects
  */
 import { request } from '@/utils/axios.ts'
 
-const BASE_URL = '/api/blogs'
+const BASE_URL = '/api/blog'
 
 /** 项目数据类型 */
 export interface Project {
@@ -15,17 +16,31 @@ export interface Project {
   color: string           // 图标颜色
   bgColor: string         // 图标背景色
   url: string             // 项目链接
-  sort: number            // 排序号
+  sort: number            // 排序号（后端按 sort ASC 排序）
   status: 0 | 1           // 0-隐藏 1-显示
   createTime?: string
   updateTime?: string
 }
 
+/** 项目查询参数 */
+export interface ProjectQuery {
+  pageNum?: number
+  pageSize?: number
+  keyword?: string
+  status?: number
+}
+
 export const ProjectAPI = {
-  /** 获取项目列表 */
-  getList() {
-    return request<any, Project[]>({
-      url: `${BASE_URL}/projects`, method: 'get',
+  /** 分页查询项目列表（支持 status/keyword 筛选，后端按 sort ASC 排序） */
+  getPage(params?: ProjectQuery) {
+    return request<any, PageResult<Project[]>>({
+      url: `${BASE_URL}/projects`, method: 'get', params,
+    })
+  },
+  /** 根据 ID 查询项目详情 */
+  getDetail(id: number) {
+    return request<any, Project>({
+      url: `${BASE_URL}/projects/${id}`, method: 'get',
     })
   },
   /** 新增项目 */

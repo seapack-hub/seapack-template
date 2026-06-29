@@ -25,7 +25,7 @@
             class="sidebar-link"
             :class="{ active: isActive(item.name) }"
           >
-            <el-icon><component :is="item.icon" /></el-icon>
+            <SPIcon :name="item.icon" size="18px" />
             <span>{{ item.label }}</span>
           </router-link>
         </nav>
@@ -43,19 +43,32 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import BlogHeader from '@/views/blogs/components/BlogHeader.vue'
-import { Document, Edit, Collection } from '@element-plus/icons-vue'
+import { useUserStore } from '@/store/modules/user'
+import { filterVisibleRoutes } from '@/utils/routeUtils'
+import { getRawModuleRoutes } from '@/router/index'
 
 const route = useRoute()
+const userStore = useUserStore()
 
 /** 当前是否为管理后台路由 */
 const isAdminRoute = computed(() => route.path.includes('/admin'))
 
-/** 管理后台侧边导航项 */
-const adminNavItems = [
-  { name: 'articleList', label: '文章管理', icon: Document },
-  { name: 'articleCreate', label: '写文章', icon: Edit },
-  { name: 'categoryManage', label: '分类标签', icon: Collection },
-]
+/** 管理后台侧边导航项（从路由动态读取，经权限过滤） */
+const adminNavItems = computed(() => {
+  const blogsMgmtRoute = getRawModuleRoutes().find(r => r.name === 'blogsManagement')
+  const adminRoute = blogsMgmtRoute?.children?.find(r => r.name === 'blogsAdmin')
+  if (!adminRoute?.children) return []
+  const visibleRoutes = filterVisibleRoutes(
+    adminRoute.children,
+    userStore.menuPermKeys,
+    userStore.username === 'admin',
+  )
+  return visibleRoutes.map(r => ({
+    name: r.name as string,
+    label: (r.meta?.description as string) || '',
+    icon: (r.meta?.icon as string) || '',
+  }))
+})
 
 /** 判断当前激活的导航项 */
 function isActive(name: string) {
@@ -113,15 +126,6 @@ function isActive(name: string) {
     background: linear-gradient(135deg, rgba(64, 158, 255, 0.12), rgba(118, 75, 162, 0.08));
     color: #409eff;
     font-weight: 600;
-
-    .el-icon {
-      color: #409eff;
-    }
-  }
-
-  .el-icon {
-    font-size: 18px;
-    flex-shrink: 0;
   }
 }
 

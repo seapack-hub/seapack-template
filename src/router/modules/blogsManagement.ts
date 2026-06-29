@@ -70,8 +70,8 @@ const blogsManagementRoute: Array<RouterObject> = [
             component: () => import('@/views/blogs/admin/ArticleEdit.vue'),
             meta: {
               title: 'articleCreate',
-              description: '写文章',
-              icon: 'edit',
+              description: '文章创作',
+              icon: 'articleCreate',
               permKey: 'articleCreate',
             },
           },
@@ -82,9 +82,44 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'articleEdit',
               description: '编辑文章',
-              icon: 'edit',
+              icon: 'articleCreate',
               hidden: true,
               permKey: 'articleEdit',
+            },
+          },
+          {
+            path: 'projects',
+            name: 'projectList',
+            component: () => import('@/views/blogs/admin/ProjectList.vue'),
+            meta: {
+              title: 'projectList',
+              description: '项目管理',
+              icon: 'projectList',
+              permKey: 'projectList',
+            },
+          },
+          {
+            path: 'project/create',
+            name: 'projectCreate',
+            component: () => import('@/views/blogs/admin/ProjectEdit.vue'),
+            meta: {
+              title: 'projectCreate',
+              description: '新增项目',
+              icon: 'plus',
+              hidden: true,
+              permKey: 'projectCreate',
+            },
+          },
+          {
+            path: 'project/edit/:id',
+            name: 'projectEdit',
+            component: () => import('@/views/blogs/admin/ProjectEdit.vue'),
+            meta: {
+              title: 'projectEdit',
+              description: '编辑项目',
+              icon: 'edit',
+              hidden: true,
+              permKey: 'projectEdit',
             },
           },
           {
@@ -94,7 +129,7 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'categoryManage',
               description: '分类管理',
-              icon: 'category',
+              icon: 'categoryManage',
               permKey: 'categoryManage',
             },
           },
