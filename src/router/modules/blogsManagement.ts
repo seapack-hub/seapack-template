@@ -71,8 +71,7 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'articleCreate',
               description: '文章创作',
-              icon: 'articleCreate',
-              permKey: 'articleCreate',
+              icon: 'article-create',
             },
           },
           {
@@ -82,7 +81,7 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'articleEdit',
               description: '编辑文章',
-              icon: 'articleCreate',
+              icon: 'article-create',
               hidden: true,
               permKey: 'articleEdit',
             },
@@ -94,7 +93,7 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'projectList',
               description: '项目管理',
-              icon: 'projectList',
+              icon: 'project-list',
               permKey: 'projectList',
             },
           },
@@ -129,7 +128,7 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'categoryManage',
               description: '分类管理',
-              icon: 'categoryManage',
+              icon: 'category-manage',
               permKey: 'categoryManage',
             },
           },

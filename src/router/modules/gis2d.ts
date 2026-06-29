@@ -13,7 +13,7 @@ const gis2dRoute: Array<RouterObject> = [
     meta: {
       title: 'gis2d',
       description: '二维地图',
-      icon: '2D-layers',
+      icon: 'two-d-layers',
       permKey: 'gis2d',
     },
     children: [

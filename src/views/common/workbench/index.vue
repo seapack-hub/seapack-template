@@ -53,8 +53,8 @@ const userStore = useUserStore()
 
 const moduleIcons: Record<string, string> = {
   systemManagement: 'system',
-  gis2d: '2D-layers',
-  gis3d: '3D-layers',
+  gis2d: 'two-d-layers',
+  gis3d: 'three-d-layers',
   bigScreen: 'screen',
   universalTemplate: 'basic-dashboard',
   blogsManagement: 'blogs',

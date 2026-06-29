@@ -17,9 +17,9 @@
       </div>
     </div>
     <div class="menuTab-nav-bar-right">
-      <SPIcon name="houtai" size="20px" @click="jumpToLink('/systemManagement')"></SPIcon>
-      <SPIcon name="2D-layers" size="20px" @click="jumpToLink('/gis2d')"></SPIcon>
-      <SPIcon name="3D-layers" size="20px" @click="jumpToLink('/gis3d')"></SPIcon>
+      <SPIcon name="backend" size="20px" @click="jumpToLink('/systemManagement')"></SPIcon>
+      <SPIcon name="two-d-layers" size="20px" @click="jumpToLink('/gis2d')"></SPIcon>
+      <SPIcon name="three-d-layers" size="20px" @click="jumpToLink('/gis3d')"></SPIcon>
     </div>
   </div>
 </template>
@@ -38,10 +38,10 @@ interface ItemType {
 /** 列表*/
 const itemList = ref<ItemType[]>([]);
 itemList.value = [
-  { name: '首页', color: '#000000', iconName: 'homeMain' },
+  { name: '首页', color: '#000000', iconName: 'home-main' },
   { name: '归档', color: '#000000', iconName: 'pigeonhole' },
   { name: '分类', color: '#000000', iconName: 'classify' },
-  { name: '系统', color: '#000000', iconName: 'backOffice' }
+  { name: '系统', color: '#000000', iconName: 'back-office' }
 ];
 /** 当前活跃页*/
 const activeValue = ref(0);

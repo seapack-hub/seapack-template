@@ -82,10 +82,22 @@ export default defineConfig(({mode}:ConfigEnv) => {
       }),
       // SVG配置
       createSvgIconsPlugin({
-        // 指定需要缓存的图标文件夹
-        iconDirs: [resolve(process.cwd(), 'src/assets/icons')],
+        // 指定需要缓存的图标文件夹（每个子目录单独注册，保证 [name] 不含目录前缀）
+        iconDirs: [
+          resolve(process.cwd(), 'src/assets/icons/common'),
+          resolve(process.cwd(), 'src/assets/icons/nav'),
+          resolve(process.cwd(), 'src/assets/icons/social'),
+          resolve(process.cwd(), 'src/assets/icons/system'),
+          resolve(process.cwd(), 'src/assets/icons/blogs'),
+          resolve(process.cwd(), 'src/assets/icons/stockFund'),
+          resolve(process.cwd(), 'src/assets/icons/ai'),
+          resolve(process.cwd(), 'src/assets/icons/devTools'),
+          resolve(process.cwd(), 'src/assets/icons/gis2d'),
+          resolve(process.cwd(), 'src/assets/icons/gis3d'),
+          resolve(process.cwd(), 'src/assets/icons/bigScreen'),
+        ],
         // 指定symbolId格式
-        symbolId: 'icon-[dir]-[name]',
+        symbolId: 'icon-[name]',
       }),
       isDev ? VueDevTools() : null,
       isDev ? eslint({

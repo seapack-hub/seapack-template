@@ -1,7 +1,7 @@
 <template>
   <div class="w-100% flex flex-col items-center justify-center color-#D8DEE6 !cursor-default">
     <SPIcon 
-      name="empty_data"
+      name="empty-data"
       size="120px"
     ></SPIcon>
     <p

@@ -83,7 +83,7 @@ const devToolsRoute: Array<RouterObject> = [
             meta: {
               title: 'wangEditer',
               description: '富文本编辑器',
-              icon: 'wang-editer',
+              icon: 'wang-editor',
               permKey: 'wangEditer',
             },
           },

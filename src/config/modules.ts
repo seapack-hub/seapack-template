@@ -13,8 +13,8 @@ export const MODULE_DEFS: ModuleDef[] = [
   { key: 'stockFund', path: '/stockFund/workbench', title: '股票基金', icon: 'trend-charts', permKey: 'stockFund' },
   { key: 'aiModule', path: '/aiModule/rag', title: 'AI交互', icon: 'ai-interaction', permKey: 'aiModule' },
   { key: 'devTools', path: '/devTools/workbench', title: '开发工具', icon: 'tool', permKey: 'devTools' },
-  { key: 'gis2d', path: '/gis2d/baseMap', title: '二维地图', icon: '2D-layers', permKey: 'gis2d' },
-  { key: 'gis3d', path: '/gis3d/baseCesium', title: '三维GIS', icon: '3D-layers', permKey: 'gis3d' },
+  { key: 'gis2d', path: '/gis2d/baseMap', title: '二维地图', icon: 'two-d-layers', permKey: 'gis2d' },
+  { key: 'gis3d', path: '/gis3d/baseCesium', title: '三维GIS', icon: 'three-d-layers', permKey: 'gis3d' },
   { key: 'bigScreen', path: '/bigScreen', title: '智慧运营', icon: 'screen', permKey: 'bigScreen' },
   { key: 'universalTemplate', path: '/universalTemplate', title: '通用大屏', icon: 'basic-dashboard', permKey: 'universalTemplate' },
 ]

@@ -72,7 +72,7 @@
           <SPIcon
             size="14px"
             class="m-l-2px"
-            name="arrow_down"
+            name="arrow-down"
           ></SPIcon>
         </el-link>
         <template #dropdown>

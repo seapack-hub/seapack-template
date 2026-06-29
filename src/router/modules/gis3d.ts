@@ -13,7 +13,7 @@ const gis3dRoute: Array<RouterObject> = [
     meta: {
       title: 'gis3d',
       description: '三维GIS',
-      icon: '3D-layers',
+      icon: 'three-d-layers',
       permKey: 'gis3d',
     },
     children: [
@@ -166,7 +166,7 @@ const gis3dRoute: Array<RouterObject> = [
             meta: {
               title: 'flightTrajectory',
               description: '飞机轨迹',
-              icon: 'flightTrajectory',
+              icon: 'flight-trajectory',
               permKey: 'flightTrajectory',
             }
           }
