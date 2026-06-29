@@ -1,9 +1,9 @@
 <template>
-  <div class="m-b-8px flex items-center justify-between">
+  <div class="header-title m-b-4px flex items-center justify-between">
     <!--标题插槽-->
     <slot v-if="$slots.title" name="title"></slot>
-    <p v-else class="font-size-[20px] color-[var(--el-text-color-primary)] font-semibold line-height-[20px]">{{ props.title }}</p>
-    <div class="bottom-[14px] right-0 flex items-center justify-end">
+    <p v-else class="header-title-text font-size-[20px] color-[var(--el-text-color-primary)] font-semibold">{{ props.title }}</p>
+    <div class="header-actions flex items-center justify-end">
       <!--按钮插槽-->
       <slot name="button" />
 
@@ -71,4 +71,35 @@ const handleCancel = ()=>{
 const handleEdit = () => emit('edit');
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.header-title {
+  position: relative;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #dbdbdb;
+}
+
+// ===== 标题文字 + 左侧渐变色 accent 条 =====
+.header-title-text {
+  position: relative;
+  padding-left: 14px;
+  font-weight: 700;
+  line-height: 24px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2px;
+    bottom: 2px;
+    width: 4px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #409eff, #764ba2);
+  }
+}
+
+// ===== 右侧按钮区 =====
+.header-actions {
+  gap: 10px;
+  flex-shrink: 0;
+}
+</style>

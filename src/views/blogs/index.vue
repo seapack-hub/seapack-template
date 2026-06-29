@@ -1,6 +1,5 @@
 <template>
   <div class="blog-page">
-    <BlogHeader />
     <BlogHero />
     <div class="blog-main">
       <div class="blog-articles"><BlogArticles /></div>
@@ -11,7 +10,6 @@
 </template>
 
 <script setup lang="ts">
-import BlogHeader from './components/BlogHeader.vue'
 import BlogHero from './components/BlogHero.vue'
 import BlogArticles from './components/BlogArticles.vue'
 import BlogProjects from './components/BlogProjects.vue'
@@ -20,8 +18,8 @@ import BlogFooter from './components/BlogFooter.vue'
 
 <style lang="scss" scoped>
 .blog-page {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #f5f7fa;

@@ -17,24 +17,6 @@ export const routerRecordRow: RouteRecordRaw[] = [
     path: '/menuTab',
     component: () => import('@/views/common/workbench/index.vue'),
   },
-  //博客
-  {
-    path: "/blogsManagement",
-    name: "blogsManagement",
-    component: RouterView,
-    redirect: { name: 'blogs' },
-    children:[
-      {
-        path: "blogs",
-        component: () => import("@/views/blogs/index.vue"),
-        meta: {
-          title: '博客管理',
-          icon: 'security'
-        },
-        name: "blogs",
-      }
-    ]
-  },
   {
     path: '/errorPage',
     name: 'errorPage',

@@ -1,0 +1,129 @@
+// =====================================================
+// 博客管理后台 — 统一品牌样式变量
+// 所有管理页面通过 @import 引用此文件，保持视觉一致
+// =====================================================
+
+// ----- 间距与圆角 -----
+$admin-gap: 16px;
+$admin-padding: 20px;
+$admin-card-radius: 8px;
+
+// ----- 色彩 -----
+$admin-bg: #f5f7fa;
+$admin-card-bg: #fff;
+$admin-brand-start: #409eff;
+$admin-brand-end: #764ba2;
+
+// ===== 通用容器 =====
+.app-container {
+  padding: $admin-padding;
+  gap: $admin-gap;
+}
+
+// ===== 卡片统一样式 =====
+.admin-card {
+  border-radius: $admin-card-radius !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  border: 1px solid var(--el-border-color-lighter) !important;
+
+  :deep(.el-card__header) {
+    padding: 14px 20px;
+    background: #fafbfd;
+    border-bottom: 1px solid #ebeef5;
+  }
+
+  :deep(.el-card__body) {
+    padding: 16px 20px 20px;
+  }
+}
+
+// ===== 搜索卡片 =====
+.search-card {
+  :deep(.el-card__body) {
+    padding: 16px 20px;
+  }
+}
+
+// ===== 表格卡片 =====
+.table-card {
+  :deep(.el-card__body) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px 20px;
+  }
+}
+
+// ===== 表格统一风格 =====
+:deep(.el-table) {
+  // 表头浅色背景
+  --el-table-header-bg-color: #f8fafd;
+
+  th.el-table__cell {
+    background-color: #f8fafd;
+    color: #606266;
+    font-weight: 600;
+    font-size: 13px;
+  }
+}
+
+// ===== 卡片标题栏 =====
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+// ===== 表格工具栏 =====
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .toolbar-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--el-text-color-primary);
+    }
+  }
+
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+// ===== 表格容器 =====
+.table-wrapper {
+  border-radius: 6px;
+  border: 1px solid var(--el-border-color-lighter);
+  overflow: hidden;
+}
+
+// ===== PageHeader 博客品牌装饰 =====
+:deep(.page-header-brand) {
+  position: relative;
+  padding-left: 14px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    border-radius: 2px;
+    background: linear-gradient(135deg, $admin-brand-start, $admin-brand-end);
+  }
+}
