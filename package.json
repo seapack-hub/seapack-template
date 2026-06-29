@@ -39,6 +39,7 @@
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "seapack-f-o": "^1.0.3",
+    "turndown": "^7.2.4",
     "vue": "^3.5.13",
     "vue3-slide-verify": "^1.1.7"
   },
@@ -49,6 +50,7 @@
     "@types/nprogress": "^0.2.3",
     "@types/ol": "^7.0.0",
     "@types/path-browserify": "^1.0.3",
+    "@types/turndown": "^5.0.6",
     "@typescript-eslint/eslint-plugin": "^8.31.0",
     "@typescript-eslint/parser": "^8.31.0",
     "@unocss/eslint-config": "^0.65.2",

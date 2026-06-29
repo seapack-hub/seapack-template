@@ -12,7 +12,7 @@
     </PageHeader>
 
     <div class="editor-area">
-      <Editor v-model="form.contentHtml" class="rich-editor" />
+      <ImportExportEditor v-model="form.contentHtml" :filename="form.title || 'article'" class="rich-editor" />
     </div>
 
     <ArticleSettingsDrawer
@@ -31,8 +31,8 @@ import { useBlogStore } from '@/store/modules/blog.ts'
 import { CategoryAPI, type BlogCategory } from '@/api/blogs/category.ts'
 import { ElMessage } from 'element-plus'
 import { Setting } from '@element-plus/icons-vue'
-import Editor from '@/components/WangEditor/index.vue'
 import ArticleSettingsDrawer from './components/ArticleSettingsDrawer.vue'
+import ImportExportEditor from '@/components/ImportExportEditor/index.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -124,6 +124,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   background: #f5f7fa;
+  box-sizing: border-box;
 }
 
 .editor-area {
@@ -136,25 +137,6 @@ onMounted(async () => {
 
 :deep(.rich-editor) {
   flex: 1;
-  display: flex;
-  flex-direction: column;
   min-height: 0;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  overflow: hidden;
-
-  .editor-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
-
-  #editor-container {
-    flex: 1 !important;
-    height: auto !important;
-    overflow-y: auto !important;
-  }
 }
 </style>

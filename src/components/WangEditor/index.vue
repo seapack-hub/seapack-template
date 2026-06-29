@@ -42,7 +42,7 @@ const emit = defineEmits(["update:modelValue"]);
 const modelValue = useVModel(props, "modelValue", emit);
 
 const editorRef = shallowRef(); // 编辑器实例，必须用 shallowRef
-const mode = ref("simple"); // 编辑器模式
+const mode = ref("default"); // 编辑器模式，启用更多工具栏
 const toolbarConfig = ref({
   excludeKeys: props.excludeKeys,
 }); // 工具条配置
@@ -68,6 +68,13 @@ const handleCreated = (editor: any) => {
 function handleChange(editor: any) {
   modelValue.value = editor.getHtml();
 }
+
+// 对外暴露编辑器实例方法，供父组件调用
+defineExpose({
+  getHtml: () => editorRef.value?.getHtml() || '',
+  setHtml: (html: string) => editorRef.value?.setHtml(html),
+  getEditor: () => editorRef.value,
+})
 
 // 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
