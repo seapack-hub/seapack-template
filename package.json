@@ -29,7 +29,10 @@
     "echarts": "^5.5.1",
     "echarts-gl": "^2.0.9",
     "element-plus": "^2.6.1",
+    "html-to-docx": "^1.8.0",
+    "html2canvas": "^1.4.1",
     "jsencrypt": "^3.5.4",
+    "jspdf": "^4.2.1",
     "lodash-es": "^4.17.21",
     "markdown-it": "^14.1.1",
     "mitt": "^3.0.1",
@@ -45,6 +48,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",
+    "@types/jspdf": "^2.0.0",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.12.7",
     "@types/nprogress": "^0.2.3",

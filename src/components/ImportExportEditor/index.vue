@@ -12,16 +12,20 @@
         <el-button-group>
           <el-button size="small" @click="fileInput?.click()">
             <el-icon><Upload /></el-icon>
+            <span class="btn-label">导入</span>
           </el-button>
           <el-dropdown size="small" trigger="click" @command="handleExport">
             <el-button size="small">
               <el-icon><Download /></el-icon>
+              <span class="btn-label">导出</span>
               <el-icon><ArrowDown /></el-icon>
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="md">.md Markdown</el-dropdown-item>
                 <el-dropdown-item command="html">.html 网页</el-dropdown-item>
+                <el-dropdown-item command="pdf">.pdf 文档</el-dropdown-item>
+                <el-dropdown-item command="doc">.doc Word 文档</el-dropdown-item>
                 <el-dropdown-item command="txt">.txt 纯文本</el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -56,6 +60,8 @@ import { ElMessage } from 'element-plus'
 // @ts-ignore
 import MarkdownIt from 'markdown-it'
 import TurndownService from 'turndown'
+import { exportHtmlToPdf } from '@/utils/export/htmlToPdf'
+import { exportHtmlToDoc } from '@/utils/export/htmlToDoc'
 
 // 文件上传 API（与原有 WangEditor 组件保持一致）
 import FileAPI from '@/api/file'
@@ -141,30 +147,7 @@ function onFileSelected(event: Event) {
 
 // ---- 导出逻辑 ----
 
-function handleExport(format: 'md' | 'html' | 'txt') {
-  const html = editorRef.value?.getHtml() || ''
-  if (!html || html === '<p></p>' || html === '<p><br></p>') {
-    ElMessage.warning('编辑器内容为空，无法导出')
-    return
-  }
-
-  let content = ''
-  const safeName = props.filename || 'article'
-  const timestamp = Date.now()
-  let filename = ''
-
-  if (format === 'html') {
-    content = `<!DOCTYPE html>\n<html lang="zh-CN">\n<head><meta charset="UTF-8"><title>${safeName}</title></head>\n<body>\n${html}\n</body>\n</html>`
-    filename = `${safeName}-${timestamp}.html`
-  } else if (format === 'md') {
-    content = turndownService.turndown(html)
-    filename = `${safeName}-${timestamp}.md`
-  } else {
-    content = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
-    filename = `${safeName}-${timestamp}.txt`
-  }
-
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -173,7 +156,50 @@ function handleExport(format: 'md' | 'html' | 'txt') {
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
-  ElMessage.success(`已导出 ${filename}`)
+}
+
+function handleExport(format: 'md' | 'html' | 'txt' | 'pdf' | 'doc') {
+  const html = editorRef.value?.getHtml() || ''
+  if (!html || html === '<p></p>' || html === '<p><br></p>') {
+    ElMessage.warning('编辑器内容为空，无法导出')
+    return
+  }
+
+  const safeName = props.filename || 'article'
+  const timestamp = Date.now()
+
+  if (format === 'pdf') {
+    exportHtmlToPdf(html, `${safeName}-${timestamp}.pdf`)
+      .then(() => ElMessage.success(`已导出 ${safeName}-${timestamp}.pdf`))
+      .catch(() => ElMessage.error('PDF 导出失败'))
+    return
+  }
+
+  if (format === 'doc') {
+    exportHtmlToDoc(html, `${safeName}-${timestamp}.doc`, { title: safeName })
+    ElMessage.success(`已导出 ${safeName}-${timestamp}.doc`)
+    return
+  }
+  
+  let content = ''
+  let mime = 'text/plain;charset=utf-8'
+  let ext = ''
+
+  if (format === 'html') {
+    content = `<!DOCTYPE html>\n<html lang="zh-CN">\n<head><meta charset="UTF-8"><title>${safeName}</title></head>\n<body>\n${html}\n</body>\n</html>`
+    ext = 'html'
+  } else if (format === 'md') {
+    content = turndownService.turndown(html)
+    ext = 'md'
+  } else {
+    // txt
+    content = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+    ext = 'txt'
+  }
+
+  const blob = new Blob([content], { type: mime })
+  downloadBlob(blob, `${safeName}-${timestamp}.${ext}`)
+  ElMessage.success(`已导出 ${safeName}-${timestamp}.${ext}`)
 }
 
 onBeforeUnmount(() => {
@@ -214,14 +240,17 @@ onBeforeUnmount(() => {
   :deep(.el-button-group) {
     .el-button--small {
       height: 28px;
-      padding: 4px 10px;
+      padding: 4px 8px;
       font-size: 12px;
 
       .el-icon {
         font-size: 13px;
-        margin-right: 2px;
       }
     }
+  }
+
+  .btn-label {
+    margin: 0 2px;
   }
 }
 
