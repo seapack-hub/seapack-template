@@ -13,7 +13,7 @@
         <el-input v-model="form.code" placeholder="如 content_gen" :disabled="isEdit" />
       </el-form-item>
       <el-form-item label="图标" prop="icon">
-        <el-input v-model="form.icon" placeholder="SVG 文件名（不含 .svg）" />
+        <IconPicker v-model="form.icon" placeholder="选择图标" clearable />
       </el-form-item>
       <el-form-item label="描述" prop="description">
         <el-input v-model="form.description" type="textarea" :rows="3" placeholder="分类描述" />
