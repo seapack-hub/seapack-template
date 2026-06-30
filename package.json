@@ -26,6 +26,7 @@
     "cesium": "^1.119.0",
     "codemirror": "^5.0.2",
     "codemirror-editor-vue3": "^2.8.0",
+    "docx-preview": "^0.3.7",
     "echarts": "^5.5.1",
     "echarts-gl": "^2.0.9",
     "element-plus": "^2.6.1",
@@ -39,12 +40,14 @@
     "nprogress": "^0.2.0",
     "ol": "^9.1.0",
     "path-browserify": "^1.0.1",
+    "pdfjs-dist": "^5.7.284",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "seapack-f-o": "^1.0.3",
     "turndown": "^7.2.4",
     "vue": "^3.5.13",
-    "vue3-slide-verify": "^1.1.7"
+    "vue3-slide-verify": "^1.1.7",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",

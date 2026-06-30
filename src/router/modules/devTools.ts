@@ -87,6 +87,17 @@ const devToolsRoute: Array<RouterObject> = [
               permKey: 'wangEditer',
             },
           },
+          {
+            path: 'file-preview',
+            name: 'filePreview',
+            component: () => import('@/views/devTools/components/filePreview/index.vue'),
+            meta: {
+              title: 'filePreview',
+              description: '文件预览',
+              icon: 'document',
+              permKey: 'filePreview',
+            },
+          },
         ]
       },
       //图形化管理
