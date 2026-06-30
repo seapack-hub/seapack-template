@@ -53,6 +53,18 @@ const aiModuleRoute: Array<RouterObject> = [
           permKey: 'imageGeneration',
         },
       },
+      //AI技能管理
+      {
+        path: 'skills',
+        name: 'skillManagement',
+        component: () => import('@/views/aiModule/skillManagement/index.vue'),
+        meta: {
+          title: 'skillManagement',
+          description: 'Skills 管理',
+          icon: 'skill-management',
+          permKey: 'skillManagement',
+        },
+      },
     ]
   },
 ];

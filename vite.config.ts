@@ -55,7 +55,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
       VITE_MOCK_DEV_SERVER === "true" ? viteMockServe({
         ignore: /^\_/,
         mockPath: 'mock',   // Mock 文件存放目录（默认 `mock`）
-        localEnabled: false,     // 开发环境启用 Mock
+        localEnabled: true,     // 开发环境启用 Mock
         prodEnabled: true,     // 生产环境禁用 Mock
         supportTs: true,       // 支持 TypeScript 文件
         logger: true,           // 控制台显示请求日志

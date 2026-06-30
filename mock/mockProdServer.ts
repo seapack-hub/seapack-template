@@ -4,7 +4,8 @@ import deptMock from './dept.mock'; // 导入 Mock 数据文件
 import loginMock from "./login.mock";
 import userMock from "./user.mock";
 import blogMock from "./blog.mock";
+import skillMock from "./skill.mock";
 
 export function setupProdMockServer() {
-  createProdMockServer([...deptMock,...loginMock,...userMock,...blogMock]); // 注册所有 Mock 接口
+  createProdMockServer([...deptMock, ...loginMock, ...userMock, ...blogMock, ...skillMock]); // 注册所有 Mock 接口
 }
