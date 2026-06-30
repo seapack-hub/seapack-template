@@ -1,5 +1,24 @@
+<!--
+  文件预览公共组件 FilePreview
+
+  功能：
+    - 接收 File/Blob 对象，根据扩展名自动选择渲染方式
+    - 支持 PDF / DOCX / XLSX / CSV / Markdown / HTML / TXT / 图片 等格式
+    - 顶部工具栏展示文件名、类型标签、下载按钮
+    - 加载中 / 错误 / 渲染三种状态切换
+
+  用法：
+    <FilePreview :file="fileObject" filename="report.pdf" height="600px" />
+
+  Props:
+    file     - File | Blob（必填），文件数据来源不限
+    filename - 文件名，不传则从 file.name 取
+    type     - 强制指定格式，不传则从后缀推断
+    height   - 预览区域高度，默认 100%
+-->
 <template>
   <div class="file-preview" :style="{ height: height || '100%' }">
+    <!-- 顶部工具栏：文件名 + 格式标签 + 下载按钮 -->
     <div class="fp-toolbar">
       <div class="fp-toolbar-left">
         <span class="fp-filename">{{ displayName }}</span>
@@ -12,6 +31,7 @@
         </el-button>
       </div>
     </div>
+    <!-- 内容区：渲染容器始终保留在 DOM 中（v-show 控制显隐），避免 ref 丢失 -->
     <div class="fp-body">
       <div ref="containerRef" class="fp-renderer" :class="{ 'fp-renderer--hidden': loading || error }"></div>
       <div v-if="loading" class="fp-status">
@@ -30,11 +50,13 @@
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { Download, Loading } from '@element-plus/icons-vue'
 
+// ---- Props 定义 ----
+
 const props = defineProps({
-  file: { type: [File, Blob], required: true },
-  filename: { type: String, default: '' },
-  type: { type: String, default: '' },
-  height: { type: String, default: '100%' },
+  file: { type: [File, Blob], required: true },   // 文件对象，外部传入
+  filename: { type: String, default: '' },          // 文件名，用于显示和类型推断
+  type: { type: String, default: '' },              // 强制指定格式（如 'pdf'），不填则从文件名后缀推断
+  height: { type: String, default: '100%' },         // 预览容器高度
 })
 
 const emit = defineEmits<{
@@ -43,22 +65,29 @@ const emit = defineEmits<{
   error: [message: string]
 }>()
 
-const containerRef = ref<HTMLElement>()
-const loading = ref(true)
-const error = ref(false)
-const errorMessage = ref('')
-let cleanup: (() => void) | null = null
+// ---- 响应式状态 ----
 
+const containerRef = ref<HTMLElement>()              // 渲染挂载点
+const loading = ref(true)                            // 加载中
+const error = ref(false)                             // 是否出错
+const errorMessage = ref('')                         // 错误描述
+let cleanup: (() => void) | null = null              // 渲染器清理函数
+
+// ---- 计算属性 ----
+
+// 文件扩展名（小写），用于格式分发
 const ext = computed(() => {
   if (props.type) return props.type.toLowerCase()
   const name = props.filename || (props.file as File).name || ''
   return name.split('.').pop()?.toLowerCase() || ''
 })
 
+// 展示用的文件名
 const displayName = computed(() => {
   return props.filename || (props.file as File).name || '未知文件'
 })
 
+// 扩展名 → 格式标签映射
 const extLabel = computed(() => {
   const map: Record<string, string> = {
     pdf: 'PDF',
@@ -77,6 +106,9 @@ const extLabel = computed(() => {
 
 const imageExts = new Set(['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'bmp', 'ico'])
 
+// ---- 核心渲染入口 ----
+
+// 读取文件数据 → 根据扩展名动态导入对应的渲染器 → 挂载到 containerRef
 async function startRender() {
   const container = containerRef.value
   if (!container) return
@@ -84,7 +116,7 @@ async function startRender() {
   loading.value = true
   error.value = false
   errorMessage.value = ''
-  // 清理上一次渲染
+  // 销毁上一次渲染结果
   cleanup?.()
   cleanup = null
 
@@ -92,42 +124,51 @@ async function startRender() {
     const fext = ext.value
     const fileData = props.file
 
+    // 按文件类型分发到不同渲染器（均使用动态 import 按需加载）
     if (fext === 'pdf') {
+      // PDF：读取为 ArrayBuffer，交给 pdfjs-dist 逐页渲染 canvas
       const buffer = await fileData.arrayBuffer()
       const { renderPdf } = await import('./renderers/pdf')
       cleanup = await renderPdf(container, buffer)
     } else if (fext === 'docx') {
+      // DOCX：读取为 ArrayBuffer，交给 docx-preview 渲染
       const buffer = await fileData.arrayBuffer()
       const { renderDocx } = await import('./renderers/docx')
       cleanup = await renderDocx(container, buffer)
     } else if (fext === 'xls' || fext === 'xlsx') {
+      // XLSX / XLS：读取为 ArrayBuffer，交给 xlsx 解析并生成 HTML 表格
       const buffer = await fileData.arrayBuffer()
       const { renderSpreadsheet } = await import('./renderers/spreadsheet')
       cleanup = await renderSpreadsheet(container, buffer)
     } else if (fext === 'csv') {
+      // CSV：读取为文本 → 编码为 ArrayBuffer → 复用表格渲染器
       const text = await fileData.text()
       const { renderSpreadsheet } = await import('./renderers/spreadsheet')
       const encoder = new TextEncoder()
       cleanup = await renderSpreadsheet(container, encoder.encode(text).buffer as ArrayBuffer)
     } else if (fext === 'md') {
+      // Markdown：读取为文本 → markdown-it 渲染为 HTML
       const text = await fileData.text()
       const { renderMarkdown } = await import('./renderers/markdown')
       cleanup = await renderMarkdown(container, text)
     } else if (fext === 'html' || fext === 'htm') {
+      // HTML：读取为文本 → 放入 iframe（sandbox 隔离）
       const text = await fileData.text()
       const { renderHtml } = await import('./renderers/html')
       cleanup = await renderHtml(container, text)
     } else if (imageExts.has(fext)) {
+      // 图片文件：读取为 ArrayBuffer → Blob URL → img 标签
       const buffer = await fileData.arrayBuffer()
       const { renderImage } = await import('./renderers/image')
       cleanup = await renderImage(container, buffer, fileData.type)
     } else {
-      // 默认按文本渲染
+      // 其他未知格式：降级按纯文本渲染
       const text = await fileData.text()
       const { renderText } = await import('./renderers/text')
       cleanup = await renderText(container, text)
     }
   } catch (e: any) {
+    // 渲染失败 → 显示错误状态
     error.value = true
     errorMessage.value = e?.message || '文件预览失败'
     emit('error', errorMessage.value)
@@ -136,6 +177,9 @@ async function startRender() {
   }
 }
 
+// ---- 下载 ----
+
+// 通过 Blob URL 触发浏览器下载
 function handleDownload() {
   const name = props.filename || (props.file as File).name || 'download'
   emit('download', name)
@@ -150,9 +194,13 @@ function handleDownload() {
   URL.revokeObjectURL(url)
 }
 
+// ---- 生命周期 ----
+
+// 组件挂载或 file 变化时重新渲染
 onMounted(startRender)
 watch(() => props.file, startRender, { flush: 'post' })
 
+// 组件销毁时清理渲染器资源
 onBeforeUnmount(() => {
   cleanup?.()
 })
