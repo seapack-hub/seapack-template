@@ -28,39 +28,43 @@ const skills = [
 ]
 
 // ===== 技能参数 =====
-const skillParams: { id: number; skillId: number; paramName: string; label: string; paramType: string; required: number; defaultValue: string; options: any; placeholder: string; sortOrder: number }[] = [
+// 注意：options 存储为后端 JSON String（columnDefinition = "JSON"），
+//       前端 API 层（serializeOptions / deserializeOptions）自动转换
+const skillParams: { id: number; skillId: number; paramName: string; label: string; paramType: string; required: number; defaultValue: string; options: string | null; placeholder: string; sortOrder: number }[] = [
   // 技能1: 文章AI写作助手
   { id: 1, skillId: 1, paramName: 'topic', label: '文章主题', paramType: 'string', required: 1, defaultValue: '', options: null, placeholder: '如 Vue3 状态管理最佳实践', sortOrder: 1 },
   { id: 2, skillId: 1, paramName: 'keywords', label: '关键词', paramType: 'string', required: 0, defaultValue: 'Vue3, Pinia, 状态管理', options: null, placeholder: '逗号分隔', sortOrder: 2 },
-  { id: 3, skillId: 1, paramName: 'style', label: '文章风格', paramType: 'select', required: 0, defaultValue: '技术教程', options: [{ label: '技术教程', value: '技术教程' }, { label: '经验分享', value: '经验分享' }, { label: '行业分析', value: '行业分析' }, { label: '产品介绍', value: '产品介绍' }], placeholder: '选择风格', sortOrder: 3 },
+  { id: 3, skillId: 1, paramName: 'style', label: '文章风格', paramType: 'select', required: 0, defaultValue: '技术教程', options: '[{"label":"技术教程","value":"技术教程"},{"label":"经验分享","value":"经验分享"},{"label":"行业分析","value":"行业分析"},{"label":"产品介绍","value":"产品介绍"}]', placeholder: '选择风格', sortOrder: 3 },
   { id: 4, skillId: 1, paramName: 'wordCount', label: '字数要求', paramType: 'number', required: 0, defaultValue: '1500', options: null, placeholder: '建议 800-3000', sortOrder: 4 },
   // 技能2: 智能选股助手
   { id: 5, skillId: 2, paramName: 'stockCode', label: '股票代码', paramType: 'string', required: 1, defaultValue: '', options: null, placeholder: '如 600519', sortOrder: 1 },
-  { id: 6, skillId: 2, paramName: 'dimension', label: '分析维度', paramType: 'select', required: 0, defaultValue: 'all', options: [{ label: '全面分析', value: 'all' }, { label: '技术面', value: 'technical' }, { label: '基本面', value: 'fundamental' }, { label: '资金面', value: 'capital' }], placeholder: '选择维度', sortOrder: 2 },
+  { id: 6, skillId: 2, paramName: 'dimension', label: '分析维度', paramType: 'select', required: 0, defaultValue: 'all', options: '[{"label":"全面分析","value":"全面分析"},{"label":"技术面","value":"technical"},{"label":"基本面","value":"fundamental"},{"label":"资金面","value":"capital"}]', placeholder: '选择维度', sortOrder: 2 },
   // 技能3: 代码审查助手
-  { id: 7, skillId: 3, paramName: 'language', label: '编程语言', paramType: 'select', required: 1, defaultValue: 'JavaScript', options: [{ label: 'JavaScript', value: 'JavaScript' }, { label: 'TypeScript', value: 'TypeScript' }, { label: 'Python', value: 'Python' }, { label: 'Java', value: 'Java' }, { label: 'Go', value: 'Go' }], placeholder: '选择语言', sortOrder: 1 },
+  { id: 7, skillId: 3, paramName: 'language', label: '编程语言', paramType: 'select', required: 1, defaultValue: 'JavaScript', options: '[{"label":"JavaScript","value":"JavaScript"},{"label":"TypeScript","value":"TypeScript"},{"label":"Python","value":"Python"},{"label":"Java","value":"Java"},{"label":"Go","value":"Go"}]', placeholder: '选择语言', sortOrder: 1 },
   { id: 8, skillId: 3, paramName: 'code', label: '源代码', paramType: 'string', required: 1, defaultValue: '', options: null, placeholder: '粘贴需要审查的代码', sortOrder: 2 },
   // 技能4: 数据图表生成器
-  { id: 9, skillId: 4, paramName: 'chartType', label: '图表类型', paramType: 'select', required: 1, defaultValue: 'bar', options: [{ label: '柱状图', value: 'bar' }, { label: '折线图', value: 'line' }, { label: '饼图', value: 'pie' }, { label: '散点图', value: 'scatter' }], placeholder: '选择图表类型', sortOrder: 1 },
+  { id: 9, skillId: 4, paramName: 'chartType', label: '图表类型', paramType: 'select', required: 1, defaultValue: 'bar', options: '[{"label":"柱状图","value":"bar"},{"label":"折线图","value":"line"},{"label":"饼图","value":"pie"},{"label":"散点图","value":"scatter"}]', placeholder: '选择图表类型', sortOrder: 1 },
   { id: 10, skillId: 4, paramName: 'data', label: '数据', paramType: 'string', required: 1, defaultValue: '', options: null, placeholder: 'JSON格式数据', sortOrder: 2 },
   { id: 11, skillId: 4, paramName: 'description', label: '需求描述', paramType: 'string', required: 0, defaultValue: '', options: null, placeholder: '额外的样式要求', sortOrder: 3 },
   // 技能5: 智能客服
   { id: 12, skillId: 5, paramName: 'question', label: '用户问题', paramType: 'string', required: 1, defaultValue: '', options: null, placeholder: '请输入用户的问题', sortOrder: 1 },
   { id: 13, skillId: 5, paramName: 'context', label: '上下文', paramType: 'string', required: 0, defaultValue: '', options: null, placeholder: '对话历史上下文', sortOrder: 2 },
   // 技能7: SQL查询优化器
-  { id: 14, skillId: 7, paramName: 'dbType', label: '数据库类型', paramType: 'select', required: 1, defaultValue: 'MySQL', options: [{ label: 'MySQL', value: 'MySQL' }, { label: 'PostgreSQL', value: 'PostgreSQL' }, { label: 'Oracle', value: 'Oracle' }, { label: 'SQL Server', value: 'SQL Server' }], placeholder: '选择数据库', sortOrder: 1 },
-  { id: 15, skillId: 7, paramName: 'sql', label: 'SQL语句', paramType: 'string', required: 1, defaultValue: '', options: null, placeholder: '粘贴需要优化的SQL', sortOrder: 2 },
+  { id: 14, skillId: 7, paramName: 'dbType', label: '数据库类型', paramType: 'select', required: 1, defaultValue: 'MySQL', options: '[{"label":"MySQL","value":"MySQL"},{"label":"PostgreSQL","value":"PostgreSQL"},{"label":"Oracle","value":"Oracle"},{"label":"SQL Server","value":"SQL Server"}]', placeholder: '选择数据库', sortOrder: 1 },
+  { id: 15, skillId: 7, paramName: 'sql', label: 'SQL语句', paramType: 'string', required: 1, defaultValue: '', options: null, placeholder: '粘贴需要审查的SQL', sortOrder: 2 },
   // 技能8: 知识库问答助手
   { id: 16, skillId: 8, paramName: 'context', label: '知识库内容', paramType: 'string', required: 1, defaultValue: '', options: null, placeholder: '知识库相关文档内容', sortOrder: 1 },
   { id: 17, skillId: 8, paramName: 'question', label: '用户问题', paramType: 'string', required: 1, defaultValue: '', options: null, placeholder: '请输入问题', sortOrder: 2 },
 ]
 
 // ===== 模块绑定 =====
-const bindings: { id: number; skillId: number; moduleKey: string; position: string; config: any; status: number }[] = [
-  { id: 1, skillId: 1, moduleKey: 'blogsManagement', position: 'editor-toolbar', config: { buttonText: 'AI写作' }, status: 1 },
-  { id: 2, skillId: 2, moduleKey: 'stockFund', position: 'detail-toolbar', config: { buttonText: 'AI分析' }, status: 1 },
-  { id: 3, skillId: 5, moduleKey: 'aiModule', position: 'chat-sidebar', config: { buttonText: '客服模式' }, status: 1 },
-  { id: 4, skillId: 8, moduleKey: 'aiModule', position: 'chat-sidebar', config: { buttonText: '知识库问答' }, status: 1 },
+// 注意：config 存储为后端 JSON String（columnDefinition = "JSON"），
+//       前端 API 层（serializeConfig / deserializeConfig）自动转换
+const bindings: { id: number; skillId: number; moduleKey: string; position: string; config: string | null; status: number }[] = [
+  { id: 1, skillId: 1, moduleKey: 'blogsManagement', position: 'editor-toolbar', config: '{"buttonText":"AI写作"}', status: 1 },
+  { id: 2, skillId: 2, moduleKey: 'stockFund', position: 'detail-toolbar', config: '{"buttonText":"AI分析"}', status: 1 },
+  { id: 3, skillId: 5, moduleKey: 'aiModule', position: 'chat-sidebar', config: '{"buttonText":"客服模式"}', status: 1 },
+  { id: 4, skillId: 8, moduleKey: 'aiModule', position: 'chat-sidebar', config: '{"buttonText":"知识库问答"}', status: 1 },
 ]
 
 // ===== 执行日志（20条模拟数据） =====
@@ -90,260 +94,10 @@ const executionLogs = Array.from({ length: 20 }, (_, i) => {
   }
 })
 
-// 用于追踪 ID 自增
-let maxCategoryId = 5
-let maxSkillId = 8
-let maxParamId = 17
-let maxBindingId = 4
-let maxLogId = 20
-
-// ===== Mock API 路由注册 =====
-export default [
-  // ==================== 分类接口 ====================
-  {
-    url: '/api/ai/skill-categories',
-    method: 'GET',
-    response: () => ({ code: 200, data: categories, message: '成功' }),
-  },
-  {
-    url: '/api/ai/skill-categories',
-    method: 'POST',
-    response: ({ body }: any) => {
-      maxCategoryId++
-      const now = new Date().toISOString().replace('T', ' ').slice(0, 19)
-      categories.push({ id: maxCategoryId, ...body, createdAt: now, updatedAt: now })
-      return { code: 200, data: null, message: '新增成功' }
-    },
-  },
-  {
-    url: '/api/ai/skill-categories/:id',
-    method: 'PUT',
-    response: ({ params, body }: any) => {
-      const idx = categories.findIndex(c => c.id === Number(params.id))
-      if (idx === -1) return { code: 404, data: null, message: '分类不存在' }
-      categories[idx] = { ...categories[idx], ...body, updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19) }
-      return { code: 200, data: null, message: '更新成功' }
-    },
-  },
-  {
-    url: '/api/ai/skill-categories/:id',
-    method: 'DELETE',
-    response: ({ params }: any) => {
-      const idx = categories.findIndex(c => c.id === Number(params.id))
-      if (idx === -1) return { code: 404, data: null, message: '分类不存在' }
-      categories.splice(idx, 1)
-      return { code: 200, data: null, message: '删除成功' }
-    },
-  },
-
-  // ==================== 技能接口 ====================
-  {
-    url: '/api/ai/skills',
-    method: 'GET',
-    response: ({ query }: any) => {
-      let list = [...skills]
-      if (query.categoryId) list = list.filter(s => s.categoryId === Number(query.categoryId))
-      if (query.status !== undefined && query.status !== '') list = list.filter(s => s.status === Number(query.status))
-      if (query.keyword) {
-        const kw = query.keyword.toLowerCase()
-        list = list.filter(s => s.name.toLowerCase().includes(kw) || s.code.toLowerCase().includes(kw) || (s.description || '').toLowerCase().includes(kw))
-      }
-      const pageNum = Number(query.pageNum) || 1
-      const pageSize = Number(query.pageSize) || 10
-      const start = (pageNum - 1) * pageSize
-      const paged = list.slice(start, start + pageSize)
-      return { code: 200, data: { list: paged, total: list.length }, message: '成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:id',
-    method: 'GET',
-    response: ({ params }: any) => {
-      const skill = skills.find(s => s.id === Number(params.id))
-      if (!skill) return { code: 404, data: null, message: '技能不存在' }
-      return { code: 200, data: skill, message: '成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills',
-    method: 'POST',
-    response: ({ body }: any) => {
-      maxSkillId++
-      const now = new Date().toISOString().replace('T', ' ').slice(0, 19)
-      const cat = categories.find(c => c.id === body.categoryId)
-      skills.push({
-        id: maxSkillId,
-        ...body,
-        categoryName: cat ? cat.name : '',
-        useCount: 0,
-        createdAt: now,
-        updatedAt: now,
-      })
-      return { code: 200, data: null, message: '新增成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:id',
-    method: 'PUT',
-    response: ({ params, body }: any) => {
-      const idx = skills.findIndex(s => s.id === Number(params.id))
-      if (idx === -1) return { code: 404, data: null, message: '技能不存在' }
-      const cat = categories.find(c => c.id === body.categoryId)
-      skills[idx] = {
-        ...skills[idx],
-        ...body,
-        categoryName: cat ? cat.name : skills[idx].categoryName,
-        updatedAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
-      }
-      return { code: 200, data: null, message: '更新成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:id',
-    method: 'DELETE',
-    response: ({ params }: any) => {
-      const idx = skills.findIndex(s => s.id === Number(params.id))
-      if (idx === -1) return { code: 404, data: null, message: '技能不存在' }
-      skills.splice(idx, 1)
-      return { code: 200, data: null, message: '删除成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:id/execute',
-    method: 'POST',
-    response: ({ params, body }: any) => {
-      const skill = skills.find(s => s.id === Number(params.id))
-      if (!skill) return { code: 404, data: null, message: '技能不存在' }
-      maxLogId++
-      const now = new Date().toISOString().replace('T', ' ').slice(0, 19)
-      const tokensPrompt = Math.floor(Math.random() * 500) + 100
-      const tokensCompletion = Math.floor(Math.random() * 1000) + 200
-      const durationMs = Math.floor(Math.random() * 3000) + 300
-      const result = {
-        content: `# ${skill.name} 执行结果\n\n## 输入参数\n\`\`\`json\n${JSON.stringify(body, null, 2)}\n\`\`\`\n\n## 输出内容\n\n这是一段由 **${skill.name}** 生成的模拟执行结果。在真实环境中，这里将展示 LLM 返回的完整内容。\n\n### 关键发现\n\n1. 当前系统运行状态正常\n2. 主要指标符合预期\n3. 建议持续关注后续变化\n\n> 此内容为模拟数据，实际执行时将调用 AI 模型生成。`,
-        tokensPrompt,
-        tokensCompletion,
-        durationMs,
-      }
-      // 记录日志
-      executionLogs.unshift({
-        id: maxLogId,
-        skillId: skill.id,
-        skillCode: skill.code,
-        moduleKey: 'skillManagement',
-        inputParams: body,
-        outputResult: result.content,
-        tokensPrompt,
-        tokensCompletion,
-        durationMs,
-        status: 'success',
-        errorMessage: null,
-        createdBy: 1,
-        createdAt: now,
-      })
-      skill.useCount = (skill.useCount || 0) + 1
-      return { code: 200, data: result, message: '执行成功' }
-    },
-  },
-
-  // ==================== 参数接口 ====================
-  {
-    url: '/api/ai/skills/:skillId/params',
-    method: 'GET',
-    response: ({ params }: any) => {
-      return { code: 200, data: skillParams.filter(p => p.skillId === Number(params.skillId)), message: '成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:skillId/params',
-    method: 'POST',
-    response: ({ params, body }: any) => {
-      maxParamId++
-      skillParams.push({ id: maxParamId, skillId: Number(params.skillId), ...body })
-      return { code: 200, data: null, message: '新增成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:skillId/params/:paramId',
-    method: 'PUT',
-    response: ({ params, body }: any) => {
-      const idx = skillParams.findIndex(p => p.id === Number(params.paramId))
-      if (idx === -1) return { code: 404, data: null, message: '参数不存在' }
-      skillParams[idx] = { ...skillParams[idx], ...body }
-      return { code: 200, data: null, message: '更新成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:skillId/params/:paramId',
-    method: 'DELETE',
-    response: ({ params }: any) => {
-      const idx = skillParams.findIndex(p => p.id === Number(params.paramId))
-      if (idx === -1) return { code: 404, data: null, message: '参数不存在' }
-      skillParams.splice(idx, 1)
-      return { code: 200, data: null, message: '删除成功' }
-    },
-  },
-
-  // ==================== 模块绑定接口 ====================
-  {
-    url: '/api/ai/skills/:skillId/bindings',
-    method: 'GET',
-    response: ({ params }: any) => {
-      return { code: 200, data: bindings.filter(b => b.skillId === Number(params.skillId)), message: '成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:skillId/bindings',
-    method: 'POST',
-    response: ({ params, body }: any) => {
-      maxBindingId++
-      bindings.push({ id: maxBindingId, skillId: Number(params.skillId), ...body })
-      return { code: 200, data: null, message: '新增成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:skillId/bindings/:bindingId',
-    method: 'PUT',
-    response: ({ params, body }: any) => {
-      const idx = bindings.findIndex(b => b.id === Number(params.bindingId))
-      if (idx === -1) return { code: 404, data: null, message: '绑定不存在' }
-      bindings[idx] = { ...bindings[idx], ...body }
-      return { code: 200, data: null, message: '更新成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/:skillId/bindings/:bindingId',
-    method: 'DELETE',
-    response: ({ params }: any) => {
-      const idx = bindings.findIndex(b => b.id === Number(params.bindingId))
-      if (idx === -1) return { code: 404, data: null, message: '绑定不存在' }
-      bindings.splice(idx, 1)
-      return { code: 200, data: null, message: '删除成功' }
-    },
-  },
-
-  // ==================== 执行日志接口 ====================
-  {
-    url: '/api/ai/skills/logs',
-    method: 'GET',
-    response: ({ query }: any) => {
-      let list = [...executionLogs]
-      if (query.skillId) list = list.filter(l => l.skillId === Number(query.skillId))
-      if (query.status) list = list.filter(l => l.status === query.status)
-      const pageNum = Number(query.pageNum) || 1
-      const pageSize = Number(query.pageSize) || 10
-      const start = (pageNum - 1) * pageSize
-      const paged = list.slice(start, start + pageSize)
-      return { code: 200, data: { list: paged, total: list.length }, message: '成功' }
-    },
-  },
-  {
-    url: '/api/ai/skills/logs/:id',
-    method: 'GET',
-    response: ({ params }: any) => {
-      const log = executionLogs.find(l => l.id === Number(params.id))
-      if (!log) return { code: 404, data: null, message: '日志不存在' }
-      return { code: 200, data: log, message: '成功' }
-    },
-  },
-] as MockMethod[];
+export const mock: MockMethod[] = [
+  { url: '/api/ai/skill/categories', method: 'get', response: () => ({ data: categories }) },
+  { url: '/api/ai/skill/list', method: 'get', response: () => ({ data: skills }) },
+  { url: '/api/ai/skill/params', method: 'get', response: () => ({ data: skillParams }) },
+  { url: '/api/ai/skill/bindings', method: 'get', response: () => ({ data: bindings }) },
+  { url: '/api/ai/skill/logs', method: 'get', response: () => ({ data: executionLogs }) }
+]

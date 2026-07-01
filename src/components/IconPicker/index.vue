@@ -1,3 +1,8 @@
+<!--
+  IconPicker 图标选择器公共组件
+  基于 el-popover 弹出图标面板，展示 Element Plus 全部 293 个图标
+  支持搜索过滤、v-model 绑定选中值
+-->
 <template>
   <el-popover
     ref="popoverRef"

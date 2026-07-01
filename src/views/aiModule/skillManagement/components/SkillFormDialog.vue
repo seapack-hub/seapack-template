@@ -1,3 +1,8 @@
+<!--
+  技能新增/编辑弹窗
+  包含名称、编码、所属分类、输出格式、描述、提示词模板、
+  Temperature 滑块、Max Tokens、版本号、排序号、状态
+-->
 <template>
   <el-dialog
     v-model="visible"

@@ -1,28 +1,44 @@
+<!--
+  模块绑定管理弹窗
+  将技能绑定到指定功能模块的某个位置
+  内嵌绑定新增/编辑子弹窗，支持 9 个模块选项
+-->
 <template>
-  <el-dialog v-model="visible" :title="`模块绑定 - ${skillName}`" width="800px" @closed="onClosed">
+  <el-dialog v-model="visible" :title="`模块绑定 - ${skillName}`" width="1000px" @closed="onClosed">
     <div class="flex items-center justify-between mb-10">
       <span class="text-13px text-[var(--el-text-color-secondary)]">
         将技能绑定到功能模块的指定位置，使该模块内可使用此技能
       </span>
       <el-button type="primary" size="small" icon="plus" @click="openBindingForm()">新增绑定</el-button>
     </div>
-    <el-table :data="bindings" border stripe max-height="400" size="small">
-      <el-table-column type="index" label="序号" width="50" align="center" />
-      <el-table-column prop="moduleKey" label="模块标识" min-width="130" />
-      <el-table-column prop="position" label="位置" min-width="100" />
-      <el-table-column prop="status" label="状态" width="70" align="center">
-        <template #default="{ row }">
-          <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">{{ row.status === 1 ? '启用' : '禁用' }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="100" fixed="right" align="center">
-        <template #default="{ row }">
-          <el-button text size="small" icon="edit" @click="openBindingForm(row)">编辑</el-button>
-          <el-button text size="small" icon="delete" type="danger" @click="onDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-empty v-if="!bindings.length" :description="loading ? '加载中...' : '暂无绑定' " />
+    <!-- 绑定列表（使用 SpTable 封装组件） -->
+    <SpTable
+      :loading="loading"
+      :data="bindings"
+      :columns="columns"
+      show-index
+      height="400"
+      size="small"
+    >
+      <!-- 展示配置列：JSON 概要显示 -->
+      <template #bindingConfig>
+        <el-table-column label="展示配置" prop="config" min-width="140" slot-name="bindingConfig">
+          <template #default="{ row }">
+            <span class="text-12px text-[var(--el-text-color-secondary)]">
+              {{ formatConfig(row.config) }}
+            </span>
+          </template>
+        </el-table-column>
+      </template>
+      <!-- 状态列：启用/禁用标签 -->
+      <template #bindingStatus>
+        <el-table-column label="状态" prop="status" width="70" align="center" slot-name="bindingStatus">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 1 ? 'success' : 'danger'" size="small">{{ row.status === 1 ? '启用' : '禁用' }}</el-tag>
+          </template>
+        </el-table-column>
+      </template>
+    </SpTable>
 
     <!-- 绑定新增/编辑弹窗 -->
     <el-dialog
@@ -41,6 +57,14 @@
         <el-form-item label="位置标识" prop="position">
           <el-input v-model="bindingForm.position" placeholder="如 toolbar / sidebar / menu" />
         </el-form-item>
+        <el-form-item label="展示配置" prop="config">
+          <el-input
+            v-model="configText"
+            type="textarea"
+            :rows="6"
+            placeholder="JSON 格式，如 {buttonText: 'AI写作'}"
+          />
+        </el-form-item>
         <el-form-item label="状态">
           <el-switch v-model="bindingForm.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" />
         </el-form-item>
@@ -56,25 +80,25 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { SkillAPI, type SkillBinding } from '@/api/ai/skill';
-
-/** 模块选项列表 */
-const MODULE_OPTIONS = [
-  { label: '系统管理', value: 'systemManagement' },
-  { label: '个人博客', value: 'blogsManagement' },
-  { label: '股票基金', value: 'stockFund' },
-  { label: 'AI交互', value: 'aiModule' },
-  { label: '开发工具', value: 'devTools' },
-  { label: '二维地图', value: 'gis2d' },
-  { label: '三维GIS', value: 'gis3d' },
-  { label: '智慧运营', value: 'bigScreen' },
-  { label: '通用大屏', value: 'universalTemplate' },
-]
+import { MODULE_OPTIONS, BINDING_LIST_COLUMNS } from '../utils';
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ skillId: number; skillName: string }>()
 
 const bindings = ref<SkillBinding[]>([])
 const loading = ref(false)
+
+/** SpTable 列配置：模块标识、位置、状态（slotName）、操作 */
+const columns = [
+  ...BINDING_LIST_COLUMNS,
+  {
+    columnType: 'operate', label: '操作', width: 120, fixed: 'right', align: 'center',
+    buttons: [
+      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openBindingForm(row) },
+      { type: 'danger', label: '删除', size: 'small', renderType: 'link', click: ({ row }: any) => onDelete(row) },
+    ],
+  },
+]
 
 watch(visible, async (val) => {
   if (val && props.skillId) await fetchBindings()
@@ -91,19 +115,41 @@ function onClosed() { bindings.value = [] }
 // ===== 绑定新增/编辑 =====
 const bindingFormVisible = ref(false)
 const bindingFormIsEdit = ref(false)
-const bindingForm = ref<SkillBinding>({ moduleKey: '', position: '', status: 1 })
+const bindingForm = ref<SkillBinding>({ moduleKey: '', position: '', config: {}, status: 1 })
 const bindingEditingId = ref<number | undefined>()
 const bindingSubmitting = ref(false)
+
+/** config 对象 ↔ JSON 字符串双向转换（用于 textarea 编辑） */
+const configText = computed({
+  get: () => {
+    const c = bindingForm.value.config
+    return c && Object.keys(c).length ? JSON.stringify(c, null, 2) : ''
+  },
+  set: (val: string) => {
+    if (!val.trim()) { bindingForm.value.config = {}; return }
+    try {
+      const parsed = JSON.parse(val)
+      if (parsed && typeof parsed === 'object') bindingForm.value.config = parsed
+    } catch { bindingForm.value.config = {} }
+  },
+})
+
+/** config 概要展示（取首字段或 JSON 缩略） */
+function formatConfig(config?: Record<string, any>): string {
+  if (!config || !Object.keys(config).length) return '-'
+  const firstVal = Object.values(config)[0]
+  return firstVal !== undefined ? `${Object.keys(config)[0]}: ${firstVal}` : JSON.stringify(config)
+}
 
 function openBindingForm(row?: SkillBinding) {
   if (row) {
     bindingFormIsEdit.value = true
     bindingEditingId.value = row.id
-    bindingForm.value = { ...row }
+    bindingForm.value = { ...row, config: row.config ? { ...row.config } : {} }
   } else {
     bindingFormIsEdit.value = false
     bindingEditingId.value = undefined
-    bindingForm.value = { moduleKey: '', position: '', status: 1 }
+    bindingForm.value = { moduleKey: '', position: '', config: {}, status: 1 }
   }
   bindingFormVisible.value = true
 }

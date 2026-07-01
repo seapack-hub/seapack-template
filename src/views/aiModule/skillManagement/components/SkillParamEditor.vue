@@ -1,5 +1,10 @@
+<!--
+  参数管理弹窗
+  为技能定义输入参数（对应提示词模板中的 {{variable}} 插值变量）
+  内嵌参数新增/编辑子弹窗，支持 string/number/boolean/select 四种类型
+-->
 <template>
-  <el-dialog v-model="visible" title="输入参数管理" width="800px" @closed="onClosed">
+  <el-dialog v-model="visible" title="参数管理" width="1000px" @closed="onClosed">
     <!-- 工具栏 -->
     <div class="flex items-center justify-between mb-10">
       <span class="text-13px text-[var(--el-text-color-secondary)]">
@@ -7,32 +12,32 @@
       </span>
       <el-button type="primary" size="small" icon="plus" @click="openParamForm()">新增参数</el-button>
     </div>
-    <!-- 参数列表 -->
-    <el-table :data="params" border stripe max-height="400" size="small">
-      <el-table-column type="index" label="序号" width="50" align="center" />
-      <el-table-column prop="paramName" label="参数名" min-width="120" />
-      <el-table-column prop="label" label="标签" min-width="100" />
-      <el-table-column prop="paramType" label="类型" width="90" align="center">
-        <template #default="{ row }">
-          <el-tag :type="typeTagType(row.paramType)" size="small">{{ row.paramType }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="required" label="必填" width="60" align="center">
-        <template #default="{ row }">
-          <el-tag :type="row.required === 1 ? 'danger' : 'info'" size="small">{{ row.required === 1 ? '是' : '否' }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="defaultValue" label="默认值" min-width="120" show-overflow-tooltip />
-      <el-table-column prop="sortOrder" label="排序" width="60" align="center" />
-      <el-table-column label="操作" width="120" fixed="right" align="center">
-        <template #default="{ row }">
-          <el-button text size="small" icon="edit" @click="openParamForm(row)">编辑</el-button>
-          <el-button text size="small" icon="delete" type="danger" @click="onDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 空状态 -->
-    <el-empty v-if="!params.length" :description="loading ? '加载中...' : '暂无参数，请点击上方按钮新增'" />
+    <!-- 参数列表（使用 SpTable 封装组件，slotName 列需注入完整 el-table-column） -->
+    <SpTable
+      :loading="loading"
+      :data="params"
+      :columns="columns"
+      show-index
+      height="400"
+      size="small"
+    >
+      <!-- 类型列：类型标签着色 -->
+      <template #paramType>
+        <el-table-column label="类型" prop="paramType" width="90" align="center" slot-name="paramType">
+          <template #default="{ row }">
+            <el-tag :type="typeTagType(row.paramType) as any" size="small">{{ row.paramType }}</el-tag>
+          </template>
+        </el-table-column>
+      </template>
+
+      <template #isRequired>
+        <el-table-column label="必填" prop="required" width="60" align="center" slot-name="isRequired">
+          <template #default="{ row }">
+            <el-tag :type="row.required === 1 ? 'danger' : 'info'" size="small">{{ row.required === 1 ? '是' : '否' }}</el-tag>
+          </template>
+        </el-table-column>
+      </template>
+    </SpTable>
 
     <!-- 参数新增/编辑对话框（内嵌） -->
     <el-dialog
@@ -82,8 +87,8 @@
           <el-input
             v-model="optionsText"
             type="textarea"
-            :rows="3"
-            placeholder="每行一个选项，格式: label=value，如: 深度分析=deep"
+            :rows="6"
+            placeholder="JSON 数组格式，例如 [{label, value}, ...]"
           />
         </el-form-item>
         <el-form-item label="排序号" prop="sortOrder">
@@ -101,12 +106,25 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { SkillAPI, type SkillParam } from '@/api/ai/skill';
+import { PARAM_LIST_COLUMNS } from '../utils';
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ skillId: number }>()
 
 const params = ref<SkillParam[]>([])
 const loading = ref(false)
+
+/** SpTable 列配置：从共享常量中获取基础列，追加操作列 */
+const columns = [
+  ...PARAM_LIST_COLUMNS,
+  {
+    columnType: 'operate', label: '操作', width: 120, fixed: 'right', align: 'center',
+    buttons: [
+      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openParamForm(row) },
+      { type: 'danger', label: '删除', size: 'small', renderType: 'link', click: ({ row }: any) => onDelete(row) },
+    ],
+  },
+]
 
 /** 监听弹窗打开，加载参数数据 */
 watch(visible, async (val) => {
@@ -131,12 +149,23 @@ const paramEditingId = ref<number | undefined>()
 const paramSubmitting = ref(false)
 
 const optionsText = computed({
-  get: () => (paramForm.value.options || []).map(o => `${o.label}=${o.value}`).join('\n'),
+  get: () => {
+    const opts = paramForm.value.options
+    return opts?.length ? JSON.stringify(opts, null, 2) : ''
+  },
   set: (val: string) => {
-    paramForm.value.options = val.split('\n').filter(Boolean).map(line => {
-      const [label = '', value = ''] = line.split('=')
-      return { label: label.trim(), value: value.trim() }
-    })
+    if (!val.trim()) {
+      paramForm.value.options = []
+      return
+    }
+    try {
+      const parsed = JSON.parse(val)
+      if (Array.isArray(parsed)) {
+        paramForm.value.options = parsed.map(o => ({ label: String(o.label ?? ''), value: String(o.value ?? '') }))
+        return
+      }
+    } catch {}
+    paramForm.value.options = []
   },
 })
 

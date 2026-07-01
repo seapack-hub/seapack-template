@@ -7,7 +7,7 @@
  */
 import { request } from '@/utils/axios';
 
-const BASE_URL = '/api/ai/skills/logs';
+const BASE_URL = '/api';
 
 /** 技能执行日志实体 */
 export interface SkillExecutionLog {
@@ -53,11 +53,18 @@ export interface ExecutionLogQuery {
 export const SkillExecutionAPI = {
   /** 分页查询执行日志 */
   page(query: ExecutionLogQuery) {
-    return request<any, PageResult<SkillExecutionLog[]>>({ url: BASE_URL, method: 'get', params: query });
+    return request<any, PageResult<SkillExecutionLog[]>>({ 
+      url: `${BASE_URL}/ai/skills/logs`, 
+      method: 'get', 
+      params: query 
+    });
   },
 
   /** 查询日志详情 */
   getById(id: number) {
-    return request<any, SkillExecutionLog>({ url: `${BASE_URL}/${id}`, method: 'get' });
+    return request<any, SkillExecutionLog>({ 
+      url: `${BASE_URL}/ai/skills/logs/${id}`, 
+      method: 'get' 
+    });
   },
 };

@@ -7,6 +7,8 @@
 
 import { request } from '@/utils/axios';
 
+const BASE_URL = '/api';
+
 /** 个股诊断请求参数 */
 export interface StockAnalyzeRequest {
   /** 股票代码，如 600519 */
@@ -35,7 +37,7 @@ export const StockAnalysisAPI = {
    */
   analyze(data: StockAnalyzeRequest) {
     return request<any, StockAnalyzeResponse>({
-      url: '/api/ai/stock/analyze',
+      url: `${BASE_URL}/ai/stock/analyze`,
       method: 'post',
       data,
     });

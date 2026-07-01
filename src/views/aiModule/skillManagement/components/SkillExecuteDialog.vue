@@ -1,3 +1,8 @@
+<!--
+  技能执行测试弹窗
+  左侧动态参数表单（按参数类型渲染不同组件）
+  右侧展示执行结果（Token 消耗、耗时、输出内容）
+-->
 <template>
   <el-dialog v-model="visible" title="技能执行测试" width="800px" @closed="onClosed">
     <div v-loading="loadingParams" class="flex gap-16">

@@ -1,3 +1,8 @@
+<!--
+  技能分类新增/编辑弹窗
+  支持名称、编码、图标（IconPicker）、描述、排序号、状态字段
+  使用 defineModel 实现 visible/isEdit/form 三向绑定
+-->
 <template>
   <el-dialog
     v-model="visible"
@@ -57,7 +62,10 @@ function onClosed() {
 async function onSubmit() {
   await formRef.value?.validate()
   submitting.value = true
-  try { emit('confirm', form.value, isEdit.value) }
-  finally { submitting.value = false }
+  try { 
+    emit('confirm', form.value, isEdit.value) 
+  }finally { 
+    submitting.value = false 
+  }
 }
 </script>

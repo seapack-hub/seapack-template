@@ -61,6 +61,7 @@ declare module 'vue' {
     FilePreview: typeof import('./src/components/FilePreview/index.vue')['default']
     FixRender: typeof import('./src/components/baseComponents/SpDetailEditable/components/fixRender.vue')['default']
     FormComponent: typeof import('./src/components/baseComponents/SpDetailForm/components/formComponent.vue')['default']
+    IconPicker: typeof import('./src/components/IconPicker/index.vue')['default']
     ImportExportEditor: typeof import('./src/components/ImportExportEditor/index.vue')['default']
     LoginUser: typeof import('./src/components/loginUser/index.vue')['default']
     Logo: typeof import('./src/components/Logo/index.vue')['default']

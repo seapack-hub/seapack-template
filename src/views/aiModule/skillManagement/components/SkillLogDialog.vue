@@ -1,3 +1,8 @@
+<!--
+  执行日志弹窗
+  分页展示技能执行日志列表，支持按状态筛选
+  行点击打开详情抽屉（基本信息、错误信息、输入参数、输出结果）
+-->
 <template>
   <el-dialog v-model="visible" title="执行日志" width="1000px" @closed="onClosed">
     <!-- 搜索栏 -->
@@ -17,31 +22,45 @@
         </el-form-item>
       </el-form>
     </div>
-    <!-- 日志列表 -->
-    <el-table :data="logs" border stripe height="400" size="small" @row-click="onRowClick">
-      <el-table-column type="index" label="序号" width="50" align="center" />
-      <el-table-column prop="skillCode" label="技能编码" min-width="110" />
-      <el-table-column prop="status" label="状态" width="70" align="center">
-        <template #default="{ row }">
-          <el-tag :type="row.status === 'success' ? 'success' : row.status === 'fail' ? 'danger' : 'warning'" size="small">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Token 消耗" width="130" align="center">
-        <template #default="{ row }">
-          <span class="text-12px text-[var(--el-text-color-secondary)]">
-            P:{{ row.tokensPrompt || '-' }} / C:{{ row.tokensCompletion || '-' }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="durationMs" label="耗时" width="80" align="center">
-        <template #default="{ row }">
-          {{ row.durationMs ? `${row.durationMs}ms` : '-' }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="createdAt" label="执行时间" min-width="150" />
-    </el-table>
+    <!-- 日志列表（使用 SpTable 封装组件） -->
+    <SpTable
+      :loading="false"
+      :data="logs"
+      :columns="columns"
+      show-index
+      height="400"
+      size="small"
+      @row-click="onRowClick"
+    >
+      <!-- 状态列：成功/失败/超时标签着色 -->
+      <template #logStatus>
+        <el-table-column label="状态" prop="status" width="70" align="center" slot-name="logStatus">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 'success' ? 'success' : row.status === 'fail' ? 'danger' : 'warning'" size="small">
+              {{ row.status }}
+            </el-tag>
+          </template>
+        </el-table-column>
+      </template>
+      <!-- Token 消耗列 -->
+      <template #tokenCost>
+        <el-table-column label="Token 消耗" width="130" align="center" slot-name="tokenCost">
+          <template #default="{ row }">
+            <span class="text-12px text-[var(--el-text-color-secondary)]">
+              P:{{ row.tokensPrompt || '-' }} / C:{{ row.tokensCompletion || '-' }}
+            </span>
+          </template>
+        </el-table-column>
+      </template>
+      <!-- 耗时列 -->
+      <template #duration>
+        <el-table-column prop="durationMs" label="耗时" width="80" align="center" slot-name="duration">
+          <template #default="{ row }">
+            {{ row.durationMs ? `${row.durationMs}ms` : '-' }}
+          </template>
+        </el-table-column>
+      </template>
+    </SpTable>
     <div class="mt-10">
       <Pagination v-model:total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
     </div>
@@ -88,6 +107,7 @@
 
 <script setup lang="ts">
 import { SkillExecutionAPI, type SkillExecutionLog, type ExecutionLogQuery } from '@/api/ai/skillExecution';
+import { LOG_LIST_COLUMNS } from '../utils';
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ skillId?: number }>()
@@ -95,6 +115,9 @@ const props = defineProps<{ skillId?: number }>()
 const queryParams = reactive<ExecutionLogQuery>({ pageNum: 1, pageSize: 10, status: '' })
 const logs = ref<SkillExecutionLog[]>([])
 const total = ref(0)
+
+/** SpTable 列配置 */
+const columns = LOG_LIST_COLUMNS
 
 watch(visible, async (val) => {
   if (val) {

@@ -18,8 +18,9 @@
  *   DELETE /api/ai/skills/{id}/bindings/{bid} — 删除绑定
  */
 import { request } from '@/utils/axios';
+import { serializeOptions, deserializeOptions, serializeConfig, deserializeConfig } from '@/utils/skillParam';
 
-const BASE_URL = '/api/ai/skills';
+const BASE_URL = '/api';
 
 /** 技能实体 */
 export interface Skill {
@@ -82,7 +83,10 @@ export interface SkillParam {
   required?: number;
   /** 默认值 */
   defaultValue?: string;
-  /** select 类型的选项列表 */
+  /**
+   * select 类型的选项列表
+   * 前端内部为数组格式，提交时由 serializeOptions 序列化为 JSON 字符串
+   */
   options?: { label: string; value: string }[];
   /** 输入提示 */
   placeholder?: string;
@@ -119,33 +123,51 @@ export interface SkillExecuteResult {
 export const SkillAPI = {
   /** 分页查询技能列表 */
   page(query: SkillQuery) {
-    return request<any, PageResult<Skill[]>>({ url: BASE_URL, method: 'get', params: query });
+    return request<any, PageResult<Skill[]>>({ 
+      url: `${BASE_URL}/ai/skills`, 
+      method: 'get', 
+      params: query 
+    });
   },
 
   /** 查询技能详情 */
   getById(id: number) {
-    return request<any, Skill>({ url: `${BASE_URL}/${id}`, method: 'get' });
+    return request<any, Skill>({ 
+      url: `${BASE_URL}/ai/skills/${id}`,
+      method: 'get' 
+    });
   },
 
   /** 新增技能 */
   insert(data: Partial<Skill>) {
-    return request<any, any>({ url: BASE_URL, method: 'post', data });
+    return request<any, any>({ 
+      url: `${BASE_URL}/ai/skills`, 
+      method: 'post', 
+      data 
+    });
   },
 
   /** 编辑技能 */
   update(id: number, data: Partial<Skill>) {
-    return request<any, any>({ url: `${BASE_URL}/${id}`, method: 'put', data });
+    return request<any, any>({ 
+      url: `${BASE_URL}/ai/skills/${id}`, 
+      method: 'put', 
+      data 
+    });
   },
 
   /** 删除技能 */
   delete(id: number) {
-    return request<any, any>({ url: `${BASE_URL}/${id}`, method: 'delete' });
+    return request<any, any>({ 
+      url: `${BASE_URL}/ai/skills/${id}`, 
+      method: 'delete' 
+    });
   },
 
   /** 执行技能 */
   execute(id: number, params: Record<string, any>) {
     return request<any, SkillExecuteResult>({
-      url: `${BASE_URL}/${id}/execute`,
+      url: `${BASE_URL}/ai/skills/${id}/execute`,
       method: 'post',
       data: params,
     });
@@ -153,45 +175,81 @@ export const SkillAPI = {
 
   // ===== 参数管理 =====
 
-  /** 获取技能参数列表 */
-  getParams(skillId: number) {
-    return request<any, SkillParam[]>({ url: `${BASE_URL}/${skillId}/params`, method: 'get' });
+  /** 获取技能参数列表（自动反序列化 options JSON → 数组） */
+  async getParams(skillId: number) {
+    const res = await request<any, SkillParam[]>({ 
+      url: `${BASE_URL}/ai/skills/${skillId}/params`, 
+      method: 'get' 
+    });
+    return (res || []).map(p => ({
+      ...p,
+      options: deserializeOptions(p.options as unknown as string | null) as any,
+    }))
   },
 
-  /** 新增参数 */
-  addParam(skillId: number, data: Partial<SkillParam>) {
-    return request<any, any>({ url: `${BASE_URL}/${skillId}/params`, method: 'post', data });
+  /** 新增参数（自动序列化 options 数组 → JSON） */
+  async addParam(skillId: number, data: Partial<SkillParam>) {
+    return request<any, any>({ 
+      url: `${BASE_URL}/ai/skills/${skillId}/params`, 
+      method: 'post', 
+      data: { ...data, options: serializeOptions(data.options as any) },
+    });
   },
 
-  /** 编辑参数 */
-  updateParam(skillId: number, paramId: number, data: Partial<SkillParam>) {
-    return request<any, any>({ url: `${BASE_URL}/${skillId}/params/${paramId}`, method: 'put', data });
+  /** 编辑参数（自动序列化 options 数组 → JSON） */
+  async updateParam(skillId: number, paramId: number, data: Partial<SkillParam>) {
+    return request<any, any>({ 
+      url: `${BASE_URL}/ai/skills/${skillId}/params/${paramId}`, 
+      method: 'put', 
+      data: { ...data, options: serializeOptions(data.options as any) },
+    });
   },
 
   /** 删除参数 */
   deleteParam(skillId: number, paramId: number) {
-    return request<any, any>({ url: `${BASE_URL}/${skillId}/params/${paramId}`, method: 'delete' });
+    return request<any, any>({ 
+      url: `${BASE_URL}/ai/skills/${skillId}/params/${paramId}`, 
+      method: 'delete' 
+    });
   },
 
   // ===== 模块绑定 =====
 
-  /** 获取技能模块绑定列表 */
-  getBindings(skillId: number) {
-    return request<any, SkillBinding[]>({ url: `${BASE_URL}/${skillId}/bindings`, method: 'get' });
+  /** 获取技能模块绑定列表（自动反序列化 config JSON → 对象） */
+  async getBindings(skillId: number) {
+    const res = await request<any, SkillBinding[]>({ 
+      url: `${BASE_URL}/ai/skills/${skillId}/bindings`, 
+      method: 'get' 
+    });
+    return (res || []).map(b => ({
+      ...b,
+      config: deserializeConfig(b.config as unknown as string | null) as any,
+    }))
   },
 
-  /** 新增模块绑定 */
-  addBinding(skillId: number, data: Partial<SkillBinding>) {
-    return request<any, any>({ url: `${BASE_URL}/${skillId}/bindings`, method: 'post', data });
+  /** 新增模块绑定（自动序列化 config 对象 → JSON） */
+  async addBinding(skillId: number, data: Partial<SkillBinding>) {
+    return request<any, any>({ 
+      url: `${BASE_URL}/ai/skills/${skillId}/bindings`, 
+      method: 'post', 
+      data: { ...data, config: serializeConfig(data.config as any) },
+    });
   },
 
-  /** 编辑模块绑定 */
-  updateBinding(skillId: number, bindingId: number, data: Partial<SkillBinding>) {
-    return request<any, any>({ url: `${BASE_URL}/${skillId}/bindings/${bindingId}`, method: 'put', data });
+  /** 编辑模块绑定（自动序列化 config 对象 → JSON） */
+  async updateBinding(skillId: number, bindingId: number, data: Partial<SkillBinding>) {
+    return request<any, any>({ 
+      url: `${BASE_URL}/ai/skills/${skillId}/bindings/${bindingId}`, 
+      method: 'put', 
+      data: { ...data, config: serializeConfig(data.config as any) },
+    });
   },
 
   /** 删除模块绑定 */
   deleteBinding(skillId: number, bindingId: number) {
-    return request<any, any>({ url: `${BASE_URL}/${skillId}/bindings/${bindingId}`, method: 'delete' });
+    return request<any, any>({ 
+      url: `${BASE_URL}/ai/skills/${skillId}/bindings/${bindingId}`, 
+      method: 'delete' 
+    });
   },
 };
