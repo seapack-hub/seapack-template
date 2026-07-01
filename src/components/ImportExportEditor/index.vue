@@ -219,9 +219,19 @@ function getSelectedText(): string {
   return ''
 }
 
+/** 获取当前内容转换后的 Markdown */
+function getContentMd(): string {
+  const editor = editorRef.value
+  if (!editor) return ''
+  const html = editor.getHtml()
+  if (!html) return ''
+  return turndownService.turndown(html)
+}
+
 defineExpose({ 
   insertContent, 
   getSelectedText, 
+  getContentMd,
   editorRef 
 })
 

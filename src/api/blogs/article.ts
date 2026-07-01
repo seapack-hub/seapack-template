@@ -23,6 +23,7 @@ export interface Article {
   viewCount: number       // 阅读数（新增时后端自动初始化为 0）
   likeCount: number       // 点赞数（新增时后端自动初始化为 0）
   isTop: 0 | 1            // 0-不置顶 1-置顶
+  sort: number            // 排序号（置顶文章排序用）
   createTime?: string
   updateTime?: string
 }

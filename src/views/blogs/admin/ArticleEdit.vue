@@ -95,6 +95,7 @@ function openAiDialog(skillId?: number) {
 export interface ArticleForm {
   title: string
   summary: string
+  contentMd: string
   contentHtml: string
   category: string
   tag: string
@@ -103,11 +104,13 @@ export interface ArticleForm {
   coverColor: string
   status: 0 | 1
   isTop: 0 | 1
+  sort: number
 }
 
 const form = reactive<ArticleForm>({
   title: '',
   summary: '',
+  contentMd: '',
   contentHtml: '',
   category: '',
   tag: '',
@@ -116,6 +119,7 @@ const form = reactive<ArticleForm>({
   coverColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   status: 0,
   isTop: 0,
+  sort: 0,
 })
 
 provide('articleForm', form)
@@ -142,6 +146,7 @@ async function save() {
     ElMessage.warning('请完善文章设置')
     return
   }
+  form.contentMd = editorCompRef.value?.getContentMd?.() || ''
   saving.value = true
   try {
     if (isEdit.value) {
@@ -164,6 +169,7 @@ onMounted(async () => {
     if (article) {
       form.title = article.title
       form.summary = article.summary
+      form.contentMd = article.contentMd || ''
       form.contentHtml = article.contentHtml || article.contentMd || ''
       form.category = article.category
       form.tag = article.tag
@@ -172,6 +178,7 @@ onMounted(async () => {
       form.coverColor = article.coverColor
       form.status = article.status
       form.isTop = article.isTop
+      form.sort = article.sort ?? 0
     }
   }
 })

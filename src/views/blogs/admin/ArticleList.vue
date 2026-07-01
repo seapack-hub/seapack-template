@@ -9,11 +9,7 @@
 <template>
   <div class="app-container w-100% h-100% flex flex-col">
     <!-- 页面标题 -->
-    <PageHeader title="文章管理" :edit="false" :back="false">
-      <template #button>
-        <el-button type="primary" icon="plus" @click="createArticle">写文章</el-button>
-      </template>
-    </PageHeader>
+    <PageHeader title="文章管理" :edit="false" :back="false"></PageHeader>
 
     <!-- 搜索栏 -->
     <el-card class="search-card admin-card" shadow="never">

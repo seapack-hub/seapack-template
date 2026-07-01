@@ -4,7 +4,8 @@
       <h2 class="text-20px font-700 color-#1a1a2e m-0">最新文章</h2>
       <div class="flex gap-4px bg-white rounded-24px p-3px shadow-sm flex-wrap">
         <span
-          v-for="tab in tabs" :key="tab.key"
+          v-for="tab in tabs"
+          :key="tab.key"
           class="px-16px py-5px rounded-20px text-13px color-#606266 cursor-pointer transition-all duration-200 select-none"
           :class="activeTab === tab.key ? 'bg-#409eff color-white font-500' : 'hover:color-#409eff'"
           @click="switchTab(tab.key)"
@@ -28,7 +29,7 @@
               </div>
               <div class="p-14px 16px flex-1 flex flex-col">
                 <div class="flex items-center gap-8px mb-8px">
-                  <el-tag :type="item.tagType" size="small" effect="plain">{{ item.tag }}</el-tag>
+                  <el-tag :type="item.tagType as any" size="small" effect="plain">{{ item.tag }}</el-tag>
                   <span class="text-14px color-#c0c4cc">{{ item.date }}</span>
                 </div>
                 <h3 class="m-0 mb-6px text-17px font-600 color-#1a1a2e">{{ item.title }}</h3>
@@ -56,7 +57,7 @@ import { View, ArrowRight } from '@element-plus/icons-vue'
 
 const store = useBlogStore()
 const router = useRouter()
-const activeTab = ref('all')
+const activeTab = ref('')
 const tabs = ref<{ key: string; label: string }[]>([])
 
 interface ArticleDisplay {
@@ -68,7 +69,8 @@ interface ArticleDisplay {
 const articles = ref<ArticleDisplay[]>([])
 
 const filteredArticles = computed(() => {
-  if (activeTab.value === 'all') return articles.value
+  if (activeTab.value === '')
+    return articles.value
   return articles.value.filter(a => a.category === activeTab.value)
 })
 
@@ -108,7 +110,7 @@ watch(() => store.articles, (val) => {
 onMounted(async () => {
   await store.fetchArticles()
   const cats = await CategoryAPI.getList()
-  tabs.value = [{ key: 'all', label: '全部' }, ...(cats || []).map(c => ({ key: c.dictCode, label: c.dictName }))]
+  tabs.value = [{ key: '', label: '全部' }, ...(cats || []).map(c => ({ key: c.dictCode, label: c.dictName }))]
 })
 </script>
 

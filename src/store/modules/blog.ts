@@ -17,7 +17,7 @@ export const useBlogStore = defineStore('blog', () => {
   const articles = ref<Article[]>([])           // 当前页文章列表
   const total = ref(0)                          // 文章总数
   const loading = ref(false)                    // 列表加载状态
-  const query = ref<ArticleQuery>({ pageNum: 1, pageSize: 10, category: 'all' })
+  const query = ref<ArticleQuery>({ pageNum: 1, pageSize: 10, category: '' })
 
   // ===== 项目状态 =====
   const projects = ref<Project[]>([])           // 项目列表
