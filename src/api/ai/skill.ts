@@ -120,6 +120,54 @@ export interface SkillExecuteResult {
   durationMs?: number;
 }
 
+/** 技能绑定的完整信息（含技能详情和参数定义），供批量查询接口返回 */
+export interface SkillBindingInfo {
+  /** 技能 ID */
+  skillId: number;
+  /** 技能名称 */
+  skillName: string;
+  /** 技能编码 */
+  skillCode: string;
+  /** 系统提示词模板 */
+  promptTemplate?: string;
+  /** LLM 温度参数 */
+  temperature?: number;
+  /** 最大输出 token 数 */
+  maxTokens?: number;
+  /** 输出格式 */
+  outputFormat?: string;
+  /** 模块标识 */
+  moduleKey: string;
+  /** 模块内位置 */
+  position: string;
+  /** 状态：1启用 0禁用 */
+  status: number;
+  /** 展示配置 JSON */
+  config?: Record<string, any>;
+  /** 技能的参数定义列表 */
+  params: SkillParam[];
+}
+
+/** 统一 AI 执行结果，消费方据此处理插入/替换/预览 */
+export interface AiExecutionResult {
+  /** 是否执行成功 */
+  success: boolean;
+  /** 主输出内容 */
+  content: string;
+  /** 内容类型，消费方根据此决定插入方式 */
+  contentType: 'markdown' | 'html' | 'text' | 'json';
+  /** 技能名称 */
+  skillName: string;
+  /** 技能 ID */
+  skillId: number;
+  /** 执行日志 ID */
+  executionLogId?: number;
+  /** 执行耗时（毫秒） */
+  elapsedMs: number;
+  /** 扩展元数据（JSON 格式时存放结构化内容） */
+  meta?: Record<string, any>;
+}
+
 export const SkillAPI = {
   /** 分页查询技能列表 */
   page(query: SkillQuery) {
@@ -250,6 +298,16 @@ export const SkillAPI = {
     return request<any, any>({ 
       url: `${BASE_URL}/ai/skills/${skillId}/bindings/${bindingId}`, 
       method: 'delete' 
+    });
+  },
+
+  // ===== 批量查询（供前端 Store 全量缓存） =====
+
+  /** 查询所有模块绑定（含技能和参数详情），初始化时全量加载 */
+  getAllBindings() {
+    return request<any, SkillBindingInfo[]>({
+      url: `${BASE_URL}/ai/skills/bindings`,
+      method: 'get',
     });
   },
 };

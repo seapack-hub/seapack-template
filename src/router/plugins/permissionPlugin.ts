@@ -1,5 +1,6 @@
 import type { RouterPlugin } from './types'
 import { useUserStore } from '@/store/modules/user'
+import { useAiSkillBindingsStore } from '@/store/modules/aiSkillBindings'
 
 // 白名单页面：不需要登录即可访问
 const WHITE_LIST = ['/login', '/blogs', '/errorPage/401', '/errorPage/403', '/errorPage/404', '/errorPage/500']
@@ -28,16 +29,18 @@ export const permissionPlugin: RouterPlugin = {
       const isRestored = userStore.restoreLoginState()
       //获取按钮权限数据
       await userStore.fetchAuthPerms(String(userStore.userId))
+      //加载 AI 技能绑定数据（低频变动，全量缓存供全局使用）
+      useAiSkillBindingsStore().fetchAllBindings()
       if (!isRestored) {
         return `/login?redirect=${to.path}`
       }
     }
 
-    // 3. admin 跳过所有权限检查
+    // 3. admin 跳过所有权限检
     if (userStore.username === 'admin') return undefined
 
     // 4. 权限标识检查：从后端菜单树（getMenus）提取 permKey 作为数据源
-    //    空字符串 permKey 视为无权限要求，公开访问
+    // 空字符串 permKey 视为无权限要求，公开访问
     const permKey = getValidPermKey(to.meta as Record<string, unknown>)
     if (permKey) {
       if (!userStore.menuPermKeys.includes(permKey)) {

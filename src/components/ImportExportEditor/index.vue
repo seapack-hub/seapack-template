@@ -202,6 +202,29 @@ function handleExport(format: 'md' | 'html' | 'txt' | 'pdf' | 'doc') {
   ElMessage.success(`已导出 ${safeName}-${timestamp}.${ext}`)
 }
 
+/** 在光标位置插入 HTML 内容，供外部 AI 写作等功能调用 */
+function insertContent(html: string) {
+  if (editorRef.value) {
+    editorRef.value.restoreSelection()
+    editorRef.value.dangerouslyInsertHtml(html)
+  }
+}
+
+/** 获取编辑器当前选中文本 */
+function getSelectedText(): string {
+  if (editorRef.value) {
+    const sel = editorRef.value.selection
+    if (sel) return sel.toString() 
+  }
+  return ''
+}
+
+defineExpose({ 
+  insertContent, 
+  getSelectedText, 
+  editorRef 
+})
+
 onBeforeUnmount(() => {
   editorRef.value?.destroy()
 })

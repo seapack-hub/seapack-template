@@ -22,6 +22,7 @@ import { RsaUtil } from "@/utils/jsencrypt.ts";
 import { UserAPI } from "@/api/system/baseInfo/user";
 import { useUserStore } from '@/store/modules/user';
 import { usePermissionStore } from '@/store/modules/permission'
+import { useAiSkillBindingsStore } from '@/store/modules/aiSkillBindings'
 
 const router = useRouter();
 const props = defineProps<{
@@ -67,6 +68,9 @@ const onCaptchaSuccess = async ()=>{
     // 3. 调用接口，获取用户权限信息并赋值
     userStore.fetchAuthPerms(String(loginRes.userId))
     
+    // 4. 加载 AI 技能绑定数据（低频变动，全量缓存供全局使用）
+    useAiSkillBindingsStore().fetchAllBindings()
+
     // 路由已在启动时全量加载，只需收集列表供侧边栏使用
     permissionStore.collectRoutes()
 

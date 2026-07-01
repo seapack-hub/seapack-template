@@ -44,18 +44,28 @@
     <el-dialog
       v-model="bindingFormVisible"
       :title="bindingFormIsEdit ? '编辑绑定' : '新增绑定'"
-      width="480px"
+      width="800px"
       append-to-body
       @closed="bindingFormRef?.resetFields()"
     >
       <el-form ref="bindingFormRef" :model="bindingForm" :rules="bindingFormRules" label-width="100px">
         <el-form-item label="模块标识" prop="moduleKey">
-          <el-select v-model="bindingForm.moduleKey" placeholder="选择模块" style="width: 100%">
+          <el-select v-model="bindingForm.moduleKey" placeholder="选择模块" style="width: 100%" @change="onModuleChange">
             <el-option v-for="mod in MODULE_OPTIONS" :key="mod.value" :label="mod.label" :value="mod.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="位置标识" prop="position">
-          <el-input v-model="bindingForm.position" placeholder="如 toolbar / sidebar / menu" />
+          <el-select v-model="bindingForm.position" placeholder="先选择模块再选位置" style="width: 100%" :disabled="!bindingForm.moduleKey" clearable>
+            <el-option
+              v-for="pos in currentPositionOptions"
+              :key="pos.position"
+              :label="pos.label"
+              :value="pos.position"
+            >
+              <span>{{ pos.label }}</span>
+              <span class="text-12px text-[var(--el-text-color-secondary)] ml-8">{{ pos.description }}</span>
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="展示配置" prop="config">
           <el-input
@@ -78,9 +88,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { SkillAPI, type SkillBinding } from '@/api/ai/skill';
 import { MODULE_OPTIONS, BINDING_LIST_COLUMNS } from '../utils';
+import { getPositionsByModule } from '@/config/aiPositions';
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ skillId: number; skillName: string }>()
@@ -118,6 +130,16 @@ const bindingFormIsEdit = ref(false)
 const bindingForm = ref<SkillBinding>({ moduleKey: '', position: '', config: {}, status: 1 })
 const bindingEditingId = ref<number | undefined>()
 const bindingSubmitting = ref(false)
+
+/** 根据已选的 moduleKey 过滤可用的位置选项 */
+const currentPositionOptions = computed(() => {
+  return bindingForm.value.moduleKey ? getPositionsByModule(bindingForm.value.moduleKey) : []
+})
+
+/** 切换模块时清空已选位置 */
+function onModuleChange() {
+  bindingForm.value.position = ''
+}
 
 /** config 对象 ↔ JSON 字符串双向转换（用于 textarea 编辑） */
 const configText = computed({

@@ -94,10 +94,27 @@ const executionLogs = Array.from({ length: 20 }, (_, i) => {
   }
 })
 
+/**
+ * 合并绑定与技能、参数信息，模拟批量查询接口返回
+ */
+function buildBindingInfos() {
+  return bindings.map(b => {
+    const skill = skills.find(s => s.id === b.skillId)
+    const params = skillParams.filter(p => p.skillId === b.skillId)
+    return {
+      binding: b,
+      skill: skill || null,
+      params: params || [],
+    }
+  }).filter(item => item.skill !== null)
+}
+
 export const mock: MockMethod[] = [
   { url: '/api/ai/skill/categories', method: 'get', response: () => ({ data: categories }) },
   { url: '/api/ai/skill/list', method: 'get', response: () => ({ data: skills }) },
   { url: '/api/ai/skill/params', method: 'get', response: () => ({ data: skillParams }) },
   { url: '/api/ai/skill/bindings', method: 'get', response: () => ({ data: bindings }) },
-  { url: '/api/ai/skill/logs', method: 'get', response: () => ({ data: executionLogs }) }
+  { url: '/api/ai/skill/logs', method: 'get', response: () => ({ data: executionLogs }) },
+  // 批量查询：返回含技能和参数详情的绑定列表，供前端 Store 全量缓存
+  { url: '/api/ai/skills/bindings', method: 'get', response: () => ({ data: buildBindingInfos() }) },
 ]

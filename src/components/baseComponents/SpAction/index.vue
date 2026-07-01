@@ -3,7 +3,7 @@
   <el-link
     v-if="renderType === 'link'"
     v-bind="$attrs"
-    :underline="true"
+    underline="always"
     @click="handleAction"
   >
     {{ label }}

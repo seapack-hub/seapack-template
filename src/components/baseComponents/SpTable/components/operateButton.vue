@@ -38,7 +38,7 @@
             <el-link
               :disabled="btnItem?.disabledHandler ? btnItem.disabledHandler(scope) : false"
               v-bind="btnItem"
-              :underline="false"
+              underline="never"
             >
               {{ btnItem.label }}
             </el-link>
@@ -53,7 +53,7 @@
         <el-link
           v-if="btnItem?.vIFHandler ? btnItem.vIFHandler(scope) : true"
           :disabled="btnItem?.disabledHandler ? btnItem.disabledHandler(scope) : false"
-          :underline="false"
+          underline="never"
           v-bind="btnItem"
           @click="btnItem.click(scope)"
         >
@@ -65,7 +65,7 @@
     <template v-if="dropDownButtons.length > 0">
       <el-dropdown class="flex justify-center items-center">
         <el-link
-          :underline="false"
+          underline="never"
           type="primary"
         >
           更多
@@ -96,7 +96,7 @@
                 <el-link
                   v-else
                   :disabled="btnItem?.disabledHandler ? btnItem.disabledHandler(scope) : false"
-                  :underline="false"
+                  underline="never"
                   v-bind="btnItem"
                   class="w-100% !p-x-15px !p-y-7px"
                   @click="dropdownClick(btnItem, scope)"

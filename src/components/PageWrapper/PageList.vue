@@ -53,7 +53,7 @@
       </div>
       <!--查询操作-->
       <div class="search-feature">
-        <el-link v-if="showToggleButton" type="primary" :underline="false" @click="onSearchExpand">
+        <el-link v-if="showToggleButton" type="primary" underline="never" @click="onSearchExpand">
           {{ isExpanded ? '收起筛选' : '更多筛选' }}
           <el-icon class="">
             <arrow-down v-if="!isExpanded" />
@@ -171,7 +171,6 @@ import { ArrowDown, ArrowUp } from '@element-plus/icons-vue';
 import { mergeWith } from 'lodash-es';
 import { useLoading, useOperateTypeEnum } from '@/hooks/useGlobal.ts';
 import { ConfigType, SearchParamType, OperateButtonType } from './types.ts';
-import { withDefaults } from 'vue';
 import type { AxiosResponse } from 'axios';
 const { loading, showLoading, cancelLoading } = useLoading();
 const { updateType, deleteType, detailType, importType, exportType } = useOperateTypeEnum();
