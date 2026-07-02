@@ -95,18 +95,38 @@ const executionLogs = Array.from({ length: 20 }, (_, i) => {
 })
 
 /**
- * 合并绑定与技能、参数信息，模拟批量查询接口返回
+ * 合并绑定与技能、参数信息，模拟批量查询接口返回扁平结构
+ * 匹配后端实际返回格式：{ skillId, skillName, moduleKey, position, status, config, params, ... }
  */
 function buildBindingInfos() {
   return bindings.map(b => {
     const skill = skills.find(s => s.id === b.skillId)
-    const params = skillParams.filter(p => p.skillId === b.skillId)
+    if (!skill) return null
     return {
-      binding: b,
-      skill: skill || null,
-      params: params || [],
+      skillId: skill.id,
+      skillName: skill.name,
+      skillCode: skill.code,
+      promptTemplate: skill.promptTemplate,
+      temperature: skill.temperature,
+      maxTokens: skill.maxTokens,
+      outputFormat: skill.outputFormat,
+      moduleKey: b.moduleKey,
+      position: b.position,
+      status: b.status,
+      config: b.config ? JSON.parse(b.config as string) : null,
+      params: skillParams
+        .filter(p => p.skillId === b.skillId)
+        .map(p => ({
+          paramName: p.paramName,
+          label: p.label,
+          paramType: p.paramType,
+          required: p.required,
+          options: p.options,
+          placeholder: p.placeholder,
+          sortOrder: p.sortOrder,
+        })),
     }
-  }).filter(item => item.skill !== null)
+  }).filter(Boolean)
 }
 
 export const mock: MockMethod[] = [

@@ -14,7 +14,13 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="技能名称" prop="name">
-            <el-input v-model="form.name" placeholder="如 文章AI写作助手" />
+            <el-input v-model="form.name" placeholder="如 文章AI写作助手">
+              <template #suffix>
+                <el-tooltip content="AI 生成名称" placement="top">
+                  <el-button link type="primary" size="small" :icon="MagicStick" @click="openAiDialog('name')" />
+                </el-tooltip>
+              </template>
+            </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -27,7 +33,7 @@
         <el-col :span="12">
           <el-form-item label="所属分类" prop="categoryId">
             <el-select v-model="form.categoryId" placeholder="选择分类" clearable style="width: 100%">
-              <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id" />
+              <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id as any" />
             </el-select>
           </el-form-item>
         </el-col>
@@ -43,7 +49,13 @@
         </el-col>
       </el-row>
       <el-form-item label="描述" prop="description">
-        <el-input v-model="form.description" type="textarea" :rows="2" placeholder="技能功能描述" />
+        <el-input v-model="form.description" type="textarea" :rows="2" placeholder="技能功能描述">
+          <template #suffix>
+            <el-tooltip content="AI 生成描述" placement="top">
+              <el-button link type="primary" size="small" :icon="MagicStick" @click="openAiDialog('description')" />
+            </el-tooltip>
+          </template>
+        </el-input>
       </el-form-item>
       <el-form-item label="提示词模板" prop="promptTemplate">
         <el-input
@@ -51,7 +63,24 @@
           type="textarea"
           :rows="6"
           placeholder="系统提示词，支持 {{variable}} 插值语法"
-        />
+        >
+          <template #suffix>
+            <el-tooltip content="AI 辅助编写提示词" placement="top">
+              <template v-for="b in aiBindings" :key="b.skillId">
+                <el-button
+                  v-if="(b.config?.displayType || 'button') === 'button'"
+                  :type="b.config?.type || 'primary'"
+                  @click="openAiDialog('prompt')"
+                >
+                  <el-icon style="vertical-align: -2px; margin-right: 4px">
+                    <component :is="b.config?.icon || 'MagicStick'" />
+                  </el-icon>
+                  {{ b.config?.buttonText || b.skillName }}
+                </el-button>
+              </template>
+            </el-tooltip>
+          </template>
+        </el-input>
       </el-form-item>
       <el-row :gutter="20">
         <el-col :span="8">
@@ -90,6 +119,17 @@
         </el-col>
       </el-row>
     </el-form>
+
+    <!-- AI 技能执行通用弹框：辅助编写提示词模板 -->
+    <AiSkillExecutor
+      v-model:visible="aiDialogVisible"
+      module-key="aiModule"
+      position="skill-editor"
+      :skill-id="activeSkillId"
+      :context="aiContext"
+      @done="handleAiResult"
+    />
+
     <template #footer>
       <el-button @click="visible = false">取消</el-button>
       <el-button type="primary" :loading="submitting" @click="onSubmit">确认</el-button>
@@ -98,8 +138,11 @@
 </template>
 
 <script setup lang="ts">
-import type { Skill } from '@/api/ai/skill';
+import type { Skill, AiExecutionResult } from '@/api/ai/skill';
 import type { SkillCategory } from '@/api/ai/skillCategory';
+import { useAiBindings } from '@/hooks/useAiBindings'
+import { MagicStick } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
@@ -123,6 +166,40 @@ const formRules = {
 
 const formRef = ref<any>(null)
 const submitting = ref(false)
+
+/** AI 辅助 */
+const { bindings: aiBindings } = useAiBindings('aiModule', 'skill-editor')
+const aiDialogVisible = ref(false)
+const activeSkillId = ref<number | undefined>()
+const aiTarget = ref<'name' | 'description' | 'prompt'>('prompt')
+const aiContext = ref({ skillName: '', skillDescription: '', promptTemplate: '' })
+
+function openAiDialog(target: 'name' | 'description' | 'prompt') {
+  aiTarget.value = target
+  activeSkillId.value = undefined
+  aiContext.value = {
+    skillName: form.value.name || '',
+    skillDescription: form.value.description || '',
+    promptTemplate: form.value.promptTemplate || '',
+  }
+  aiDialogVisible.value = true
+}
+
+function handleAiResult(result: AiExecutionResult) {
+  if (!result.success) {
+    ElMessage.error('AI 辅助生成失败，请重试')
+    return
+  }
+  const content = result.content.replace(/^["'「」【】\s]+|["'「」【】\s]+$/g, '')
+  if (aiTarget.value === 'name') {
+    form.value.name = content.slice(0, 100)
+  } else if (aiTarget.value === 'description') {
+    form.value.description = content.slice(0, 500)
+  } else {
+    form.value.promptTemplate = (form.value.promptTemplate || '') + (form.value.promptTemplate ? '\n\n' : '') + content
+  }
+  ElMessage.success(`${result.skillName} 内容已填充`)
+}
 
 function onClosed() {
   isEdit.value = false

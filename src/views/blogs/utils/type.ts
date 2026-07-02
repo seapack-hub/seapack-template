@@ -1,3 +1,11 @@
+/** 字典项（博客分类/标签通用） */
+export interface DictItem {
+  dictCode: string
+  dictName: string
+  orderNum: number
+  remark?: string
+}
+
 export interface ArticleCard {
   id: number
   title: string

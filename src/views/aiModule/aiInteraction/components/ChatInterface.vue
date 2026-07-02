@@ -31,6 +31,19 @@
             </div>
           </div>
         </el-popover>
+        <!-- AI 技能按钮 -->
+        <template v-for="b in aiBindings" :key="b.skillId">
+          <el-button
+            v-if="(b.config?.displayType || 'button') === 'button'"
+            :type="b.config?.type || 'primary'"
+            @click="openAiDialog(b.skillId)"
+          >
+            <el-icon style="vertical-align: -2px; margin-right: 4px">
+              <component :is="b.config?.icon || 'MagicStick'" />
+            </el-icon>
+            {{ b.config?.buttonText || b.skillName }}
+          </el-button>
+        </template>
         <el-button text :icon="Delete" @click="handleClear">清空会话</el-button>
       </div>
     </el-header>
@@ -113,9 +126,19 @@
     </el-footer>
 
     <VoiceInputTip
-      :status="voice.status"
-      :interim-text="voice.interimText"
-      :error-message="voice.errorMessage"
+      :status="voice.status as any"
+      :interim-text="voice.interimText as any"
+      :error-message="voice.errorMessage as any"
+    />
+
+    <!-- AI 技能执行通用弹框 -->
+    <AiSkillExecutor
+      v-model:visible="aiDialogVisible"
+      module-key="aiModule"
+      position="chat-sidebar"
+      :skill-id="activeSkillId"
+      :context="aiContext"
+      @done="handleAiResult"
     />
   </div>
 </template>
@@ -126,6 +149,8 @@ import { Delete, Setting, Promotion, Microphone, ChatLineSquare } from '@element
 import { useChatStore } from '@/store/modules/chat';
 import { streamChat } from '@/api/ai/index';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { useAiBindings } from '@/hooks/useAiBindings';
+import type { AiExecutionResult } from '@/api/ai/skill';
 import VoiceInputTip from './VoiceInputTip.vue';
 import emitter from '@/utils/bus';
 // @ts-ignore
@@ -133,6 +158,32 @@ import MarkdownIt from 'markdown-it';
 import { ElMessageBox, ElMessage } from 'element-plus';
 
 const store = useChatStore();
+
+/** 从 Store 获取聊天侧边栏位所有启用的 AI 技能绑定 */
+const { bindings: aiBindings } = useAiBindings('aiModule', 'chat-sidebar')
+
+const aiDialogVisible = ref(false)
+const activeSkillId = ref<number | undefined>()
+const aiContext = ref({ inputText: '' })
+
+function openAiDialog(skillId?: number) {
+  activeSkillId.value = skillId
+  aiContext.value = { inputText: inputText.value }
+  aiDialogVisible.value = true
+}
+
+function handleAiResult(result: AiExecutionResult) {
+  if (!result.success) {
+    ElMessage.error('AI 执行失败，请重试')
+    return
+  }
+  store.addMessage({ role: 'user', content: `使用技能：${result.skillName}` })
+  store.addMessage({ role: 'assistant', content: result.content })
+  nextTick(() => {
+    const scrollWrap = scrollbarRef.value?.wrapRef
+    if (scrollWrap) scrollWrap.scrollTop = scrollWrap.scrollHeight
+  })
+}
 
 const md = new MarkdownIt({ html: false, linkify: true, typographer: true });
 
@@ -186,7 +237,7 @@ watch(() => voice.status, (status) => {
     recognizing: '正在识别...',
     error: voice.errorMessage.value,
   };
-  voiceTooltip.value = tips[status] || '语音输入';
+  voiceTooltip.value = tips[status as any] || '语音输入';
 });
 
 // ===== 消息发送 =====

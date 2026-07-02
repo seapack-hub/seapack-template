@@ -42,6 +42,27 @@ export const AI_POSITIONS: AiPosition[] = [
     label: 'AI 聊天侧边栏',
     description: 'AI 对话页侧边栏，用于切换客服/知识库等模式',
   },
+  {
+    moduleKey: 'blogsManagement',
+    position: 'settings-drawer',
+    label: '文章设置抽屉',
+    description: '文章编辑页右侧设置抽屉，用于 AI 生成标题、摘要等',
+    component: 'ArticleSettingsDrawer',
+  },
+  {
+    moduleKey: 'aiModule',
+    position: 'skill-editor',
+    label: '技能编辑器',
+    description: 'AI 技能管理编辑弹窗，用于 AI 辅助编写提示词模板',
+    component: 'SkillFormDialog',
+  },
+  {
+    moduleKey: 'blogsManagement',
+    position: 'project-editor',
+    label: '项目编辑器',
+    description: '博客项目编辑页，用于 AI 生成项目描述等',
+    component: 'ProjectEdit',
+  },
 ]
 
 /** 根据 moduleKey 过滤该模块下的所有位置 */

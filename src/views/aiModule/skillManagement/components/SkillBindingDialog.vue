@@ -68,12 +68,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="展示配置" prop="config">
-          <el-input
-            v-model="configText"
-            type="textarea"
-            :rows="6"
-            placeholder="JSON 格式，如 {buttonText: 'AI写作'}"
-          />
+          <JsonEditor v-model="bindingForm.config" height="240px" mode="text" />
         </el-form-item>
         <el-form-item label="状态">
           <el-switch v-model="bindingForm.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" />
@@ -140,21 +135,6 @@ const currentPositionOptions = computed(() => {
 function onModuleChange() {
   bindingForm.value.position = ''
 }
-
-/** config 对象 ↔ JSON 字符串双向转换（用于 textarea 编辑） */
-const configText = computed({
-  get: () => {
-    const c = bindingForm.value.config
-    return c && Object.keys(c).length ? JSON.stringify(c, null, 2) : ''
-  },
-  set: (val: string) => {
-    if (!val.trim()) { bindingForm.value.config = {}; return }
-    try {
-      const parsed = JSON.parse(val)
-      if (parsed && typeof parsed === 'object') bindingForm.value.config = parsed
-    } catch { bindingForm.value.config = {} }
-  },
-})
 
 /** config 概要展示（取首字段或 JSON 缩略） */
 function formatConfig(config?: Record<string, any>): string {

@@ -1,7 +1,22 @@
 <template>
   <!-- 股票详情页：基本信息 / 分红 / K 线 / 财务 四个 Tab -->
   <div class="detail-container flex flex-col">
-    <PageHeader :title="stockName" :edit="false" back-text="返回" @cancel="goBack" />
+    <PageHeader :title="stockName" :edit="false" back-text="返回" @cancel="goBack">
+      <template #button>
+        <template v-for="b in aiBindings" :key="b.skillId">
+          <el-button
+            v-if="(b.config?.displayType || 'button') === 'button'"
+            :type="b.config?.type || 'primary'"
+            @click="openAiDialog(b.skillId)"
+          >
+            <el-icon style="vertical-align: -2px; margin-right: 4px">
+              <component :is="b.config?.icon || 'MagicStick'" />
+            </el-icon>
+            {{ b.config?.buttonText || b.skillName }}
+          </el-button>
+        </template>
+      </template>
+    </PageHeader>
 
     <el-tabs v-model="activeTab" class="detail-tabs flex-1">
       <!-- 标的概况 + 交易参数 -->
@@ -21,6 +36,27 @@
         <StockFinanceTab :data="financeData" :loading="financeLoading" />
       </el-tab-pane>
     </el-tabs>
+
+    <!-- AI 技能执行通用弹框 -->
+    <AiSkillExecutor
+      v-model:visible="aiDialogVisible"
+      module-key="stockFund"
+      position="detail-toolbar"
+      :skill-id="activeSkillId"
+      :context="aiContext"
+      @done="handleAiResult"
+    />
+
+    <!-- AI 分析结果展示弹框 -->
+    <el-dialog v-model="resultVisible" :title="resultTitle" width="700px" class="ai-result-dialog">
+      <div v-loading="resultLoading" class="result-content">
+        <div v-if="resultContent" class="markdown-body" v-html="renderedResult" />
+        <el-empty v-else description="暂无分析结果" :image-size="60" />
+      </div>
+      <template #footer>
+        <el-button @click="resultVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -31,6 +67,11 @@ import StockInfoTab from './components/StockInfoTab.vue'
 import StockChartTab from './components/StockChartTab.vue'
 import StockDividendTab from './components/StockDividendTab.vue'
 import StockFinanceTab from './components/StockFinanceTab.vue'
+import { useAiBindings } from '@/hooks/useAiBindings'
+import type { AiExecutionResult } from '@/api/ai/skill'
+import MarkdownIt from 'markdown-it'
+import { ElMessage } from 'element-plus'
+const md = new MarkdownIt()
 
 const router = useRouter()
 const route = useRoute()
@@ -48,6 +89,45 @@ const financeData = ref<{ balance: any[]; income: any[]; cashflow: any[] }>({ ba
 
 const infoLoading = ref(true)
 const financeLoading = ref(true)
+
+/** 从 Store 获取股票详情工具栏位所有启用的 AI 技能绑定 */
+const { bindings: aiBindings } = useAiBindings('stockFund', 'detail-toolbar')
+
+const aiDialogVisible = ref(false)
+const activeSkillId = ref<number | undefined>()
+const aiContext = ref({ stockCode: '', stockName: '' })
+
+/** AI 结果展示 */
+const resultVisible = ref(false)
+const resultTitle = ref('')
+const resultContent = ref('')
+const resultLoading = ref(false)
+
+/** 将 markdown 渲染为 HTML */
+const renderedResult = computed(() => {
+  if (!resultContent.value) return ''
+  try { return md.render(resultContent.value) }
+  catch { return resultContent.value }
+})
+
+function openAiDialog(skillId?: number) {
+  activeSkillId.value = skillId
+  aiContext.value = {
+    stockCode: stockCode as string,
+    stockName: stockName.value,
+  }
+  aiDialogVisible.value = true
+}
+
+function handleAiResult(result: AiExecutionResult) {
+  if (!result.success) {
+    ElMessage.error('AI 分析执行失败，请重试')
+    return
+  }
+  resultTitle.value = `${result.skillName} 分析结果`
+  resultContent.value = result.content
+  resultVisible.value = true
+}
 
 onMounted(async () => {
   if (!stockCode) return
@@ -82,5 +162,11 @@ onMounted(async () => {
 }
 .detail-tabs {
   background: #fff; border-radius: 8px; padding: 0 16px 16px;
+}
+:deep(.ai-result-dialog .result-content) {
+  min-height: 200px;
+  max-height: 60vh;
+  overflow-y: auto;
+  .markdown-body { line-height: 1.8; font-size: 14px; }
 }
 </style>

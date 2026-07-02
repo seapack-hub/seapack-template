@@ -98,6 +98,7 @@ import { useRouter } from 'vue-router'
 import { useBlogStore } from '@/store/modules/blog.ts'
 import { CategoryAPI, type BlogCategory } from '@/api/blogs/category.ts'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import { ARTICLE_LIST_COLUMNS } from '../utils/tableColumns'
 
 const store = useBlogStore()
 const router = useRouter()
@@ -117,15 +118,9 @@ const total = ref(0)
 const categories = ref<BlogCategory[]>([])
 const categoriesMap = ref<Record<string, string>>({})
 
-// ===== SpTable 列定义 =====
+// ===== SpTable 列定义（基础列 + 操作列） =====
 const columns = reactive([
-  { label: '标题', prop: 'title', minWidth: '220px', showOverflowTooltip: true },
-  { slotName: 'category' },
-  { slotName: 'tag' },
-  { label: '阅读', prop: 'viewCount', minWidth: '70px', align: 'center' },
-  { slotName: 'status' },
-  { slotName: 'isTop' },
-  { label: '创建时间', prop: 'createTime', minWidth: '160px', align: 'center' },
+  ...ARTICLE_LIST_COLUMNS,
   {
     columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
     buttons: [
@@ -189,7 +184,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@use '@/views/blogs/admin/styles/admin-common.scss' as *;
+@use '@/views/blogs/styles/admin-common.scss' as *;
 
 .app-container { 
   padding: 20px; 

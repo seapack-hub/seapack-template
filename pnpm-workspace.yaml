@@ -3,5 +3,6 @@ allowBuilds:
   core-js: false
   es5-ext: false
   esbuild: false
+  json-editor-vue: false
   protobufjs: false
   vue-demi: false

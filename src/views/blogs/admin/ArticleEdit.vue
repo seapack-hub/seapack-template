@@ -61,7 +61,7 @@ import { ElMessage } from 'element-plus'
 import { Setting } from '@element-plus/icons-vue'
 import type { AiExecutionResult } from '@/api/ai/skill'
 import { useAiBindings } from '@/hooks/useAiBindings'
-import ArticleSettingsDrawer from './components/ArticleSettingsDrawer.vue'
+import ArticleSettingsDrawer from '../components/ArticleSettingsDrawer.vue'
 
 const route = useRoute()
 const router = useRouter()

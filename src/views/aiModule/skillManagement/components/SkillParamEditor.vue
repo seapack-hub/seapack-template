@@ -67,7 +67,7 @@
                 <el-option label="字符串" value="string" />
                 <el-option label="数字" value="number" />
                 <el-option label="布尔" value="boolean" />
-                <el-option label="下拉选择" value="select" />
+                <el-option label="Json" value="json" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -83,13 +83,8 @@
         <el-form-item label="提示文字" prop="placeholder">
           <el-input v-model="paramForm.placeholder" placeholder="输入框占位提示" />
         </el-form-item>
-        <el-form-item v-if="paramForm.paramType === 'select'" label="选项列表" prop="options">
-          <el-input
-            v-model="optionsText"
-            type="textarea"
-            :rows="6"
-            placeholder="JSON 数组格式，例如 [{label, value}, ...]"
-          />
+        <el-form-item v-if="paramForm.paramType === 'json'" label="Json信息" prop="options">
+          <JsonEditor v-model="paramForm.options" height="240px" mode="text" />
         </el-form-item>
         <el-form-item label="排序号" prop="sortOrder">
           <el-input-number v-model="paramForm.sortOrder" :min="0" :max="999" style="width: 100%" />
@@ -148,29 +143,13 @@ const paramForm = ref<SkillParam>({ paramName: '', label: '', paramType: 'string
 const paramEditingId = ref<number | undefined>()
 const paramSubmitting = ref(false)
 
-const optionsText = computed({
-  get: () => {
-    const opts = paramForm.value.options
-    return opts?.length ? JSON.stringify(opts, null, 2) : ''
-  },
-  set: (val: string) => {
-    if (!val.trim()) {
-      paramForm.value.options = []
-      return
-    }
-    try {
-      const parsed = JSON.parse(val)
-      if (Array.isArray(parsed)) {
-        paramForm.value.options = parsed.map(o => ({ label: String(o.label ?? ''), value: String(o.value ?? '') }))
-        return
-      }
-    } catch {}
-    paramForm.value.options = []
-  },
-})
-
 function typeTagType(type: string) {
-  return ({ string: '', number: 'warning', boolean: 'success', select: 'info' } as Record<string, string>)[type] || ''
+  return ({ 
+    string: '', 
+    number: 'warning', 
+    boolean: 'success', 
+    json: 'info' 
+  } as Record<string, string>)[type] || ''
 }
 
 function openParamForm(row?: SkillParam) {

@@ -49,9 +49,7 @@ export const useAiSkillBindingsStore = defineStore('aiSkillBindings', () => {
     loading.value = true
     try {
       const res = await SkillAPI.getAllBindings()
-
-      //对应值  元素值 params 中的 options 
-      //options: "[{\"label\": \"技术教程\", \"value\": \"技术教程\"}, {\"label\": \"经验分享\", \"value\": \"经验分享\"}, {\"label\": \"行业分析\", \"value\": \"行业分析\"}, {\"label\": \"产品介绍\", \"value\": \"产品介绍\"}]"
+      // 后端 params[].options 为 JSON 字符串，反序列化为数组格式
       bindings.value = res || []
       loaded.value = true
     } finally {

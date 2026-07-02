@@ -22,11 +22,23 @@
         </template>
 
         <el-form-item label="项目名称" prop="name" :rules="[{ required: true, message: '请输入项目名称' }]">
-          <el-input v-model="form.name" placeholder="请输入项目名称" maxlength="100" show-word-limit />
+          <el-input v-model="form.name" placeholder="请输入项目名称" maxlength="100" show-word-limit>
+            <template #suffix>
+              <el-tooltip content="AI 生成名称" placement="top">
+                <el-button link type="primary" size="small" :icon="MagicStick" @click="openAiDialog('name')" />
+              </el-tooltip>
+            </template>
+          </el-input>
         </el-form-item>
 
         <el-form-item label="项目描述" prop="description">
-          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入项目描述" maxlength="500" show-word-limit />
+          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入项目描述" maxlength="500" show-word-limit>
+            <template #suffix>
+              <el-tooltip content="AI 生成描述" placement="top">
+                <el-button link type="primary" size="small" :icon="MagicStick" @click="openAiDialog('description')" />
+              </el-tooltip>
+            </template>
+          </el-input>
         </el-form-item>
 
         <el-row :gutter="24">
@@ -82,6 +94,16 @@
         </el-row>
       </el-card>
     </el-form>
+
+    <!-- AI 技能执行通用弹框 -->
+    <AiSkillExecutor
+      v-model:visible="aiDialogVisible"
+      module-key="blogsManagement"
+      position="project-editor"
+      :skill-id="activeSkillId"
+      :context="aiContext"
+      @done="handleAiResult"
+    />
   </div>
 </template>
 
@@ -90,13 +112,47 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ProjectAPI } from '@/api/blogs/project.ts'
 import { ElMessage } from 'element-plus'
+import { MagicStick } from '@element-plus/icons-vue'
+import { useAiBindings } from '@/hooks/useAiBindings'
 import type { FormInstance } from 'element-plus'
+import type { AiExecutionResult } from '@/api/ai/skill'
 
 const route = useRoute()
 const router = useRouter()
 const formRef = ref<FormInstance>()
 const isEdit = computed(() => !!route.params.id)
 const saving = ref(false)
+
+/** AI 辅助 */
+const { bindings: aiBindings } = useAiBindings('blogsManagement', 'project-editor')
+const aiDialogVisible = ref(false)
+const activeSkillId = ref<number | undefined>()
+const aiTarget = ref<'name' | 'description'>('description')
+const aiContext = ref({ projectName: '', projectDescription: '' })
+
+function openAiDialog(target: 'name' | 'description') {
+  aiTarget.value = target
+  activeSkillId.value = undefined
+  aiContext.value = {
+    projectName: form.name || '',
+    projectDescription: form.description || '',
+  }
+  aiDialogVisible.value = true
+}
+
+function handleAiResult(result: AiExecutionResult) {
+  if (!result.success) {
+    ElMessage.error('AI 生成失败，请重试')
+    return
+  }
+  const content = result.content.replace(/^["'「」【】\s]+|["'「」【】\s]+$/g, '')
+  if (aiTarget.value === 'name') {
+    form.name = content.slice(0, 100)
+  } else {
+    form.description = content.slice(0, 500)
+  }
+  ElMessage.success(`${result.skillName} 内容已填充`)
+}
 
 const form = reactive({
   name: '',
@@ -144,7 +200,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@use '@/views/blogs/admin/styles/admin-common.scss' as *;
+@use '@/views/blogs/styles/admin-common.scss' as *;
 
 .app-container { padding: 20px; gap: 10px; box-sizing: border-box; }
 .edit-form { flex: 1; min-height: 0; overflow-y: auto; }

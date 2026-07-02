@@ -16,7 +16,9 @@
 
     <el-alert
       title="分类与标签数据由系统字典统一管理，点击右上角按钮可跳转至「系统管理 → 字典设置」维护 dictType = blog_category / blog_tag 的字典项"
-      type="info" :closable="false" show-icon
+      type="info" 
+      :closable="false" 
+      show-icon
     />
 
     <el-row :gutter="16" class="flex-1 min-h-0">
@@ -29,7 +31,7 @@
             </div>
           </template>
           <div class="table-wrapper flex-1">
-            <SpTable :columns="categoryColumns" :data="categories" :show-index="true" />
+            <SpTable :columns="CATEGORY_LIST_COLUMNS" :data="categories" :show-index="true" />
           </div>
         </el-card>
       </el-col>
@@ -43,7 +45,7 @@
             </div>
           </template>
           <div class="table-wrapper flex-1">
-            <SpTable :columns="tagColumns" :data="tags" :show-index="true">
+            <SpTable :columns="TAG_LIST_COLUMNS" :data="tags" :show-index="true">
               <template #tagColor>
                 <el-table-column label="颜色" min-width="100px" align="center" slot-name="tagColor">
                   <template #default="{ row }">
@@ -63,46 +65,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getDictByType } from '@/api/system/baseInfo/dict.ts'
-
-interface DictItem {
-  dictCode: string
-  dictName: string
-  orderNum: number
-  remark?: string
-}
+import type { DictItem } from '../utils/type'
+import { CATEGORY_LIST_COLUMNS, TAG_LIST_COLUMNS } from '../utils/tableColumns'
 
 const router = useRouter()
 const categories = ref<DictItem[]>([])
 const tags = ref<DictItem[]>([])
-
-/** 分类表格列定义 */
-const categoryColumns = reactive([
-  { label: '编码', prop: 'dictCode', minWidth: '120px' },
-  { label: '名称', prop: 'dictName', minWidth: '200px', showOverflowTooltip: true },
-  { label: '排序', prop: 'orderNum', minWidth: '80px', align: 'center' },
-  {
-    columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
-    buttons: [
-      { type: 'primary', label: '编辑分类', size: 'small', renderType: 'link', click: () => goToDict() },
-    ],
-  },
-])
-
-/** 标签表格列定义 */
-const tagColumns = reactive([
-  { label: '标签名', prop: 'dictCode', minWidth: '200px', showOverflowTooltip: true },
-  { slotName: 'tagColor' },
-  { label: '排序', prop: 'orderNum', minWidth: '80px', align: 'center' },
-  {
-    columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
-    buttons: [
-      { type: 'primary', label: '编辑标签', size: 'small', renderType: 'link', click: () => goToDict() },
-    ],
-  },
-])
 
 /** 从 remark JSON 中解析颜色类型 */
 function getTagColor(remark?: string) {
@@ -124,7 +95,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@use '@/views/blogs/admin/styles/admin-common.scss' as *;
+@use '@/views/blogs/styles/admin-common.scss' as *;
 
 .app-container { 
   padding: 20px; 

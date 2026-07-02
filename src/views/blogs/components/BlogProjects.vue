@@ -26,7 +26,7 @@
 import { onMounted, ref } from 'vue'
 import { useBlogStore } from '@/store/modules/blog.ts'
 import { ArrowRight } from '@element-plus/icons-vue'
-import { openLink } from '../data'
+import { openLink } from '../utils/type'
 
 const store = useBlogStore()
 

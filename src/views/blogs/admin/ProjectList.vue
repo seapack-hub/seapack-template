@@ -9,9 +9,6 @@
 <template>
   <div class="app-container w-100% h-100% flex flex-col">
     <PageHeader title="项目管理" :edit="false" :back="false">
-      <template #button>
-        <el-button type="primary" icon="plus" @click="createProject">新增项目</el-button>
-      </template>
     </PageHeader>
 
     <el-card class="search-card admin-card" shadow="never">
@@ -80,6 +77,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ProjectAPI, type Project } from '@/api/blogs/project.ts'
 import { ElMessageBox, ElMessage } from 'element-plus'
+import { PROJECT_LIST_COLUMNS } from '../utils/tableColumns'
 
 const router = useRouter()
 
@@ -94,15 +92,9 @@ const total = ref(0)
 const loading = ref(false)
 const tableData = ref<Project[]>([])
 
-// ===== SpTable 列定义 =====
+// ===== SpTable 列定义（基础列 + 操作列） =====
 const columns = reactive([
-  { label: '项目名称', prop: 'name', minWidth: '180px', showOverflowTooltip: true },
-  { label: '描述', prop: 'description', minWidth: '260px', showOverflowTooltip: true },
-  { label: '图标', prop: 'icon', minWidth: '80px', align: 'center' },
-  { slotName: 'colorPreview' },
-  { label: '链接', prop: 'url', minWidth: '200px', showOverflowTooltip: true },
-  { label: '排序', prop: 'sort', minWidth: '60px', align: 'center' },
-  { slotName: 'status' },
+  ...PROJECT_LIST_COLUMNS,
   {
     columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
     buttons: [
@@ -163,7 +155,7 @@ onMounted(() => { fetchData() })
 </script>
 
 <style scoped lang="scss">
-@use '@/views/blogs/admin/styles/admin-common.scss' as *;
+@use '@/views/blogs/styles/admin-common.scss' as *;
 
 .app-container { padding: 20px; gap: 10px; box-sizing: border-box; }
 .search-card :deep(.el-card__body) { padding: 16px 20px; }
