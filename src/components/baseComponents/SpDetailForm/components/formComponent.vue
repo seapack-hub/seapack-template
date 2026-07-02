@@ -5,7 +5,7 @@
       <div class="inline-flex items-center gap-x-3px">
         {{ column.label }}
         <el-tooltip effect="dark" :content="String(column.tips)" placement="top">
-          <SPIcon name="tips" size="14px" color="#909299"></SPIcon>
+          <Icon name="tips" :size="14" color="#909299" />
         </el-tooltip>
       </div>
     </template>
@@ -48,7 +48,7 @@
         </Suspense>
       </SpDetailEditable>
       <el-tooltip v-if="column.tooltipOption && editable" v-bind="column.tooltipOption">
-        <SPIcon name="tips" text="[var(--el-text-color-secondary)]" class="ml-[8px]"></SPIcon>
+        <Icon name="tips" text="[var(--el-text-color-secondary)]" class="ml-[8px]" />
       </el-tooltip>
       <slot
         v-if="column.slotOptions"

@@ -75,7 +75,7 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'industryManagement',
               description: '行业管理',
-              icon: 'industry',
+              icon: 'industry-management',
               permKey: 'industryManagement',
             },
           },

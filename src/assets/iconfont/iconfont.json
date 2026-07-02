@@ -1,0 +1,37 @@
+{
+  "id": "3707716",
+  "name": "SeaPack",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "自研项目",
+  "glyphs": [
+    {
+      "icon_id": "4181803",
+      "name": "industry-management",
+      "font_class": "industry-management",
+      "unicode": "e739",
+      "unicode_decimal": 59193
+    },
+    {
+      "icon_id": "25626313",
+      "name": "fund-base-info",
+      "font_class": "fund-base-info",
+      "unicode": "e6de",
+      "unicode_decimal": 59102
+    },
+    {
+      "icon_id": "44493720",
+      "name": "stock-quote",
+      "font_class": "stock-quote",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "3638339",
+      "name": "agent",
+      "font_class": "agent",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    }
+  ]
+}

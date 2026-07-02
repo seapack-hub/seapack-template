@@ -16,7 +16,7 @@
              group-hover:(scale-110 rotate-[-4deg])"
       :style="{ background: color }"
     >
-      <SPIcon :name="icon" :size="iconSize" color="#fff" />
+      <Icon :name="icon" :size="iconSize" color="#fff" />
     </div>
     <div class="flex-1 min-w-0">
       <h3 class="text-[15px] font-600 color-[rgba(255,255,255,0.9)] m-0 mb-4px">{{ title }}</h3>

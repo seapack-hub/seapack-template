@@ -87,10 +87,10 @@
                 placement="top"
                 :content="item.tips"
               >
-                <SPIcon 
+                <Icon 
                   name="tips"
-                  size="15px"
-                ></SPIcon>
+                  :size="15"
+                />
               </el-tooltip>
             </div>
           </template>

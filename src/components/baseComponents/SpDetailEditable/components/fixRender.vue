@@ -1,5 +1,5 @@
 <template>
-  <SPIcon v-if="type === 'icon'" :name="value"></SPIcon>
+  <Icon v-if="type === 'icon'" :name="value" />
   <span v-else class="font-size-14px">
     {{ value }}
   </span>

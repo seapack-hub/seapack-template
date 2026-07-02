@@ -25,7 +25,7 @@
           </div>
           <!-- 右侧：彩色图标背景 -->
           <div class="stats-icon" :style="{ background: item.bgColor }">
-            <SPIcon :name="item.icon" :size="28" :color="item.color" />
+            <Icon :name="item.icon" :size="28" :color="item.color" />
           </div>
         </div>
         <!-- 底部：趋势变化（红色上涨 / 绿色下跌） -->

@@ -1,9 +1,9 @@
 <template>
   <div class="w-100% flex flex-col items-center justify-center color-#D8DEE6 !cursor-default">
-    <SPIcon 
+    <Icon 
       name="empty-data"
-      size="120px"
-    ></SPIcon>
+      :size="120"
+    />
     <p
       v-if="showText"
       :class="textClass"

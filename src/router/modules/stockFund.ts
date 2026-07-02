@@ -64,7 +64,7 @@ const stockFundRoute: Array<RouterObject> = [
             meta: {
               title: 'stockQuote',
               description: '股票实时行情',
-              icon: 'trend-charts',
+              icon: 'stock-quote',
               permKey: 'stockQuote',
             },
           },
@@ -150,7 +150,7 @@ const stockFundRoute: Array<RouterObject> = [
             meta: {
               title: 'fundBaseInfo',
               description: '基金信息',
-              icon: 'fund-info',
+              icon: 'fund-base-info',
               permKey: 'fundBaseInfo',
             },
           },

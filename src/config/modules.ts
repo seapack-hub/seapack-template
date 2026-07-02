@@ -3,13 +3,13 @@ export interface ModuleDef {
   key: string           // 模块唯一标识，与路由 name 对应
   path: string          // 默认导航路径
   title: string         // 模块名称（中文）
-  icon: string          // SPIcon 图标名
+  icon: string          // 图标名（传给 <Icon> 组件的 name prop）
   permKey?: string      // 模块级权限标识（可选）
 }
 
 export const MODULE_DEFS: ModuleDef[] = [
-  { key: 'systemManagement', path: '/systemManagement/dashboard', title: '系统管理', icon: 'setting', permKey: 'systemManagement' },
-  { key: 'blogsManagement', path: '/blogsManagement/blogs', title: '个人博客', icon: 'blog', permKey: 'blogsManagement' },
+  { key: 'systemManagement', path: '/systemManagement/dashboard', title: '系统管理', icon: 'system', permKey: 'systemManagement' },
+  { key: 'blogsManagement', path: '/blogsManagement/blogs', title: '个人博客', icon: 'blogs', permKey: 'blogsManagement' },
   { key: 'stockFund', path: '/stockFund/workbench', title: '股票基金', icon: 'trend-charts', permKey: 'stockFund' },
   { key: 'aiModule', path: '/aiModule/rag', title: 'AI交互', icon: 'ai-interaction', permKey: 'aiModule' },
   { key: 'devTools', path: '/devTools/workbench', title: '开发工具', icon: 'tool', permKey: 'devTools' },

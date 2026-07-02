@@ -30,6 +30,11 @@ declare module '*.svg' {
   export default src;
 }
 
+declare module '*?raw' {
+  const content: string;
+  export default content;
+}
+
 export type formItemName =
   | 'ElAutocomplete'
   | 'ElCalendar'

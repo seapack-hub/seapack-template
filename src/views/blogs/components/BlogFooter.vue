@@ -8,15 +8,15 @@
           target="_blank"
           :underline="false"
         >
-          <SPIcon name="juejin" :size="18" class="m-r-10" color="#ffffff" /> 掘金
+          <Icon name="juejin" :size="18" class="m-r-10" color="#ffffff" /> 掘金
         </el-link>
         <el-divider direction="vertical" />
         <el-link href="https://gitee.com/zenghaifenga/seapack-template" target="_blank" underline="never">
-          <SPIcon name="gitee" :size="18" class="m-r-10" color="#ffffff" /> Gitee
+          <Icon name="gitee" :size="18" class="m-r-10" color="#ffffff" /> Gitee
         </el-link>
         <el-divider direction="vertical" />
         <el-link href="https://github.com/seapack-hub" target="_blank" underline="never">
-          <SPIcon name="github" :size="18" class="m-r-10" color="#ffffff" /> GitHub
+          <Icon name="github" :size="18" class="m-r-10" color="#ffffff" /> GitHub
         </el-link>
       </div>
     </div>

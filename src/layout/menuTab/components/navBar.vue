@@ -11,15 +11,15 @@
           tabindex="0"
           @click="tabClick(item, index)"
         >
-          <SPIcon :name="item.iconName" size="20px" :color="activeValue === index ? 'aqua' : item.color"></SPIcon>
+          <Icon :name="item.iconName" :size="20" :color="activeValue === index ? 'aqua' : item.color" />
           <span class="item-name">{{ item.name }}</span>
         </div>
       </div>
     </div>
     <div class="menuTab-nav-bar-right">
-      <SPIcon name="backend" size="20px" @click="jumpToLink('/systemManagement')"></SPIcon>
-      <SPIcon name="two-d-layers" size="20px" @click="jumpToLink('/gis2d')"></SPIcon>
-      <SPIcon name="three-d-layers" size="20px" @click="jumpToLink('/gis3d')"></SPIcon>
+      <Icon name="backend" :size="20" @click="jumpToLink('/systemManagement')" />
+      <Icon name="two-d-layers" :size="20" @click="jumpToLink('/gis2d')" />
+      <Icon name="three-d-layers" :size="20" @click="jumpToLink('/gis3d')" />
     </div>
   </div>
 </template>

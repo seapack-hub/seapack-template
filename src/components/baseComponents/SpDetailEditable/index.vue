@@ -58,7 +58,7 @@
 
       <div v-if="isDetailShowTooltip && props?.column?.tooltipOption" class="flex items-center justify-start">
         <el-tooltip v-bind="props?.column?.tooltipOption">
-          <SPIcon name="tips" text="[var(--el-text-color-secondary)]" class="ml-[8px]"></SPIcon>
+          <Icon name="tips" text="[var(--el-text-color-secondary)]" class="ml-[8px]" />
         </el-tooltip>
       </div>
     </div>

@@ -27,19 +27,19 @@
       <!-- 工具按钮 -->
       <el-tooltip content="主屏幕" placement="bottom" :show-after="300">
         <div class="icon-btn" @click="jumpToLink('/menuTab')">
-          <SPIcon name="to-home" size="18px" />
+          <Icon name="to-home" :size="18" />
         </div>
       </el-tooltip>
 
       <el-tooltip content="消息通知" placement="bottom" :show-after="300">
         <div class="icon-btn">
-          <SPIcon name="message-notify" size="18px" />
+          <Icon name="message-notify" :size="18" />
         </div>
       </el-tooltip>
 
       <el-tooltip :content="isFullscreen ? '退出全屏' : '全屏'" placement="bottom" :show-after="300">
         <div class="icon-btn" @click="toggle">
-          <SPIcon :name="isFullscreen ? 'fullscreen-shrink' : 'fullscreen-expand'" size="18px" />
+          <Icon :name="isFullscreen ? 'fullscreen-shrink' : 'fullscreen-expand'" :size="18" />
         </div>
       </el-tooltip>
 

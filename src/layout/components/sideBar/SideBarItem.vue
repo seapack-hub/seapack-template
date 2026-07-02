@@ -6,7 +6,7 @@
   <template v-if="!item.children?.length">
     <Link :to="resolvePath(item.path)">
       <el-menu-item :index="resolvePath(item.path)">
-        <SPIcon :name="item.meta?.icon" size="20px"></SPIcon>
+        <Icon :name="item.meta?.icon" :size="20"></Icon>
         <template #title>
           <span class="menu-text">{{ item.meta?.description || '未知' }}</span>
         </template>
@@ -16,7 +16,7 @@
   <template v-else>
     <el-sub-menu :index="resolvePath(item.path)">
       <template #title>
-        <SPIcon :name="item.meta.icon" size="20px"></SPIcon>
+        <Icon :name="item.meta.icon" :size="20"></Icon>
         <span class="menu-text">{{ item.meta.description || '未知' }}</span>
       </template>
       <side-bar-item

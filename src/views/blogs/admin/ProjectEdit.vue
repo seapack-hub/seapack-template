@@ -68,7 +68,7 @@
           <el-col :xs="24" :sm="12" :lg="6">
             <el-form-item label="图标预览">
               <div class="icon-preview" :style="{ background: form.bgColor || 'rgba(64,158,255,0.1)' }">
-                <SPIcon v-if="form.icon" :name="form.icon" :size="22" :color="form.color || '#409eff'" />
+                <Icon v-if="form.icon" :name="form.icon" :size="22" :color="form.color || '#409eff'" />
                 <span v-else class="text-12px color-#c0c4cc">无</span>
               </div>
             </el-form-item>

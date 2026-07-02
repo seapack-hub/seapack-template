@@ -13,6 +13,8 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 import UnoCSS from 'unocss/vite'
 //配置SVG
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
+//图标目录动态扫描
+import fg from 'fast-glob'
 //引入地图组件
 import cesium from 'vite-plugin-cesium'
 import eslint from 'vite-plugin-eslint';
@@ -82,26 +84,19 @@ export default defineConfig(({mode}:ConfigEnv) => {
       }),
       // SVG配置
       createSvgIconsPlugin({
-        // 指定需要缓存的图标文件夹（每个子目录单独注册，保证 [name] 不含目录前缀）
-        iconDirs: [
-          resolve(process.cwd(), 'src/assets/icons/common'),
-          resolve(process.cwd(), 'src/assets/icons/nav'),
-          resolve(process.cwd(), 'src/assets/icons/social'),
-          resolve(process.cwd(), 'src/assets/icons/system'),
-          resolve(process.cwd(), 'src/assets/icons/blogs'),
-          resolve(process.cwd(), 'src/assets/icons/stockFund'),
-          resolve(process.cwd(), 'src/assets/icons/ai'),
-          resolve(process.cwd(), 'src/assets/icons/devTools'),
-          resolve(process.cwd(), 'src/assets/icons/gis2d'),
-          resolve(process.cwd(), 'src/assets/icons/gis3d'),
-          resolve(process.cwd(), 'src/assets/icons/bigScreen'),
-        ],
+        // 自动扫描 src/assets/icons/ 下所有子目录，新增 SVG 目录无需手动配置
+        iconDirs: fg.sync('src/assets/icons/*/', {
+          onlyDirectories: true,
+          cwd: process.cwd(),
+          absolute: true,
+        }),
         // 指定symbolId格式
         symbolId: 'icon-[name]',
       }),
       isDev ? VueDevTools() : null,
       isDev ? eslint({
-        include: ['src/**/*.ts', 'src/**/*.js', 'src/**/*.vue', 'src/*.ts', 'src/*.js', 'src/*.vue']
+        include: ['src/**/*.ts', 'src/**/*.js', 'src/**/*.vue', 'src/*.ts', 'src/*.js', 'src/*.vue'],
+        exclude: ['src/assets/iconfont/**'],
       }) : null
     ],
     resolve: {

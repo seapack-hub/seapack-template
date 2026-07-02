@@ -13,6 +13,7 @@ export default [
       'components.d.ts',
       'auto-imports.d.ts',
       'node_modules/**',
+      'src/assets/iconfont/**',
     ],
   },
 

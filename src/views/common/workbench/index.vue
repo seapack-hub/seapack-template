@@ -28,7 +28,7 @@
       >
         <div class="card-accent"></div>
         <div class="card-icon">
-          <SPIcon :name="moduleIcons[mod.key] || 'home'" size="28px" color="#ffffff" />
+          <Icon :name="moduleIcons[mod.key] || 'home'" :size="28" color="#ffffff" />
         </div>
         <div class="card-body">
           <h3 class="card-title">{{ mod.title }}</h3>

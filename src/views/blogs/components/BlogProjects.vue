@@ -10,7 +10,7 @@
         @mouseleave="($event.currentTarget as HTMLElement).style.boxShadow = ''"
       >
         <div class="w-44px h-44px rounded-12px flex items-center justify-center flex-shrink-0" :style="{ background: item.bgColor }">
-          <SPIcon :name="item.icon" :size="24" :color="item.color" />
+          <Icon :name="item.icon" :size="24" :color="item.color" />
         </div>
         <div class="flex-1 min-w-0">
           <h4 class="m-0 mb-3px text-14px font-600 color-#303133">{{ item.name }}</h4>

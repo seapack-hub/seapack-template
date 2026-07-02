@@ -21,7 +21,7 @@
       >
         <!-- 图标容器：带彩色背景 -->
         <div class="nav-icon" :style="{ background: item.bgColor }">
-          <SPIcon :name="item.icon" :size="26" :color="item.color" />
+          <Icon :name="item.icon" :size="26" :color="item.color" />
         </div>
         <!-- 模块名称 -->
         <span class="nav-label">{{ item.label }}</span>

@@ -69,11 +69,11 @@
           type="primary"
         >
           更多
-          <SPIcon
-            size="14px"
+          <Icon
+            :size="14"
             class="m-l-2px"
             name="arrow-down"
-          ></SPIcon>
+          />
         </el-link>
         <template #dropdown>
           <el-dropdown-menu>

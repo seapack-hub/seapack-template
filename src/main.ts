@@ -8,6 +8,8 @@ import 'element-plus/es/components/message-box/style/css'
 import './styles/index.scss';
 // 本地SVG图标
 import 'virtual:svg-icons-register';
+// Iconfont 图标初始化（加载精灵图 + 清除内联颜色）
+import './assets/iconfont/setup';
 // 全局注册 Element Plus 图标，使字符串 prop 形式（icon="search"）可用
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 //引入pinia

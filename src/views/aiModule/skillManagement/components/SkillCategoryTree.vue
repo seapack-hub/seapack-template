@@ -38,7 +38,7 @@
           :class="{ 'is-active': !activeId }"
           @click="$emit('select', undefined)"
         >
-          <SPIcon name="list" size="15" />
+          <Icon name="list" :size="15" />
           <span class="item-label">全部分类</span>
         </div>
         <!-- 遍历分类 -->
@@ -49,9 +49,8 @@
           :class="{ 'is-active': activeId === cat.id }"
           @click="$emit('select', cat.id)"
         >
-          <!-- 优先渲染 Element Plus 图标，若名称非 EP 图标则回退到 SVG 图标 -->
-          <component :is="cat.icon" v-if="isEPIcon(cat.icon)" style="width: 15px; height: 15px; flex-shrink: 0;" />
-          <SPIcon v-else :name="cat.icon || 'category'" size="15" />
+          <!-- 统一通过 Icon 组件渲染，自动识别 EP 图标或 SVG 精灵 -->
+          <Icon :name="cat.icon || 'category'" :size="15" />
           <span class="item-label">{{ cat.name }}</span>
           <!-- hover 时显示操作按钮 -->
           <span class="item-actions">
@@ -71,14 +70,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Loading } from '@element-plus/icons-vue'
-import * as ElementPlusIcons from '@element-plus/icons-vue'
 import type { SkillCategory } from '@/api/ai/skillCategory';
-
-/** Element Plus 图标名称集合，用于运行时判断图标渲染方式 */
-const epIconNames = new Set(Object.keys(ElementPlusIcons))
-function isEPIcon(name?: string): boolean {
-  return !!name && epIconNames.has(name)
-}
 
 const props = defineProps<{
   /** 分类列表 */

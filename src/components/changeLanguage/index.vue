@@ -4,35 +4,35 @@
     @command="handleCommand"
   >
     <div>
-      <SPIcon
+      <Icon
         name="translation"
-        size="20px"
-      ></SPIcon>
+        :size="20"
+      />
     </div>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item command="zh-CN">
-          <SPIcon
+          <Icon
             name="simplified"
-            size="20px"
+            :size="20"
             class="svg-icon"
-          ></SPIcon>
+          />
           中文简体
         </el-dropdown-item>
         <el-dropdown-item command="zh-TW">
-          <SPIcon
+          <Icon
             name="complex"
-            size="20px"
+            :size="20"
             class="svg-icon"
-          ></SPIcon>
+          />
           中文繁體
         </el-dropdown-item>
         <el-dropdown-item command="en">
-          <SPIcon
+          <Icon
             name="english"
-            size="20px"
+            :size="20"
             class="svg-icon"
-          ></SPIcon>
+          />
           English
         </el-dropdown-item>
       </el-dropdown-menu>

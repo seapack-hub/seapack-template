@@ -25,7 +25,7 @@
             class="sidebar-link"
             :class="{ active: isActive(item.name) }"
           >
-            <SPIcon :name="item.icon" size="18px" />
+            <Icon :name="item.icon" :size="18" />
             <span>{{ item.label }}</span>
           </router-link>
         </nav>
