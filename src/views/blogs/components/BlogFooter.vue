@@ -1,7 +1,7 @@
 <template>
   <footer class="blog-footer">
     <div class="footer-inner">
-      <p>© 2025 Sea Pack · 烈风逍遥</p>
+      <p>© 2026 Sea Pack · 烈风逍遥</p>
       <div class="footer-links">
         <el-link
           href="https://juejin.cn/user/2071912223613783"
@@ -26,7 +26,7 @@
 <style lang="scss" scoped>
 .blog-footer {
   background: #1a1a2e;
-  padding: 24px 40px;
+  padding: 15px 40px;
   text-align: center;
   flex-shrink: 0;
 }

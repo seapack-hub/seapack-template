@@ -19,9 +19,14 @@
             <span class="flex items-center gap-[4px]"><el-icon><Star /></el-icon> {{ article?.likeCount }} 赞</span>
           </div>
         </div>
-        <el-button class="back-btn" @click="goBack">
-          <el-icon><ArrowLeft /></el-icon> 返回
-        </el-button>
+        <div class="flex gap-[8px]">
+          <el-button class="back-btn" @click="copyContent">
+            <el-icon><CopyDocument /></el-icon> 复制
+          </el-button>
+          <el-button class="back-btn" @click="goBack">
+            <el-icon><ArrowLeft /></el-icon> 返回
+          </el-button>
+        </div>
       </div>
     </div>
 
@@ -36,7 +41,7 @@
             {{ article.summary }}
           </p>
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <div ref="contentRef" class="bg-white rd-10 px-[36px] py-[28px] text-15px lh-[1.9] color-[#303133] shadow-[0_1px_4px_rgba(0,0,0,0.04)] prose" v-html="article?.contentHtml"></div>
+          <div ref="contentRef" class="bg-white rd-10 px-[36px] py-[28px] text-15px lh-[1.9] color-[#303133] shadow-[0_1px_4px_rgba(0,0,0,0.04)]" v-html="renderedHtml"></div>
         </div>
 
         <ArticleToc v-if="article?.contentHtml" :content-html="article.contentHtml" />
@@ -55,10 +60,11 @@
  *   3. 三栏布局：左侧其他文章列表 | 中间正文 | 右侧目录导航
  *   4. 为正文标题自动注入 id，供目录组件定位
  */
-import { onMounted, ref, nextTick, watch } from 'vue'
+import { computed, onMounted, ref, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBlogStore } from '@/store/modules/blog.ts'
-import { ArrowLeft, Calendar, View, Star } from '@element-plus/icons-vue'
+import { ArrowLeft, Calendar, View, Star, CopyDocument } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import type { Article } from '@/api/blogs/article.ts'
 import ArticleList from './components/ArticleList.vue'
 import ArticleToc from './components/ArticleToc.vue'
@@ -68,6 +74,14 @@ const router = useRouter()
 const store = useBlogStore()
 const article = ref<Article | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
+
+/** 处理后的安全 HTML：将过时的 <font> 替换为 <span>，避免样式失效 */
+const renderedHtml = computed(() => {
+  if (!article.value?.contentHtml) return ''
+  return article.value.contentHtml
+    .replace(/<font(\s[^>]*)>/gi, '<span$1>')
+    .replace(/<\/font>/gi, '</span>')
+})
 
 /**
  * 为正文中所有 h1/h2/h3 标题元素注入 id
@@ -82,6 +96,18 @@ function injectHeadingIds() {
       el.id = `toc-${btoa(encodeURIComponent(text)).slice(0, 32)}`
     }
   })
+}
+
+/** 复制文章全文到剪贴板，方便翻译/分享 */
+function copyContent() {
+  const text = article.value ? `${article.value.title}\n\n${article.value.summary || ''}\n\n${article.value.contentHtml?.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() || ''}` : ''
+  if (!text) {
+    ElMessage.warning('暂无内容');
+    return
+  }
+  navigator.clipboard.writeText(text)
+      .then(() => ElMessage.success('已复制到剪贴板'))
+      .catch(() => ElMessage.error('复制失败'))
 }
 
 /** 返回博客首页 */
@@ -118,7 +144,6 @@ watch(() => article.value?.contentHtml, async () => {
 /* --- 返回按钮（含半透明 hover 效果） --- */
 .back-btn {
   color: #fff;
-  margin-right: 20px;
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
@@ -145,6 +170,10 @@ watch(() => article.value?.contentHtml, async () => {
   border-radius: 4px;
   font-size: 14px;
   color: #d63384;
+}
+:deep(span[style]) {
+  display: inline;
+  border-radius: 3px;
 }
 :deep(pre) {
   background: #1a1a2e;

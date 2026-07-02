@@ -52,7 +52,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .hero-section {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  padding: 50px 0; flex-shrink: 0;
+  padding: 20px 0; flex-shrink: 0;
 }
 .hero-inner { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
 .hero-content { display: flex; align-items: center; gap: 24px; }

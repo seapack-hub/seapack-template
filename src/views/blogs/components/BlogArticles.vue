@@ -2,11 +2,11 @@
   <div class="h-full flex flex-col">
     <div class="flex justify-between items-center flex-shrink-0 mb-16px">
       <h2 class="text-20px font-700 color-#1a1a2e m-0">最新文章</h2>
-      <div class="flex gap-4px bg-white rounded-24px p-3px shadow-sm flex-wrap">
+      <div class="tab-card flex gap-4px bg-white p-3px shadow-sm flex-wrap">
         <span
           v-for="tab in tabs"
           :key="tab.key"
-          class="px-16px py-5px rounded-20px text-13px color-#606266 cursor-pointer transition-all duration-200 select-none"
+          class="px-16px py-5px rounded-4px text-13px color-#606266 cursor-pointer transition-all duration-200 select-none"
           :class="activeTab === tab.key ? 'bg-#409eff color-white font-500' : 'hover:color-#409eff'"
           @click="switchTab(tab.key)"
         >{{ tab.label }}</span>
@@ -15,28 +15,25 @@
     <div class="flex-1 overflow-hidden flex flex-col">
       <el-carousel v-if="articleChunks.length > 0" height="100%" indicator-position="outside" arrow="always" class="flex-1">
         <el-carousel-item v-for="chunk in articleChunks" :key="chunk.key">
-          <div class="flex flex-wrap justify-center items-stretch gap-16px h-full p-10 box-border">
+          <div class="grid grid-cols-4 gap-16px h-full p-10 box-border content-start">
             <div
               v-for="item in chunk.items" :key="item.id"
-              class="article-card bg-white cursor-pointer flex flex-col"
-              style="width: calc((100% - 48px) / 4); min-width: 220px;"
+              class="article-card bg-white cursor-pointer flex flex-col overflow-hidden"
               @click="openDetail(item.id)"
-              @mouseenter="($event.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; ($event.currentTarget as HTMLElement).style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)'"
-              @mouseleave="($event.currentTarget as HTMLElement).style.transform = ''; ($event.currentTarget as HTMLElement).style.boxShadow = ''"
             >
-              <div class="h-120px flex items-center justify-center flex-shrink-0 rounded-t-8px" :style="{ background: item.coverBg }">
-                <span class="text-42px">{{ item.icon }}</span>
+              <div class="h-100px flex items-center justify-center flex-shrink-0" :style="{ background: item.coverBg }">
+                <span class="text-36px">{{ item.icon }}</span>
               </div>
-              <div class="p-14px 16px flex-1 flex flex-col">
-                <div class="flex items-center gap-8px mb-8px">
+              <div class="p-12px flex-1 flex flex-col min-h-0">
+                <div class="flex items-center gap-6px mb-6px">
                   <el-tag :type="item.tagType as any" size="small" effect="plain">{{ item.tag }}</el-tag>
-                  <span class="text-14px color-#c0c4cc">{{ item.date }}</span>
+                  <span class="text-12px color-#c0c4cc">{{ item.date }}</span>
                 </div>
-                <h3 class="m-0 mb-6px text-17px font-600 color-#1a1a2e">{{ item.title }}</h3>
-                <p class="m-0 mb-10px text-15px color-#909399 flex-1">{{ item.desc }}</p>
-                <div class="flex justify-between items-center flex-shrink-0">
-                  <span class="text-12px color-#c0c4cc flex items-center gap-4px"><el-icon><View /></el-icon> {{ item.views }}</span>
-                  <span class="text-13px color-#409eff flex items-center gap-4px font-500">阅读全文 <el-icon><ArrowRight /></el-icon></span>
+                <h3 class="m-0 mb-4px text-15px font-600 color-#1a1a2e line-clamp-1">{{ item.title }}</h3>
+                <p class="m-0 text-13px color-#909399 flex-1 line-clamp-2 lh-1.5">{{ item.desc }}</p>
+                <div class="flex justify-between items-center flex-shrink-0 mt-8px">
+                  <span class="text-12px color-#c0c4cc flex items-center gap-3px"><el-icon :size="12"><View /></el-icon> {{ item.views }}</span>
+                  <span class="text-12px color-#409eff flex items-center gap-3px font-500">阅读全文 <el-icon :size="12"><ArrowRight /></el-icon></span>
                 </div>
               </div>
             </div>
@@ -74,7 +71,7 @@ const filteredArticles = computed(() => {
   return articles.value.filter(a => a.category === activeTab.value)
 })
 
-const PER_PAGE = 4
+const PER_PAGE = 8
 const articleChunks = computed(() => {
   const chunks: { key: string; items: ArticleDisplay[] }[] = []
   for (let i = 0; i < filteredArticles.value.length; i += PER_PAGE) {
@@ -115,13 +112,20 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-.article-card{
-  border-radius: 8px;
-  border: 1px solid #e8e8e8;
+.tab-card{
+  border-radius: 10px;
+  border: 1px solid #eee;
   box-sizing: border-box;
+}
+.article-card{
+  border-radius: 10px;
+  border: 1px solid #eee;
+  box-sizing: border-box;
+  transition: all 0.25s ease;
   &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    border-color: #d0d0d0;
   }
 }
 :deep(.el-carousel) { 
@@ -129,5 +133,9 @@ onMounted(async () => {
 }
 :deep(.el-carousel__container) { 
   height: calc(100% - 32px) !important; 
+  padding: 4px;
+}
+:deep(.el-carousel__item) { 
+  border-radius: 0; 
 }
 </style>
