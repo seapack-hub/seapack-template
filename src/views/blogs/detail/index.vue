@@ -6,30 +6,32 @@
   <div class="h-full flex flex-col">
     <!-- 渐变色头部区：标题、元信息、返回按钮 -->
     <div
-      class="pb-[10px] color-white flex-shrink-0 relative overflow-hidden"
-      :style="{ background: article?.coverColor || 'linear-gradient(135deg, #667eea, #764ba2)' }"
+      class="p-15 color-white border-color-red relative overflow-hidden"
+      :style="{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }"
     >
-      <div class="w-100% mx-auto px-[24px]">
+      <div class="w-100% flex items-center justify-between">
+        <div>
+          <div class="text-30px font-500 p-y-10">{{ article?.title }}</div>
+          <div class="flex items-center flex-wrap gap-[16px] text-14px opacity-88">
+            <el-tag :type="article?.tagType || 'primary'" size="small" effect="dark">{{ article?.tag }}</el-tag>
+            <span class="flex items-center gap-[4px]"><el-icon><Calendar /></el-icon> {{ article?.createTime?.slice(0, 10) }}</span>
+            <span class="flex items-center gap-[4px]"><el-icon><View /></el-icon> {{ article?.viewCount }} 阅读</span>
+            <span class="flex items-center gap-[4px]"><el-icon><Star /></el-icon> {{ article?.likeCount }} 赞</span>
+          </div>
+        </div>
         <el-button class="back-btn" @click="goBack">
           <el-icon><ArrowLeft /></el-icon> 返回
         </el-button>
-        <h1 class="text-32px font-700 ma-0 mb-[14px] lh-[1.4]">{{ article?.title }}</h1>
-        <div class="flex items-center flex-wrap gap-[16px] text-14px opacity-88">
-          <el-tag :type="article?.tagType || 'primary'" size="small" effect="dark">{{ article?.tag }}</el-tag>
-          <span class="flex items-center gap-[4px]"><el-icon><Calendar /></el-icon> {{ article?.createTime?.slice(0, 10) }}</span>
-          <span class="flex items-center gap-[4px]"><el-icon><View /></el-icon> {{ article?.viewCount }} 阅读</span>
-          <span class="flex items-center gap-[4px]"><el-icon><Star /></el-icon> {{ article?.likeCount }} 赞</span>
-        </div>
       </div>
     </div>
 
     <!-- 三栏主体：左侧列表 | 正文 | 右侧目录 -->
-    <div class="flex-1 overflow-hidden py-[28px] px-[20px] pb-[48px]">
-      <div class="flex gap-[20px] w-full mx-auto h-full items-start">
+    <div class="flex-1 overflow-hidden p-15">
+      <div class="flex gap-[10px] w-full mx-auto h-full items-start">
         <ArticleList v-if="article?.id" :current-id="article.id" />
 
         <!-- 正文区（独立滚动） -->
-        <div class="flex-1 min-w-0 overflow-y-auto h-full pr-[4px]">
+        <div class="flex-1 min-w-0 overflow-y-auto h-full pr-[4px] body-inner">
           <p v-if="article?.summary" class="text-15px color-[#606266] lh-[1.8] px-[22px] py-[18px] bg-white rd-10 border-l-4 border-l-[#409eff] ma-0 mb-[22px] shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
             {{ article.summary }}
           </p>
@@ -85,11 +87,19 @@ function injectHeadingIds() {
 /** 返回博客首页 */
 function goBack() { router.push('/blogsManagement/blogs') }
 
-onMounted(async () => {
-  const id = Number(route.params.id)
+async function loadArticle(id: number) {
   article.value = await store.fetchArticleById(id)
   await nextTick()
   injectHeadingIds()
+}
+
+onMounted(async () => {
+  await loadArticle(Number(route.params.id))
+})
+
+/** 路由参数变化时重新加载文章（组件复用场景） */
+watch(() => route.params.id, async (newId) => {
+  if (newId) await loadArticle(Number(newId))
 })
 
 /** 当正文 HTML 变化时，重新注入标题 id */
@@ -108,7 +118,7 @@ watch(() => article.value?.contentHtml, async () => {
 /* --- 返回按钮（含半透明 hover 效果） --- */
 .back-btn {
   color: #fff;
-  margin-bottom: 20px;
+  margin-right: 20px;
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;

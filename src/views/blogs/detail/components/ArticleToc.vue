@@ -6,37 +6,39 @@
   -->
   <aside
     v-if="headings.length > 0"
-    class="flex-shrink-0 w-[220px] bg-white rd-10 shadow-[0_1px_4px_rgba(0,0,0,0.04)] flex flex-col overflow-hidden sticky top-0 self-start max-h-full"
+    class="flex-shrink-0 w-[220px] h-[100%] bg-white rd-10 shadow-[0_1px_4px_rgba(0,0,0,0.04)] flex flex-col overflow-hidden sticky top-0 self-start max-h-full"
   >
     <!-- 面板标题 -->
     <div class="flex-shrink-0 px-[18px] py-[12px] border-b border-b-[var(--el-border-color-lighter)]">
-      <h3 class="ma-0 text-15px font-600 color-[#303133] flex items-center gap-[6px]">
+      <div class="ma-0 text-20px font-600 color-[#303133] flex items-center gap-[6px]">
         <el-icon><List /></el-icon>
         <span>目录</span>
-      </h3>
+      </div>
     </div>
 
     <!-- 目录项列表 -->
-    <div class="flex-1 overflow-y-auto py-[8px]">
-      <nav class="flex flex-col">
-        <a
-          v-for="(item, index) in headings"
-          :key="index"
-          :class="[
-            'block px-[18px] py-[6px] text-13px color-[#606266] no-underline lh-[1.6] border-l-2 border-l-transparent transition-all-200 overflow-hidden text-ellipsis whitespace-nowrap',
-            index === activeIndex
-              ? 'color-[#409eff] bg-[#ecf5ff] border-l-[#409eff] font-500'
-              : 'hover:color-[#409eff] hover:bg-[#f5f7fa]',
-            `pl-[${18 + (item.level - 1) * 14}px]`,
-            item.level === 1 ? 'font-600' : '',
-            item.level === 3 ? 'text-12px' : '',
-          ]"
-          :title="item.text"
-          @click.prevent="scrollToHeading(index)"
-        >
-          {{ item.text }}
-        </a>
-      </nav>
+    <div class="flex-1 overflow-hidden py-[8px]">
+      <el-scrollbar>
+        <nav class="flex flex-col">
+          <a
+            v-for="(item, index) in headings"
+            :key="index"
+            :class="[
+              'block px-[18px] py-[6px] text-13px color-[#606266] no-underline lh-[1.6] border-l-2 border-l-transparent transition-all-200 overflow-hidden text-ellipsis whitespace-nowrap',
+              index === activeIndex
+                ? 'color-[#409eff] bg-[#ecf5ff] border-l-[#409eff] font-500'
+                : 'hover:color-[#409eff] hover:bg-[#f5f7fa]',
+              item.level === 1 ? 'font-600' : '',
+              item.level === 3 ? 'text-12px' : '',
+            ]"
+            :style="{ paddingLeft: `${18 + (item.level - 1) * 14}px` }"
+            :title="item.text"
+            @click.prevent="scrollToHeading(index)"
+          >
+            {{ item.text }}
+          </a>
+        </nav>
+      </el-scrollbar>
     </div>
   </aside>
 </template>

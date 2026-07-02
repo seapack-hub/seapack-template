@@ -8,32 +8,36 @@
   >
     <!-- 面板标题 -->
     <div class="flex-shrink-0 px-[18px] py-[12px] border-b border-b-[var(--el-border-color-lighter)]">
-      <h3 class="ma-0 text-15px font-600 color-[#303133] flex items-center gap-[6px]">
+      <div class="ma-0 text-20px font-600 color-[#303133] flex items-center gap-[6px]">
         <el-icon><Document /></el-icon>
         <span>文章列表</span>
-      </h3>
+      </div>
     </div>
 
     <!-- 文章条目列表 -->
-    <div v-loading="loading" class="flex-1 overflow-y-auto py-[8px]">
+    <div v-loading="loading" class="flex-1 overflow-hidden py-[8px]">
       <template v-if="items.length > 0">
-        <div
-          v-for="item in items"
-          :key="item.id"
-          class="px-[18px] py-[12px] cursor-pointer border-l-3 border-l-transparent transition-all-200"
-          :class="[item.id === currentId ? 'bg-[#ecf5ff] border-l-[#409eff]' : 'hover:bg-[#f5f7fa]']"
-          @click="goArticle(item.id!)"
-        >
-          <div class="mb-[4px]">
-            <el-tag :type="item.tagType || 'info'" size="small" effect="plain">{{ item.tag }}</el-tag>
+        <el-scrollbar class="h-full">
+          <div class="flex flex-col gap-10 px-[8px]">
+            <div
+              v-for="item in items"
+              :key="item.id"
+              class="article-card px-[18px] py-[12px] cursor-pointer border-l-3 border-l-transparent transition-all-200"
+              :class="[item.id === currentId ? 'bg-[#ecf5ff] border-l-[#409eff]' : 'hover:bg-[#f5f7fa]']"
+              @click="goArticle(item.id!)"
+            >
+              <div class="mb-[4px]">
+                <el-tag :type="item.tagType || 'info'" size="small" effect="plain">{{ item.tag }}</el-tag>
+              </div>
+              <div class="text-13px font-500 color-[#303133] lh-[1.5] line-clamp-2">
+                {{ item.title }}
+              </div>
+              <div class="text-12px color-[#909399] mt-[4px]">
+                {{ item.createTime?.slice(0, 10) }}
+              </div>
+            </div>
           </div>
-          <div class="text-13px font-500 color-[#303133] lh-[1.5] line-clamp-2">
-            {{ item.title }}
-          </div>
-          <div class="text-12px color-[#909399] mt-[4px]">
-            {{ item.createTime?.slice(0, 10) }}
-          </div>
-        </div>
+        </el-scrollbar>
       </template>
       <el-empty v-else description="暂无文章" :image-size="80" />
     </div>
@@ -81,3 +85,10 @@ onMounted(async () => {
   }
 })
 </script>
+<style lang="scss" scoped>
+.article-card{
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-sizing: border-box;
+}
+</style>

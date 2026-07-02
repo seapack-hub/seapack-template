@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import * as path from 'path'
 import { resolve } from 'path'
+import fs from 'node:fs'
 import ElementPlus from 'unplugin-element-plus/vite'
 //element-plus自动导入
 import AutoImport from 'unplugin-auto-import/vite'
@@ -13,8 +14,6 @@ import VueDevTools from 'vite-plugin-vue-devtools'
 import UnoCSS from 'unocss/vite'
 //配置SVG
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-//图标目录动态扫描
-import fg from 'fast-glob'
 //引入地图组件
 import cesium from 'vite-plugin-cesium'
 import eslint from 'vite-plugin-eslint';
@@ -85,11 +84,9 @@ export default defineConfig(({mode}:ConfigEnv) => {
       // SVG配置
       createSvgIconsPlugin({
         // 自动扫描 src/assets/icons/ 下所有子目录，新增 SVG 目录无需手动配置
-        iconDirs: fg.sync('src/assets/icons/*/', {
-          onlyDirectories: true,
-          cwd: process.cwd(),
-          absolute: true,
-        }),
+        iconDirs: fs.readdirSync(resolve(process.cwd(), 'src/assets/icons'), { withFileTypes: true })
+          .filter(d => d.isDirectory())
+          .map(d => resolve(process.cwd(), 'src/assets/icons', d.name)),
         // 指定symbolId格式
         symbolId: 'icon-[name]',
       }),
