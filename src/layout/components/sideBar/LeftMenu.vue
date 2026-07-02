@@ -38,8 +38,11 @@ const textColor = computed(() => {
 const backgroundColor = computed(() => {
   return isLeft.value ? getCssVariableValue('--sidebar-menu-bg-color') : undefined;
 });
-const hoverMenuActiveTextColor = computed(() => {
+const hoverBgColor = computed(() => {
   return !isTop.value ? getCssVariableValue('--sidebar-menu-hover-bg-color') : 'transparent';
+});
+const activeBgColor = computed(() => {
+  return !isTop.value ? getCssVariableValue('--sidebar-menu-active-bg-color') : 'transparent';
 });
 const tipLineWidth = computed(() => {
   return isLeft.value ? '2px' : '0px';
@@ -72,7 +75,6 @@ const showMeanList = computed(()=>{
   border: none;
   width: 100% !important;
   min-height: calc(100% - 65px);
-  //background-color: var(--sidebar-menu-bg-color);
   background-color: v-bind(backgroundColor);
 }
 
@@ -82,14 +84,19 @@ const showMeanList = computed(()=>{
 :deep(.el-menu--horizontal .el-menu-item) {
   height: var(--sidebar-menu-item-height);
   line-height: var(--sidebar-menu-item-height);
-  //color:var(--sidebar-menu-text-color);
   color: v-bind(textColor);
-  &.is-active,
+
+  // 悬浮时：用半透明白提升亮度
   &:hover {
-    //background-color:var(--sidebar-menu-hover-bg-color);
-    background-color: v-bind(hoverMenuActiveTextColor);
-    //color:var(--sidebar-menu-active-text-color)
+    background-color: v-bind(hoverBgColor);
     color: v-bind(activeTextColor);
+  }
+
+  // 选中时：用更强的色块 + 高亮文字
+  &.is-active {
+    background-color: v-bind(activeBgColor);
+    color: v-bind(activeTextColor);
+    font-weight: 500;
   }
 }
 

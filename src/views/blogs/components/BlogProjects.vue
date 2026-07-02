@@ -1,10 +1,10 @@
 <template>
-  <div class="h-full flex flex-col border-l-1 border-#e4e7ed pl-20px">
+  <div class="h-full flex flex-col border-l-1 border-#e4e7ed">
     <h2 class="text-20px font-700 color-#1a1a2e m-0 mb-16px flex-shrink-0">开源项目</h2>
     <div class="flex-1 overflow-y-auto flex flex-col gap-12px">
       <div
         v-for="item in projectList" :key="item.name"
-        class="bg-white rounded-12px p-16px flex items-center gap-12px cursor-pointer transition-all duration-200 border-1 border-#e8e8e8"
+        class="project-card bg-white rounded-8px p-16px flex items-center gap-12px cursor-pointer transition-all duration-200 border-1 border-#e8e8e8"
         @click="openLink(item.url)"
         @mouseenter="($event.currentTarget as HTMLElement).style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)'"
         @mouseleave="($event.currentTarget as HTMLElement).style.boxShadow = ''"
@@ -45,3 +45,19 @@ watch(() => store.projects, (val) => {
 
 onMounted(() => { store.fetchProjects() })
 </script>
+<style scoped lang="scss">
+.project-card{
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  } 
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+}
+</style>

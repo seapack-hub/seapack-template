@@ -15,16 +15,16 @@
     <div class="flex-1 overflow-hidden flex flex-col">
       <el-carousel v-if="articleChunks.length > 0" height="100%" indicator-position="outside" arrow="always" class="flex-1">
         <el-carousel-item v-for="chunk in articleChunks" :key="chunk.key">
-          <div class="flex flex-wrap justify-center items-stretch gap-16px h-full py-4px">
+          <div class="flex flex-wrap justify-center items-stretch gap-16px h-full p-10 box-border">
             <div
               v-for="item in chunk.items" :key="item.id"
-              class="bg-white rounded-12px cursor-pointer transition-all duration-250 flex flex-col border-1 border-#e8e8e8"
+              class="article-card bg-white cursor-pointer flex flex-col"
               style="width: calc((100% - 48px) / 4); min-width: 220px;"
               @click="openDetail(item.id)"
               @mouseenter="($event.currentTarget as HTMLElement).style.transform = 'translateY(-3px)'; ($event.currentTarget as HTMLElement).style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)'"
               @mouseleave="($event.currentTarget as HTMLElement).style.transform = ''; ($event.currentTarget as HTMLElement).style.boxShadow = ''"
             >
-              <div class="h-120px flex items-center justify-center flex-shrink-0" :style="{ background: item.coverBg }">
+              <div class="h-120px flex items-center justify-center flex-shrink-0 rounded-t-8px" :style="{ background: item.coverBg }">
                 <span class="text-42px">{{ item.icon }}</span>
               </div>
               <div class="p-14px 16px flex-1 flex flex-col">
@@ -114,7 +114,20 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-:deep(.el-carousel) { flex: 1; }
-:deep(.el-carousel__container) { height: calc(100% - 32px) !important; }
+<style scoped lang="scss">
+.article-card{
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  box-sizing: border-box;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+}
+:deep(.el-carousel) { 
+  flex: 1; 
+}
+:deep(.el-carousel__container) { 
+  height: calc(100% - 32px) !important; 
+}
 </style>

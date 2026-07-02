@@ -28,11 +28,11 @@ const sidebarWidth = computed(() => {
 <style scoped lang="scss">
 .el-aside {
   width: v-bind(sidebarWidth);
-  //设置平滑过渡效果，监听宽度变化，平滑5秒
   transition-property: width;
   transition-duration: 0.5s;
+  overflow: hidden;
 }
 .el-main{
-  background-color:rgba(247, 249, 252, 1);
+  background-color: rgba(247, 249, 252, 1);
 }
 </style>

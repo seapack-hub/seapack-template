@@ -66,6 +66,7 @@ const isCollapse = computed(() => !appStore.opened);
   height: 100%;
   background-color: var(--sidebar-menu-bg-color);
   width: 100%;
+  border-right: 1px solid var(--sidebar-border-color);
   .logo-title {
     color: var(--sidebar-menu-text-color);
     width: 100%;
