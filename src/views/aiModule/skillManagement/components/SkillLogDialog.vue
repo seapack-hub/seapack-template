@@ -10,10 +10,12 @@
       <el-form :inline="true" :model="queryParams" size="small">
         <el-form-item label="状态">
           <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 110px">
-            <el-option label="全部" value="" />
-            <el-option label="成功" value="success" />
-            <el-option label="失败" value="fail" />
-            <el-option label="超时" value="timeout" />
+            <el-option
+              v-for="opt in LOG_STATUS_OPTIONS"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -34,7 +36,7 @@
     >
       <!-- 状态列：成功/失败/超时标签着色 -->
       <template #logStatus>
-        <el-table-column label="状态" prop="status" width="70" align="center" slot-name="logStatus">
+        <el-table-column label="状态" prop="status" min-width="100" align="center" slot-name="logStatus">
           <template #default="{ row }">
             <el-tag :type="row.status === 'success' ? 'success' : row.status === 'fail' ? 'danger' : 'warning'" size="small">
               {{ row.status }}
@@ -44,7 +46,7 @@
       </template>
       <!-- Token 消耗列 -->
       <template #tokenCost>
-        <el-table-column label="Token 消耗" width="130" align="center" slot-name="tokenCost">
+        <el-table-column label="Token 消耗" min-width="130" align="center" slot-name="tokenCost">
           <template #default="{ row }">
             <span class="text-12px text-[var(--el-text-color-secondary)]">
               P:{{ row.tokensPrompt || '-' }} / C:{{ row.tokensCompletion || '-' }}
@@ -54,7 +56,7 @@
       </template>
       <!-- 耗时列 -->
       <template #duration>
-        <el-table-column prop="durationMs" label="耗时" width="80" align="center" slot-name="duration">
+        <el-table-column prop="durationMs" label="耗时" min-width="100" align="center" slot-name="duration">
           <template #default="{ row }">
             {{ row.durationMs ? `${row.durationMs}ms` : '-' }}
           </template>
@@ -108,6 +110,7 @@
 <script setup lang="ts">
 import { SkillExecutionAPI, type SkillExecutionLog, type ExecutionLogQuery } from '@/api/ai/skillExecution';
 import { LOG_LIST_COLUMNS } from '../utils';
+import { LOG_STATUS_OPTIONS } from '../utils/moduleOptions'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ skillId?: number }>()

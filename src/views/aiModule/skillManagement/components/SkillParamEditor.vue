@@ -64,10 +64,12 @@
           <el-col :span="12">
             <el-form-item label="类型" prop="paramType">
               <el-select v-model="paramForm.paramType" style="width: 100%">
-                <el-option label="字符串" value="string" />
-                <el-option label="数字" value="number" />
-                <el-option label="布尔" value="boolean" />
-                <el-option label="Json" value="json" />
+                <el-option
+                  v-for="opt in PARAM_TYPE_OPTIONS"
+                  :key="opt.value"
+                  :label="opt.label"
+                  :value="opt.value"
+                />
               </el-select>
             </el-form-item>
           </el-col>
@@ -102,6 +104,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { SkillAPI, type SkillParam } from '@/api/ai/skill';
 import { PARAM_LIST_COLUMNS } from '../utils';
+import { PARAM_TYPE_OPTIONS } from '../utils/moduleOptions'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ skillId: number }>()

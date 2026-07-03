@@ -35,8 +35,8 @@ export const BINDING_LIST_COLUMNS = [
 /** 执行日志表格列 */
 export const LOG_LIST_COLUMNS = [
   { label: '技能编码', prop: 'skillCode', minWidth: 110 },
-  { label: '状态', prop: 'status', width: 70, align: 'center', slotName: 'logStatus' },
+  { label: '状态', prop: 'status', miWidth: 100, align: 'center', slotName: 'logStatus' },
   { label: 'Token 消耗', width: 130, align: 'center', slotName: 'tokenCost' },
-  { label: '耗时', prop: 'durationMs', width: 80, align: 'center', slotName: 'duration' },
+  { label: '耗时', prop: 'durationMs', minWidth: 100, align: 'center', slotName: 'duration' },
   { label: '执行时间', prop: 'createdAt', minWidth: 150 },
 ]

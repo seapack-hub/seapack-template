@@ -30,9 +30,12 @@
               </el-form-item>
               <el-form-item label="状态">
                 <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 120px">
-                  <el-option label="全部" value="" />
-                  <el-option label="启用" :value="1" />
-                  <el-option label="禁用" :value="0" />
+                  <el-option
+                    v-for="opt in SKILL_STATUS_OPTIONS"
+                    :key="String(opt.value)"
+                    :label="opt.label"
+                    :value="opt.value"
+                  />
                 </el-select>
               </el-form-item>
               <el-form-item>
@@ -123,6 +126,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { SkillCategoryAPI, type SkillCategory } from '@/api/ai/skillCategory'
 import { SkillAPI, type Skill } from '@/api/ai/skill'
 import { SKILL_LIST_COLUMNS } from './utils'
+import { SKILL_STATUS_OPTIONS } from './utils/moduleOptions'
 import SkillCategoryTree from './components/SkillCategoryTree.vue'
 import SkillCategoryDialog from './components/SkillCategoryDialog.vue'
 import SkillFormDialog from './components/SkillFormDialog.vue'

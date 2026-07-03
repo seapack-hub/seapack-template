@@ -7,7 +7,7 @@
   <el-dialog
     v-model="visible"
     :title="isEdit ? '编辑技能' : '新增技能'"
-    width="800px"
+    width="1050px"
     @closed="onClosed"
   >
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="120px">
@@ -40,10 +40,12 @@
         <el-col :span="12">
           <el-form-item label="输出格式" prop="outputFormat">
             <el-select v-model="form.outputFormat" placeholder="markdown" style="width: 100%">
-              <el-option label="Markdown" value="markdown" />
-              <el-option label="JSON" value="json" />
-              <el-option label="纯文本" value="text" />
-              <el-option label="HTML" value="html" />
+              <el-option
+                v-for="opt in OUTPUT_FORMAT_OPTIONS"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value"
+              />
             </el-select>
           </el-form-item>
         </el-col>
@@ -143,6 +145,7 @@ import type { SkillCategory } from '@/api/ai/skillCategory';
 import { useAiBindings } from '@/hooks/useAiBindings'
 import { MagicStick } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { OUTPUT_FORMAT_OPTIONS } from '../utils/moduleOptions'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })

@@ -45,11 +45,28 @@
             :model-value="model[p.paramName]"
             @update:model-value="model[p.paramName] = $event"
           />
+          <el-select
+            v-else-if="p.paramType === 'select' && p.options"
+            v-model="model[p.paramName]"
+            :placeholder="p.placeholder || '请选择'"
+            style="width: 100%"
+            clearable
+          >
+            <el-option v-for="opt in p.options" :key="opt.value" :label="opt.label" :value="opt.value" />
+          </el-select>
           <JsonEditor
             v-else-if="p.paramType === 'json'"
             v-model="model[p.paramName]"
             mode="code"
             height="200px"
+          />
+          <el-input
+            v-else
+            :model-value="model[p.paramName]"
+            :placeholder="p.placeholder || `请输入${p.label}`"
+            type="textarea"
+            clearable
+            @update:model-value="model[p.paramName] = $event"
           />
         </el-form-item>
 
