@@ -29,6 +29,9 @@ class CacheKey {
 
   /** 已缓存组件名称列表（keep-alive）的存储键 */
   static readonly CACHED_VIEWS = `${SYSTEM_NAME}-cached-views-key`;
+
+  /** 权限数据（roles, perms, menuTree）的 sessionStorage 缓存键 */
+  static readonly AUTH_CACHE = `${SYSTEM_NAME}-auth-cache`;
 }
 
 export default CacheKey;

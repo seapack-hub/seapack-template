@@ -37,9 +37,12 @@ app.use(router)
 .use(pinia)
 .directive('table-shadow', vTableShadow)
 
-// 收集模块路由列表供侧边栏渲染
+// 收集模块路由列表供侧边栏渲染（仅在已登录时执行，避免未登录时重复 work）
 import { usePermissionStore } from '@/store/modules/permission'
+import CacheKey from '@/constants/cache-key'
 const permissionStore = usePermissionStore()
-permissionStore.collectRoutes()
+if (localStorage.getItem(CacheKey.TOKEN)) {
+  permissionStore.collectRoutes()
+}
 
 app.mount('#app');

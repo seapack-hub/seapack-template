@@ -25,6 +25,7 @@
               class="article-card px-[18px] py-[12px] cursor-pointer border-l-3 border-l-transparent transition-all-200"
               :class="[item.id === currentId ? 'bg-[#ecf5ff] border-l-[#409eff]' : 'hover:bg-[#f5f7fa]']"
               @click="goArticle(item.id!)"
+              @mouseenter="prefetchArticle"
             >
               <div class="mb-[4px]">
                 <el-tag :type="item.tagType || 'info'" size="small" effect="plain">{{ item.tag }}</el-tag>
@@ -74,6 +75,11 @@ const items = computed(() =>
 /** 点击跳转到指定文章详情页 */
 function goArticle(id: number) {
   router.push({ name: 'articleDetail', params: { id } })
+}
+
+/** 鼠标悬停时预加载文章详情页组件 chunk */
+function prefetchArticle() {
+  import('@/views/blogs/detail/index.vue')
 }
 
 onMounted(async () => {

@@ -18,6 +18,7 @@ export const useBlogStore = defineStore('blog', () => {
   const total = ref(0)                          // 文章总数
   const loading = ref(false)                    // 列表加载状态
   const query = ref<ArticleQuery>({ pageNum: 1, pageSize: 10, category: '' })
+  const articleCache = ref(new Map<number, Article>())  // 文章详情缓存（id → Article）
 
   // ===== 项目状态 =====
   const projects = ref<Project[]>([])           // 项目列表
@@ -43,12 +44,26 @@ export const useBlogStore = defineStore('blog', () => {
     }
   }
 
-  /** 根据 ID 获取文章详情 */
+  /** 根据 ID 获取文章详情（优先读缓存，避免重复请求） */
   async function fetchArticleById(id: number): Promise<Article | null> {
+    if (articleCache.value.has(id)) {
+      return articleCache.value.get(id)!
+    }
     try {
-      return await ArticleAPI.getDetail(id)
+      const article = await ArticleAPI.getDetail(id)
+      if (article) articleCache.value.set(id, article)
+      return article
     } catch {
       return null
+    }
+  }
+
+  /** 清除指定文章的详情缓存（编辑/删除后调用） */
+  function clearArticleCache(id?: number) {
+    if (id) {
+      articleCache.value.delete(id)
+    } else {
+      articleCache.value.clear()
     }
   }
 
@@ -124,5 +139,6 @@ export const useBlogStore = defineStore('blog', () => {
     fetchProjectById,
     setPage, 
     setCategory,
+    clearArticleCache,
   }
 })

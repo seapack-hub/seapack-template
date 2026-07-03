@@ -3,6 +3,13 @@ import { type User} from '@/api/system/baseInfo/user.ts';
 import { usePermissionStore } from '@/store/modules/permission';
 import { AuthAPI, type MenuTree } from '@/api/system/permission/auth';
 import CacheKey from '@/constants/cache-key';
+
+interface AuthCache {
+  roles: string[]
+  perms: string[]
+  menuTree: MenuTree[]
+}
+
 /**
  * 用户状态管理
  * 职责：
@@ -25,6 +32,8 @@ export const useUserStore = defineStore('user', {
     perms: [] as string[],
     // 后端返回的已过滤菜单树（getMenus 结果），用作权限守卫的真实数据源
     menuTree: [] as MenuTree[],
+    // 标记当前会话是否已完成权限加载（避免重复请求）
+    authLoaded: false,
   }),
   getters: {
     // 是否已登录（有 Token）
@@ -136,6 +145,44 @@ export const useUserStore = defineStore('user', {
       this.roles = [];
       this.perms = [];
       this.menuTree = [];
+      this.authLoaded = false;
+    },
+
+    /** 从 sessionStorage 恢复权限缓存 */
+    restoreAuthFromCache(): boolean {
+      try {
+        const raw = sessionStorage.getItem(CacheKey.AUTH_CACHE)
+        if (!raw) return false
+        const cache: AuthCache = JSON.parse(raw)
+        if (!cache.roles || !cache.perms || !cache.menuTree) return false
+        this.roles = cache.roles
+        this.perms = cache.perms
+        this.menuTree = cache.menuTree
+        this.authLoaded = true
+        return true
+      } catch {
+        sessionStorage.removeItem(CacheKey.AUTH_CACHE)
+        return false
+      }
+    },
+
+    /** 将当前权限数据存入 sessionStorage */
+    saveAuthToCache() {
+      try {
+        const cache: AuthCache = {
+          roles: this.roles,
+          perms: this.perms,
+          menuTree: this.menuTree,
+        }
+        sessionStorage.setItem(CacheKey.AUTH_CACHE, JSON.stringify(cache))
+      } catch {
+        // sessionStorage 满或不可用时静默忽略
+      }
+    },
+
+    /** 清除 sessionStorage 权限缓存 */
+    clearAuthCache() {
+      sessionStorage.removeItem(CacheKey.AUTH_CACHE)
     },
 
     // ===== 登录/登出完整流程 =====
@@ -165,7 +212,7 @@ export const useUserStore = defineStore('user', {
     },
 
     //从后端获取用户角色权限
-    async fetchAuthPerms(userId:string){
+    async fetchAuthPerms(userId: string) {
       //获取用户权限数据
       const authInfo = await AuthAPI.getUserInfo(userId);
       //赋值
@@ -175,6 +222,10 @@ export const useUserStore = defineStore('user', {
       //获取用户权限菜单（已过滤的菜单树）
       const menu = await AuthAPI.getMenus(userId);
       this.menuTree = menu;
+
+      // 缓存到 sessionStorage，下次页面刷新直接恢复
+      this.authLoaded = true
+      this.saveAuthToCache()
 
       // 重新收集路由，恢复 dynamicRoutesLoaded，刷新侧边栏
       const permissionStore = usePermissionStore()
@@ -201,7 +252,9 @@ export const useUserStore = defineStore('user', {
       this.clearUserInfo();
       // 4. 清除权限数据
       this.clearAuth();
-      // 5. 重置路由权限状态（让路由守卫重新判断）
+      // 5. 清除 sessionStorage 权限缓存
+      this.clearAuthCache();
+      // 6. 重置路由权限状态（让路由守卫重新判断）
       const permissionStore = usePermissionStore();
       permissionStore.resetPermissionState();
     },

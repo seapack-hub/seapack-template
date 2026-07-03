@@ -27,16 +27,37 @@ export const permissionPlugin: RouterPlugin = {
     // 2. Token 校验与恢复
     if (!userStore.token) {
       const isRestored = userStore.restoreLoginState()
-      //获取按钮权限数据
-      await userStore.fetchAuthPerms(String(userStore.userId))
-      //加载 AI 技能绑定数据（低频变动，全量缓存供全局使用）
-      useAiSkillBindingsStore().fetchAllBindings()
       if (!isRestored) {
         return `/login?redirect=${to.path}`
       }
+
+      // 2a. 权限数据已加载则跳过（同一会话内避免重复请求）
+      if (!userStore.authLoaded) {
+        // 2b. 优先从 sessionStorage 恢复（页面刷新后避免重复 API 调用）
+        const cached = userStore.restoreAuthFromCache()
+        if (!cached) {
+          // 2c. 缓存未命中 → 从后端拉取
+          try {
+            await userStore.fetchAuthPerms(String(userStore.userId))
+          } catch {
+            // token 过期或网络错误 → 清除状态并跳转登录
+            userStore.clearAuth()
+            userStore.clearToken()
+            userStore.clearUserInfo()
+            return `/login?redirect=${to.path}`
+          }
+        } else {
+          // 从缓存恢复后需要重建路由表供侧边栏渲染
+          const { usePermissionStore } = await import('@/store/modules/permission')
+          usePermissionStore().collectRoutes()
+        }
+
+        // 加载 AI 技能绑定数据（低频变动，全量缓存供全局使用）
+        useAiSkillBindingsStore().fetchAllBindings()
+      }
     }
 
-    // 3. admin 跳过所有权限检
+    // 3. admin 跳过所有权限检查
     if (userStore.username === 'admin') return undefined
 
     // 4. 权限标识检查：从后端菜单树（getMenus）提取 permKey 作为数据源

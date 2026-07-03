@@ -1,0 +1,147 @@
+/* ========================================================
+   BlogRenderer — v-html 渲染内容的全局排版样式
+   作用于 .blog-renderer .content 下的所有子元素
+   ======================================================== */
+
+/* ----- 标题 ----- */
+.blog-renderer .content h1,
+.blog-renderer .content h2,
+.blog-renderer .content h3 {
+  margin-top: 28px;
+  margin-bottom: 12px;
+  scroll-margin-top: 20px;
+}
+
+/* ----- 段落 ----- */
+.blog-renderer .content p {
+  margin-bottom: 16px;
+}
+
+/* ----- 加粗 / 斜体 ----- */
+.blog-renderer .content strong,
+.blog-renderer .content b {
+  font-weight: 700;
+}
+.blog-renderer .content em,
+.blog-renderer .content i {
+  font-style: italic;
+}
+
+/* ----- 行内代码 ----- */
+.blog-renderer .content code:not(pre code) {
+  background: #f5f7fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #d63384;
+}
+
+/* ----- 代码块 ----- */
+.blog-renderer .content pre {
+  background: #1a1a2e;
+  color: #f8f8f2;
+  padding: 18px 22px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.blog-renderer .content pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+/* ----- 图片 ----- */
+.blog-renderer .content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 16px 0;
+  display: block;
+}
+
+/* ----- 引用块 ----- */
+.blog-renderer .content blockquote {
+  border-left: 4px solid #409eff;
+  margin: 16px 0;
+  padding: 10px 18px;
+  background: #f5f7fa;
+  border-radius: 0 8px 8px 0;
+  color: #606266;
+}
+
+/* ----- 链接 ----- */
+.blog-renderer .content a {
+  color: #409eff;
+  text-decoration: none;
+}
+.blog-renderer .content a:hover {
+  text-decoration: underline;
+}
+
+/* ----- 列表 ----- */
+.blog-renderer .content ul,
+.blog-renderer .content ol {
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+.blog-renderer .content li {
+  margin-bottom: 6px;
+}
+
+/* ----- 表格 ----- */
+.blog-renderer .content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.blog-renderer .content th,
+.blog-renderer .content td {
+  border: 1px solid var(--el-border-color-light);
+  padding: 10px 14px;
+  text-align: left;
+}
+.blog-renderer .content th {
+  background: #f5f7fa;
+  font-weight: 600;
+}
+
+/* ===== :::info / :::warning 等 admonition 容器 ===== */
+.blog-renderer .content .admonition {
+  margin: 16px 0;
+  padding: 14px 18px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  font-size: 14px;
+  line-height: 1.7;
+  background: #f5f7fa;
+}
+.blog-renderer .content .admonition p {
+  margin: 0 0 8px 0;
+}
+.blog-renderer .content .admonition p:last-child {
+  margin-bottom: 0;
+}
+.blog-renderer .content .admonition strong,
+.blog-renderer .content .admonition b {
+  font-weight: 700;
+}
+
+.blog-renderer .content .admonition-info {
+  border-left-color: #409eff;
+  background: #f0f7ff;
+}
+.blog-renderer .content .admonition-warning {
+  border-left-color: #e6a23c;
+  background: #fdf6ec;
+}
+.blog-renderer .content .admonition-tip {
+  border-left-color: #67c23a;
+  background: #f0f9eb;
+}
+.blog-renderer .content .admonition-danger {
+  border-left-color: #f56c6c;
+  background: #fef0f0;
+}

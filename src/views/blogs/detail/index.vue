@@ -31,18 +31,16 @@
     </div>
 
     <!-- 三栏主体：左侧列表 | 正文 | 右侧目录 -->
-    <div class="flex-1 overflow-hidden p-15">
+    <div class="flex-1 overflow-hidden p-[12px]">
       <div class="flex gap-[10px] w-full mx-auto h-full items-start">
         <ArticleList v-if="article?.id" :current-id="article.id" />
 
-        <!-- 正文区（独立滚动） -->
-        <div class="flex-1 min-w-0 overflow-y-auto h-full pr-[4px] body-inner">
-          <p v-if="article?.summary" class="text-15px color-[#606266] lh-[1.8] px-[22px] py-[18px] bg-white rd-10 border-l-4 border-l-[#409eff] ma-0 mb-[22px] shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
-            {{ article.summary }}
-          </p>
-          <!-- eslint-disable-next-line vue/no-v-html -->
-          <div ref="contentRef" class="bg-white rd-10 px-[36px] py-[28px] text-15px lh-[1.9] color-[#303133] shadow-[0_1px_4px_rgba(0,0,0,0.04)]" v-html="renderedHtml"></div>
-        </div>
+        <!-- 正文区（使用 BlogRenderer 组件，含 sanitize-html + highlight.js） -->
+        <BlogRenderer
+          class="body-inner"
+          :content-html="article?.contentHtml || ''"
+          :summary="article?.summary"
+        />
 
         <ArticleToc v-if="article?.contentHtml" :content-html="article.contentHtml" />
       </div>
@@ -60,7 +58,7 @@
  *   3. 三栏布局：左侧其他文章列表 | 中间正文 | 右侧目录导航
  *   4. 为正文标题自动注入 id，供目录组件定位
  */
-import { computed, onMounted, ref, nextTick, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBlogStore } from '@/store/modules/blog.ts'
 import { ArrowLeft, Calendar, View, Star, CopyDocument } from '@element-plus/icons-vue'
@@ -68,46 +66,24 @@ import { ElMessage } from 'element-plus'
 import type { Article } from '@/api/blogs/article.ts'
 import ArticleList from './components/ArticleList.vue'
 import ArticleToc from './components/ArticleToc.vue'
+import BlogRenderer from './components/BlogRenderer.vue'
 
 const route = useRoute()
 const router = useRouter()
 const store = useBlogStore()
 const article = ref<Article | null>(null)
-const contentRef = ref<HTMLElement | null>(null)
 
-/** 处理后的安全 HTML：将过时的 <font> 替换为 <span>，避免样式失效 */
-const renderedHtml = computed(() => {
-  if (!article.value?.contentHtml) return ''
-  return article.value.contentHtml
-    .replace(/<font(\s[^>]*)>/gi, '<span$1>')
-    .replace(/<\/font>/gi, '</span>')
-})
-
-/**
- * 为正文中所有 h1/h2/h3 标题元素注入 id
- * 目录组件（ArticleToc）通过此 id 实现锚点定位
- */
-function injectHeadingIds() {
-  if (!contentRef.value) return
-  const headings = contentRef.value.querySelectorAll('h1, h2, h3')
-  headings.forEach((el) => {
-    const text = el.textContent?.trim() || ''
-    if (text && !el.id) {
-      el.id = `toc-${btoa(encodeURIComponent(text)).slice(0, 32)}`
-    }
-  })
-}
-
-/** 复制文章全文到剪贴板，方便翻译/分享 */
+/** 复制文章全文到剪贴板 */
 function copyContent() {
-  const text = article.value ? `${article.value.title}\n\n${article.value.summary || ''}\n\n${article.value.contentHtml?.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() || ''}` : ''
+  const raw = article.value
+  const text = raw ? `${raw.title}\n\n${raw.summary || ''}\n\n${raw.contentHtml?.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() || ''}` : ''
   if (!text) {
     ElMessage.warning('暂无内容');
     return
   }
   navigator.clipboard.writeText(text)
-      .then(() => ElMessage.success('已复制到剪贴板'))
-      .catch(() => ElMessage.error('复制失败'))
+    .then(() => ElMessage.success('已复制到剪贴板'))
+    .catch(() => ElMessage.error('复制失败'))
 }
 
 /** 返回博客首页 */
@@ -115,33 +91,23 @@ function goBack() { router.push('/blogsManagement/blogs') }
 
 async function loadArticle(id: number) {
   article.value = await store.fetchArticleById(id)
-  await nextTick()
-  injectHeadingIds()
 }
 
 onMounted(async () => {
   await loadArticle(Number(route.params.id))
 })
 
-/** 路由参数变化时重新加载文章（组件复用场景） */
+/** 路由参数变化时重新加载文章 */
 watch(() => route.params.id, async (newId) => {
   if (newId) await loadArticle(Number(newId))
-})
-
-/** 当正文 HTML 变化时，重新注入标题 id */
-watch(() => article.value?.contentHtml, async () => {
-  await nextTick()
-  injectHeadingIds()
 })
 </script>
 
 <!--
-  以下 :deep() 样式仅针对 v-html 渲染后的正文 HTML 内容生效，
-  用于控制文章正文中的标题/段落/代码块/图片/表格等元素的默认样式。
-  由于渲染内容不受组件作用域影响，必须使用 :deep() 穿透。
+  页面级别的样式：头部渐变区、返回按钮。
+  正文排版样式已移至 BlogRenderer 组件的全局样式中。
 -->
 <style scoped>
-/* --- 返回按钮（含半透明 hover 效果） --- */
 .back-btn {
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
@@ -156,66 +122,4 @@ watch(() => article.value?.contentHtml, async () => {
   background: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.4);
 }
-
-/* ===== 正文内容排版样式（作用于 v-html 渲染的 HTML） ===== */
-:deep(h1), :deep(h2), :deep(h3) {
-  margin-top: 28px;
-  margin-bottom: 12px;
-  scroll-margin-top: 20px;
-}
-:deep(p) { margin-bottom: 16px; }
-:deep(code) {
-  background: #f5f7fa;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #d63384;
-}
-:deep(span[style]) {
-  display: inline;
-  border-radius: 3px;
-}
-:deep(pre) {
-  background: #1a1a2e;
-  color: #f8f8f2;
-  padding: 18px 22px;
-  border-radius: 8px;
-  overflow-x: auto;
-  font-size: 14px;
-  line-height: 1.6;
-}
-:deep(pre code) {
-  background: transparent;
-  padding: 0;
-  color: inherit;
-}
-:deep(img) {
-  max-width: 100%;
-  border-radius: 8px;
-  margin: 16px 0;
-}
-:deep(blockquote) {
-  border-left: 4px solid #409eff;
-  margin: 16px 0;
-  padding: 10px 18px;
-  background: #f5f7fa;
-  border-radius: 0 8px 8px 0;
-  color: #606266;
-}
-:deep(a) { color: #409eff; text-decoration: none; }
-:deep(a:hover) { text-decoration: underline; }
-:deep(ul), :deep(ol) { padding-left: 24px; margin-bottom: 16px; }
-:deep(li) { margin-bottom: 6px; }
-:deep(table) {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 16px 0;
-  font-size: 14px;
-}
-:deep(th), :deep(td) {
-  border: 1px solid var(--el-border-color-light);
-  padding: 10px 14px;
-  text-align: left;
-}
-:deep(th) { background: #f5f7fa; font-weight: 600; }
 </style>
