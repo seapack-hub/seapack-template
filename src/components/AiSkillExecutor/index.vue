@@ -47,18 +47,33 @@
         :bindings="bindings"
       />
 
-      <!-- 双栏布局 -->
-      <div v-loading="executing" class="flex min-h-[380px]" :class="{ 'min-h-[320px]': !skillId && bindings.length > 1 }">
-        <!-- 左：参数表单 -->
-        <ParamForm
-          v-model:form-data="executeParams"
-          :params="currentParams"
-          :executing="executing"
-          :skill-name="currentBinding?.skillName"
-          class="flex-1"
-          @execute="onExecute"
-          @reset="resetParams"
-        />
+      <!-- 双栏布局（不遮盖左侧参数，状态由右侧 ResultPanel 展示） -->
+      <div class="flex min-h-[380px]" :class="{ 'min-h-[320px]': !skillId && bindings.length > 1 }">
+        <!-- 左：参数表单 + 补充消息 -->
+        <div class="flex-1 flex flex-col min-w-0 gap-[10px]">
+          <ParamForm
+            v-model:form-data="executeParams"
+            :params="currentParams"
+            :executing="executing"
+            :skill-name="currentBinding?.skillName"
+            @execute="onExecute"
+            @reset="resetParams"
+          />
+          <div class="flex-shrink-0 border border-solid border-[var(--el-border-color-lighter)] rounded-8 bg-white">
+            <div class="flex items-center gap-[6px] px-16 py-[10px] border-b border-[var(--el-border-color-extra-light)] bg-[var(--el-fill-color-lighter)]">
+              <span class="text-[14px] font-600">补充指令</span>
+            </div>
+            <div class="px-16 py-12">
+              <el-input
+                v-model="userMessage"
+                type="textarea"
+                :rows="3"
+                placeholder="可选：输入额外指令或补充说明..."
+                :disabled="executing"
+              />
+            </div>
+          </div>
+        </div>
 
         <!-- 分隔 -->
         <div class="flex-shrink-0 w-[1px] mx-[18px] bg-[var(--el-border-color-lighter)] self-stretch" />
@@ -152,6 +167,7 @@ const currentParams = computed<SkillParam[]>(() => {
 })
 
 const executeParams = ref<Record<string, any>>({})
+const userMessage = ref('')
 const result = ref<SkillExecuteResult | null>(null)
 const executing = ref(false)
 
@@ -171,6 +187,7 @@ function resetParams() {
     data[p.paramName] = p.defaultValue ?? (p.paramType === 'boolean' ? false : (p.paramType === 'number' ? 0 : ''))
   })
   executeParams.value = data
+  userMessage.value = ''
   result.value = null
 }
 
@@ -189,15 +206,18 @@ async function onExecute() {
         if (!(k in input)) input[k] = v
       })
     }
-    const res = await SkillAPI.execute(currentBinding.value.skillId!, input)
+    const res = await SkillAPI.execute(currentBinding.value.skillId!, {
+      params: input,
+      userMessage: userMessage.value || undefined,
+    })
     result.value = res
   } catch (e) {
     result.value = {
-      content: `执行失败: ${(e as Error).message}`,
+      output: `执行失败: ${(e as Error).message}`,
       tokensPrompt: 0,
       tokensCompletion: 0,
       durationMs: 0,
-    }
+    } as SkillExecuteResult
   } finally {
     executing.value = false
   }
@@ -208,12 +228,13 @@ function onConfirm() {
   if (!result.value || !currentBinding.value) return
   const skill = currentBinding.value
   const aiResult: AiExecutionResult = {
-    success: !!result.value.content && !result.value.content.startsWith('执行失败'),
-    content: result.value.content,
+    success: !result.value.output.startsWith('执行失败'),
+    content: result.value.output,
     contentType: (skill.outputFormat as AiExecutionResult['contentType']) || 'text',
     skillName: skill.skillName,
     skillId: skill.skillId!,
-    elapsedMs: result.value.durationMs || 0,
+    executionLogId: result.value.logId,
+    elapsedMs: result.value.durationMs,
   }
   emit('done', aiResult)
   visible.value = false
@@ -223,6 +244,7 @@ function onConfirm() {
 function onClosed() {
   result.value = null
   executeParams.value = {}
+  userMessage.value = ''
 }
 
 // 监听空状态

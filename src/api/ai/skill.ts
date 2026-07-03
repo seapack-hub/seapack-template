@@ -108,16 +108,30 @@ export interface SkillBinding {
   status?: number;
 }
 
-/** 技能执行结果 */
+/** 技能执行请求体，对应后端 SkillExecuteRequest */
+export interface SkillExecuteRequest {
+  /** 技能参数键值对 */
+  params: Record<string, any>
+  /** 用户补充消息，附加在 prompt_template 之后 */
+  userMessage?: string
+}
+
+/** 技能执行结果，对应后端返回 data */
 export interface SkillExecuteResult {
-  /** 输出内容 */
-  content: string;
+  /** 技能 ID */
+  skillId: number;
+  /** 技能编码 */
+  skillCode: string;
+  /** 生成的内容 */
+  output: string;
   /** 提示词 token 数 */
-  tokensPrompt?: number;
+  tokensPrompt: number;
   /** 补全 token 数 */
-  tokensCompletion?: number;
+  tokensCompletion: number;
   /** 耗时（毫秒） */
-  durationMs?: number;
+  durationMs: number;
+  /** 执行日志 ID */
+  logId: number;
 }
 
 /** 技能绑定的完整信息（含技能详情和参数定义），供批量查询接口返回 */
@@ -212,12 +226,13 @@ export const SkillAPI = {
     });
   },
 
-  /** 执行技能 */
-  execute(id: number, params: Record<string, any>) {
+  /** 执行技能（AI 接口较慢，超时设为 5 分钟） */
+  execute(id: number, req: SkillExecuteRequest) {
     return request<any, SkillExecuteResult>({
       url: `${BASE_URL}/ai/skills/${id}/execute`,
       method: 'post',
-      data: params,
+      data: req,
+      timeout: 300000,
     });
   },
 

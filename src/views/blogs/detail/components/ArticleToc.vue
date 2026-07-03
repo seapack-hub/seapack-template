@@ -48,12 +48,13 @@
  * ArticleToc —— 右侧文章目录导航组件
  *
  * 功能：
- *   1. 根据传入的 HTML 内容提取 h1/h2/h3 标题
+ *   1. 根据传入的内容（支持 Markdown / HTML 混合）提取 h1/h2/h3 标题
  *   2. 点击目录项平滑滚动到对应标题位置
  *   3. 监听正文滚动，自动高亮当前所在标题
  */
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { List } from '@element-plus/icons-vue'
+import { renderToHtml } from '@/views/blogs/utils/sanitize'
 
 /** 目录项数据结构 */
 interface TocItem {
@@ -62,7 +63,7 @@ interface TocItem {
   level: number // 标题层级：1 / 2 / 3
 }
 
-/** 正文 HTML 内容，由父组件传入 */
+/** 正文内容（支持 Markdown 或 HTML），由父组件传入 */
 const props = defineProps<{ contentHtml: string }>()
 
 const headings = ref<TocItem[]>([])
@@ -81,12 +82,20 @@ function extractHeadings(html: string): TocItem[] {
     const level = parseInt(tag.replace('h', ''), 10)
     const text = el.textContent?.trim() || ''
     if (text) {
-      // 以标题文本的 base64 作为唯一 id（转义中文等字符）
       const id = `toc-${btoa(encodeURIComponent(text)).slice(0, 32)}`
       result.push({ id, text, level })
     }
   })
   return result
+}
+
+/**
+ * 异步提取目录：先通过 renderToHtml 将内容渲染为真实 HTML（支持 Markdown），再提取标题
+ */
+async function buildToc(content: string) {
+  if (!content) { headings.value = []; return }
+  const html = await renderToHtml(content)
+  headings.value = extractHeadings(html)
 }
 
 /**
@@ -137,14 +146,10 @@ function onScroll() {
   }, 80)
 }
 
-/** 监听 HTML 内容变化，重新提取目录 */
+/** 监听内容变化，重新提取目录 */
 watch(
   () => props.contentHtml,
-  (html) => {
-    if (html) {
-      headings.value = extractHeadings(html)
-    }
-  },
+  (html) => { buildToc(html) },
   { immediate: true }
 )
 

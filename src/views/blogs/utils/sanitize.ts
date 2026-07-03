@@ -154,27 +154,29 @@ export async function createMarkdownIt(): Promise<any> {
 }
 
 /**
- * 异步渲染管线：预处理 → markdown-it → 标签还原 → sanitize
+ * 渲染管线（不含 sanitize）：预处理 → markdown-it → 标签还原
+ * 用于目录提取等需要真实 HTML 但不需清洗的场景
+ */
+export async function renderToHtml(content: string): Promise<string> {
+  if (!content) return ''
+
+  const markdownReady = preprocessMarkdown(content)
+  const md = await createMarkdownIt()
+  const rendered = md.render(markdownReady)
+  return preprocessHtml(rendered)
+}
+
+/**
+ * 完整渲染管线：预处理 → markdown-it → 标签还原 → sanitize
  * 动态导入 markdown-it / sanitize-html 等重型依赖，避免阻塞首屏加载
  */
 export async function renderSafeHtml(contentHtml: string): Promise<string> {
   if (!contentHtml) return ''
 
-  // 预处理 Markdown（纯字符串操作，无依赖）
-  const markdownReady = preprocessMarkdown(contentHtml)
-
-  // 并行加载重型依赖
-  const [sanitizeHtml, md] = await Promise.all([
+  const [restoredHtml, sanitizeHtml] = await Promise.all([
+    renderToHtml(contentHtml),
     import('sanitize-html').then(m => m.default),
-    createMarkdownIt(),
   ])
 
-  // markdown-it 渲染
-  const rendered = md.render(markdownReady)
-
-  // 还原实体编码的 HTML 标签（纯字符串操作，无依赖）
-  const restoredHtml = preprocessHtml(rendered)
-
-  // sanitize 安全清洗
   return sanitizeHtml(restoredHtml, sanitizeOptions)
 }
