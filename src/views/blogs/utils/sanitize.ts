@@ -154,13 +154,48 @@ export async function createMarkdownIt(): Promise<any> {
 }
 
 /**
+ * 从 HTML 中提取被 <p> 标签包裹的 markdown 语法，暴露给 markdown-it 处理。
+ *
+ * 场景：AI 技能生成的 markdown 文本经旧版 wangEditor 插入后，
+ * 会被包在 <p> 标签中（如 `<p># 标题</p>`），markdown-it(html:true)
+ * 见到已有 HTML 则跳过内部处理，导致标题/代码块等无法渲染。
+ * 此函数在传给 markdown-it 前将这类 <p> 标签剥离。
+ */
+function unwrapMarkdownFromHtml(html: string): string {
+  let s = html
+
+  // 0. 将 <p> 内的 <br> 转换为 \n，使 markdown-it 能按行识别 ##、``` 等语法
+  //    场景：wangEditor 通过 dangerouslyInsertHtml 插入的 markdown 会被塞进
+  //    单个 <p> 并用 <br> 换行，剥离 <p> 后若保留 <br>，markdown-it 看到的是
+  //    一行文本，不会解析多行语法（headings、代码围栏）。
+  s = s.replace(/<br\s*\/?>/gi, '\n')
+
+  // 1. <p> 包裹的 markdown 标题：<p># text</p> → # text
+  s = s.replace(/<p[^>]*>\s*(#{1,6}\s[\s\S]*?)<\/p>/g, '$1')
+
+  // 2. <p> 包裹的代码围栏：<p>```...```</p> → ```...```
+  s = s.replace(/<p[^>]*>\s*(```[\s\S]*?```)\s*<\/p>/g, '$1')
+
+  // 3. <p> 包裹的粗体/斜体：<p>**bold**</p> → **bold**
+  s = s.replace(/<p[^>]*>\s*(\*\*\*?[\s\S]*?\*\*\*?)\s*<\/p>/g, '$1')
+
+  // 4. <p> 包裹的块引用标记：<p>> text</p> → > text
+  s = s.replace(/<p[^>]*>\s*(>[\s\S]*?)<\/p>/g, '$1')
+
+  // 5. <p> 包裹的 <code> 行内代码（整段只有 inline code）
+  s = s.replace(/<p[^>]*>\s*(<code>[\s\S]*?<\/code>)\s*<\/p>/g, '$1')
+
+  return s
+}
+
+/**
  * 渲染管线（不含 sanitize）：预处理 → markdown-it → 标签还原
  * 用于目录提取等需要真实 HTML 但不需清洗的场景
  */
 export async function renderToHtml(content: string): Promise<string> {
   if (!content) return ''
 
-  const markdownReady = preprocessMarkdown(content)
+  const markdownReady = unwrapMarkdownFromHtml(preprocessMarkdown(content))
   const md = await createMarkdownIt()
   const rendered = md.render(markdownReady)
   return preprocessHtml(rendered)

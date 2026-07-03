@@ -61,6 +61,7 @@ import { ElMessage } from 'element-plus'
 import { Setting } from '@element-plus/icons-vue'
 import type { AiExecutionResult } from '@/api/ai/skill'
 import { useAiBindings } from '@/hooks/useAiBindings'
+import { renderToHtml } from '@/views/blogs/utils/sanitize'
 import ArticleSettingsDrawer from '../components/ArticleSettingsDrawer.vue'
 
 const route = useRoute()
@@ -124,15 +125,19 @@ const form = reactive<ArticleForm>({
 
 provide('articleForm', form)
 
-/** AI 执行结果处理：将生成的内容插入编辑器光标位置 */
-function handleAiResult(result: AiExecutionResult) {
+/** AI 执行结果处理：将 markdown 转 HTML 后插入编辑器光标位置 */
+async function handleAiResult(result: AiExecutionResult) {
   if (!result.success) {
     ElMessage.error('AI 执行失败，请重试')
     return
   }
-  const content = result.content
-  editorCompRef.value?.insertContent(content)
-  ElMessage.success(`${result.skillName} 内容已插入`)
+  try {
+    const html = await renderToHtml(result.content)
+    editorCompRef.value?.insertContent(html)
+    ElMessage.success(`${result.skillName} 内容已插入`)
+  } catch (e) {
+    ElMessage.error('内容格式转换失败，请重试')
+  }
 }
 
 async function saveDraft() { form.status = 0; await save() }
