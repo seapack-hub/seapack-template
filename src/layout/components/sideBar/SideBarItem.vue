@@ -4,14 +4,12 @@
     使用 ?.length 兼容两种结构：undefined?.length → undefined → !undefined → true；[].length → 0 → !0 → true
   -->
   <template v-if="!item.children?.length">
-    <Link :to="resolvePath(item.path)">
-      <el-menu-item :index="resolvePath(item.path)">
-        <Icon :name="item.meta?.icon" :size="20"></Icon>
-        <template #title>
-          <span class="menu-text">{{ item.meta?.description || '未知' }}</span>
-        </template>
-      </el-menu-item>
-    </Link>
+    <el-menu-item :index="resolvePath(item.path)">
+      <Icon :name="item.meta?.icon" :size="20"></Icon>
+      <template #title>
+        <span class="menu-text">{{ item.meta?.description || '未知' }}</span>
+      </template>
+    </el-menu-item>
   </template>
   <template v-else>
     <el-sub-menu :index="resolvePath(item.path)">
@@ -30,8 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import Link from './Link.vue';
-
 const props = defineProps({
   basePath: {
     type: String,

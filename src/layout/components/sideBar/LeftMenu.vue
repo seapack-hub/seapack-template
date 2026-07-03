@@ -8,6 +8,7 @@
     :unique-opened="true"
     :collapse-transition="false"
     :collapse="collapse"
+    :router="true"
     :mode="isTop ? 'horizontal' : 'vertical'"
   >
     <side-bar-item v-for="(item, index) in showMeanList" :key="index" :item="item" :base-path="basePath"></side-bar-item>
