@@ -77,6 +77,18 @@ const aiModuleRoute: Array<RouterObject> = [
           permKey: 'promptTemplate',
         },
       },
+      //Agent 管理
+      {
+        path: 'agentManage',
+        name: 'agentManage',
+        component: () => import('@/views/aiModule/agent/index.vue'),
+        meta: {
+          title: 'agentManage',
+          description: 'Agent 管理',
+          icon: 'User',
+          permKey: 'agentManage',
+        },
+      },
     ]
   },
 ];

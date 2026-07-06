@@ -7,6 +7,7 @@
     v-model="visible"
     :title="isEdit ? '编辑模板' : '新增模板'"
     width="1050px"
+    top="5vh"
     @closed="onClosed"
   >
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="100px">
