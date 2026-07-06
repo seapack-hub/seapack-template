@@ -24,7 +24,7 @@
       </div>
     </el-card>
 
-    <MenuFormDialog v-model:visible="formVisible" v-model:is-edit="formIsEdit" v-model:form="formData" v-model:parent-name="parentName" @confirm="onFormConfirm" />
+    <MenuFormDialog v-model:visible="formVisible" v-model:is-edit="formIsEdit" v-model:form="formData" v-model:parent-name="parentName" v-model:parent-type="parentType" @confirm="onFormConfirm" />
   </div>
 </template>
 
@@ -45,8 +45,10 @@ const columns = createMenuColumns({
       await fetchTree()
   },
   onAddChild(row) {
-    formData.value = { name: '', type: 2, path: '', component: '', permKey: '', sortOrder: 0, status: 1, parentId: row.id }
+    const childType = row.type === 1 ? 2 : 3
+    formData.value = { name: '', type: childType, path: '', component: '', permKey: '', sortOrder: 0, status: 1, parentId: row.id }
     parentName.value = row.name
+    parentType.value = row.type
     formIsEdit.value = false
     formVisible.value = true
   },
@@ -55,15 +57,17 @@ const columns = createMenuColumns({
 const formVisible = ref(false)
 const formIsEdit = ref(false)
 const parentName = ref('')
-const formData = ref<any>({ name: '', type: 2, path: '', component: '', permKey: '', sortOrder: 0, status: 1, parentId: 0 })
+const parentType = ref<number>(0)
+const formData = ref<any>({ name: '', type: 1, path: '', component: '', permKey: '', sortOrder: 0, status: 1, parentId: 0 })
 
 function openFormDialog(row?: any) {
   parentName.value = ''
+  parentType.value = 0
   if (row) {
     formData.value = { ...row }
     formIsEdit.value = true
   } else {
-    formData.value = { name: '', type: 2, path: '', component: '', permKey: '', sortOrder: 0, status: 1, parentId: 0 }
+    formData.value = { name: '', type: 1, path: '', component: '', permKey: '', sortOrder: 0, status: 1, parentId: 0 }
     formIsEdit.value = false
   }
   formVisible.value = true

@@ -21,9 +21,29 @@ export function createMenuColumns(handlers: MenuColumnHandlers) {
     {
       columnType: 'operate', label: '操作', width: '180px', fixed: 'right',
       buttons: [
-        { type: 'primary', label: '新增子项', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onAddChild(row) },
-        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
-        { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该权限（及子项）吗？' }, click: ({ row }: any) => handlers.onDelete(row) },
+        { 
+          type: 'primary', 
+          label: '新增子项', 
+          size: 'small', 
+          renderType: 'link', 
+          vIFHandler: ({ row }: any) => row.type !== 3, 
+          click: ({ row }: any) => handlers.onAddChild(row) 
+        },
+        { 
+          type: 'primary', 
+          label: '编辑', 
+          size: 'small', 
+          renderType: 'link', 
+          click: ({ row }: any) => handlers.onEdit(row) 
+        },
+        { 
+          type: 'danger', 
+          label: '删除', 
+          size: 'small', 
+          renderType: 'link', 
+          popconFirm: { title: '确认删除该权限（及子项）吗？' }, 
+          click: ({ row }: any) => handlers.onDelete(row) 
+        },
       ],
     },
   ]

@@ -5,10 +5,8 @@
         <el-input v-model="form.name" placeholder="请输入名称" />
       </el-form-item>
       <el-form-item label="资源类型" prop="type">
-        <el-select v-model="form.type" placeholder="请选择" style="width: 100%">
-          <el-option label="目录" :value="1" />
-          <el-option label="菜单" :value="2" />
-          <el-option label="按钮" :value="3" />
+        <el-select v-model="form.type" placeholder="请选择" style="width: 100%" :disabled="isEdit">
+          <el-option v-for="opt in typeOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
         </el-select>
       </el-form-item>
       <el-form-item v-if="form.type !== 3" label="路由路径" prop="path">
@@ -36,6 +34,7 @@ const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { required: true })
 const form = defineModel<any>('form', { required: true })
 const parentName = defineModel<string>('parentName', { required: true })
+const parentType = defineModel<number>('parentType', { required: true })
 
 const emit = defineEmits<{ confirm: [formData: any, isEdit: boolean] }>()
 
@@ -43,6 +42,13 @@ const formRules = {
   name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
   type: [{ required: true, message: '请选择资源类型', trigger: 'change' }],
 }
+
+const typeOptions = computed(() => {
+  const pt = parentType.value
+  if (pt === 1) return [{ label: '目录', value: 1 }, { label: '菜单', value: 2 }]
+  if (pt === 2) return [{ label: '按钮', value: 3 }]
+  return [{ label: '目录', value: 1 }]
+})
 
 const formRef = ref<any>(null)
 const submitting = ref(false)
