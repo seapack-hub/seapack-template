@@ -220,7 +220,7 @@
 <script setup lang="ts">
 import { ref, watch, onBeforeUnmount, computed } from 'vue'
 import { EditPen, Document, Message, CaretRight, Loading as IconLoading, Promotion, CircleCheckFilled, Coin, Timer, Connection } from '@element-plus/icons-vue'
-import { SkillAPI, type SkillParam, type SkillExecuteResult } from '@/api/ai/skill'
+import { SkillAPI, type SkillParam } from '@/api/ai/skill'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const dialogVisible = computed({
@@ -233,7 +233,7 @@ const props = defineProps<{ skillId: number }>()
 const params = ref<SkillParam[]>([])
 const executeParams = ref<Record<string, any>>({})
 const userMessage = ref('')
-const result = ref<SkillExecuteResult | null>(null)
+const result = ref<AiExecuteResult | null>(null)
 const loadingParams = ref(false)
 const executing = ref(false)
 
@@ -314,13 +314,11 @@ async function onExecute() {
     result.value = res
   } catch (e) {
     result.value = {
-      skillId: props.skillId,
-      skillCode: '',
+      renderedPrompt: '',
       output: `执行失败: ${(e as Error).message}`,
       tokensPrompt: 0,
       tokensCompletion: 0,
       durationMs: 0,
-      logId: 0,
     }
   } finally { executing.value = false }
 }

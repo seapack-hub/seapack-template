@@ -65,6 +65,18 @@ const aiModuleRoute: Array<RouterObject> = [
           permKey: 'skillManagement',
         },
       },
+      //提示词模板管理
+      {
+        path: 'promptTemplate',
+        name: 'promptTemplate',
+        component: () => import('@/views/aiModule/promptTemplate/index.vue'),
+        meta: {
+          title: 'promptTemplate',
+          description: '提示词模板',
+          icon: 'Document',
+          permKey: 'promptTemplate',
+        },
+      },
     ]
   },
 ];

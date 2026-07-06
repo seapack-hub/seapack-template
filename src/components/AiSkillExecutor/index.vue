@@ -110,7 +110,7 @@
 
 <script setup lang="ts">
 import { Loading, CircleCheck } from '@element-plus/icons-vue'
-import { SkillAPI, type SkillParam, type SkillExecuteResult, type SkillBindingInfo, type AiExecutionResult } from '@/api/ai/skill'
+import { SkillAPI, type SkillParam, type SkillBindingInfo, type AiExecutionResult } from '@/api/ai/skill'
 import { useAiBindings } from '@/hooks/useAiBindings'
 import SkillSelector from './components/SkillSelector.vue'
 import ParamForm from './components/ParamForm.vue'
@@ -168,7 +168,7 @@ const currentParams = computed<SkillParam[]>(() => {
 
 const executeParams = ref<Record<string, any>>({})
 const userMessage = ref('')
-const result = ref<SkillExecuteResult | null>(null)
+const result = ref<AiExecuteResult | null>(null)
 const executing = ref(false)
 
 const dialogTitle = computed(() => {
@@ -213,11 +213,12 @@ async function onExecute() {
     result.value = res
   } catch (e) {
     result.value = {
+      renderedPrompt: '',
       output: `执行失败: ${(e as Error).message}`,
       tokensPrompt: 0,
       tokensCompletion: 0,
       durationMs: 0,
-    } as SkillExecuteResult
+    }
   } finally {
     executing.value = false
   }
@@ -233,7 +234,7 @@ function onConfirm() {
     contentType: (skill.outputFormat as AiExecutionResult['contentType']) || 'text',
     skillName: skill.skillName,
     skillId: skill.skillId!,
-    executionLogId: result.value.logId,
+    executionLogId: undefined,
     elapsedMs: result.value.durationMs,
   }
   emit('done', aiResult)

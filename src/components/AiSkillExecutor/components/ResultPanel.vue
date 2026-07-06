@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue'
 import { Loading, Document, Promotion, Coin, Timer, CircleCheckFilled, Connection } from '@element-plus/icons-vue'
-import type { SkillExecuteResult } from '@/api/ai/skill'
 
 const props = defineProps<{
-  result: SkillExecuteResult | null
+  result: AiExecuteResult | null
   executing: boolean
 }>()
 
@@ -126,9 +125,6 @@ onUnmounted(() => stopTimer())
           <span class="inline-flex items-center gap-[4px]">
             <el-icon :size="14"><Timer /></el-icon>
             耗时: {{ result.durationMs }}ms
-          </span>
-          <span v-if="result.logId" class="inline-flex items-center gap-[4px]">
-            日志: #{{ result.logId }}
           </span>
         </div>
 

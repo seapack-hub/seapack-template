@@ -40,6 +40,22 @@ declare global {
     /** 总数 */
     total: number;
   }
+
+  /**
+   * AI 执行结果（对应后端 AiExecuteResult）
+   */
+  interface AiExecuteResult {
+    /** 渲染后的完整 Prompt（变量替换后） */
+    renderedPrompt: string;
+    /** LLM 生成的输出内容 */
+    output: string;
+    /** 提示词消耗的 Token 数 */
+    tokensPrompt: number;
+    /** 补全生成的 Token 数 */
+    tokensCompletion: number;
+    /** 执行耗时（毫秒） */
+    durationMs: number;
+  }
 }
 
 export {};

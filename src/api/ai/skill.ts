@@ -1,21 +1,5 @@
 /**
  * 技能管理 API
- *
- * 后端接口：
- *   GET    /api/ai/skills                   — 分页查询技能列表
- *   POST   /api/ai/skills                   — 新增技能
- *   GET    /api/ai/skills/{id}              — 技能详情
- *   PUT    /api/ai/skills/{id}              — 编辑技能
- *   DELETE /api/ai/skills/{id}              — 删除技能
- *   POST   /api/ai/skills/{id}/execute      — 执行技能
- *   GET    /api/ai/skills/{id}/params       — 获取技能参数列表
- *   POST   /api/ai/skills/{id}/params       — 新增参数
- *   PUT    /api/ai/skills/{id}/params/{pid} — 编辑参数
- *   DELETE /api/ai/skills/{id}/params/{pid} — 删除参数
- *   GET    /api/ai/skills/{id}/bindings     — 获取模块绑定列表
- *   POST   /api/ai/skills/{id}/bindings     — 新增绑定
- *   PUT    /api/ai/skills/{id}/bindings/{bid} — 编辑绑定
- *   DELETE /api/ai/skills/{id}/bindings/{bid} — 删除绑定
  */
 import { request } from '@/utils/axios';
 import { serializeOptions, deserializeOptions, serializeConfig, deserializeConfig } from '@/utils/skillParam';
@@ -69,28 +53,25 @@ export interface SkillQuery {
   keyword?: string;
 }
 
-/** 技能输入参数实体 */
+/**
+ * 技能输入参数（向后兼容，用于直接执行技能时的参数定义）
+ *
+ * 新设计中参数（变量）已迁移至 ai_template_variable 表，归属提示词模板。
+ * 此类型保留用于：
+ *   1. 直接执行技能（不经过 Agent）时的参数声明
+ *   2. SkillBindingInfo 中聚合展示
+ * 新增/编辑参数请使用 PromptTemplateAPI 的变量管理接口。
+ */
 export interface SkillParam {
   id?: number;
   skillId?: number;
-  /** 参数名，对应 prompt_template 中的变量名 */
   paramName: string;
-  /** 参数标签 */
   label: string;
-  /** 参数类型：string/number/boolean/select */
   paramType: string;
-  /** 是否必填：1是 0否 */
   required?: number;
-  /** 默认值 */
   defaultValue?: string;
-  /**
-   * select 类型的选项列表
-   * 前端内部为数组格式，提交时由 serializeOptions 序列化为 JSON 字符串
-   */
   options?: { label: string; value: string }[];
-  /** 输入提示 */
   placeholder?: string;
-  /** 排序号 */
   sortOrder?: number;
 }
 
@@ -114,24 +95,6 @@ export interface SkillExecuteRequest {
   params: Record<string, any>
   /** 用户补充消息，附加在 prompt_template 之后 */
   userMessage?: string
-}
-
-/** 技能执行结果，对应后端返回 data */
-export interface SkillExecuteResult {
-  /** 技能 ID */
-  skillId: number;
-  /** 技能编码 */
-  skillCode: string;
-  /** 生成的内容 */
-  output: string;
-  /** 提示词 token 数 */
-  tokensPrompt: number;
-  /** 补全 token 数 */
-  tokensCompletion: number;
-  /** 耗时（毫秒） */
-  durationMs: number;
-  /** 执行日志 ID */
-  logId: number;
 }
 
 /** 技能绑定的完整信息（含技能详情和参数定义），供批量查询接口返回 */
@@ -228,7 +191,7 @@ export const SkillAPI = {
 
   /** 执行技能（AI 接口较慢，超时设为 5 分钟） */
   execute(id: number, req: SkillExecuteRequest) {
-    return request<any, SkillExecuteResult>({
+    return request<any, AiExecuteResult>({
       url: `${BASE_URL}/ai/skills/${id}/execute`,
       method: 'post',
       data: req,
