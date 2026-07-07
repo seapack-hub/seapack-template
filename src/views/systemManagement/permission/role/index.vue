@@ -121,7 +121,14 @@ onMounted(() => { handleQuery() })
 
 <style lang="scss" scoped>
 .el-card-main ::v-deep(.el-card__body) {
-  height: calc(100% - 40px); display: flex; flex-direction: column; gap: 10px;
+  height: calc(100% - 40px); 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
 }
-.table-toolbar { display: flex; justify-content: space-between; align-items: center; }
+.table-toolbar { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+}
 </style>

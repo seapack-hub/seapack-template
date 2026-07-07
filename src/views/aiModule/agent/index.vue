@@ -12,7 +12,7 @@
             <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 100px">
+            <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 200px">
               <el-option v-for="opt in AGENT_STATUS_OPTIONS" :key="String(opt.value)" :label="opt.label" :value="opt.value" />
             </el-select>
           </el-form-item>
@@ -24,11 +24,11 @@
       </div>
 
       <!-- 工具栏 -->
-      <div class="table-toolbar">
+      <div class="table-toolbar h-[40px]">
         <div class="flex gap-8px">
           <el-button type="success" icon="plus" @click="openAddDialog()">新增 Agent</el-button>
         </div>
-        <el-radio-group v-model="viewMode" size="small">
+        <el-radio-group v-model="viewMode">
           <el-radio-button value="card">
             <el-icon><Grid /></el-icon>
           </el-radio-button>
@@ -76,7 +76,7 @@
 
       <!-- 列表模式 -->
       <div v-else class="flex-1 flex flex-col justify-between overflow-hidden border">
-        <SpTable :loading="loading" :columns="columns" :data="tableData" :show-index="true">
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
           <template #status>
             <el-table-column label="状态" prop="status" width="80" align="center" slot-name="status">
               <template #default="{ row }">
@@ -187,6 +187,7 @@ onMounted(() => {
   gap: 16px;
   overflow-y: auto;
   flex: 1;
+  border: 1px solid var(--el-border-color-lighter);
 }
 
 .col-span-full {
