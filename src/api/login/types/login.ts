@@ -24,3 +24,12 @@ export interface LoginResponse {
   /** 用户名 */
   username: string;
 }
+
+/** 滑动验证码数据 */
+export interface CaptchaData {
+  bgImage: string;
+  sliderImage: string;
+  token: string;
+  sliderX: number;
+  sliderY: number;
+}

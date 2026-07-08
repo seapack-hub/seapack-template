@@ -1,31 +1,10 @@
 import { request } from '@/utils/axios.ts'
+import type { IndustrySector, IndustrySectorQuery } from './types/industrySector'
 
-/** 行业分类节点 */
-export interface IndustrySector {
-  id: number
-  code: string
-  label: string
-  parentId?: number | null
-  parentLabel?: string
-  nodeLevel: number // 1-一级行业 2-二级行业
-  sortOrder: number
-  createdAt?: string
-  updatedAt?: string
-  children?: IndustrySector[]
-}
+export type { IndustrySector, IndustrySectorQuery }
 
-/** 分页查询参数 */
-export interface IndustrySectorQuery {
-  pageNum?: number
-  pageSize?: number
-  keyword?: string
-  nodeLevel?: number
-  parentId?: number
-}
-
-/** 行业分类 API（后端路径 /industrySector） */
 export const IndustrySectorAPI = {
-  /** 分页查询行业节点列表（支持筛选） */
+  /** 分页查询行业节点列表 */
   getList(params?: IndustrySectorQuery) {
     return request<any, PageResult<IndustrySector[]>>({
       url: '/api/industrySector/list', method: 'get', params,
@@ -49,7 +28,7 @@ export const IndustrySectorAPI = {
       url: `/api/industrySector/children/${parentId}`, method: 'get',
     })
   },
-  /** 新增行业节点（id 自增，无需传入） */
+  /** 新增行业节点 */
   insert(data: Partial<IndustrySector>) {
     return request<any, any>({ url: '/api/industrySector/insert', method: 'post', data })
   },
@@ -57,7 +36,7 @@ export const IndustrySectorAPI = {
   update(data: IndustrySector) {
     return request<any, any>({ url: '/api/industrySector/update', method: 'post', data })
   },
-  /** 删除行业节点（有子节点时不允许删除） */
+  /** 删除行业节点 */
   delete(id: number) {
     return request<any, any>({ url: `/api/industrySector/delete/${id}`, method: 'delete' })
   },

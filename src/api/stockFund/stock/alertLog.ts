@@ -1,23 +1,9 @@
 import { request } from '@/utils/axios'
+import type { AlertLogDto, AlertLogQuery } from './types/alertLog'
+
+export type { AlertLogDto, AlertLogQuery }
 
 const BASE_URL = '/api/alertLog'
-
-export interface AlertLogDto {
-  id: number
-  ruleId: number
-  triggeredRate: number
-  triggeredPrice: number
-  sentTime: string
-}
-
-export interface AlertLogQuery {
-  userId: number | string
-  pageNum: number
-  pageSize: number
-  stockCode?: string
-  startTime?: string
-  endTime?: string
-}
 
 export const AlertLogAPI = {
   listByUser(query: AlertLogQuery) {

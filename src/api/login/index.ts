@@ -1,5 +1,7 @@
 import { request } from "@/utils/axios";
-import type { LoginRequestData, LoginResponse } from "./types/login";
+import type { LoginRequestData, LoginResponse, CaptchaData } from "./types/login";
+
+export type { LoginRequestData, LoginResponse, CaptchaData }
 
 const USER_BASE_URL = "/api";
 
@@ -13,10 +15,8 @@ export const getLoginCodeApi = () => {
 
 /**
  * 登录验证
- * @param params 包含 username 和 password（RSA加密后）
- * @returns Promise<LoginResponse> 包含 token 和用户信息
  */
-export const loginVerify = (params: { username: string; password: string|true }) => {
+export const loginVerify = (params: { username: string; password: string | true }) => {
   return request<any, LoginResponse>({
     url: `${USER_BASE_URL}/auth/login`,
     method: "get",
@@ -39,12 +39,3 @@ export const getSlideVerifyImg = () => {
     method: "get"
   });
 };
-
-/** 滑动验证码数据 */
-export interface CaptchaData {
-  bgImage: string;
-  sliderImage: string;
-  token: string;
-  sliderX: number;
-  sliderY: number;
-}

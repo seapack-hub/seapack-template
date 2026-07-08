@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { SkillExecutionAPI, type SkillExecutionLog, type ExecutionLogQuery } from '@/api/ai/skillExecution';
+import { SkillAPI, type SkillExecutionLog, type ExecutionLogQuery } from '@/api/ai/skill';
 import { LOG_LIST_COLUMNS } from '../utils';
 import { LOG_STATUS_OPTIONS } from '../utils/moduleOptions'
 
@@ -130,7 +130,7 @@ watch(visible, async (val) => {
 })
 
 async function handleQuery() {
-  const res = await SkillExecutionAPI.page(queryParams)
+  const res = await SkillAPI.getExecutionLogs(queryParams)
   logs.value = res.list || []
   total.value = res.total || 0
 }
@@ -154,7 +154,7 @@ async function onRowClick(row: SkillExecutionLog) {
   detail.value = null
   detailVisible.value = true
   try {
-    const res = await SkillExecutionAPI.getById(row.id)
+    const res = await SkillAPI.getExecutionLogById(row.id)
     detail.value = res
   } catch {
     // fallback: 使用行数据

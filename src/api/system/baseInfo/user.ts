@@ -1,34 +1,12 @@
 import { request } from "@/utils/axios.ts"
+import type { User, UserPageQuery } from "./types/user"
+
+export type { User, UserPageQuery }
+
 const USER_BASE_URL = "/api/user"
 
-/** 用户对象 */
-export interface User {
-  //用户id
-  id: number
-  //用户名
-  userName?: string
-  //邮箱
-  email?: string
-  // 手机号
-  mobile?: string
-  //昵称
-  nickName?: string
-  //性别
-  gender?: number
-  //状态
-  status?: number
-  //部门id
-  deptId?: string
-  //部门名称
-  deptName?: string
-  //创建时间
-  createTime?: Date
-
-  [key: string]: any;
-}
-
 export const UserAPI = {
-  /** 分页查询用户列表（GET /api/user/page/list） */
+  /** 分页查询用户列表 */
   getPage(queryParams: UserPageQuery) {
     return request<any, PageResult<User[]>>({
       url: `${USER_BASE_URL}/page/list`,
@@ -36,17 +14,16 @@ export const UserAPI = {
       params: queryParams,
     })
   },
-  
-  /**
-   * 查询用户详情
-   */
-  getUserInfo(userId:string){
+
+  /** 查询用户详情 */
+  getUserInfo(userId: string) {
     return request<any, User>({
       url: `${USER_BASE_URL}/${userId}`,
       method: "get",
     })
   },
-  /** 新增用户（POST /api/user/insert） */
+
+  /** 新增用户 */
   insert(data: any) {
     return request<any, any>({
       url: `${USER_BASE_URL}/insert`,
@@ -54,7 +31,8 @@ export const UserAPI = {
       data,
     })
   },
-  /** 修改用户信息（POST /api/user/update） */
+
+  /** 修改用户信息 */
   update(data: any) {
     return request<any, any>({
       url: `${USER_BASE_URL}/update`,
@@ -62,14 +40,16 @@ export const UserAPI = {
       data,
     })
   },
-  /** 删除用户（DELETE /api/user/delete/{id}） */
+
+  /** 删除用户 */
   delete(id: number) {
     return request<any, any>({
       url: `${USER_BASE_URL}/delete/${id}`,
       method: "delete",
     })
   },
-  /** 重置密码（PUT /api/user/resetPassword） */
+
+  /** 重置密码 */
   resetPassword(id: number, newPassword: string) {
     return request({
       url: `${USER_BASE_URL}/resetPassword`,
@@ -77,7 +57,8 @@ export const UserAPI = {
       data: { id, newPassword },
     })
   },
-  /** 批量删除用户（DELETE /api/user/batchDelete） */
+
+  /** 批量删除用户 */
   deleteByIds(ids: number[]) {
     return request({
       url: `${USER_BASE_URL}/batchDelete`,
@@ -85,22 +66,14 @@ export const UserAPI = {
       data: ids,
     })
   },
-  /** 为用户分配角色（PUT /api/user/{id}/roles，JSON 体 { roleIds: [1,2,3] }） */
+
+  /** 为用户分配角色 */
   assignRoles(id: number, roleIds: number[]) {
     return request<any, any>({ url: `${USER_BASE_URL}/${id}/roles`, method: 'put', data: { roleIds } })
   },
-  /** 查询用户已有角色ID（GET /api/user/{id}/roles，用于回显弹窗勾选） */
+
+  /** 查询用户已有角色ID */
   getRoleIds(id: number) {
     return request<any, number[]>({ url: `${USER_BASE_URL}/${id}/roles`, method: 'get' })
   },
 }
-
-/** 用户分页查询参数 */
-export interface UserPageQuery extends PageQuery {
-  keywords?: string
-  status?: string
-  deptId?: number
-  startTime?: string
-  endTime?: string
-}
-

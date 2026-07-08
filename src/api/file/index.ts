@@ -1,16 +1,13 @@
 import { request } from "@/utils/axios";
+import type { FileInfo } from "./types/file";
+
+export type { FileInfo }
 
 const FileAPI = {
-  /**
-   * 文件上传地址
-   */
+  /** 文件上传地址 */
   uploadUrl: import.meta.env.VITE_APP_BASE_API + "/api/v1/files",
 
-  /**
-   * 上传文件
-   *
-   * @param file
-   */
+  /** 上传文件 */
   upload(file: File) {
     const formData = new FormData();
     formData.append("file", file);
@@ -24,11 +21,7 @@ const FileAPI = {
     });
   },
 
-  /**
-   * 删除文件
-   *
-   * @param filePath 文件完整路径
-   */
+  /** 删除文件 */
   deleteByPath(filePath?: string) {
     return request({
       url: "/api/v1/files",
@@ -37,17 +30,13 @@ const FileAPI = {
     });
   },
 
-  /**
-   * 下载文件
-   * @param url
-   * @param fileName
-   */
+  /** 下载文件 */
   downloadFile(url: string, fileName?: string) {
     return request({
       url: url,
       method: "get",
       responseType: "blob",
-    }).then((res:any) => {
+    }).then((res: any) => {
       const blob = new Blob([res.data]);
       const a = document.createElement("a");
       const url = window.URL.createObjectURL(blob);
@@ -60,13 +49,3 @@ const FileAPI = {
 };
 
 export default FileAPI;
-
-/**
- * 文件API类型声明
- */
-export interface FileInfo {
-  /** 文件名 */
-  name: string;
-  /** 文件路径 */
-  url: string;
-}

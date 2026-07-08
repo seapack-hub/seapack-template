@@ -1,85 +1,53 @@
 import { request } from "@/utils/axios.ts";
+import type { FundPageQuery, FundBaseInfo } from "./types/fund";
+
+export type { FundPageQuery, FundBaseInfo }
+
 const USER_BASE_URL = "/api/fundBaseInfo";
+
 export const FundBaseInfoAPI = {
-  //分页查询基金列表
-  getFundBaseInfoList(queryParams:FundPageQuery){
-    // 从参数中解构出分页字段和查询条件对象
+  /** 分页查询基金列表 */
+  getFundBaseInfoList(queryParams: FundPageQuery) {
     const { pageNum, pageSize, ...fundBaseInfo } = queryParams;
-    return request<any,FundBaseInfo>({
+    return request<any, FundBaseInfo>({
       url: `${USER_BASE_URL}/page`,
       method: "post",
-      params:{pageNum,pageSize},
-      data:fundBaseInfo,
+      params: { pageNum, pageSize },
+      data: fundBaseInfo,
     });
   },
 
-  //插入
-  insertFundBaseInfo(fundInfo:FundBaseInfo){
-    return request<any,any>({
-      url:`${USER_BASE_URL}/insert`,
-      method:"post",
-      data:fundInfo
+  /** 插入 */
+  insertFundBaseInfo(fundInfo: FundBaseInfo) {
+    return request<any, any>({
+      url: `${USER_BASE_URL}/insert`,
+      method: "post",
+      data: fundInfo
     })
   },
-  //删除
-  deleteFundBaseInfo(fundCode:string){
-    return request<any,any>({
-      url:`${USER_BASE_URL}/delete/${fundCode}`,
-      method:"delete",
-    })
-  },
-  //详情
-  getFundBaseInfoDetail(fundCode:string){
-    return request<any,FundBaseInfo>({
-      url:`${USER_BASE_URL}/detail/${fundCode}`,
-      method:"get"
-    })
-  },
-  //更新
-  updateFundBaseInfo(fundInfo:FundBaseInfo){
-    return request<any,any>({
-      url:`${USER_BASE_URL}/update`,
-      method:"post",
-      data:fundInfo
-    })
-  },
-};
 
-export interface FundPageQuery extends PageQuery{
-  //关键字搜索
-  keywords?:string,
-  //用户状态
-  status?:string,
-  //开始时间
-  startTime?:string,
-  //结束时间
-  endTime?:string
- }
+  /** 删除 */
+  deleteFundBaseInfo(fundCode: string) {
+    return request<any, any>({
+      url: `${USER_BASE_URL}/delete/${fundCode}`,
+      method: "delete",
+    })
+  },
 
-export interface FundBaseInfo {
-  /** 基金编码 */
-  fundCode?:string,
-  /** 基金简称 */
-  fundName?:string,
-  /** 基金全称 */
-  fundFullName?:string,
-  /** 基金类型 */
-  fundTypeName?:string,
-  /** 基金管理公司 */
-  managementCompany?:string,
-  /** 基金托管人 */
-  custodian?:string,
-  /** 成立日期 */
-  inceptDate?:string,
-  /** 成立规模 */
-  issueShare?:number,
-  /** 管理费率 */
-  mfee?:number,
-  /** 托管费率 */
-  cfee?:number,
-  /** 销售服务费率 */
-  sfee?:number,
-  /** 基金状态 */
-  status?:string,
-  [property: string]: any
+  /** 详情 */
+  getFundBaseInfoDetail(fundCode: string) {
+    return request<any, FundBaseInfo>({
+      url: `${USER_BASE_URL}/detail/${fundCode}`,
+      method: "get"
+    })
+  },
+
+  /** 更新 */
+  updateFundBaseInfo(fundInfo: FundBaseInfo) {
+    return request<any, any>({
+      url: `${USER_BASE_URL}/update`,
+      method: "post",
+      data: fundInfo
+    })
+  },
 };

@@ -1,15 +1,15 @@
+import type { ChatMessage } from './types/index'
+
+export type { ChatMessage }
+
 const USER_BASE_URL = "/api";
-export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-}
 
 export async function streamChat(
   messages: ChatMessage[],
   onChunk: (text: string) => void,
   onDone: () => void,
   onError: (e: Error) => void,
-  namespace?: string, //命名空间参数
+  namespace?: string,
 ) {
   try {
     const response = await fetch(`${USER_BASE_URL}/chat/aiModel`, {
@@ -19,7 +19,7 @@ export async function streamChat(
       },
       body: JSON.stringify({
         messages: messages,
-        namespace: namespace, //命名空间参数
+        namespace: namespace,
         stream: true
       })
     });
@@ -34,42 +34,31 @@ export async function streamChat(
     }
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
-    let buffer = ''; // 用于处理粘包或半包问题
+    let buffer = '';
     while (true) {
       const { done, value } = await reader.read();
       if (done) {
         onDone();
         break;
       }
-      // 将新读取的数据追加到缓冲区
-      buffer += decoder.decode(value, { stream: true });      
-      // 按行分割
-      const lines = buffer.split('\n');      
-      // 保留最后一行（可能是不完整的），留待下次循环处理
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
       buffer = lines.pop() || '';
       for (const line of lines) {
-        const trimmedLine = line.trim();        
-        // 1. 确保以 data: 开头
+        const trimmedLine = line.trim();
         if (trimmedLine.startsWith('data:')) {
-          // 2. 去掉 data: 前缀
           const jsonString = trimmedLine.replace(/^data:\s*/, '');
-          // 3. 处理结束标记
           if (jsonString === '[DONE]') {
             onDone();
             return;
           }
           try {
             const parsed = JSON.parse(jsonString);
-            // --- 核心修复：提取路径 ---
-            // 截图显示 object 为 chat.completion.chunk，这是标准流式格式
-            // 内容通常在 delta.content 中
             const content = parsed.choices?.[0]?.delta?.content;
-            
             if (content) {
               onChunk(content);
             }
           } catch (e) {
-            // 忽略非 JSON 的心跳包或解析错误
             // eslint-disable-next-line no-console
             console.warn('解析失败:', e, jsonString);
           }

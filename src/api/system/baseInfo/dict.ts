@@ -1,28 +1,9 @@
 import { request } from '@/utils/axios.ts'
+import type { Dict, DictQuery } from './types/dict'
+
+export type { Dict, DictQuery }
 
 const USER_BASE_URL = '/api'
-
-/** 系统字典 */
-export interface Dict {
-  id: number
-  dictType: string
-  dictCode: string
-  dictName: string
-  orderNum: number
-  status: string // 1启用 0停用
-  remark?: string
-  gmtCreate?: string
-  gmtModified?: string
-}
-
-/** 字典分页查询参数 */
-export interface DictQuery {
-  pageNum?: number
-  pageSize?: number
-  dictType?: string
-  keyword?: string
-  status?: string
-}
 
 export const DictAPI = {
   /** 分页查询字典列表 */
@@ -51,6 +32,6 @@ export const DictAPI = {
   },
 }
 
-/** 按类型查询字典列表（提取自分页结果，pageSize 设大值获取全部） */
+/** 按类型查询字典列表 */
 export const getDictByType = (dictType: string) =>
   DictAPI.getList({ dictType, pageSize: 9999 }).then(res => res.list || [])
