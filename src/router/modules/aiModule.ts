@@ -113,6 +113,18 @@ const aiModuleRoute: Array<RouterObject> = [
           permKey: 'tokenStats',
         },
       },
+      //知识库管理
+      {
+        path: 'knowledgeBase',
+        name: 'knowledgeBase',
+        component: () => import('@/views/aiModule/knowledgeBase/index.vue'),
+        meta: {
+          title: 'knowledgeBase',
+          description: '知识库管理',
+          icon: 'Collection',
+          permKey: 'knowledgeBase',
+        },
+      },
     ]
   },
 ];

@@ -1,17 +1,5 @@
 /**
  * Token 用量统计 API
- *
- * 后端需实现以下接口：
- *
- * 1. GET  /api/ai/token-stats/overview        → 概览（今日/昨日汇总）
- * 2. GET  /api/ai/token-stats/trend           → 趋势（按天聚合）
- * 3. GET  /api/ai/token-stats/model-pie       → 模型占比
- * 4. GET  /api/ai/token-stats/scene-bar       → 场景调用柱状图
- * 5. GET  /api/ai/token-stats/cost-summary    → 费用汇总表
- * 6. GET  /api/ai/token-stats/recent-calls    → 最近调用记录
- *
- * 注意：最近调用记录需要一张明细表（ai_token_usage_log），
- *       ai_token_usage_daily 是聚合表，不含单次调用明细。
  */
 import { request } from '@/utils/axios'
 
