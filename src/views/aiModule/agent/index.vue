@@ -6,7 +6,7 @@
   <div class="app-container w-100% h-100% flex flex-col">
     <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
       <!-- 搜索栏 -->
-      <div class="h-[50px]">
+      <div class="search-bar h-[50px]">
         <el-form :inline="true" :model="queryParams">
           <el-form-item label="agent名称">
             <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
@@ -57,7 +57,7 @@
                 @change="(val) => onStatusChange(row, val as any)"
               />
             </div>
-            <div class="text-12px text-[var(--el-text-color-secondary)] leading-1.5 line-clamp-2">{{ row.description || '暂无描述' }}</div>
+            <div class="text-12px text-[var(--el-text-color-secondary)]">{{ row.description || '暂无描述' }}</div>
             <div class="flex items-center gap-8px">
               <el-tag size="small" type="info">{{ row.modelCode }}</el-tag>
               <span class="text-12px text-[var(--el-text-color-secondary)]">v{{ row.version }}</span>
@@ -161,7 +161,7 @@ const viewMode = ref<'card' | 'list'>('card')
 const columns = [
   ...AGENT_LIST_COLUMNS,
   {
-    columnType: 'operate', label: '操作', width: '170px', fixed: 'right',
+    columnType: 'operate', label: '操作', width: '160px', fixed: 'right',
     buttons: [
       { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openEditDialog(row) },
       { type: 'primary', label: '配置', size: 'small', renderType: 'link', click: ({ row }: any) => openConfigDrawer(row) },
@@ -197,7 +197,7 @@ async function handleCardDelete(row: Agent) {
   gap: 16px;
   overflow-y: auto;
   flex: 1;
-  padding: 1px;
+  padding: 10px;
   box-sizing: border-box;
   border: 1px solid var(--el-border-color-lighter);
 }

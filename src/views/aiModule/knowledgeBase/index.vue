@@ -185,7 +185,7 @@ onMounted(() => {
   align-content: start;
   gap: 16px;
   overflow-y: auto;
-  flex: 1;
+  flex: 10px;
   padding: 1px;
   box-sizing: border-box;
   border: 1px solid var(--el-border-color-lighter);

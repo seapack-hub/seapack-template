@@ -5,7 +5,7 @@
   <el-dialog
     v-model="visible"
     :title="isEdit ? '编辑知识库' : '新增知识库'"
-    width="600px"
+    width="800px"
     @closed="onClosed"
   >
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="100px">
