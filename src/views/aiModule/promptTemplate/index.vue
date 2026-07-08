@@ -29,7 +29,7 @@
       </div>
 
       <!-- 工具栏 -->
-      <div class="table-toolbar">
+      <div class="flex justify-between items-center">
         <el-button type="success" icon="plus" @click="openAddDialog()">新增模板</el-button>
       </div>
 
@@ -173,17 +173,3 @@ onMounted(() => {
   handleQuery()
 })
 </script>
-
-<style lang="scss" scoped>
-.el-card-main ::v-deep(.el-card__body) {
-  height: calc(100% - 40px);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.table-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-</style>

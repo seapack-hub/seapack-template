@@ -6,7 +6,7 @@
   <div class="app-container w-100% h-100% flex flex-col">
     <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
       <!-- 搜索栏 -->
-      <div class="search-bar h-[50px]">
+      <div class="h-[50px]">
         <el-form :inline="true" :model="queryParams">
           <el-form-item label="助手名称">
             <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
@@ -24,10 +24,8 @@
       </div>
 
       <!-- 工具栏 -->
-      <div class="table-toolbar h-[40px]">
-        <div class="flex gap-8px">
-          <el-button type="success" icon="plus" @click="openAddDialog()">新增 Agent</el-button>
-        </div>
+      <div class="h-[40px] flex justify-between items-center">
+        <el-button type="success" icon="plus" @click="openAddDialog()">新增 Agent</el-button>
         <el-radio-group v-model="viewMode">
           <el-radio-button value="card">
             <el-icon><Grid /></el-icon>
@@ -44,11 +42,11 @@
           <el-empty description="暂无 Agent" />
         </div>
         <div v-for="row in tableData" :key="row.id" class="agent-card">
-          <div class="card-header">
+          <div class="flex items-center gap-10px">
             <div class="card-avatar">{{ row.avatar || row.name?.charAt(0) || 'A' }}</div>
-            <div class="card-info">
-              <div class="card-name">{{ row.name }}</div>
-              <div class="card-code text-12px text-[var(--el-text-color-secondary)]">{{ row.code }}</div>
+            <div class="flex-1 min-w-0">
+              <div class="text-14px font-600 color-[var(--el-text-color-primary)] overflow-hidden text-ellipsis whitespace-nowrap">{{ row.name }}</div>
+              <div class="text-12px text-[var(--el-text-color-secondary)] overflow-hidden text-ellipsis whitespace-nowrap">{{ row.code }}</div>
             </div>
             <el-switch
               :model-value="row.status"
@@ -58,18 +56,18 @@
               @change="(val) => onStatusChange(row, val as any)"
             />
           </div>
-          <div class="card-desc">{{ row.description || '暂无描述' }}</div>
-          <div class="card-meta">
+          <div class="text-12px text-[var(--el-text-color-secondary)] leading-1.5 line-clamp-2">{{ row.description || '暂无描述' }}</div>
+          <div class="flex items-center gap-8px">
             <el-tag size="small" type="info">{{ row.modelCode }}</el-tag>
             <span class="text-12px text-[var(--el-text-color-secondary)]">v{{ row.version }}</span>
             <span class="text-12px text-[var(--el-text-color-secondary)]">使用 {{ row.useCount || 0 }} 次</span>
           </div>
-          <div class="card-actions">
+          <div class="flex gap-4px border-t border-[var(--el-border-color-extra-light)] pt-10px">
             <el-button link type="primary" size="small" @click="openEditDialog(row)">编辑</el-button>
             <el-button link type="primary" size="small" @click="openConfigDrawer(row)">配置</el-button>
             <el-button link type="primary" size="small" @click="openTestDrawer(row)">测试</el-button>
             <el-button link type="primary" size="small" @click="handleCopy(row)">复制</el-button>
-            <el-button link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button link type="danger" size="small" @click="handleCardDelete(row)">删除</el-button>
           </div>
         </div>
       </div>
@@ -127,6 +125,7 @@
 </template>
 
 <script setup lang="ts">
+import { ElMessageBox } from 'element-plus'
 import { type Agent } from '@/api/ai/agent'
 import { AGENT_STATUS_OPTIONS } from './utils/moduleOptions'
 import { AGENT_LIST_COLUMNS } from './utils/tableColumns'
@@ -136,11 +135,21 @@ import AgentConfigDrawer from './components/AgentConfigDrawer.vue'
 import AgentTestDrawer from './components/AgentTestDrawer.vue'
 
 const {
-  queryParams, tableData, total, loading,
-  handleQuery, handleReset,
-  formVisible, formIsEdit, formData,
-  openAddDialog, openEditDialog, onFormConfirm,
-  handleDelete, handleCopy, onStatusChange,
+  queryParams, 
+  tableData, 
+  total, 
+  loading,
+  handleQuery,
+   handleReset,
+  formVisible, 
+  formIsEdit, 
+  formData,
+  openAddDialog, 
+  openEditDialog, 
+  onFormConfirm,
+  handleDelete, 
+  handleCopy, 
+  onStatusChange,
   configDrawerVisible, currentAgentId, currentAgentName, openConfigDrawer,
   testDrawerVisible, openTestDrawer,
 } = useAgent()
@@ -164,6 +173,11 @@ const columns = [
 onMounted(() => {
   handleQuery()
 })
+
+async function handleCardDelete(row: Agent) {
+  await ElMessageBox.confirm(`确认删除 Agent【${row.name}】？`, '提示', { type: 'warning' })
+  await handleDelete(row)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -174,20 +188,14 @@ onMounted(() => {
   gap: 10px;
 }
 
-.table-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* ===== 卡片网格 ===== */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  align-content: start;
   gap: 16px;
   overflow-y: auto;
   flex: 1;
-  border: 1px solid var(--el-border-color-lighter);
+  padding: 1px;
 }
 
 .col-span-full {
@@ -208,12 +216,6 @@ onMounted(() => {
   }
 }
 
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .card-avatar {
   width: 40px;
   height: 40px;
@@ -226,48 +228,5 @@ onMounted(() => {
   font-size: 16px;
   font-weight: 600;
   flex-shrink: 0;
-}
-
-.card-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.card-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.card-code {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.card-desc {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.card-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.card-actions {
-  display: flex;
-  gap: 4px;
-  border-top: 1px solid var(--el-border-color-extra-light);
-  padding-top: 10px;
 }
 </style>

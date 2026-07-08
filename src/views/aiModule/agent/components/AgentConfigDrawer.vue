@@ -9,11 +9,11 @@
     size="700px"
     @opened="onOpened"
   >
-    <el-tabs v-model="activeTab" class="config-tabs">
+    <el-tabs v-model="activeTab" class="px-16px">
       <!-- 系统提示词 Tab -->
       <el-tab-pane name="prompt">
-        <template #label><span class="tab-label"><el-icon><EditPen /></el-icon> 系统提示词</span></template>
-        <div class="tab-content">
+        <template #label><span class="inline-flex items-center gap-4px text-13px"><el-icon><EditPen /></el-icon> 系统提示词</span></template>
+        <div class="min-h-300px">
           <el-input
             v-model="agentDetail.systemPrompt"
             type="textarea"
@@ -58,8 +58,8 @@
 
       <!-- 技能 Tab -->
       <el-tab-pane name="skill">
-        <template #label><span class="tab-label"><el-icon><Connection /></el-icon> 技能关联</span></template>
-        <div class="tab-content">
+        <template #label><span class="inline-flex items-center gap-4px text-13px"><el-icon><Connection /></el-icon> 技能关联</span></template>
+        <div class="min-h-300px">
           <div class="flex items-center justify-between mb-8px">
             <span class="text-14px font-600">关联技能</span>
             <el-button type="primary" size="small" icon="plus" @click="openAddSkill">添加技能</el-button>
@@ -93,8 +93,8 @@
 
       <!-- 知识库 Tab -->
       <el-tab-pane name="knowledge">
-        <template #label><span class="tab-label"><el-icon><Collection /></el-icon> 知识库关联</span></template>
-        <div class="tab-content">
+        <template #label><span class="inline-flex items-center gap-4px text-13px"><el-icon><Collection /></el-icon> 知识库关联</span></template>
+        <div class="min-h-300px">
           <div class="flex items-center justify-between mb-8px">
             <span class="text-14px font-600">关联知识库</span>
             <el-button type="primary" size="small" icon="plus" @click="openAddKnowledge">添加知识库</el-button>
@@ -121,8 +121,8 @@
 
       <!-- 对话记忆 Tab -->
       <el-tab-pane name="memory">
-        <template #label><span class="tab-label"><el-icon><ChatDotRound /></el-icon> 对话记忆</span></template>
-        <div class="tab-content">
+        <template #label><span class="inline-flex items-center gap-4px text-13px"><el-icon><ChatDotRound /></el-icon> 对话记忆</span></template>
+        <div class="min-h-300px">
           <el-form label-width="120px">
             <el-form-item label="开启记忆">
               <el-switch v-model="agentDetail.memoryEnabled" :active-value="1" :inactive-value="0" active-text="开启" inactive-text="关闭" />
@@ -414,18 +414,3 @@ async function toggleKnowledgeEnabled(row: AgentKnowledge, val: number) {
   row.enabled = val
 }
 </script>
-
-<style scoped>
-.config-tabs :deep(.el-tabs__content) {
-  padding: 16px;
-}
-.tab-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-}
-.tab-content {
-  min-height: 300px;
-}
-</style>
