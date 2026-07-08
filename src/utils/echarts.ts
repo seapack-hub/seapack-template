@@ -10,6 +10,7 @@ import {
   LineChart,
   LinesChart,
   MapChart,
+  PieChart,
   RadarChart,
   ScatterChart,
 } from 'echarts/charts'
@@ -32,6 +33,7 @@ echarts.use([
   GeoComponent,
   BarChart,
   LineChart,
+  PieChart,
   CandlestickChart,
   MapChart,
   ScatterChart,

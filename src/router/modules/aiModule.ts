@@ -89,6 +89,30 @@ const aiModuleRoute: Array<RouterObject> = [
           permKey: 'agentManage',
         },
       },
+      //场景管理
+      {
+        path: 'sceneManage',
+        name: 'sceneManage',
+        component: () => import('@/views/aiModule/scene/index.vue'),
+        meta: {
+          title: 'sceneManage',
+          description: '场景管理',
+          icon: 'Grid',
+          permKey: 'sceneManage',
+        },
+      },
+      //Token 用量统计
+      {
+        path: 'tokenStats',
+        name: 'tokenStats',
+        component: () => import('@/views/aiModule/tokenStats/index.vue'),
+        meta: {
+          title: 'tokenStats',
+          description: 'Token 统计',
+          icon: 'DataAnalysis',
+          permKey: 'tokenStats',
+        },
+      },
     ]
   },
 ];

@@ -8,7 +8,7 @@
       <!-- 搜索栏 -->
       <div class="h-[50px]">
         <el-form :inline="true" :model="queryParams">
-          <el-form-item label="助手名称">
+          <el-form-item label="agent名称">
             <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="状态">
@@ -37,67 +37,69 @@
       </div>
 
       <!-- 卡片模式 -->
-      <div v-if="viewMode === 'card'" class="card-grid">
-        <div v-if="tableData.length === 0 && !loading" class="col-span-full">
-          <el-empty description="暂无 Agent" />
-        </div>
-        <div v-for="row in tableData" :key="row.id" class="agent-card">
-          <div class="flex items-center gap-10px">
-            <div class="card-avatar">{{ row.avatar || row.name?.charAt(0) || 'A' }}</div>
-            <div class="flex-1 min-w-0">
-              <div class="text-14px font-600 color-[var(--el-text-color-primary)] overflow-hidden text-ellipsis whitespace-nowrap">{{ row.name }}</div>
-              <div class="text-12px text-[var(--el-text-color-secondary)] overflow-hidden text-ellipsis whitespace-nowrap">{{ row.code }}</div>
+      <Transition name="view-fade" mode="out-in">
+        <div v-if="viewMode === 'card'" key="card" class="card-grid">
+          <div v-if="tableData.length === 0 && !loading" class="col-span-full">
+            <el-empty description="暂无 Agent" />
+          </div>
+          <div v-for="row in tableData" :key="row.id" class="agent-card">
+            <div class="flex items-center gap-10px">
+              <div class="card-avatar">{{ row.avatar || row.name?.charAt(0) || 'A' }}</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-14px font-600 color-[var(--el-text-color-primary)] overflow-hidden text-ellipsis whitespace-nowrap">{{ row.name }}</div>
+                <div class="text-12px text-[var(--el-text-color-secondary)] overflow-hidden text-ellipsis whitespace-nowrap">{{ row.code }}</div>
+              </div>
+              <el-switch
+                :model-value="row.status"
+                :active-value="1"
+                :inactive-value="0"
+                size="small"
+                @change="(val) => onStatusChange(row, val as any)"
+              />
             </div>
-            <el-switch
-              :model-value="row.status"
-              :active-value="1"
-              :inactive-value="0"
-              size="small"
-              @change="(val) => onStatusChange(row, val as any)"
+            <div class="text-12px text-[var(--el-text-color-secondary)] leading-1.5 line-clamp-2">{{ row.description || '暂无描述' }}</div>
+            <div class="flex items-center gap-8px">
+              <el-tag size="small" type="info">{{ row.modelCode }}</el-tag>
+              <span class="text-12px text-[var(--el-text-color-secondary)]">v{{ row.version }}</span>
+              <span class="text-12px text-[var(--el-text-color-secondary)]">使用 {{ row.useCount || 0 }} 次</span>
+            </div>
+            <div class="flex gap-4px border-t border-[var(--el-border-color-extra-light)] pt-10px">
+              <el-button link type="primary" size="small" @click="openEditDialog(row)">编辑</el-button>
+              <el-button link type="primary" size="small" @click="openConfigDrawer(row)">配置</el-button>
+              <el-button link type="primary" size="small" @click="openTestDrawer(row)">测试</el-button>
+              <el-button link type="primary" size="small" @click="handleCopy(row)">复制</el-button>
+              <el-button link type="danger" size="small" @click="handleCardDelete(row)">删除</el-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 列表模式 -->
+        <div v-else key="list" class="flex-1 flex flex-col justify-between overflow-hidden border">
+          <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
+            <template #status>
+              <el-table-column label="状态" prop="status" width="80" align="center" slot-name="status">
+                <template #default="{ row }">
+                  <el-switch
+                    :model-value="row.status"
+                    :active-value="1"
+                    :inactive-value="0"
+                    size="small"
+                    @change="(val) => onStatusChange(row as any, val as any)"
+                  />
+                </template>
+              </el-table-column>
+            </template>
+          </SpTable>
+          <div class="h-[40px] mt-10px">
+            <Pagination
+              v-model:total="total"
+              v-model:page="queryParams.pageNum"
+              v-model:limit="queryParams.pageSize"
+              @pagination="handleQuery"
             />
           </div>
-          <div class="text-12px text-[var(--el-text-color-secondary)] leading-1.5 line-clamp-2">{{ row.description || '暂无描述' }}</div>
-          <div class="flex items-center gap-8px">
-            <el-tag size="small" type="info">{{ row.modelCode }}</el-tag>
-            <span class="text-12px text-[var(--el-text-color-secondary)]">v{{ row.version }}</span>
-            <span class="text-12px text-[var(--el-text-color-secondary)]">使用 {{ row.useCount || 0 }} 次</span>
-          </div>
-          <div class="flex gap-4px border-t border-[var(--el-border-color-extra-light)] pt-10px">
-            <el-button link type="primary" size="small" @click="openEditDialog(row)">编辑</el-button>
-            <el-button link type="primary" size="small" @click="openConfigDrawer(row)">配置</el-button>
-            <el-button link type="primary" size="small" @click="openTestDrawer(row)">测试</el-button>
-            <el-button link type="primary" size="small" @click="handleCopy(row)">复制</el-button>
-            <el-button link type="danger" size="small" @click="handleCardDelete(row)">删除</el-button>
-          </div>
         </div>
-      </div>
-
-      <!-- 列表模式 -->
-      <div v-else class="flex-1 flex flex-col justify-between overflow-hidden border">
-        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
-          <template #status>
-            <el-table-column label="状态" prop="status" width="80" align="center" slot-name="status">
-              <template #default="{ row }">
-                <el-switch
-                  :model-value="row.status"
-                  :active-value="1"
-                  :inactive-value="0"
-                  size="small"
-                  @change="(val) => onStatusChange(row as any, val as any)"
-                />
-              </template>
-            </el-table-column>
-          </template>
-        </SpTable>
-        <div class="h-[40px] mt-10px">
-          <Pagination
-            v-model:total="total"
-            v-model:page="queryParams.pageNum"
-            v-model:limit="queryParams.pageSize"
-            @pagination="handleQuery"
-          />
-        </div>
-      </div>
+      </Transition>
     </el-card>
 
     <!-- 新增/编辑弹窗 -->
@@ -196,6 +198,8 @@ async function handleCardDelete(row: Agent) {
   overflow-y: auto;
   flex: 1;
   padding: 1px;
+  box-sizing: border-box;
+  border: 1px solid var(--el-border-color-lighter);
 }
 
 .col-span-full {
@@ -228,5 +232,19 @@ async function handleCardDelete(row: Agent) {
   font-size: 16px;
   font-weight: 600;
   flex-shrink: 0;
+}
+
+/* 视图切换过渡 */
+.view-fade-enter-active,
+.view-fade-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.view-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.view-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 </style>
