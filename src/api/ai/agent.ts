@@ -121,6 +121,70 @@ export interface AgentChatResponse {
   durationMs: number
 }
 
+// ===== 测试会话 & 链路追踪 =====
+
+/** 链路追踪步骤 */
+export interface AgentTraceStep {
+  stepIndex: number
+  stepType: 'prompt_assembly' | 'knowledge_retrieval' | 'skill_execution' | 'llm_call'
+  stepName: string
+  status: 'success' | 'fail' | 'skip'
+  durationMs: number
+  input?: string
+  output?: string | string[]
+  metadata?: Record<string, any>
+}
+
+/** 链路追踪快照 */
+export interface AgentTraceSnapshot {
+  steps: AgentTraceStep[]
+  totalDurationMs: number
+  totalTokens: { prompt: number; completion: number }
+}
+
+/** 测试会话实体 */
+export interface AgentTestSession {
+  id?: number
+  agentId?: number
+  agentName?: string
+  /** 用户输入 */
+  userMessage: string
+  /** Agent 回复 */
+  agentReply?: string
+  /** 链路追踪快照 */
+  traceSnapshot?: AgentTraceSnapshot
+  /** 总耗时 */
+  totalDurationMs?: number
+  /** Token 数 */
+  tokensPrompt?: number
+  tokensCompletion?: number
+  /** 模型 */
+  modelName?: string
+  /** 状态 */
+  status?: string
+  /** 错误信息 */
+  errorMessage?: string
+  createdBy?: number
+  createdAt?: string
+}
+
+/** 测试对话请求（含链路追踪） */
+export interface AgentTestChatRequest {
+  agentId: number
+  message: string
+  history?: { role: 'user' | 'assistant'; content: string }[]
+}
+
+/** 测试对话响应（含链路追踪） */
+export interface AgentTestChatResponse {
+  content: string
+  tokensPrompt: number
+  tokensCompletion: number
+  durationMs: number
+  /** 链路追踪快照 */
+  traceSnapshot: AgentTraceSnapshot
+}
+
 // ===== API 方法 =====
 
 export const AgentAPI = {
@@ -317,6 +381,41 @@ export const AgentAPI = {
       method: 'post',
       data: req,
       timeout: 300000,
+    })
+  },
+
+  /** 测试对话（含链路追踪） */
+  testChat(req: AgentTestChatRequest) {
+    return request<any, AgentTestChatResponse>({
+      url: `${BASE_URL}/test-chat`,
+      method: 'post',
+      data: req,
+      timeout: 300000,
+    })
+  },
+
+  /** 测试会话历史列表 */
+  getTestSessions(agentId: number, params?: { pageNum?: number; pageSize?: number }) {
+    return request<any, PageResult<AgentTestSession[]>>({
+      url: `${BASE_URL}/${agentId}/test-sessions`,
+      method: 'get',
+      params,
+    })
+  },
+
+  /** 测试会话详情 */
+  getTestSessionDetail(agentId: number, sessionId: number) {
+    return request<any, AgentTestSession>({
+      url: `${BASE_URL}/${agentId}/test-sessions/${sessionId}`,
+      method: 'get',
+    })
+  },
+
+  /** 删除测试会话 */
+  deleteTestSession(agentId: number, sessionId: number) {
+    return request<any, any>({
+      url: `${BASE_URL}/${agentId}/test-sessions/${sessionId}`,
+      method: 'delete',
     })
   },
 }
