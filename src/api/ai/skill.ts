@@ -145,6 +145,77 @@ export interface AiExecutionResult {
   meta?: Record<string, any>;
 }
 
+// ===== 调试日志 =====
+
+/** 调试日志实体 */
+export interface SkillDebugLog {
+  id?: number
+  skillId?: number
+  skillName?: string
+  skillCode?: string
+  /** 输入参数 */
+  inputParams?: Record<string, any>
+  /** 用户补充指令 */
+  userMessage?: string
+  /** 原始提示词模板（含 {{变量}}） */
+  rawPromptTemplate?: string
+  /** 变量替换后的完整 Prompt */
+  renderedPrompt?: string
+  /** 发送给 LLM 的完整请求体 */
+  llmRequestBody?: Record<string, any>
+  /** LLM 返回的原始响应体 */
+  llmResponseBody?: Record<string, any>
+  /** 实际调用的模型 */
+  llmModel?: string
+  /** 提示词 Token 数 */
+  tokensPrompt?: number
+  /** 补全 Token 数 */
+  tokensCompletion?: number
+  /** 总耗时（毫秒） */
+  durationMs?: number
+  /** LLM 调用耗时（毫秒） */
+  durationLlmMs?: number
+  /** 最终输出结果 */
+  outputResult?: string
+  /** 状态 */
+  status?: string
+  /** 错误信息 */
+  errorMessage?: string
+  createdBy?: number
+  createdAt?: string
+}
+
+/** 调试执行请求 */
+export interface SkillDebugRequest {
+  params: Record<string, any>
+  userMessage?: string
+}
+
+/** 调试执行响应 */
+export interface SkillDebugResponse {
+  /** 最终输出 */
+  output: string
+  /** 渲染后的 Prompt */
+  renderedPrompt: string
+  /** 原始模板 */
+  rawPromptTemplate: string
+  /** LLM 请求体 */
+  llmRequestBody: Record<string, any>
+  /** LLM 响应体 */
+  llmResponseBody: Record<string, any>
+  /** 模型 */
+  llmModel: string
+  /** Token 数 */
+  tokensPrompt: number
+  tokensCompletion: number
+  /** 总耗时 */
+  durationMs: number
+  /** LLM 调用耗时 */
+  durationLlmMs: number
+  /** 日志 ID */
+  debugLogId: number
+}
+
 export const SkillAPI = {
   /** 分页查询技能列表 */
   page(query: SkillQuery) {
@@ -286,6 +357,43 @@ export const SkillAPI = {
     return request<any, SkillBindingInfo[]>({
       url: `${BASE_URL}/ai/skills/bindings`,
       method: 'get',
+    });
+  },
+
+  // ===== 调试 =====
+
+  /** 调试执行（含完整请求/响应记录） */
+  debug(id: number, req: SkillDebugRequest) {
+    return request<any, SkillDebugResponse>({
+      url: `${BASE_URL}/ai/skills/${id}/debug`,
+      method: 'post',
+      data: req,
+      timeout: 300000,
+    });
+  },
+
+  /** 调试日志分页查询 */
+  getDebugLogs(params: { pageNum: number; pageSize: number; skillId?: number; status?: string }) {
+    return request<any, PageResult<SkillDebugLog[]>>({
+      url: `${BASE_URL}/ai/skills/debug-logs/page`,
+      method: 'get',
+      params,
+    });
+  },
+
+  /** 调试日志详情 */
+  getDebugLogDetail(id: number) {
+    return request<any, SkillDebugLog>({
+      url: `${BASE_URL}/ai/skills/detail-debug-logs/${id}`,
+      method: 'get',
+    });
+  },
+
+  /** 删除调试日志 */
+  deleteDebugLog(id: number) {
+    return request<any, any>({
+      url: `${BASE_URL}/ai/skills/delete-debug-logs/${id}`,
+      method: 'delete',
     });
   },
 };

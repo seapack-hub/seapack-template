@@ -113,6 +113,11 @@
       v-model:visible="executeDialogVisible"
       :skill-id="currentSkillId"
     />
+    <!-- 调试弹窗 -->
+    <SkillDebugDialog
+      v-model:visible="debugDialogVisible"
+      :skill-id="currentSkillId"
+    />
     <!-- 执行日志弹窗 -->
     <SkillLogDialog
       v-model:visible="logDialogVisible"
@@ -133,6 +138,7 @@ import SkillFormDialog from './components/SkillFormDialog.vue'
 import SkillParamEditor from './components/SkillParamEditor.vue'
 import SkillBindingDialog from './components/SkillBindingDialog.vue'
 import SkillExecuteDialog from './components/SkillExecuteDialog.vue'
+import SkillDebugDialog from './components/SkillDebugDialog.vue'
 import SkillLogDialog from './components/SkillLogDialog.vue'
 
 // ===== 分类管理：加载分类列表、选中过滤、CRUD 弹窗控制 =====
@@ -225,6 +231,7 @@ const columns = [
       { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该技能吗？' }, click: ({ row }: any) => onDeleteSkill(row) },
       { type: 'primary', label: '模块绑定', size: 'small', renderType: 'link', click: ({ row }: any) => openBindingDialog(row) },
       { type: 'primary', label: '执行测试', size: 'small', renderType: 'link', click: ({ row }: any) => openExecuteDialog(row) },
+      { type: 'primary', label: '调试', size: 'small', renderType: 'link', click: ({ row }: any) => openDebugDialog(row) },
       { type: 'primary', label: '执行日志', size: 'small', renderType: 'link', click: ({ row }: any) => openLogDialog(row) },
     ],
   },
@@ -304,6 +311,7 @@ const currentSkillName = ref('')
 const paramEditorVisible = ref(false)
 const bindingDialogVisible = ref(false)
 const executeDialogVisible = ref(false)
+const debugDialogVisible = ref(false)
 const logDialogVisible = ref(false)
 
 function openParamEditor(row: Skill) {
@@ -320,6 +328,11 @@ function openBindingDialog(row: Skill) {
 function openExecuteDialog(row: Skill) {
   currentSkillId.value = row.id!
   executeDialogVisible.value = true
+}
+
+function openDebugDialog(row: Skill) {
+  currentSkillId.value = row.id!
+  debugDialogVisible.value = true
 }
 
 function openLogDialog(row: Skill) {
