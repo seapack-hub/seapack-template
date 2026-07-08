@@ -1,5 +1,15 @@
 import {request} from "@/utils/axios";
-import { ApiResponse } from '@/api/ai/types/rag.ts';
+import { 
+  ApiResponse, 
+  IngestRequest, 
+  ChatRequest 
+} from '@/api/ai/types/rag.ts';
+
+export type { 
+  ApiResponse, 
+  IngestRequest, 
+  ChatRequest 
+};
 
 const USER_BASE_URL = "/api";
 

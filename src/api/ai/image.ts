@@ -8,6 +8,8 @@
 import { request } from '@/utils/axios';
 import type { ImageGenRequest } from './types/image';
 
+export type { ImageGenRequest };
+
 const BASE_URL = '/api';
 
 export const imageApi = {
