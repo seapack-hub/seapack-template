@@ -72,6 +72,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
+import { useDictionaryStore } from '@/store/modules/dictionary'
 import { WorkflowInstanceAPI } from '@/api/workflow/instance'
 import type { WorkflowInstance, WorkflowNodeLog } from '@/api/workflow/types'
 
@@ -82,33 +83,39 @@ const instanceId = Number(route.params.id)
 const instanceDetail = ref<WorkflowInstance>({} as WorkflowInstance)
 const nodeLogs = ref<WorkflowNodeLog[]>([])
 
-const statusMap: Record<number, { label: string; type: string }> = {
-  0: { label: '待执行', type: 'info' },
-  1: { label: '运行中', type: 'warning' },
-  2: { label: '已完成', type: 'success' },
-  3: { label: '失败', type: 'danger' },
-  4: { label: '暂停', type: 'warning' },
-  5: { label: '已取消', type: 'info' },
+const dictStore = useDictionaryStore()
+
+// 实例状态标签映射（由字典动态加载）
+const statusLabelMap = ref<Record<number, string>>({})
+const nodeStatusLabelMap = ref<Record<number, string>>({})
+const triggerLabelMap = ref<Record<string, string>>({})
+
+// 实例状态标签类型（UI 视觉色，不来自字典）
+const statusTagTypeMap: Record<number, string> = {
+  0: 'info',
+  1: 'warning',
+  2: 'success',
+  3: 'danger',
+  4: 'warning',
+  5: 'info',
+}
+// 节点状态标签类型（UI 视觉色）
+const nodeStatusTagTypeMap: Record<number, string> = {
+  0: 'info',
+  1: 'warning',
+  2: 'success',
+  3: 'danger',
+  4: 'info',
+  5: 'warning',
+  6: 'danger',
+  7: 'info',
 }
 
-const nodeStatusMap: Record<number, { label: string; type: string }> = {
-  0: { label: '待执行', type: 'info' },
-  1: { label: '执行中', type: 'warning' },
-  2: { label: '已完成', type: 'success' },
-  3: { label: '失败', type: 'danger' },
-  4: { label: '跳过', type: 'info' },
-  5: { label: '等待人工', type: 'warning' },
-  6: { label: '超时', type: 'danger' },
-  7: { label: '已取消', type: 'info' },
-}
-
-const triggerMap: Record<string, string> = { manual: '手动', api: 'API', schedule: '定时', event: '事件' }
-
-const statusLabel = (s?: number) => statusMap[s ?? 0]?.label || '未知'
-const statusTagType = (s?: number) => statusMap[s ?? 0]?.type || 'info'
-const nodeStatusLabel = (s?: number) => nodeStatusMap[s ?? 0]?.label || '未知'
-const nodeStatusType = (s?: number) => nodeStatusMap[s ?? 0]?.type || 'info'
-const triggerLabel = (t?: string) => triggerMap[t || 'manual'] || t
+const statusLabel = (s?: number) => statusLabelMap.value[s ?? 0] || '未知'
+const statusTagType = (s?: number) => (statusTagTypeMap[s ?? 0] || 'info') as 'info' | 'warning' | 'success' | 'danger'
+const nodeStatusLabel = (s?: number) => nodeStatusLabelMap.value[s ?? 0] || '未知'
+const nodeStatusType = (s?: number) => (nodeStatusTagTypeMap[s ?? 0] || 'info') as 'info' | 'warning' | 'success' | 'danger'
+const triggerLabel = (t?: string) => triggerLabelMap.value[t || 'manual'] || t || ''
 
 const formatDuration = (ms?: number) => {
   if (!ms) return '-'
@@ -146,7 +153,19 @@ const handleCancel = async () => {
   loadData()
 }
 
+const loadDictData = async () => {
+  const [statusList, nodeStatusList, triggerList] = await Promise.all([
+    dictStore.getDictionaryList('workflow_instance_status'),
+    dictStore.getDictionaryList('workflow_node_status'),
+    dictStore.getDictionaryList('workflow_trigger_type'),
+  ])
+  statusLabelMap.value = Object.fromEntries(statusList.map((item: any) => [Number(item.value), item.label]))
+  nodeStatusLabelMap.value = Object.fromEntries(nodeStatusList.map((item: any) => [Number(item.value), item.label]))
+  triggerLabelMap.value = Object.fromEntries(triggerList.map((item: any) => [item.value, item.label]))
+}
+
 onMounted(() => {
+  loadDictData()
   loadData()
 })
 </script>
