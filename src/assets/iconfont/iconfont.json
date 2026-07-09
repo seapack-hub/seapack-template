@@ -6,6 +6,69 @@
   "description": "自研项目",
   "glyphs": [
     {
+      "icon_id": "35118837",
+      "name": "rag",
+      "font_class": "rag",
+      "unicode": "e7e7",
+      "unicode_decimal": 59367
+    },
+    {
+      "icon_id": "2944003",
+      "name": "agent-manage",
+      "font_class": "agent-manage",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
+      "icon_id": "28310752",
+      "name": "scene-manage",
+      "font_class": "scene-manage",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "47759780",
+      "name": "image-generation",
+      "font_class": "image-generation",
+      "unicode": "e74b",
+      "unicode_decimal": 59211
+    },
+    {
+      "icon_id": "40709473",
+      "name": "skill-management",
+      "font_class": "skill-management",
+      "unicode": "e6d4",
+      "unicode_decimal": 59092
+    },
+    {
+      "icon_id": "11784880",
+      "name": "data-analysis",
+      "font_class": "data-analysis",
+      "unicode": "e6fe",
+      "unicode_decimal": 59134
+    },
+    {
+      "icon_id": "42129902",
+      "name": "prompt-template",
+      "font_class": "prompt-template",
+      "unicode": "e70e",
+      "unicode_decimal": 59150
+    },
+    {
+      "icon_id": "24159717",
+      "name": "knowledge-base",
+      "font_class": "knowledge-base",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "46051049",
+      "name": "data-line",
+      "font_class": "data-line",
+      "unicode": "e7af",
+      "unicode_decimal": 59311
+    },
+    {
       "icon_id": "4181803",
       "name": "industry-management",
       "font_class": "industry-management",

@@ -11,7 +11,7 @@ export const MODULE_DEFS: ModuleDef[] = [
   { key: 'systemManagement', path: '/systemManagement/dashboard', title: '系统管理', icon: 'system', permKey: 'systemManagement' },
   { key: 'blogsManagement', path: '/blogsManagement/blogs', title: '个人博客', icon: 'blogs', permKey: 'blogsManagement' },
   { key: 'stockFund', path: '/stockFund/workbench', title: '股票基金', icon: 'trend-charts', permKey: 'stockFund' },
-  { key: 'aiModule', path: '/aiModule/rag', title: 'AI交互', icon: 'ai-interaction', permKey: 'aiModule' },
+  { key: 'aiModule', path: '/aiModule/interaction/rag', title: 'AI交互', icon: 'ai-interaction', permKey: 'aiModule' },
   { key: 'devTools', path: '/devTools/workbench', title: '开发工具', icon: 'tool', permKey: 'devTools' },
   { key: 'gis2d', path: '/gis2d/baseMap', title: '二维地图', icon: 'two-d-layers', permKey: 'gis2d' },
   { key: 'gis3d', path: '/gis3d/baseCesium', title: '三维GIS', icon: 'three-d-layers', permKey: 'gis3d' },
