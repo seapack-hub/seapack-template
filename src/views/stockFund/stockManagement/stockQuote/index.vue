@@ -136,10 +136,11 @@
 /* ========== API 和工具 ========== */
 import { StockMarketQuoteAPI, type StockMarketQuoteDto, type StockMarketQuoteQuery } from '@/api/stockFund/stock/stockMarketQuote.ts'
 import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
-import { getDictByType } from '@/api/system/baseInfo/dict.ts'
+import { useDictionaryStore } from '@/store/modules/dictionary'
 import { createStockQuoteColumns } from '../components/columns'
 import { yieldLevelClass } from '../components/shared'
 
+const dictStore = useDictionaryStore()
 /* ========== 状态定义 ========== */
 /** 表格列配置（只读，无操作列） */
 const columns = createStockQuoteColumns()
@@ -256,8 +257,7 @@ function handleReset() {
 /* ========== 初始化 ========== */
 onMounted(async () => {
   try {
-    const res = await getDictByType('exchange_type')
-    exchangeOptions.value = Array.isArray(res) ? res : []
+    exchangeOptions.value = await dictStore.getDictOptions('exchange_type')
   } catch { /* 降级为空 */ }
   loadIndustryTree()
   fetchData()

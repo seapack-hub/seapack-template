@@ -82,11 +82,12 @@
 import { StockInfoAPI } from '@/api/stockFund/stock/stockPool.ts'
 import type { StockInfo } from '@/api/stockFund/stock/stockPool.ts'
 import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
-import { getDictByType } from '@/api/system/baseInfo/dict.ts'
+import { useDictionaryStore } from '@/store/modules/dictionary'
 import { createStockPoolColumns } from '../components/columns'
 import StockPoolFormDialog from './components/StockPoolFormDialog.vue'
 import StockPoolBatchDialog from './components/StockPoolBatchDialog.vue'
 
+const dictStore = useDictionaryStore()
 /* ========== 交易所字典 ========== */
 const exchangeOptions = ref<any[]>([])
 
@@ -216,8 +217,7 @@ const handleReset = () => {
 
 onMounted(async () => {
   try {
-    const res = await getDictByType('exchange_type')
-    exchangeOptions.value = Array.isArray(res) ? res : []
+    exchangeOptions.value = await dictStore.getDictOptions('exchange_type')
   } catch { /* 降级为空 */ }
   loadIndustryTree()
   handleQuery()

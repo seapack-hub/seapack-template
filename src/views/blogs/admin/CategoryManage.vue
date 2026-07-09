@@ -67,10 +67,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getDictByType } from '@/api/system/baseInfo/dict.ts'
+import { useDictionaryStore } from '@/store/modules/dictionary'
 import type { DictItem } from '../utils/type'
 import { CATEGORY_LIST_COLUMNS, TAG_LIST_COLUMNS } from '../utils/tableColumns'
 
+const dictStore = useDictionaryStore()
 const router = useRouter()
 const categories = ref<DictItem[]>([])
 const tags = ref<DictItem[]>([])
@@ -89,8 +90,8 @@ function goToDict() {
 }
 
 onMounted(async () => {
-  categories.value = (await getDictByType('blog_category')) || []
-  tags.value = (await getDictByType('blog_tag')) || []
+  categories.value = await dictStore.getDictionaryList('blog_category')
+  tags.value = await dictStore.getDictionaryList('blog_tag')
 })
 </script>
 

@@ -42,7 +42,9 @@
 
 <script setup lang="ts">
 import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
-import { getDictByType } from '@/api/system/baseInfo/dict.ts'
+import { useDictionaryStore } from '@/store/modules/dictionary'
+
+const dictStore = useDictionaryStore()
 
 const exchangeOptions = ref<any[]>([])
 
@@ -89,14 +91,14 @@ watch(visible, async (val) => {
   try {
     const [treeRes, dictRes] = await Promise.all([
       IndustrySectorAPI.getTree(),
-      getDictByType('exchange_type'),
+      dictStore.getDictOptions('exchange_type'),
     ])
     const list = Array.isArray(treeRes) ? treeRes : []
     cascaderOpts.value = toCascader(list)
     labelToIdPath.value = {}
     idToLabel.value = {}
     buildPathMap(list)
-    exchangeOptions.value = Array.isArray(dictRes) ? dictRes : []
+    exchangeOptions.value = dictRes
     if (form.value.industry) {
       industryPath.value = labelToIdPath.value[idToLabel.value[form.value.industry]]
     }

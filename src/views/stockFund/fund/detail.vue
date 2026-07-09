@@ -26,7 +26,6 @@
 
 <script setup lang="ts">
 import { useTemplateRef } from "vue";
-import { getDictByType } from "@/api/system/baseInfo/dict.ts";
 import { FundBaseInfoAPI, FundBaseInfo } from "@/api/stockFund/fund/fund.ts";
 import { useRouter,useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
