@@ -15,7 +15,7 @@ import { usePermissionStore } from '@/store/modules/permission.ts';
 import { useUserStore } from '@/store/modules/user.ts';
 import { useAppStore } from '@/store/modules/app.ts';
 import { filterVisibleRoutes } from '@/utils/routeUtils.ts';
-import { MODULE_ROUTE_NAMES } from '@/config/modules';
+import { MODULE_DEFS, MODULE_ROUTE_NAMES } from '@/config/modules';
 
 const appStore = useAppStore();
 const permissionStore = usePermissionStore();
@@ -25,7 +25,10 @@ const { dynamicRoutes } = storeToRefs(permissionStore);
 
 // 根据当前路由路径第一段匹配所属模块名
 const currentModuleName = computed(() => {
-  return MODULE_ROUTE_NAMES.find(name => route.path.startsWith('/' + name))
+  return MODULE_DEFS.find(def => {
+    const prefix = '/' + def.path.split('/')[1]
+    return route.path.startsWith(prefix)
+  })?.key ?? MODULE_ROUTE_NAMES.find(name => route.path.startsWith('/' + name))
 })
 
 // 当前模块在 dynamicRoutes 或 route.matched 中的完整路由记录

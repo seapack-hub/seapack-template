@@ -1,6 +1,6 @@
 <template>
   <div class="config-section">
-    <div class="section-title mb-8px text-12px text-gray-400">审批配置</div>
+    <div class="section-title">审批配置</div>
     <el-form-item label="审批人类型">
       <el-select v-model="config.assigneeType" @change="handleChange">
         <el-option label="指定用户" value="user" />
@@ -66,3 +66,16 @@ const handleChange = () => {
   emit('change', config.value)
 }
 </script>
+
+<style lang="scss" scoped>
+.section-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #909399;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #ebeef5;
+}
+</style>

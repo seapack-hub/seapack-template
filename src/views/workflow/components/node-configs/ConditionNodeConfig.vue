@@ -1,6 +1,6 @@
 <template>
   <div class="config-section">
-    <div class="section-title mb-8px text-12px text-gray-400">条件分支配置</div>
+    <div class="section-title">条件分支配置</div>
     <el-form-item label="条件表达式">
       <el-input v-model="config.expression" type="textarea" :rows="2" placeholder="例: {{score}} > 80" @change="handleChange" />
     </el-form-item>
@@ -60,3 +60,16 @@ const handleChange = () => {
   emit('change', config.value)
 }
 </script>
+
+<style lang="scss" scoped>
+.section-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #909399;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #ebeef5;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <div class="config-section">
-    <div class="section-title mb-8px text-12px text-gray-400">子工作流配置</div>
+    <div class="section-title">子工作流配置</div>
     <el-form-item label="工作流">
       <el-select v-model="config.workflowId" placeholder="选择工作流" filterable @change="handleChange">
         <el-option v-for="wf in workflowList" :key="wf.id" :label="wf.name" :value="wf.id" />
@@ -45,3 +45,16 @@ const handleChange = () => {
   emit('change', config.value)
 }
 </script>
+
+<style lang="scss" scoped>
+.section-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #909399;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #ebeef5;
+}
+</style>

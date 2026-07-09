@@ -1,6 +1,6 @@
 <template>
   <div class="config-section">
-    <div class="section-title mb-8px text-12px text-gray-400">AI技能配置</div>
+    <div class="section-title">AI技能配置</div>
     <el-form-item label="技能">
       <el-select v-model="config.skillId" placeholder="选择技能" filterable @change="handleChange">
         <el-option v-for="skill in skillList" :key="skill.id" :label="skill.name" :value="skill.id" />
@@ -58,3 +58,16 @@ const handleChange = () => {
   emit('change', config.value)
 }
 </script>
+
+<style lang="scss" scoped>
+.section-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #909399;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #ebeef5;
+}
+</style>

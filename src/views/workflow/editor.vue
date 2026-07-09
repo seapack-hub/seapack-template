@@ -1,86 +1,87 @@
 <template>
   <div class="workflow-editor h-100% w-100% flex flex-col">
     <!-- 工具栏 -->
-    <div class="editor-toolbar h-48px flex items-center bg-white border-b border-gray-200 px-16px gap-8px">
+    <div class="editor-toolbar">
       <!-- 左侧：返回 + 名称 -->
-      <div class="flex items-center gap-8px">
-        <el-button text @click="handleBack">
+      <div class="toolbar-left">
+        <el-button text @click="handleBack" size="small">
           <el-icon><ArrowLeft /></el-icon>
         </el-button>
         <el-input
           v-model="workflowName"
           class="w-200px"
           placeholder="工作流名称"
+          size="small"
           @blur="handleNameChange"
         />
         <el-tag v-if="workflowData.version" type="info" size="small">v{{ workflowData.version }}</el-tag>
       </div>
 
-      <div class="flex-1" />
-
       <!-- 中间：保存/运行/调试 -->
-      <div class="flex items-center gap-8px">
-        <el-button :loading="saving" @click="handleSave">
+      <div class="toolbar-center">
+        <el-button :loading="saving" size="small" @click="handleSave">
           <el-icon><Check /></el-icon>保存
         </el-button>
-        <el-button type="primary" :loading="running" @click="handleRun">
+        <el-button type="primary" :loading="running" size="small" @click="handleRun">
           <el-icon><VideoPlay /></el-icon>运行
         </el-button>
-        <el-button :loading="debugging" @click="handleDebug">
+        <el-button :loading="debugging" size="small" @click="handleDebug">
           <el-icon><Monitor /></el-icon>调试
         </el-button>
-        <el-button @click="showVersionHistory = true">
+        <el-button size="small" @click="showVersionHistory = true">
           <el-icon><Clock /></el-icon>版本
         </el-button>
-        <el-button @click="showVariableEditor = true">
+        <el-button size="small" @click="showVariableEditor = true">
           <el-icon><Setting /></el-icon>变量
         </el-button>
       </div>
 
-      <div class="flex-1" />
-
       <!-- 右侧：缩放控件 -->
-      <div class="flex items-center gap-4px">
+      <div class="toolbar-right">
         <el-tooltip content="放大" placement="top">
-          <div class="toolbar-btn" @click="canvasRef?.zoomIn()">
-            <el-icon :size="18"><ZoomIn /></el-icon>
+          <div class="toolbar-btn" @click="graph?.zoomIn()">
+            <el-icon :size="16"><ZoomIn /></el-icon>
           </div>
         </el-tooltip>
         <el-tooltip content="缩小" placement="top">
-          <div class="toolbar-btn" @click="canvasRef?.zoomOut()">
-            <el-icon :size="18"><ZoomOut /></el-icon>
+          <div class="toolbar-btn" @click="graph?.zoomOut()">
+            <el-icon :size="16"><ZoomOut /></el-icon>
           </div>
         </el-tooltip>
         <el-tooltip content="适配" placement="top">
-          <div class="toolbar-btn" @click="canvasRef?.fitContent()">
-            <el-icon><FullScreen /></el-icon>
+          <div class="toolbar-btn" @click="graph?.zoomContent()">
+            <el-icon :size="16"><FullScreen /></el-icon>
           </div>
         </el-tooltip>
       </div>
     </div>
 
     <!-- 主体区域 -->
-    <div class="flex-1 flex overflow-hidden">
+    <div class="editor-body">
       <!-- 工作流节点面板 -->
-      <WorkflowStencil />
+      <div class="editor-panel editor-stencil">
+        <WorkflowStencil :graph="graph as any" />
+      </div>
 
       <!-- 画布区域 -->
-      <div ref="containerRef" class="workflow-canvas flex-1 overflow-auto"></div>
+      <div ref="containerRef" class="editor-canvas"></div>
 
       <!-- 属性面板 -->
-      <PropertyPanel
-        v-model="propertyPanelVisible"
-        :node="selectedNode"
-        :edge="selectedEdge"
-        :is-node="isNode"
-      >
-        <template #node-property="{ node }">
-          <WorkflowNodeProperty :node="node" />
-        </template>
-        <template #edge-property="{ edge }">
-          <WorkflowEdgeProperty :edge="edge" />
-        </template>
-      </PropertyPanel>
+      <div class="editor-panel editor-properties">
+        <PropertyPanel
+          v-model="propertyPanelVisible"
+          :node="selectedNode"
+          :edge="selectedEdge"
+          :is-node="isNode"
+        >
+          <template #node-property="{ node }">
+            <WorkflowNodeProperty :node="node" />
+          </template>
+          <template #edge-property="{ edge }">
+            <WorkflowEdgeProperty :edge="edge" />
+          </template>
+        </PropertyPanel>
+      </div>
     </div>
 
     <!-- 版本历史对话框 -->
@@ -99,14 +100,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
   ArrowLeft, Check, VideoPlay, Monitor, Clock, Setting,
   ZoomIn, ZoomOut, FullScreen,
 } from '@element-plus/icons-vue'
-import { Graph, Shape } from '@antv/x6'
+import { Graph, Shape, Snapline, History, Export } from '@antv/x6'
 import { registerWorkflowNodes, getAvailableNodeShapes } from '@/components/X6Nodes'
 import type { WorkflowNodeData, WorkflowVariable } from '@/components/X6Nodes'
 import { WorkflowAPI, WorkflowVersionAPI } from '@/api/workflow'
@@ -191,7 +192,6 @@ const initGraph = () => {
   addMonitorEvent(graphObj)
 
   // 使用插件
-  const { Snapline, History, Export } = require('@antv/x6')
   graphObj.use(new Snapline({ enabled: true, sharp: true }))
   graphObj.use(new History({ enabled: true }))
   graphObj.use(new Export())
@@ -446,11 +446,19 @@ const loadWorkflow = async () => {
 
 // 生命周期
 onMounted(() => {
+  // 隐藏全局设置齿轮按钮
+  const handleBtn = document.querySelector('.handle-button') as HTMLElement
+  if (handleBtn) handleBtn.style.display = 'none'
+
   initGraph()
   loadWorkflow()
 })
 
 onBeforeUnmount(() => {
+  // 恢复全局设置齿轮按钮
+  const handleBtn = document.querySelector('.handle-button') as HTMLElement
+  if (handleBtn) handleBtn.style.display = ''
+
   if (graph.value) {
     graph.value.dispose()
     graph.value = null
@@ -460,33 +468,95 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .workflow-editor {
-  background: #f5f5f5;
+  background: #f0f2f5;
 }
 
-.workflow-canvas {
-  background-color: #f5f5f5;
-  background-image: radial-gradient(circle, #d9d9d9 1px, transparent 1px);
+/* 工具栏 */
+.editor-toolbar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 8px;
+  background: #fff;
+  border-bottom: 1px solid #e4e7ed;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.toolbar-left,
+.toolbar-center,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-center {
+  margin: 0 auto;
+}
+
+/* 主体区域 */
+.editor-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 两侧面板 */
+.editor-panel {
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
+  min-width: 0;
+}
+
+.editor-stencil {
+  width: 300px;
+  border-right: 1px solid #e4e7ed;
+  background: #fff;
+  overflow: hidden;
+}
+
+.editor-properties {
+  width: 300px;
+  border-left: 1px solid #e4e7ed;
+  background: #fff;
+}
+
+/* 画布区域 */
+.editor-canvas {
+  flex: 1;
+  overflow: hidden;
+  background-color: #f8f9fb;
+  background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
   background-size: 20px 20px;
-  border: 1px solid #e8e8e8;
+  position: relative;
 }
 
+/* 缩放按钮 */
 .toolbar-btn {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.15s ease;
   color: #606266;
 
   &:hover {
-    background-color: var(--el-fill-color-light);
+    background-color: #ecf5ff;
+    color: #409eff;
   }
 
   &:active {
-    background-color: var(--el-fill-color);
+    background-color: #d9ecff;
   }
 }
 </style>

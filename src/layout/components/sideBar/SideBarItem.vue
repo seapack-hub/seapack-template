@@ -5,17 +5,21 @@
   -->
   <template v-if="!item.children?.length">
     <el-menu-item :index="resolvePath(item.path)">
-      <Icon :name="item.meta?.icon" :size="20"></Icon>
       <template #title>
-        <span class="menu-text">{{ item.meta?.description || '未知' }}</span>
+        <div class="title-1 flex items-center justify-between gap-10">
+          <Icon :name="item.meta?.icon" :size="20"></Icon>
+          <span class="menu-text">{{ item.meta?.description || '未知' }}</span>
+        </div>
       </template>
     </el-menu-item>
   </template>
   <template v-else>
     <el-sub-menu :index="resolvePath(item.path)">
       <template #title>
-        <Icon :name="item.meta.icon" :size="20"></Icon>
-        <span class="menu-text">{{ item.meta.description || '未知' }}</span>
+        <div class="title-1 flex items-center justify-between gap-10">
+          <Icon :name="item.meta.icon" :size="20"></Icon>
+          <span>{{ item.meta.description || '未知' }}</span>
+        </div>
       </template>
       <side-bar-item
         v-for="(step, index) in item.children"
@@ -51,7 +55,4 @@ function resolvePath(toPath: string): string {
 </script>
 
 <style scoped lang="scss">
-.menu-text {
-  margin-left: 10px;
-}
 </style>

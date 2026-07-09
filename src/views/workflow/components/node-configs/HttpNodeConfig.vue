@@ -1,6 +1,6 @@
 <template>
   <div class="config-section">
-    <div class="section-title mb-8px text-12px text-gray-400">HTTP请求配置</div>
+    <div class="section-title">HTTP请求配置</div>
     <el-form-item label="URL">
       <el-input v-model="config.url" placeholder="https://api.example.com/xxx" @change="handleChange" />
     </el-form-item>
@@ -67,3 +67,16 @@ const handleChange = () => {
   emit('change', config.value)
 }
 </script>
+
+<style lang="scss" scoped>
+.section-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #909399;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #ebeef5;
+}
+</style>

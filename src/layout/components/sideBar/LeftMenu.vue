@@ -83,8 +83,10 @@ const showMeanList = computed(()=>{
 :deep(.el-sub-menu__title),
 :deep(.el-sub-menu .el-menu-item),
 :deep(.el-menu--horizontal .el-menu-item) {
+  display: flex;
+  align-items: center;
   height: var(--sidebar-menu-item-height);
-  line-height: var(--sidebar-menu-item-height);
+  line-height: 1;
   color: v-bind(textColor);
 
   // 悬浮时：用半透明白提升亮度
@@ -116,6 +118,17 @@ const showMeanList = computed(()=>{
 //同时具备 el-menu-item 和 is-active 两个类名才生效
 :deep(.el-menu-item.is-active) {
   @extend %tip-line;
+}
+
+// 修复 Icon SVG 的 vertical-align 与文字不对齐
+:deep(.el-menu-item .icon-svg),
+:deep(.el-sub-menu__title .icon-svg) {
+  vertical-align: middle;
+}
+:deep(.el-menu-item .el-icon),
+:deep(.el-sub-menu__title .el-icon) {
+  display: inline-flex;
+  align-items: center;
 }
 .el-menu--collapse {
   :deep(.el-sub-menu.is-active) {

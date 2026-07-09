@@ -82,12 +82,26 @@ const handleChange = () => {
 </script>
 
 <style lang="scss" scoped>
+.workflow-edge-property {
+  padding-top: 4px;
+}
+
 .config-section {
   padding: 8px 0;
-  border-top: 1px solid #f0f0f0;
 
   &:first-child {
-    border-top: none;
+    padding-top: 0;
   }
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #909399;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #ebeef5;
 }
 </style>
