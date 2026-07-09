@@ -57,9 +57,11 @@
           <template #type>
             <el-table-column label="类型" prop="type" width="90" align="center" slot-name="type">
               <template #default="{ row }">
-                <el-tag :type="row.type === 1 ? 'warning' : 'info'" size="small">{{
-                  row.type === 1 ? '系统预设' : '自定义'
-                }}</el-tag>
+                <el-tag :type="row.type === 1 ? 'warning' : 'info'" size="small">
+                  {{
+                    row.type === 1 ? '系统预设' : '自定义'
+                  }}
+                </el-tag>
               </template>
             </el-table-column>
           </template>

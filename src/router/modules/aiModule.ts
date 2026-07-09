@@ -141,6 +141,7 @@ const aiModuleRoute: Array<RouterObject> = [
               permKey: 'knowledgeBase',
             },
           },
+
         ],
       },
       // ==================== 数据管理 ====================

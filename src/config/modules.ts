@@ -12,6 +12,7 @@ export const MODULE_DEFS: ModuleDef[] = [
   { key: 'blogsManagement', path: '/blogsManagement/blogs', title: '个人博客', icon: 'blogs', permKey: 'blogsManagement' },
   { key: 'stockFund', path: '/stockFund/workbench', title: '股票基金', icon: 'trend-charts', permKey: 'stockFund' },
   { key: 'aiModule', path: '/aiModule/interaction/rag', title: 'AI交互', icon: 'ai-interaction', permKey: 'aiModule' },
+  { key: 'workflowModule', path: '/workflow/list', title: '工作流', icon: 'workflow', permKey: 'workflowModule' },
   { key: 'devTools', path: '/devTools/workbench', title: '开发工具', icon: 'tool', permKey: 'devTools' },
   { key: 'gis2d', path: '/gis2d/baseMap', title: '二维地图', icon: 'two-d-layers', permKey: 'gis2d' },
   { key: 'gis3d', path: '/gis3d/baseCesium', title: '三维GIS', icon: 'three-d-layers', permKey: 'gis3d' },
