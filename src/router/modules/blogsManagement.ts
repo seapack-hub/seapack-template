@@ -49,8 +49,8 @@ const blogsManagementRoute: Array<RouterObject> = [
         meta: {
           title: 'blogsAdmin',
           description: '博客管理',
-          icon: 'setting',
-          permKey: 'blogsAdmin',
+          icon: 'blogs-admin',
+          permKey: 'blogsAdmin'
         },
         children: [
           {
@@ -60,7 +60,7 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'articleList',
               description: '文章管理',
-              icon: 'document',
+              icon: 'article-list',
               permKey: 'articleList',
             },
           },
@@ -82,7 +82,6 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'articleEdit',
               description: '编辑文章',
-              icon: 'article-create',
               hidden: true,
               permKey: 'articleEdit',
             },
@@ -105,7 +104,6 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'projectCreate',
               description: '新增项目',
-              icon: 'plus',
               hidden: true,
               permKey: 'projectCreate',
             },
@@ -117,7 +115,6 @@ const blogsManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'projectEdit',
               description: '编辑项目',
-              icon: 'edit',
               hidden: true,
               permKey: 'projectEdit',
             },

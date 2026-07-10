@@ -59,12 +59,6 @@ const formRef = ref<any>(null)
 const submitting = ref(false)
 const categoryOptions = ref<WorkflowCategory[]>([])
 
-const loadCategories = async () => {
-  try {
-    categoryOptions.value = await WorkflowCategoryAPI.list()
-  } catch {}
-}
-
 watch(visible, (val) => {
   if (val) loadCategories()
 })

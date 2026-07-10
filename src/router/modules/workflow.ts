@@ -31,7 +31,7 @@ const workflowRoutes: RouteRecordRaw[] = [
         meta: {
           title: 'workflowCategories',
           description: '分类管理',
-          icon: 'folder',
+          icon: 'workflow-categories',
           permKey: 'workflowCategories',
         },
       },
@@ -54,7 +54,7 @@ const workflowRoutes: RouteRecordRaw[] = [
         meta: {
           title: 'workflowInstances',
           description: '执行实例',
-          icon: 'list',
+          icon: 'workflow-instances',
           permKey: 'workflowInstances',
         },
       },
@@ -65,7 +65,6 @@ const workflowRoutes: RouteRecordRaw[] = [
         meta: {
           title: 'workflowInstanceDetail',
           description: '实例详情',
-          icon: 'detail',
           permKey: 'workflowInstanceDetail',
           hidden: true,
         },
@@ -77,7 +76,7 @@ const workflowRoutes: RouteRecordRaw[] = [
         meta: {
           title: 'workflowTasks',
           description: '人工任务',
-          icon: 'user',
+          icon: 'workflow-tasks',
           permKey: 'workflowTasks',
         },
       },
@@ -88,7 +87,7 @@ const workflowRoutes: RouteRecordRaw[] = [
         meta: {
           title: 'workflowSchedules',
           description: '调度管理',
-          icon: 'timer',
+          icon: 'workflow-schedules',
           permKey: 'workflowSchedules',
         },
       },
@@ -99,7 +98,7 @@ const workflowRoutes: RouteRecordRaw[] = [
         meta: {
           title: 'workflowStats',
           description: '执行统计',
-          icon: 'data-analysis',
+          icon: 'workflow-stats',
           permKey: 'workflowStats',
         },
       },

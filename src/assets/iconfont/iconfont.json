@@ -6,6 +6,111 @@
   "description": "自研项目",
   "glyphs": [
     {
+      "icon_id": "42227529",
+      "name": "robot",
+      "font_class": "robot-2-fill",
+      "unicode": "e7a2",
+      "unicode_decimal": 59298
+    },
+    {
+      "icon_id": "23546951",
+      "name": "project-list",
+      "font_class": "project-list",
+      "unicode": "e7d4",
+      "unicode_decimal": 59348
+    },
+    {
+      "icon_id": "28230640",
+      "name": "category-manage",
+      "font_class": "category-manage",
+      "unicode": "e785",
+      "unicode_decimal": 59269
+    },
+    {
+      "icon_id": "34808157",
+      "name": "article-create",
+      "font_class": "article-create",
+      "unicode": "e65c",
+      "unicode_decimal": 58972
+    },
+    {
+      "icon_id": "36508107",
+      "name": "article-list",
+      "font_class": "article-list",
+      "unicode": "e781",
+      "unicode_decimal": 59265
+    },
+    {
+      "icon_id": "12096246",
+      "name": "blogs-admin",
+      "font_class": "blogs-admin",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "3876247",
+      "name": "blog",
+      "font_class": "blog",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "5032730",
+      "name": "workflow-stats",
+      "font_class": "workflow-stats",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "35031049",
+      "name": "workflow-schedules",
+      "font_class": "workflow-schedules",
+      "unicode": "e87b",
+      "unicode_decimal": 59515
+    },
+    {
+      "icon_id": "17982644",
+      "name": "workflow-tasks",
+      "font_class": "workflow-tasks",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "9068312",
+      "name": "workflow-instances",
+      "font_class": "workflow-instances",
+      "unicode": "f97b",
+      "unicode_decimal": 63867
+    },
+    {
+      "icon_id": "34452827",
+      "name": "workflow-editor",
+      "font_class": "workflow-editor",
+      "unicode": "e829",
+      "unicode_decimal": 59433
+    },
+    {
+      "icon_id": "6218202",
+      "name": "workflow-categories",
+      "font_class": "workflow-categories",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "11466727",
+      "name": "workflow",
+      "font_class": "workflow",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "47428245",
+      "name": "workflow-list",
+      "font_class": "workflow-list",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
       "icon_id": "35118837",
       "name": "rag",
       "font_class": "rag",
