@@ -32,6 +32,9 @@ class CacheKey {
 
   /** 权限数据（roles, perms, menuTree）的 sessionStorage 缓存键 */
   static readonly AUTH_CACHE = `${SYSTEM_NAME}-auth-cache`;
+
+  /** 系统设置（layout配置）的存储键 */
+  static readonly SETTINGS_CACHE = `${SYSTEM_NAME}-settings-cache`;
 }
 
 export default CacheKey;

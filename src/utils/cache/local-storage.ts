@@ -59,3 +59,26 @@ export const setCachedViews = (views: string[]) => {
 };
 
 //#endregion
+
+//#region 系统设置
+
+/**
+ * 从 localStorage 中读取系统设置
+ *
+ * @returns 反序列化后的设置对象，无数据时返回 null
+ */
+export const getSettingsCache = () => {
+  const json = localStorage.getItem(CacheKey.SETTINGS_CACHE);
+  return json ? JSON.parse(json) : null;
+};
+
+/**
+ * 将系统设置持久化到 localStorage
+ *
+ * @param settings 设置对象的键值对
+ */
+export const setSettingsCache = (settings: Record<string, unknown>) => {
+  localStorage.setItem(CacheKey.SETTINGS_CACHE, JSON.stringify(settings));
+};
+
+//#endregion

@@ -39,6 +39,15 @@ export type {
 const BASE_URL = '/api';
 
 export const SkillAPI = {
+  /** 全量技能列表 */
+  list(params?: { status?: number }) {
+    return request<any, Skill[]>({
+      url: `${BASE_URL}/ai/skills/all`,
+      method: 'get',
+      params,
+    })
+  },
+
   /** 分页查询技能列表 */
   page(query: SkillQuery) {
     return request<any, PageResult<Skill[]>>({ 

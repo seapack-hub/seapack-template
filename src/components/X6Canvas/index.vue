@@ -160,8 +160,9 @@ const handleRedo = () => {
 }
 const handleExport = () => {
   exportSVG((dataUri) => {
-    const { DataUri } = require('@antv/x6')
-    DataUri.downloadDataUri(DataUri.svgToDataUrl(dataUri), '流程图_' + Date.now() + '.svg')
+    import('@antv/x6').then(({ DataUri }) => {
+      DataUri.downloadDataUri(DataUri.svgToDataUrl(dataUri), '流程图_' + Date.now() + '.svg')
+    })
   })
 }
 

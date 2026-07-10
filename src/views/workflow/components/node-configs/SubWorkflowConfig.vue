@@ -2,15 +2,17 @@
   <div class="config-section">
     <div class="section-title">子工作流配置</div>
     <el-form-item label="工作流">
-      <el-select v-model="config.workflowId" placeholder="选择工作流" filterable @change="handleChange">
-        <el-option v-for="wf in workflowList" :key="wf.id" :label="wf.name" :value="wf.id" />
+      <el-select v-model="config.workflowId" placeholder="选择工作流" filterable :loading="loading" @change="handleChange">
+        <el-option v-for="wf in workflowList" :key="wf.id ?? wf.name" :label="wf.name" :value="wf.id" />
       </el-select>
     </el-form-item>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { WorkflowAPI } from '@/api/workflow'
+import type { WorkflowDefinition } from '@/api/workflow/types'
 
 const props = defineProps({
   modelValue: {
@@ -25,10 +27,19 @@ const config = ref({
   workflowId: undefined as number | undefined,
 })
 
-const workflowList = ref([
-  { id: 1, name: '股票诊断流程' },
-  { id: 2, name: '基金分析流程' },
-])
+const workflowList = ref<WorkflowDefinition[]>([])
+const loading = ref(false)
+
+async function loadWorkflows() {
+  loading.value = true
+  try {
+    workflowList.value = await WorkflowAPI.list()
+  } catch {
+    workflowList.value = []
+  } finally {
+    loading.value = false
+  }
+}
 
 watch(
   () => props.modelValue,
@@ -44,6 +55,8 @@ const handleChange = () => {
   emit('update:modelValue', config.value)
   emit('change', config.value)
 }
+
+onMounted(loadWorkflows)
 </script>
 
 <style lang="scss" scoped>

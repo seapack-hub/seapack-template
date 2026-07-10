@@ -1,6 +1,7 @@
 import { type Ref, ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { type LayoutSetting, layoutSettings } from '@/config/layouts.ts';
+import { getSettingsCache, setSettingsCache } from '@/utils/cache/local-storage';
 
 /**
  * SettingsStore 类型
@@ -19,6 +20,9 @@ export const useSettingsStore = defineStore('settings', () => {
   // 用于存放所有响应式配置项的空对象，后续通过遍历动态填充
   const state = {} as SettingsStore;
 
+  // 从 localStorage 恢复已持久化的设置
+  const cached = getSettingsCache();
+
   /**
    * 遍历 layoutSettings 配置对象的每个键值对，
    * 为每个配置项创建一个独立的 ref 响应式变量，
@@ -29,8 +33,10 @@ export const useSettingsStore = defineStore('settings', () => {
    *   - 每个配置项各自独立响应，避免修改一个配置导致整个对象重新渲染
    */
   for (const [key, value] of Object.entries(layoutSettings)) {
+    // 优先使用缓存值，否则使用默认值
+    const initial = cached?.[key] ?? value;
     // 将配置项的原始值包装为 Vue ref，使其具备响应式能力
-    const refValue = ref(value);
+    const refValue = ref(initial);
     // state 的类型是 SettingsStore（映射类型），
     // 动态索引赋值时 TypeScript 无法推断具体类型，故使用 @ts-ignore 绕过
     // @ts-expect-error dynamic index on mapped type SettingsStore
@@ -38,15 +44,16 @@ export const useSettingsStore = defineStore('settings', () => {
 
     /**
      * 监听每个配置项的变化
-     * 当配置项被修改时，可在此处将最新值持久化到 localStorage，
+     * 当配置项被修改时，自动将最新值持久化到 localStorage，
      * 实现配置的跨会话记忆功能。
-     *
-     * TODO：后续可在此处调用缓存工具方法将配置写入 localStorage，
-     *       例如：setSettingsCache(JSON.parse(JSON.stringify(state)))
      */
     watch(refValue, () => {
-      // const settings = _getCatchData();
-      // todo 将转换后的变量存入localStorage中
+      const snapshot: Record<string, unknown> = {};
+      for (const k of Object.keys(layoutSettings)) {
+        // @ts-expect-error dynamic index on mapped type SettingsStore
+        snapshot[k] = state[k]?.value;
+      }
+      setSettingsCache(snapshot);
     });
   }
 

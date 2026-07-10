@@ -98,17 +98,6 @@ const gis2dRoute: Array<RouterObject> = [
               permKey: 'marking',
             }
           },
-          {
-            path: 'ceshi',
-            name: 'ceshi',
-            component: () => import('@/views/gis2d/openLayers/components/ceshi.vue'),
-            meta: {
-              title: 'openLayers',
-              description: '测试',
-              icon: 'openlayers',
-              permKey: 'ceshi',
-            }
-          }
         ]
       },
     ]

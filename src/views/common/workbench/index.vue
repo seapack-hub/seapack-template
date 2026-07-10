@@ -53,6 +53,7 @@ const userStore = useUserStore()
 
 const moduleIcons: Record<string, string> = {
   systemManagement: 'system',
+  workflowModule: 'workflow',
   gis2d: 'two-d-layers',
   gis3d: 'three-d-layers',
   bigScreen: 'screen',
@@ -65,6 +66,7 @@ const moduleIcons: Record<string, string> = {
 
 const moduleColors: Record<string, string> = {
   systemManagement: '#409EFF',
+  workflowModule: '#00BCD4',
   gis2d: '#26A69A',
   gis3d: '#7E57C2',
   bigScreen: '#FF6D00',
@@ -77,6 +79,7 @@ const moduleColors: Record<string, string> = {
 
 const moduleDescs: Record<string, string> = {
   systemManagement: '用户、部门、菜单权限、系统配置等管理功能',
+  workflowModule: '可视化工作流编排、执行与监控',
   gis2d: 'OpenLayers 二维地图展示与交互',
   gis3d: 'Cesium 三维GIS地图与特效',
   bigScreen: '智慧运营数据可视化大屏',
