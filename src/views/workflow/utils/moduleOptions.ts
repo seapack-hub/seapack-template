@@ -27,6 +27,7 @@ export const DEFAULT_WORKFLOW_FORM = {
   name: '',
   code: '',
   description: '',
+  categoryId: undefined as number | undefined,
   status: 1,
 }
 

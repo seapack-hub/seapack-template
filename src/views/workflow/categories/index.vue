@@ -4,8 +4,8 @@
       <!-- 搜索栏 -->
       <div class="search-bar h-[50px]">
         <el-form :inline="true" :model="queryParams">
-          <el-form-item label="调度名称">
-            <el-input v-model="queryParams.keyword" placeholder="搜索调度名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+          <el-form-item label="分类名称">
+            <el-input v-model="queryParams.keyword" placeholder="搜索分类名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="状态">
             <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 120px">
@@ -22,7 +22,7 @@
 
       <!-- 工具栏 -->
       <div class="h-[40px] flex justify-between items-center">
-        <el-button type="success" icon="plus" @click="openAddDialog">新建调度</el-button>
+        <el-button type="success" icon="plus" @click="handleAdd">新建分类</el-button>
       </div>
 
       <!-- 表格 -->
@@ -31,48 +31,50 @@
           <template #status>
             <el-table-column label="状态" width="80" slot-name="status">
               <template #default="{ row }">
-                <el-switch v-model="row.status" :active-value="1" :inactive-value="0" @change="handleStatusChange(row as any)" />
-              </template>
-            </el-table-column>
-          </template>
-          <template #scheduleType>
-            <el-table-column label="类型" width="100" slot-name="scheduleType">
-              <template #default="{ row }">
-                <el-tag size="small">{{ scheduleTypeLabel(row.scheduleType) }}</el-tag>
+                <el-switch
+                  v-model="row.status"
+                  :active-value="1"
+                  :inactive-value="0"
+                  @change="handleStatusChange(row as any)"
+                />
               </template>
             </el-table-column>
           </template>
           <template #operate>
-            <el-table-column label="操作" width="180" fixed="right" slot-name="operate">
+            <el-table-column label="操作" width="150" fixed="right" slot-name="operate">
               <template #default="{ row }">
-                <el-button type="primary" link @click="openEditDialog(row as any)">编辑</el-button>
-                <el-button type="success" link @click="handleTrigger(row as any)">立即执行</el-button>
+                <el-button type="primary" link @click="handleEdit(row as any)">编辑</el-button>
                 <el-button type="danger" link @click="handleDelete(row as any)">删除</el-button>
               </template>
             </el-table-column>
           </template>
         </SpTable>
         <div class="h-[40px] mt-10px">
-          <Pagination v-model:total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
+          <Pagination
+            v-model:total="total"
+            v-model:page="queryParams.pageNum"
+            v-model:limit="queryParams.pageSize"
+            @pagination="handleQuery"
+          />
         </div>
       </div>
     </el-card>
 
-    <!-- 新建/编辑对话框 -->
-    <ScheduleFormDialog
+    <!-- 新建/编辑分类弹框 -->
+    <CategoryFormDialog
       v-model:visible="formVisible"
       v-model:is-edit="formIsEdit"
       v-model:form="formData"
-      :workflow-list="workflowList"
+      :category-options="categoryTree"
       @confirm="onFormConfirm"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useWorkflowSchedule } from '../utils/useWorkflowSchedule'
-import { SCHEDULE_COLUMNS } from '../utils/tableColumns'
-import ScheduleFormDialog from '../components/ScheduleFormDialog.vue'
+import { useWorkflowCategory } from '../utils/useWorkflowCategory'
+import { CATEGORY_COLUMNS } from '../utils/tableColumns'
+import CategoryFormDialog from '../components/CategoryFormDialog.vue'
 import SpTable from '@/components/baseComponents/SpTable/index.vue'
 import Pagination from '@/components/Pagination/index.vue'
 
@@ -81,26 +83,24 @@ const {
   tableData,
   total,
   queryParams,
+  categoryTree,
   formVisible,
   formIsEdit,
   formData,
-  workflowList,
-  scheduleTypeLabel,
   handleQuery,
   handleReset,
-  openAddDialog,
-  openEditDialog,
-  onFormConfirm,
-  handleDelete,
+  loadCategoryTree,
+  handleAdd,
+  handleEdit,
   handleStatusChange,
-  handleTrigger,
-  loadWorkflows,
-} = useWorkflowSchedule()
+  handleDelete,
+  onFormConfirm,
+} = useWorkflowCategory()
 
-const columns = SCHEDULE_COLUMNS
+const columns = CATEGORY_COLUMNS
 
 onMounted(() => {
-  loadWorkflows()
+  loadCategoryTree()
   handleQuery()
 })
 </script>

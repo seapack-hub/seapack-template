@@ -72,6 +72,16 @@ export const STATS_COLUMNS = [
   { label: '人工任务', prop: 'humanTasksCount', width: 80 },
 ]
 
+/** 分类列表列 */
+export const CATEGORY_COLUMNS = [
+  { label: '分类名称', prop: 'name', minWidth: 150 },
+  { label: '父级ID', prop: 'parentId', width: 80, formatter: (row: any) => row.parentId || '-' },
+  { label: '子分类数', prop: 'childCount', width: 90 },
+  { label: '排序', prop: 'sortOrder', width: 80 },
+  { label: '状态', slotName: 'status', width: 80 },
+  { label: '操作', slotName: 'operate', width: 150, fixed: 'right' },
+]
+
 function formatDuration(ms?: number) {
   if (!ms) return '-'
   if (ms < 1000) return `${ms}ms`

@@ -5,5 +5,9 @@ export interface WorkflowCategory {
   parentId?: number
   sortOrder?: number
   status?: number
+
+  // 非数据库字段（树形结构辅助）
   children?: WorkflowCategory[]
+  childCount?: number
+  parentName?: string
 }

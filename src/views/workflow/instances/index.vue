@@ -1,20 +1,32 @@
 <template>
   <div class="app-container w-100% h-100% flex flex-col">
     <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
-      <div class="search-bar h-50px flex items-center gap-10px">
-        <el-input v-model="queryParams.keyword" placeholder="搜索工作流名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
-        <el-select v-model="queryParams.status" placeholder="状态" clearable style="width: 120px">
-          <el-option v-for="s in statusOptions" :key="s.value" :label="s.label" :value="s.value" />
-        </el-select>
-        <el-select v-model="queryParams.workflowId" placeholder="工作流" clearable filterable style="width: 200px">
-          <el-option v-for="wf in workflowList" :key="wf.id" :label="wf.name" :value="wf.id" />
-        </el-select>
-        <el-button type="primary" @click="handleQuery">搜索</el-button>
-        <el-button @click="handleReset">重置</el-button>
+      <!-- 搜索栏 -->
+      <div class="search-bar h-[50px]">
+        <el-form :inline="true" :model="queryParams">
+          <el-form-item label="工作流名称">
+            <el-input v-model="queryParams.keyword" placeholder="搜索工作流名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+          </el-form-item>
+          <el-form-item label="工作流">
+            <el-select v-model="queryParams.workflowId" placeholder="全部" clearable filterable style="width: 200px">
+              <el-option v-for="wf in workflowList" :key="wf.id" :label="wf.name" :value="wf.id" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 120px">
+              <el-option v-for="s in statusOptions" :key="s.value" :label="s.label" :value="s.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="search" @click="handleQuery">搜索</el-button>
+            <el-button icon="refresh" @click="handleReset">重置</el-button>
+          </el-form-item>
+        </el-form>
       </div>
 
+      <!-- 表格 -->
       <div class="flex-1 flex flex-col">
-        <SpTable :loading="loading" :columns="columns" :data="tableData" :show-index="false">
+        <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="false">
           <template #status>
             <el-table-column label="状态" width="90" slot-name="status">
               <template #default="{ row }">
@@ -55,7 +67,9 @@
             </el-table-column>
           </template>
         </SpTable>
-        <Pagination v-model:total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
+        <div class="h-[40px] mt-10px">
+          <Pagination v-model:total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
+        </div>
       </div>
     </el-card>
   </div>
@@ -97,3 +111,12 @@ onMounted(() => {
   handleQuery()
 })
 </script>
+
+<style lang="scss" scoped>
+.el-card-main ::v-deep(.el-card__body) {
+  height: calc(100% - 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+</style>

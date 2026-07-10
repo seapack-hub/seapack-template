@@ -25,6 +25,17 @@ const workflowRoutes: RouteRecordRaw[] = [
         },
       },
       {
+        path: 'categories',
+        name: 'workflowCategories',
+        component: () => import('@/views/workflow/categories/index.vue'),
+        meta: {
+          title: 'workflowCategories',
+          description: '分类管理',
+          icon: 'folder',
+          permKey: 'workflowCategories',
+        },
+      },
+      {
         path: 'editor/:id?',
         name: 'workflowEditor',
         component: () => import('@/views/workflow/editor.vue'),

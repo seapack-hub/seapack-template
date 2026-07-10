@@ -4,7 +4,7 @@
     <div class="editor-toolbar">
       <!-- 左侧：返回 + 名称 -->
       <div class="toolbar-left">
-        <el-button text @click="handleBack" size="small">
+        <el-button text size="small" @click="handleBack">
           <el-icon><ArrowLeft /></el-icon>
         </el-button>
         <el-input
@@ -13,6 +13,16 @@
           placeholder="工作流名称"
           size="small"
           @blur="handleNameChange"
+        />
+        <el-tree-select
+          v-model="workflowData.categoryId"
+          :data="categoryOptions"
+          :props="{ label: 'name', children: 'children' }" value-key="id"
+          check-strictly
+          clearable
+          placeholder="选择分类"
+          size="small"
+          style="width: 150px"
         />
         <el-tag v-if="workflowData.version" type="info" size="small">v{{ workflowData.version }}</el-tag>
       </div>
@@ -110,8 +120,8 @@ import {
 import { Graph, Shape, Snapline, History, Export } from '@antv/x6'
 import { registerWorkflowNodes, getAvailableNodeShapes } from '@/components/X6Nodes'
 import type { WorkflowNodeData, WorkflowVariable } from '@/components/X6Nodes'
-import { WorkflowAPI, WorkflowVersionAPI } from '@/api/workflow'
-import type { WorkflowDefinition } from '@/api/workflow/types'
+import { WorkflowAPI, WorkflowVersionAPI, WorkflowCategoryAPI } from '@/api/workflow'
+import type { WorkflowDefinition, WorkflowCategory } from '@/api/workflow/types'
 import WorkflowStencil from './components/WorkflowStencil.vue'
 import PropertyPanel from '@/components/X6Canvas/components/PropertyPanel.vue'
 import WorkflowNodeProperty from './components/WorkflowNodeProperty.vue'
@@ -140,6 +150,13 @@ const showVariableEditor = ref(false)
 const workflowName = ref('')
 const workflowData = reactive<Partial<WorkflowDefinition>>({})
 const workflowVariables = ref<WorkflowVariable[]>([])
+const categoryOptions = ref<WorkflowCategory[]>([])
+
+const loadCategories = async () => {
+  try {
+    categoryOptions.value = await WorkflowCategoryAPI.list()
+  } catch {}
+}
 
 // 节点选中状态
 let selectedNodeTools: any = null
@@ -452,6 +469,7 @@ onMounted(() => {
 
   initGraph()
   loadWorkflow()
+  loadCategories()
 })
 
 onBeforeUnmount(() => {

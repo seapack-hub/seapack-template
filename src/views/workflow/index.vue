@@ -7,6 +7,17 @@
           <el-form-item label="工作流名称">
             <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
           </el-form-item>
+          <el-form-item label="分类">
+            <el-tree-select
+              v-model="queryParams.categoryId"
+              :data="categoryOptions"
+              :props="{ label: 'name', children: 'children' }" value-key="id"
+              check-strictly
+              clearable
+              placeholder="全部"
+              style="width: 180px"
+            />
+          </el-form-item>
           <el-form-item label="状态">
             <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 120px">
               <el-option label="启用" :value="1" />
@@ -118,6 +129,8 @@ import { MoreFilled, Grid, List } from '@element-plus/icons-vue'
 import { useWorkflow } from './utils/useWorkflow'
 import { WORKFLOW_LIST_COLUMNS } from './utils/tableColumns'
 import WorkflowFormDialog from './components/WorkflowFormDialog.vue'
+import { WorkflowCategoryAPI } from '@/api/workflow'
+import type { WorkflowCategory } from '@/api/workflow/types'
 import SpTable from '@/components/baseComponents/SpTable/index.vue'
 import Pagination from '@/components/Pagination/index.vue'
 
@@ -140,6 +153,13 @@ const {
 } = useWorkflow()
 
 const viewMode = ref<'card' | 'list'>('card')
+const categoryOptions = ref<WorkflowCategory[]>([])
+
+const loadCategories = async () => {
+  try {
+    categoryOptions.value = await WorkflowCategoryAPI.tree()
+  } catch {}
+}
 
 const columns = [
   ...WORKFLOW_LIST_COLUMNS,
@@ -148,6 +168,7 @@ const columns = [
 ]
 
 onMounted(() => {
+  loadCategories()
   handleQuery()
 })
 </script>
