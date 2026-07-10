@@ -1,5 +1,5 @@
 <template>
-  <el-container style="width: 100%; height: 100vh">
+  <el-container style="width: 100vw; height: 100vh">
     <el-header>
       <div class="header-container">
         <div class="logo">

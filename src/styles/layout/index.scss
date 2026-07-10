@@ -6,13 +6,8 @@
       0 2px 4px 0 rgba(0, 21, 67, 0.04),
       inset 0px -1px 0px 0px #e7eaf0;
     overflow: hidden;
+    min-width: 950px;
     z-index: 4;
-  }
-
-  // 主内容区：去除默认 overflow:auto 和 padding，避免全屏页面出现滚动条
-  .el-main {
-    overflow: hidden;
-    padding: 0;
   }
 }
 

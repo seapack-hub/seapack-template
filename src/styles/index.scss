@@ -14,12 +14,12 @@
   opacity: 0;
 }
 
-html, body {
-  height: 100%;
-  overflow: hidden;
-}
 body {
   margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
 
   //--级联选择框-单选---------------------------------
   .el-cascader__dropdown {
@@ -51,8 +51,6 @@ body {
 
 #app {
   width: 100%;
-  height: 100vh;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
-  overflow: hidden;
 }
