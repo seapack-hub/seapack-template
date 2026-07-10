@@ -19,7 +19,7 @@ export const getLoginCodeApi = () => {
 export const loginVerify = (params: { username: string; password: string | true }) => {
   return request<any, LoginResponse>({
     url: `${USER_BASE_URL}/auth/login`,
-    method: "get",
+    method: "post",
     params
   });
 };
