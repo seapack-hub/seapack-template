@@ -5,7 +5,7 @@
   <el-dialog
     v-model="visible"
     :title="isEdit ? '编辑场景' : '新增场景'"
-    width="600px"
+    width="800px"
     @closed="onClosed"
   >
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="90px">
@@ -25,24 +25,25 @@
         <el-input v-model="form.description" type="textarea" :rows="2" placeholder="场景用途说明" />
       </el-form-item>
       <el-form-item label="图标">
-        <el-input v-model="form.icon" placeholder="emoji 或图片 URL" />
+        <IconPicker v-model="form.icon" clearable />
       </el-form-item>
       <el-form-item label="卡片颜色">
-        <div class="flex gap-8px flex-wrap">
-          <div
-            v-for="(preset, i) in COVER_COLOR_PRESETS"
-            :key="i"
-            class="color-preset"
-            :class="{ 'ring-2 ring-white': form.coverColor === preset.value }"
-            :style="{ background: preset.value }"
-            @click="form.coverColor = preset.value"
-          />
+        <div class="flex items-center gap-8px">
+          <el-color-picker v-model="form.coverColor" show-alpha :predefine="PREDEFINE_COLORS" />
+          <span class="text-12px text-gray-400">支持任意颜色值</span>
         </div>
       </el-form-item>
       <el-row :gutter="20">
         <el-col :span="8">
           <el-form-item label="前端模块">
-            <el-input v-model="form.moduleKey" placeholder="如 stockFund" />
+            <el-cascader
+              v-model="form.moduleKey"
+              :options="cascaderOptions"
+              :props="{ expandTrigger: 'hover', emitPath: false, value: 'value', label: 'label', children: 'children' }"
+              clearable
+              placeholder="选择关联页面"
+              style="width: 100%"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -71,7 +72,10 @@
 
 <script setup lang="ts">
 import type { Scene } from '@/api/ai/scene'
-import { COVER_COLOR_PRESETS, SCENE_PUBLIC_OPTIONS } from '../utils/moduleOptions'
+import IconPicker from '@/components/IconPicker/index.vue'
+import { PREDEFINE_COLORS, SCENE_PUBLIC_OPTIONS, getModuleCascaderOptions } from '../utils/moduleOptions'
+
+const cascaderOptions = getModuleCascaderOptions()
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
@@ -104,14 +108,4 @@ async function onSubmit() {
 </script>
 
 <style scoped>
-.color-preset {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: transform 0.15s;
-}
-.color-preset:hover {
-  transform: scale(1.1);
-}
 </style>

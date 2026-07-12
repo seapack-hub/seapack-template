@@ -1,6 +1,9 @@
 /**
  * 场景管理 — 常量定义
  */
+import type { RouteRecordRaw } from 'vue-router'
+import { RouterView } from 'vue-router'
+import { getRawModuleRoutes } from '@/router/index'
 
 /** 状态选项 */
 export const SCENE_STATUS_OPTIONS = [
@@ -14,14 +17,11 @@ export const SCENE_PUBLIC_OPTIONS = [
   { label: '私有', value: 0 },
 ]
 
-/** 渐变色预设 */
-export const COVER_COLOR_PRESETS = [
-  { label: '蓝色', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-  { label: '绿色', value: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)' },
-  { label: '橙色', value: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-  { label: '紫色', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-  { label: '红色', value: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-  { label: '青色', value: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' },
+/** el-color-picker 预定义色块 */
+export const PREDEFINE_COLORS = [
+  '#667eea', '#11998e', '#f5576c', '#7c3aed',
+  '#ef4444', '#06b6d4', '#f59e0b', '#10b981',
+  '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6',
 ]
 
 /** 默认场景表单数据 */
@@ -29,10 +29,69 @@ export const DEFAULT_SCENE_FORM = {
   name: '',
   code: '',
   icon: '',
-  coverColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  coverColor: '#667eea',
   description: '',
   moduleKey: '',
   isPublic: 1,
   status: 1,
   sortOrder: 0,
+}
+
+interface CascaderNode {
+  value: string
+  label: string
+  children?: CascaderNode[]
+  /** 纯叶子节点，没有 children */
+  leaf?: boolean
+}
+
+/** 从路由定义构建级联选择器选项（只包含叶子节点） */
+export function getModuleCascaderOptions() {
+  const routes = getRawModuleRoutes()
+  const result: CascaderNode[] = []
+
+  for (const route of routes) {
+    const node = toCascaderNode(route)
+    if (node) result.push(node)
+  }
+
+  return result
+}
+
+function toCascaderNode(
+  route: RouteRecordRaw,
+  parentPath = '',
+): CascaderNode | null {
+  const meta = route.meta || {}
+  if (meta.hidden) return null
+
+  const path = route.path.startsWith('/') ? route.path : parentPath ? `${parentPath}/${route.path}` : route.path
+  const label = meta.description || ''
+
+  // 有 children 且 component 不是 layout → 中级目录（RouterView）
+  if (route.children?.length && route.component === RouterView) {
+    const children = route.children
+      .map(c => toCascaderNode(c, path))
+      .filter(Boolean) as CascaderNode[]
+    if (!children.length) return null
+    return { value: path, label, children }
+  }
+
+  // 无 children → 叶子节点（实际页面）
+  if (!route.children?.length && route.component && route.component !== RouterView && label) {
+    return { value: path, label, leaf: true }
+  }
+
+  // 有 children 且 component 是 layout 或其他 → 模块根容器，展平 children
+  if (route.children?.length) {
+    const children = route.children
+      .map(c => toCascaderNode(c, path))
+      .filter(Boolean) as CascaderNode[]
+    if (!children.length) return null
+    // 单个子节点直接提升
+    if (children.length === 1) return children[0]
+    return { value: path, label, children }
+  }
+
+  return null
 }

@@ -12,7 +12,7 @@
             <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 100px">
+            <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 200px">
               <el-option v-for="opt in SCENE_STATUS_OPTIONS" :key="String(opt.value)" :label="opt.label" :value="opt.value" />
             </el-select>
           </el-form-item>
@@ -167,6 +167,7 @@ onMounted(() => {
   padding: 1px;
   box-sizing: border-box;
   border: 1px solid var(--el-border-color-lighter);
+  padding: 10px;
 }
 
 .col-span-full {
