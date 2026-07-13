@@ -25,7 +25,7 @@
         <el-input v-model="form.description" type="textarea" :rows="2" placeholder="知识库用途说明" />
       </el-form-item>
       <el-form-item label="图标">
-        <el-input v-model="form.icon" placeholder="emoji 或图片 URL" />
+        <IconPicker v-model="form.icon" clearable />
       </el-form-item>
       <el-row :gutter="20">
         <el-col :span="12">

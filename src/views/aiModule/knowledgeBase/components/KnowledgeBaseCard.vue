@@ -5,13 +5,13 @@
 <template>
   <div class="kb-card">
     <div class="card-top">
-      <div class="card-icon">{{ kb.icon || kb.name?.charAt(0) || 'K' }}</div>
+      <Icon v-if="kb.icon" :name="kb.icon" :size="20" color="#fff" />
       <el-switch
         :model-value="kb.status"
         :active-value="1"
         :inactive-value="0"
         size="small"
-        @change="(val: number) => emit('statusChange', kb, val)"
+        @change="(val) => emit('statusChange', kb, val as number) as any"
       />
     </div>
     <div class="card-name">{{ kb.name }}</div>
