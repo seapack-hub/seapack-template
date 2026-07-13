@@ -6,6 +6,83 @@
   "description": "自研项目",
   "glyphs": [
     {
+      "icon_id": "431876",
+      "name": "menu",
+      "font_class": "menu",
+      "unicode": "e761",
+      "unicode_decimal": 59233
+    },
+    {
+      "icon_id": "1013201",
+      "name": "role",
+      "font_class": "role",
+      "unicode": "e6bf",
+      "unicode_decimal": 59071
+    },
+    {
+      "icon_id": "10793023",
+      "name": "permission",
+      "font_class": "permission",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "608203",
+      "name": "dict-setting",
+      "font_class": "dict-setting",
+      "unicode": "e653",
+      "unicode_decimal": 58963
+    },
+    {
+      "icon_id": "22856180",
+      "name": "industry-classification",
+      "font_class": "industry-classification",
+      "unicode": "e7f3",
+      "unicode_decimal": 59379
+    },
+    {
+      "icon_id": "1206401",
+      "name": "user",
+      "font_class": "user",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "2129746",
+      "name": "company-info",
+      "font_class": "company-info",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
+      "icon_id": "2459357",
+      "name": "system",
+      "font_class": "system",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "7239436",
+      "name": "dashboard",
+      "font_class": "dashboard",
+      "unicode": "e6ea",
+      "unicode_decimal": 59114
+    },
+    {
+      "icon_id": "8755079",
+      "name": "dept",
+      "font_class": "dept",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    },
+    {
+      "icon_id": "11440875",
+      "name": "base-info",
+      "font_class": "jiben",
+      "unicode": "e826",
+      "unicode_decimal": 59430
+    },
+    {
       "icon_id": "42227529",
       "name": "robot",
       "font_class": "robot-2-fill",

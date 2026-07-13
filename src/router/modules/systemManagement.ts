@@ -10,7 +10,7 @@ const systemManagementRoute: Array<RouterObject> = [
     component: () => import('@/layout/main/index.vue'),
     redirect: { name: 'Dashboard' },
     meta: {
-      title: 'home',
+      title: 'systemManagement',
       description: '系统管理',
       icon: 'system',
       permKey: 'systemManagement',
@@ -24,7 +24,7 @@ const systemManagementRoute: Array<RouterObject> = [
         meta: {
           title: "dashboard",
           description: '工作台',
-          icon: "home",
+          icon: "dashboard",
           affix: true,
           keepAlive: true,
           permKey: 'dashboard',
@@ -39,7 +39,7 @@ const systemManagementRoute: Array<RouterObject> = [
         meta: {
           title: "baseInfo",
           description: "基础信息",
-          icon: "system",
+          icon: "base-info",
           permKey: 'baseInfo',
         },
         children: [
@@ -87,7 +87,7 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'industryClassification',
               description: '行业分类',
-              icon: 'industry',
+              icon: 'industry-classification',
               permKey: 'industryClassification',
             },
           },
@@ -99,7 +99,7 @@ const systemManagementRoute: Array<RouterObject> = [
             meta: {
               title: 'dictSetting',
               description: '字典设置',
-              icon: 'dict',
+              icon: 'dict-setting',
               permKey: 'dictSetting',
             },
           },
