@@ -12,7 +12,7 @@ const devToolsRoute: Array<RouterObject> = [
     meta: {
       title: 'devTools',
       description: '开发工具',
-      icon: 'tool',
+      icon: 'dev-tools',
       permKey: 'devTools',
     },
     children: [
@@ -24,7 +24,7 @@ const devToolsRoute: Array<RouterObject> = [
         meta: {
           title: 'devToolsWorkbench',
           description: '工作台',
-          icon: 'tool',
+          icon: 'workbench',
           affix: true,
           keepAlive: true,
           permKey: 'devToolsWorkbench',
@@ -39,7 +39,7 @@ const devToolsRoute: Array<RouterObject> = [
         meta: {
           title: 'genericComponent',
           description: '组件封装',
-          icon: 'generic-com',
+          icon: 'generic-component',
           permKey: 'genericComponent',
         },
         children: [
@@ -50,7 +50,7 @@ const devToolsRoute: Array<RouterObject> = [
             meta: {
               title: 'electronicSignatures',
               description: '电子签名',
-              icon: 'e-sign',
+              icon: 'electronic-signatures',
               permKey: 'electronicSignatures',
             },
           },
@@ -72,7 +72,7 @@ const devToolsRoute: Array<RouterObject> = [
             meta: {
               title: 'splitTable',
               description: '表格封装',
-              icon: 'encapsulation-table',
+              icon: 'split-table',
               permKey: 'splitTable',
             },
           },
@@ -94,7 +94,7 @@ const devToolsRoute: Array<RouterObject> = [
             meta: {
               title: 'filePreview',
               description: '文件预览',
-              icon: 'document',
+              icon: 'file-preview',
               permKey: 'filePreview',
             },
           },
@@ -135,7 +135,7 @@ const devToolsRoute: Array<RouterObject> = [
         meta: {
           title: 'echarts',
           description: 'echarts',
-          icon: 'pie-chart',
+          icon: 'echarts',
           permKey: 'echarts',
         },
         children: [
@@ -179,7 +179,7 @@ const devToolsRoute: Array<RouterObject> = [
             meta: {
               title: 'relationship',
               description: '人物关系',
-              icon: 'histogram',
+              icon: 'relationship',
               permKey: 'relationship',
             },
           },

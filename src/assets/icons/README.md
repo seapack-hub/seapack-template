@@ -6,7 +6,7 @@
 
 ```
 src/assets/icons/
-├── common/         # 通用/跨模块共享图标（address, arrow-down, home-main, tips 等）
+├── common/         # 通用/跨模块共享图标（address, arrow-down, home, tips 等）
 ├── nav/            # 导航栏/工具栏专用（backend, fullscreen-expand, search 等）
 ├── social/         # 社交平台外链（gitee, github, juejin）
 ├── system/         # 系统管理模块（dept, dict, menu, role, user 等）

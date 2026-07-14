@@ -12,7 +12,7 @@ const bigDataRoutes: Array<RouterObject> = [
     meta: {
       title: 'bigScreen',
       description: '智慧运营大屏',
-      icon: 'screen',
+      icon: 'big-screen',
       permKey: 'bigScreen',
     },
   },
@@ -23,7 +23,7 @@ const bigDataRoutes: Array<RouterObject> = [
     meta: {
       title: 'universalTemplate',
       description: '通用大屏模板',
-      icon: 'basic-dashboard',
+      icon: 'universal-template',
       permKey: 'universalTemplate',
     },
   },

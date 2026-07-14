@@ -38,7 +38,7 @@ interface ItemType {
 /** 列表*/
 const itemList = ref<ItemType[]>([]);
 itemList.value = [
-  { name: '首页', color: '#000000', iconName: 'home-main' },
+  { name: '首页', color: '#000000', iconName: 'home' },
   { name: '归档', color: '#000000', iconName: 'pigeonhole' },
   { name: '分类', color: '#000000', iconName: 'classify' },
   { name: '系统', color: '#000000', iconName: 'back-office' }

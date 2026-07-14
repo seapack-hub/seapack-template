@@ -12,7 +12,7 @@ const stockFundRoute: Array<RouterObject> = [
     meta: {
       title: 'stockFund',
       description: '股票基金',
-      icon: 'trend-charts',
+      icon: 'stock-fund',
       permKey: 'stockFund',
     },
     children: [
@@ -24,7 +24,7 @@ const stockFundRoute: Array<RouterObject> = [
         meta: {
           title: 'stockFundWorkbench',
           description: '工作台',
-          icon: 'home',
+          icon: 'workbench',
           affix: true,
           keepAlive: true,
           permKey: 'stockFundWorkbench',
@@ -38,7 +38,7 @@ const stockFundRoute: Array<RouterObject> = [
         meta: {
           title: 'aiStockAnalysis',
           description: 'AI个股诊断',
-          icon: 'ai-interaction',
+          icon: 'ai-stock-analysis',
           keepAlive: true,
           permKey: 'aiStockAnalysis',
         },
@@ -52,7 +52,7 @@ const stockFundRoute: Array<RouterObject> = [
         meta: {
           title: 'stock',
           description: '股票',
-          icon: 'trend-charts',
+          icon: 'stock',
           permKey: 'stock',
         },
         children: [
@@ -76,7 +76,7 @@ const stockFundRoute: Array<RouterObject> = [
             meta: {
               title: 'stockPool',
               description: '股票池管理',
-              icon: 'fund-info',
+              icon: 'stock-pool',
               permKey: 'stockPool',
             },
           },
@@ -99,8 +99,8 @@ const stockFundRoute: Array<RouterObject> = [
             meta: {
               title: 'dividendData',
               description: '分红数据维护',
-              icon: 'pie-chart',
-              permKey: 'dividendData',
+              icon: 'dividend-data',
+              permKey: 'dividendData'
             },
           },
           //股票监控池
@@ -111,7 +111,7 @@ const stockFundRoute: Array<RouterObject> = [
             meta: {
               title: 'dashboardView',
               description: '股票监控池',
-              icon: 'home',
+              icon: 'dashboard-view',
               permKey: 'dashboardView',
             },
           },
@@ -123,7 +123,7 @@ const stockFundRoute: Array<RouterObject> = [
             meta: {
               title: 'alertHistory',
               description: '告警历史记录',
-              icon: 'histogram',
+              icon: 'alert-history',
               permKey: 'alertHistory',
             },
           },
@@ -138,7 +138,7 @@ const stockFundRoute: Array<RouterObject> = [
         meta: {
           title: 'fund',
           description: '基金',
-          icon: 'fund-info',
+          icon: 'fund',
           permKey: 'fund',
         },
         children: [
@@ -161,7 +161,6 @@ const stockFundRoute: Array<RouterObject> = [
             meta: {
               title: 'fundBaseInfoDetail',
               description: '基金信息详情',
-              icon: 'fund-info',
               hidden: true,
               permKey: 'fundBaseInfoDetail',
             },

@@ -3,8 +3,295 @@
   "name": "SeaPack",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
-  "description": "自研项目",
+  "description": "sea-pack-template",
   "glyphs": [
+    {
+      "icon_id": "22913832",
+      "name": "juejin",
+      "font_class": "juejin",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "7239764",
+      "name": "github",
+      "font_class": "github",
+      "unicode": "e732",
+      "unicode_decimal": 59186
+    },
+    {
+      "icon_id": "43217855",
+      "name": "gitee",
+      "font_class": "gitee",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "3179575",
+      "name": "translation",
+      "font_class": "translation",
+      "unicode": "ea17",
+      "unicode_decimal": 59927
+    },
+    {
+      "icon_id": "8073537",
+      "name": "tips",
+      "font_class": "tips",
+      "unicode": "e6b5",
+      "unicode_decimal": 59061
+    },
+    {
+      "icon_id": "929487",
+      "name": "industry",
+      "font_class": "industry",
+      "unicode": "e746",
+      "unicode_decimal": 59206
+    },
+    {
+      "icon_id": "22606462",
+      "name": "pigeonhole",
+      "font_class": "pigeonhole",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "10166323",
+      "name": "home",
+      "font_class": "home",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "40067002",
+      "name": "english",
+      "font_class": "english",
+      "unicode": "ea24",
+      "unicode_decimal": 59940
+    },
+    {
+      "icon_id": "35654982",
+      "name": "empty-data",
+      "font_class": "empty-img-default",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "46454172",
+      "name": "complex",
+      "font_class": "complex",
+      "unicode": "ea15",
+      "unicode_decimal": 59925
+    },
+    {
+      "icon_id": "7714830",
+      "name": "browser",
+      "font_class": "browser",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "10147097",
+      "name": "arrow-down",
+      "font_class": "arrow-down",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "20186132",
+      "name": "classify",
+      "font_class": "classify",
+      "unicode": "e7bf",
+      "unicode_decimal": 59327
+    },
+    {
+      "icon_id": "757048",
+      "name": "address",
+      "font_class": "address",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "18991710",
+      "name": "radar",
+      "font_class": "radar",
+      "unicode": "e873",
+      "unicode_decimal": 59507
+    },
+    {
+      "icon_id": "23277931",
+      "name": "relationship",
+      "font_class": "relationship",
+      "unicode": "e6ed",
+      "unicode_decimal": 59117
+    },
+    {
+      "icon_id": "6907700",
+      "name": "histogram",
+      "font_class": "histogram",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "14055682",
+      "name": "migration-map",
+      "font_class": "migration-map",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "25831482",
+      "name": "echarts",
+      "font_class": "echarts",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "42813663",
+      "name": "flow-chart",
+      "font_class": "flow-chart",
+      "unicode": "e656",
+      "unicode_decimal": 58966
+    },
+    {
+      "icon_id": "13660550",
+      "name": "graphical",
+      "font_class": "graphical",
+      "unicode": "e61f",
+      "unicode_decimal": 58911
+    },
+    {
+      "icon_id": "43601616",
+      "name": "file-preview",
+      "font_class": "file-preview",
+      "unicode": "e85d",
+      "unicode_decimal": 59485
+    },
+    {
+      "icon_id": "26441067",
+      "name": "wang-editor",
+      "font_class": "wang-editor",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    },
+    {
+      "icon_id": "18644959",
+      "name": "split-table",
+      "font_class": "split-table",
+      "unicode": "e87c",
+      "unicode_decimal": 59516
+    },
+    {
+      "icon_id": "1467412",
+      "name": "encapsulation-table",
+      "font_class": "encapsulation-table",
+      "unicode": "e6a9",
+      "unicode_decimal": 59049
+    },
+    {
+      "icon_id": "33464036",
+      "name": "electronic-signatures",
+      "font_class": "electronic-signatures",
+      "unicode": "e740",
+      "unicode_decimal": 59200
+    },
+    {
+      "icon_id": "20113540",
+      "name": "generic-component",
+      "font_class": "generic-component",
+      "unicode": "e6bd",
+      "unicode_decimal": 59069
+    },
+    {
+      "icon_id": "28636544",
+      "name": "dev-tools",
+      "font_class": "dev-tools",
+      "unicode": "ed3f",
+      "unicode_decimal": 60735
+    },
+    {
+      "icon_id": "7241582",
+      "name": "universal-template",
+      "font_class": "universal-template",
+      "unicode": "e66a",
+      "unicode_decimal": 58986
+    },
+    {
+      "icon_id": "7239480",
+      "name": "fund",
+      "font_class": "fund",
+      "unicode": "e6f5",
+      "unicode_decimal": 59125
+    },
+    {
+      "icon_id": "45013944",
+      "name": "big-screen",
+      "font_class": "big-screen",
+      "unicode": "e78e",
+      "unicode_decimal": 59278
+    },
+    {
+      "icon_id": "6172762",
+      "name": "alert-history",
+      "font_class": "alert-history",
+      "unicode": "e85b",
+      "unicode_decimal": 59483
+    },
+    {
+      "icon_id": "27886546",
+      "name": "dashboard-view",
+      "font_class": "dashboard-view",
+      "unicode": "e85a",
+      "unicode_decimal": 59482
+    },
+    {
+      "icon_id": "28821050",
+      "name": "dividend-data",
+      "font_class": "dividend-data",
+      "unicode": "e607",
+      "unicode_decimal": 58887
+    },
+    {
+      "icon_id": "28573177",
+      "name": "stock-pool",
+      "font_class": "stock-pool",
+      "unicode": "e683",
+      "unicode_decimal": 59011
+    },
+    {
+      "icon_id": "40069092",
+      "name": "stock",
+      "font_class": "stock",
+      "unicode": "ea62",
+      "unicode_decimal": 60002
+    },
+    {
+      "icon_id": "2736682",
+      "name": "ai-stock-analysis",
+      "font_class": "ai-stock-analysis",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "866482",
+      "name": "stock-fund",
+      "font_class": "stock-fund",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "11221372",
+      "name": "ai-interaction",
+      "font_class": "ai-interaction",
+      "unicode": "e6a2",
+      "unicode_decimal": 59042
+    },
+    {
+      "icon_id": "33390114",
+      "name": "workbench",
+      "font_class": "workbench",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
     {
       "icon_id": "431876",
       "name": "menu",
