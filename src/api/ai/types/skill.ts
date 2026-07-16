@@ -15,18 +15,18 @@ export interface Skill {
   name: string
   /** 技能编码 */
   code: string
-  /** 图标 SVG 文件名 */
+  /** 图标 */
   icon?: string
   /** 描述 */
   description?: string
-  /** 系统提示词模板，支持 {{variable}} 插值 */
-  promptTemplate?: string
-  /** LLM 温度参数 0-2 */
-  temperature?: number
-  /** 最大输出 token 数 */
-  maxTokens?: number
-  /** 输出格式：markdown/json/text/html */
-  outputFormat?: string
+  /** 技能类型：llm/function/workflow */
+  skillType?: string
+  /** API 端点 */
+  endpoint?: string
+  /** 超时时间（毫秒） */
+  timeoutMs?: number
+  /** 输入参数 JSON Schema */
+  inputSchema?: string
   /** 当前版本号 */
   version?: string
   /** 状态：1启用 0禁用 */
@@ -103,14 +103,16 @@ export interface SkillBindingInfo {
   skillName: string
   /** 技能编码 */
   skillCode: string
-  /** 系统提示词模板 */
+  /** 系统提示词模板（来自关联模板） */
   promptTemplate?: string
-  /** LLM 温度参数 */
+  /** LLM 温度参数（来自关联模板） */
   temperature?: number
-  /** 最大输出 token 数 */
+  /** 最大输出 token 数（来自关联模板） */
   maxTokens?: number
-  /** 输出格式 */
+  /** 输出格式（来自关联模板） */
   outputFormat?: string
+  /** 技能类型 */
+  skillType?: string
   /** 模块标识 */
   moduleKey: string
   /** 模块内位置 */

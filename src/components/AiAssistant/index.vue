@@ -7,7 +7,7 @@
       @mousedown="startDrag"
       @click="visible = true"
     >
-      <el-icon :size="24"><ChatDotSquare /></el-icon>
+      <Icon name="robot-2-fill" :size="25" color="#fff"/>
     </div>
 
     <el-drawer

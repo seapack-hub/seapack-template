@@ -51,6 +51,7 @@
           <!-- 技能表格：使用 SpTable + 内联状态切换 + Pagination -->
           <div class="flex-1 flex flex-col justify-between overflow-hidden border">
             <SpTable
+              class="flex-1"
               :loading="loading"
               :columns="columns"
               :data="tableData"
@@ -268,9 +269,9 @@ async function onStatusChange(row: Skill, val: number) {
 const skillDialogVisible = ref(false)
 const skillDialogIsEdit = ref(false)
 const skillFormData = ref<Skill>({
-  name: '', code: '', categoryId: undefined, description: '', promptTemplate: '',
-  temperature: 0.7, maxTokens: 2048, outputFormat: 'markdown', version: 'v1.0.0',
-  sortOrder: 0, status: 1,
+  name: '', code: '', categoryId: undefined, description: '',
+  skillType: 'llm', endpoint: '', timeoutMs: 30000, inputSchema: '',
+  version: 'v1.0.0', sortOrder: 0, status: 1,
 })
 
 /** 打开技能弹窗，编辑时回填、新增时自动选中当前分类 */
@@ -280,9 +281,9 @@ function openSkillDialog(row?: Skill) {
     skillDialogIsEdit.value = true
   } else {
     skillFormData.value = {
-      name: '', code: '', categoryId: activeCategoryId.value, description: '', promptTemplate: '',
-      temperature: 0.7, maxTokens: 2048, outputFormat: 'markdown', version: 'v1.0.0',
-      sortOrder: 0, status: 1,
+      name: '', code: '', categoryId: activeCategoryId.value, description: '',
+      skillType: 'llm', endpoint: '', timeoutMs: 30000, inputSchema: '',
+      version: 'v1.0.0', sortOrder: 0, status: 1,
     }
     skillDialogIsEdit.value = false
   }

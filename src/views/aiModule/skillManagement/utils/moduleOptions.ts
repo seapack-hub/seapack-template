@@ -10,12 +10,11 @@ export const MODULE_OPTIONS = MODULE_DEFS.map(m => ({
   value: m.key,
 }))
 
-/** 输出格式选项（用于技能表单选择） */
-export const OUTPUT_FORMAT_OPTIONS = [
-  { label: 'Markdown', value: 'markdown' },
-  { label: 'JSON', value: 'json' },
-  { label: '纯文本', value: 'text' },
-  { label: 'HTML', value: 'html' },
+/** 技能类型选项（用于技能表单选择） */
+export const SKILL_TYPE_OPTIONS = [
+  { label: '工具调用', value: 'tool' },
+  { label: '知识检索', value: 'rag' },
+  { label: '混合', value: 'hybrid' },
 ]
 
 /** 参数类型选项（用于参数表单编辑） */
