@@ -268,7 +268,6 @@ function handleDownloadAll() {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px;
   box-sizing: border-box;
   overflow-y: auto;
 }

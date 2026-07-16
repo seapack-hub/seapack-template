@@ -29,77 +29,63 @@ const gis2dRoute: Array<RouterObject> = [
         }
       },
       {
-        path: 'openLayers',
-        name: 'openLayers',
+        path: 'layerType',
+        name: 'layerType',
         component: RouterView,
-        redirect: { name: 'layerType' },
+        redirect: { name: 'heatMap' },
         meta: {
-          title: 'openLayers',
-          description: 'openLayers地图',
-          icon: 'openlayers',
-          permKey: 'openLayers',
+          title: 'layerType',
+          description: '图层类型',
+          icon: 'layer-type',
+          permKey: 'layerType',
         },
         children: [
           {
-            path: 'layerType',
-            name: 'layerType',
-            component: RouterView,
-            redirect: { name: 'heatMap' },
+            path: 'heatMap',
+            name: 'heatMap',
+            component: () => import('@/views/gis2d/openLayers/layerType/components/HeatMap.vue'),
             meta: {
-              title: 'layerType',
-              description: '图层类型',
-              icon: 'layer-type',
-              permKey: 'layerType',
-            },
-            children: [
-              {
-                path: 'heatMap',
-                name: 'heatMap',
-                component: () => import('@/views/gis2d/openLayers/layerType/components/HeatMap.vue'),
-                meta: {
-                  title: 'heatMap',
-                  description: '热力图层',
-                  icon: 'hot-map',
-                  permKey: 'heatMap',
-                }
-              },
-              {
-                path: 'vectorMap',
-                name: 'vectorMap',
-                component: () => import('@/views/gis2d/openLayers/layerType/components/VectorMap.vue'),
-                meta: {
-                  title: 'vectorMap',
-                  description: '矢量图层',
-                  icon: 'vector-map',
-                  permKey: 'vectorMap',
-                }
-              },
-              {
-                path: 'sliceMap',
-                name: 'sliceMap',
-                component: () => import('@/views/gis2d/openLayers/layerType/components/SliceMap.vue'),
-                meta: {
-                  title: 'sliceMap',
-                  description: '切片图层',
-                  icon: 'slice-map',
-                  permKey: 'sliceMap',
-                }
-              }
-            ]
-          },
-          {
-            path: 'basicOperation',
-            name: 'marking',
-            component: () => import('@/views/gis2d/openLayers/basicOperations/marking.vue'),
-            meta: {
-              title: 'marking',
-              description: '标注',
-              icon: 'openlayers',
-              permKey: 'marking',
+              title: 'heatMap',
+              description: '热力图层',
+              icon: 'hot-map',
+              permKey: 'heatMap',
             }
           },
+          {
+            path: 'vectorMap',
+            name: 'vectorMap',
+            component: () => import('@/views/gis2d/openLayers/layerType/components/VectorMap.vue'),
+            meta: {
+              title: 'vectorMap',
+              description: '矢量图层',
+              icon: 'vector-map',
+              permKey: 'vectorMap',
+            }
+          },
+          {
+            path: 'sliceMap',
+            name: 'sliceMap',
+            component: () => import('@/views/gis2d/openLayers/layerType/components/SliceMap.vue'),
+            meta: {
+              title: 'sliceMap',
+              description: '切片图层',
+              icon: 'slice-map',
+              permKey: 'sliceMap',
+            }
+          }
         ]
       },
+      {
+        path: 'basicOperation',
+        name: 'marking',
+        component: () => import('@/views/gis2d/openLayers/basicOperations/marking.vue'),
+        meta: {
+          title: 'marking',
+          description: '标注',
+          icon: 'openlayers',
+          permKey: 'marking',
+        }
+      }
     ]
   }
 ];
