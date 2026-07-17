@@ -32,16 +32,16 @@
           </div>
         </el-popover>
         <!-- AI 技能按钮 -->
-        <template v-for="b in aiBindings" :key="b.skillId">
+        <template v-for="b in aiBindings" :key="b.sceneId">
           <el-button
             v-if="(b.config?.displayType || 'button') === 'button'"
             :type="b.config?.type || 'primary'"
-            @click="openAiDialog(b.skillId)"
+            @click="openAiDialog()"
           >
             <el-icon style="vertical-align: -2px; margin-right: 4px">
               <component :is="b.config?.icon || 'MagicStick'" />
             </el-icon>
-            {{ b.config?.buttonText || b.skillName }}
+            {{ b.config?.buttonText || b.agentName }}
           </el-button>
         </template>
         <el-button text :icon="Delete" @click="handleClear">清空会话</el-button>
@@ -131,12 +131,11 @@
       :error-message="voice.errorMessage as any"
     />
 
-    <!-- AI 技能执行通用弹框 -->
-    <AiSkillExecutor
+    <!-- AI Agent 执行通用弹框 -->
+    <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="aiModule"
       position="chat-sidebar"
-      :skill-id="activeSkillId"
       :context="aiContext"
       @done="handleAiResult"
     />
@@ -149,8 +148,7 @@ import { Delete, Setting, Promotion, Microphone, ChatLineSquare } from '@element
 import { useChatStore } from '@/store/modules/chat';
 import { streamChat } from '@/api/ai/index';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
-import { useAiBindings } from '@/hooks/useAiBindings';
-import type { AiExecutionResult } from '@/api/ai/skill';
+import { useSceneBindings } from '@/hooks/useSceneBindings';
 import VoiceInputTip from './VoiceInputTip.vue';
 import emitter from '@/utils/bus';
 // @ts-ignore
@@ -159,25 +157,23 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 
 const store = useChatStore();
 
-/** 从 Store 获取聊天侧边栏位所有启用的 AI 技能绑定 */
-const { bindings: aiBindings } = useAiBindings('aiModule', 'chat-sidebar')
+/** 从 Store 获取聊天侧边栏位所有启用的 AI 场景绑定 */
+const { bindings: aiBindings } = useSceneBindings('aiModule', 'chat-sidebar')
 
 const aiDialogVisible = ref(false)
-const activeSkillId = ref<number | undefined>()
 const aiContext = ref({ inputText: '' })
 
-function openAiDialog(skillId?: number) {
-  activeSkillId.value = skillId
+function openAiDialog() {
   aiContext.value = { inputText: inputText.value }
   aiDialogVisible.value = true
 }
 
-function handleAiResult(result: AiExecutionResult) {
-  if (!result.success) {
+function handleAiResult(result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
+  if (!result.content) {
     ElMessage.error('AI 执行失败，请重试')
     return
   }
-  store.addMessage({ role: 'user', content: `使用技能：${result.skillName}` })
+  store.addMessage({ role: 'user', content: `使用技能：${result.agentName}` })
   store.addMessage({ role: 'assistant', content: result.content })
   nextTick(() => {
     const scrollWrap = scrollbarRef.value?.wrapRef

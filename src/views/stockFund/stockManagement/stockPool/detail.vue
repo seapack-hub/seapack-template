@@ -3,16 +3,16 @@
   <div class="detail-container flex flex-col">
     <PageHeader :title="stockName" :edit="false" back-text="返回" @cancel="goBack">
       <template #button>
-        <template v-for="b in aiBindings" :key="b.skillId">
+        <template v-for="b in aiBindings" :key="b.sceneId">
           <el-button
             v-if="(b.config?.displayType || 'button') === 'button'"
             :type="b.config?.type || 'primary'"
-            @click="openAiDialog(b.skillId)"
+            @click="openAiDialog()"
           >
             <el-icon style="vertical-align: -2px; margin-right: 4px">
               <component :is="b.config?.icon || 'MagicStick'" />
             </el-icon>
-            {{ b.config?.buttonText || b.skillName }}
+            {{ b.config?.buttonText || b.agentName }}
           </el-button>
         </template>
       </template>
@@ -37,12 +37,11 @@
       </el-tab-pane>
     </el-tabs>
 
-    <!-- AI 技能执行通用弹框 -->
-    <AiSkillExecutor
+    <!-- AI Agent 执行通用弹框 -->
+    <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="stockFund"
       position="detail-toolbar"
-      :skill-id="activeSkillId"
       :context="aiContext"
       @done="handleAiResult"
     />
@@ -67,8 +66,7 @@ import StockInfoTab from './components/StockInfoTab.vue'
 import StockChartTab from './components/StockChartTab.vue'
 import StockDividendTab from './components/StockDividendTab.vue'
 import StockFinanceTab from './components/StockFinanceTab.vue'
-import { useAiBindings } from '@/hooks/useAiBindings'
-import type { AiExecutionResult } from '@/api/ai/skill'
+import { useSceneBindings } from '@/hooks/useSceneBindings'
 import MarkdownIt from 'markdown-it'
 import { ElMessage } from 'element-plus'
 const md = new MarkdownIt()
@@ -90,11 +88,10 @@ const financeData = ref<{ balance: any[]; income: any[]; cashflow: any[] }>({ ba
 const infoLoading = ref(true)
 const financeLoading = ref(true)
 
-/** 从 Store 获取股票详情工具栏位所有启用的 AI 技能绑定 */
-const { bindings: aiBindings } = useAiBindings('stockFund', 'detail-toolbar')
+/** 从 Store 获取股票详情工具栏位所有启用的 AI 场景绑定 */
+const { bindings: aiBindings } = useSceneBindings('stockFund', 'detail-toolbar')
 
 const aiDialogVisible = ref(false)
-const activeSkillId = ref<number | undefined>()
 const aiContext = ref({ stockCode: '', stockName: '' })
 
 /** AI 结果展示 */
@@ -110,8 +107,7 @@ const renderedResult = computed(() => {
   catch { return resultContent.value }
 })
 
-function openAiDialog(skillId?: number) {
-  activeSkillId.value = skillId
+function openAiDialog() {
   aiContext.value = {
     stockCode: stockCode as string,
     stockName: stockName.value,
@@ -119,12 +115,12 @@ function openAiDialog(skillId?: number) {
   aiDialogVisible.value = true
 }
 
-function handleAiResult(result: AiExecutionResult) {
-  if (!result.success) {
+function handleAiResult(result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
+  if (!result.content) {
     ElMessage.error('AI 分析执行失败，请重试')
     return
   }
-  resultTitle.value = `${result.skillName} 分析结果`
+  resultTitle.value = `${result.agentName} 分析结果`
   resultContent.value = result.content
   resultVisible.value = true
 }

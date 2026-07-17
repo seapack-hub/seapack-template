@@ -17,6 +17,8 @@ export interface Scene {
   description?: string
   /** 关联前端模块 */
   moduleKey?: string
+  /** 模块内位置（如 detail-toolbar, editor-toolbar） */
+  position?: string
   /** 1公开 0私有 */
   isPublic?: number
   /** 状态：1启用 0禁用 */
@@ -28,6 +30,24 @@ export interface Scene {
   createdBy?: number
   createdAt?: string
   updatedAt?: string
+}
+
+/** 场景关联的完整信息（聚合 Agent + Knowledge） */
+export interface SceneBindingInfo {
+  sceneId: number
+  sceneName: string
+  sceneCode: string
+  moduleKey: string
+  position: string
+  /** 默认 Agent */
+  agentId: number
+  agentName: string
+  agentCode: string
+  /** 场景配置（按钮文案等） */
+  config?: Record<string, any>
+  status: number
+  /** 关联知识库 IDs */
+  knowledgeIds?: number[]
 }
 
 /** 场景关联助手 */

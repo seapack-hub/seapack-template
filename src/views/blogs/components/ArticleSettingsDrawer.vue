@@ -89,12 +89,11 @@
       </el-form-item>
     </el-form>
 
-    <!-- AI 技能执行通用弹框 -->
-    <AiSkillExecutor
+    <!-- AI Agent 执行通用弹框 -->
+    <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="blogsManagement"
       position="settings-drawer"
-      :skill-id="activeSkillId"
       :context="aiContext"
       @done="handleAiResult"
     />
@@ -111,9 +110,8 @@ import { inject } from 'vue'
 import type { FormInstance } from 'element-plus'
 import type { BlogCategory } from '@/api/blogs/category'
 import type { ArticleForm } from '../admin/ArticleEdit.vue'
-import type { AiExecutionResult } from '@/api/ai/skill'
 import { ElMessage } from 'element-plus'
-import { useAiBindings } from '@/hooks/useAiBindings'
+import { useSceneBindings } from '@/hooks/useSceneBindings'
 import { MagicStick } from '@element-plus/icons-vue'
 
 const props = defineProps<{
@@ -135,13 +133,11 @@ const drawerModel = computed({
 })
 
 /** AI 集成 */
-const { bindings: aiBindings } = useAiBindings('blogsManagement', 'settings-drawer')
+const { bindings: aiBindings } = useSceneBindings('blogsManagement', 'settings-drawer')
 const aiDialogVisible = ref(false)
-const activeSkillId = ref<number | undefined>()
 const aiContext = ref({ articleTitle: '', articleSummary: '', articleContent: '' })
 
 function openAiDialogForTitle() {
-  activeSkillId.value = undefined
   aiContext.value = {
     articleTitle: form.title || '',
     articleSummary: form.summary || '',
@@ -151,7 +147,6 @@ function openAiDialogForTitle() {
 }
 
 function openAiDialogForSummary() {
-  activeSkillId.value = undefined
   aiContext.value = {
     articleTitle: form.title || '',
     articleSummary: form.summary || '',
@@ -160,8 +155,8 @@ function openAiDialogForSummary() {
   aiDialogVisible.value = true
 }
 
-function handleAiResult(result: AiExecutionResult) {
-  if (!result.success) {
+function handleAiResult(result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
+  if (!result.content) {
     ElMessage.error('AI 生成失败，请重试')
     return
   }
@@ -171,7 +166,7 @@ function handleAiResult(result: AiExecutionResult) {
   } else {
     form.summary = result.content.slice(0, 500)
   }
-  ElMessage.success(`${result.skillName} 内容已填充`)
+  ElMessage.success(`${result.agentName} 内容已填充`)
 }
 
 defineExpose({ formRef })

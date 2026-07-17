@@ -4,10 +4,10 @@
  * 集中声明所有支持 AI 功能的「模块:位置」组合，作为唯一可信源。
  * 后端管理员配置绑定时从此注册表选择位置，前端消费方据此渲染按钮/菜单。
  *
- * @see SkillBindingDialog  管理员配置绑定时位置下拉来源于此
+ * @see SceneBindingDialog  管理员配置绑定时位置下拉来源于此
  * @see ArticleEdit         博客编辑器按钮组根据此注册表 + bindings 动态渲染
  */
-import type { SkillBindingInfo } from '@/api/ai/skill'
+import type { SceneBindingInfo } from '@/api/ai/scene'
 
 export interface AiPosition {
   /** 模块标识，对应 MODULE_DEFS.key */
@@ -83,10 +83,10 @@ export function getPositionLabelByPosition(position: string): string {
 }
 
 /** 将绑定列表转换为按 moduleKey 分组的 Map，方便消费方按模块渲染 */
-export function groupBindingsByModule(bindings: SkillBindingInfo[]): Map<string, SkillBindingInfo[]> {
-  const map = new Map<string, SkillBindingInfo[]>()
+export function groupBindingsByModule(bindings: SceneBindingInfo[]): Map<string, SceneBindingInfo[]> {
+  const map = new Map<string, SceneBindingInfo[]>()
   for (const b of bindings) {
-    const key = b.binding.moduleKey
+    const key = b.moduleKey
     if (!map.has(key)) map.set(key, [])
     map.get(key)!.push(b)
   }

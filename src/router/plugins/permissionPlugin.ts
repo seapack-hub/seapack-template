@@ -1,6 +1,6 @@
 import type { RouterPlugin } from './types'
 import { useUserStore } from '@/store/modules/user'
-import { useAiSkillBindingsStore } from '@/store/modules/aiSkillBindings'
+import { useSceneBindingsStore } from '@/store/modules/sceneBindings'
 
 // 白名单页面：不需要登录即可访问
 const WHITE_LIST = ['/login', '/blogs', '/errorPage/401', '/errorPage/403', '/errorPage/404', '/errorPage/500']
@@ -52,8 +52,8 @@ export const permissionPlugin: RouterPlugin = {
           usePermissionStore().collectRoutes()
         }
 
-        // 加载 AI 技能绑定数据（低频变动，全量缓存供全局使用）
-        useAiSkillBindingsStore().fetchAllBindings()
+        // 加载 AI 场景绑定数据（低频变动，全量缓存供全局使用）
+        useSceneBindingsStore().fetchAllBindings()
       }
     }
 

@@ -8,16 +8,16 @@
         </el-button>
         <el-button :loading="saving" @click="saveDraft">存草稿</el-button>
         <el-button type="primary" :loading="saving" @click="publish">发布</el-button>
-        <template v-for="b in aiBindings" :key="b.skillId">
+        <template v-for="b in aiBindings" :key="b.sceneId">
           <el-button
             v-if="(b.config?.displayType || 'button') === 'button'"
             :type="b.config?.type || 'primary'"
-            @click="openAiDialog(b.skillId)"
+            @click="openAiDialog()"
           >
             <el-icon style="vertical-align: -2px; margin-right: 4px">
               <component :is="b.config?.icon || 'MagicStick'" />
             </el-icon>
-            {{ b.config?.buttonText || b.skillName }}
+            {{ b.config?.buttonText || b.agentName }}
           </el-button>
         </template>
       </template>
@@ -33,12 +33,11 @@
       />
     </div>
 
-    <!-- AI 技能执行通用弹框：绑定博客编辑器工具栏位 -->
-    <AiSkillExecutor
+    <!-- AI Agent 执行通用弹框：绑定博客编辑器工具栏位 -->
+    <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="blogsManagement"
       position="editor-toolbar"
-      :skill-id="activeSkillId"
       :context="aiContext"
       @done="handleAiResult"
     />
@@ -59,8 +58,7 @@ import { useBlogStore } from '@/store/modules/blog.ts'
 import { CategoryAPI, type BlogCategory } from '@/api/blogs/category.ts'
 import { ElMessage } from 'element-plus'
 import { Setting } from '@element-plus/icons-vue'
-import type { AiExecutionResult } from '@/api/ai/skill'
-import { useAiBindings } from '@/hooks/useAiBindings'
+import { useSceneBindings } from '@/hooks/useSceneBindings'
 import { renderToHtml } from '@/views/blogs/utils/sanitize'
 import ArticleSettingsDrawer from '../components/ArticleSettingsDrawer.vue'
 
@@ -75,17 +73,13 @@ const drawerVisible = ref(false)
 const aiDialogVisible = ref(false)
 const categories = ref<BlogCategory[]>([])
 
-/** 从 Store 获取该位置所有启用的 AI 技能绑定 */
-const { bindings: aiBindings } = useAiBindings('blogsManagement', 'editor-toolbar')
-
-/** 当前点击的 AI 技能 ID（传给 AiSkillExecutor 跳过选择器） */
-const activeSkillId = ref<number | undefined>()
+/** 从 Store 获取该位置所有启用的 AI 场景绑定 */
+const { bindings: aiBindings } = useSceneBindings('blogsManagement', 'editor-toolbar')
 
 /** AI 执行上下文：打开弹框时获取编辑器选中文本和文章标题 */
 const aiContext = ref({ selectedText: '', articleTitle: '' })
 
-function openAiDialog(skillId?: number) {
-  activeSkillId.value = skillId
+function openAiDialog() {
   aiContext.value = {
     selectedText: editorCompRef.value?.getSelectedText?.() || '',
     articleTitle: form.title || '',
@@ -126,15 +120,15 @@ const form = reactive<ArticleForm>({
 provide('articleForm', form)
 
 /** AI 执行结果处理：将 markdown 转 HTML 后插入编辑器光标位置 */
-async function handleAiResult(result: AiExecutionResult) {
-  if (!result.success) {
+async function handleAiResult(result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
+  if (!result.content) {
     ElMessage.error('AI 执行失败，请重试')
     return
   }
   try {
     const html = await renderToHtml(result.content)
     editorCompRef.value?.insertContent(html)
-    ElMessage.success(`${result.skillName} 内容已插入`)
+    ElMessage.success(`${result.agentName} 内容已插入`)
   } catch (e) {
     ElMessage.error('内容格式转换失败，请重试')
   }

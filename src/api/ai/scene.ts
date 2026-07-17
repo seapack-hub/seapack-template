@@ -5,6 +5,7 @@ import { request } from '@/utils/axios'
 import type {
   Scene,
   SceneAgent,
+  SceneBindingInfo,
   SceneKnowledge,
   SceneQuery,
 } from './types/scene'
@@ -12,6 +13,7 @@ import type {
 export type {
   Scene,
   SceneAgent,
+  SceneBindingInfo,
   SceneKnowledge,
   SceneQuery,
 }
@@ -156,6 +158,25 @@ export const SceneAPI = {
     return request<any, any>({
       url: `${BASE_URL}/${sceneId}/knowledge/${id}`,
       method: 'delete',
+    })
+  },
+
+  // ===== 场景绑定查询（替代 SkillBinding） =====
+
+  /** 查询全部场景绑定信息（供 Store 初始化） */
+  getAllBindings() {
+    return request<any, SceneBindingInfo[]>({
+      url: `${BASE_URL}/bindings/all`,
+      method: 'get',
+    })
+  },
+
+  /** 按 moduleKey + position 查询场景绑定 */
+  getByModuleAndPosition(moduleKey: string, position?: string) {
+    return request<any, SceneBindingInfo[]>({
+      url: `${BASE_URL}/bindings`,
+      method: 'get',
+      params: { moduleKey, position },
     })
   },
 }

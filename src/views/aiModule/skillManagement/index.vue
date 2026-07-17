@@ -1,7 +1,7 @@
  <!--
   技能管理主页面
   左侧分类树 + 右侧技能列表的布局结构
-  管理技能的分类、参数、模块绑定、执行测试和日志查看
+  管理技能的分类、参数和基本信息
 -->
 <template>
   <div class="app-container w-100% h-100% flex flex-col">
@@ -100,27 +100,6 @@
       v-model:visible="paramEditorVisible"
       :skill-id="currentSkillId"
     />
-    <!-- 模块绑定弹窗 -->
-    <SkillBindingDialog
-      v-model:visible="bindingDialogVisible"
-      :skill-id="currentSkillId"
-      :skill-name="currentSkillName"
-    />
-    <!-- 执行测试弹窗 -->
-    <SkillExecuteDialog
-      v-model:visible="executeDialogVisible"
-      :skill-id="currentSkillId"
-    />
-    <!-- 调试弹窗 -->
-    <SkillDebugDialog
-      v-model:visible="debugDialogVisible"
-      :skill-id="currentSkillId"
-    />
-    <!-- 执行日志弹窗 -->
-    <SkillLogDialog
-      v-model:visible="logDialogVisible"
-      :skill-id="currentSkillId"
-    />
   </div>
 </template>
 
@@ -131,10 +110,6 @@ import { useSkill } from './utils/useSkill'
 import SkillCategoryTree from './components/SkillCategoryTree.vue'
 import SkillFormDialog from './components/SkillFormDialog.vue'
 import SkillParamEditor from './components/SkillParamEditor.vue'
-import SkillBindingDialog from './components/SkillBindingDialog.vue'
-import SkillExecuteDialog from './components/SkillExecuteDialog.vue'
-import SkillDebugDialog from './components/SkillDebugDialog.vue'
-import SkillLogDialog from './components/SkillLogDialog.vue'
 
 const {
   categories,
@@ -154,17 +129,8 @@ const {
   onDeleteSkill,
   onStatusChange,
   currentSkillId,
-  currentSkillName,
   paramEditorVisible,
-  bindingDialogVisible,
-  executeDialogVisible,
-  debugDialogVisible,
-  logDialogVisible,
   openParamEditor,
-  openBindingDialog,
-  openExecuteDialog,
-  openDebugDialog,
-  openLogDialog,
 } = useSkill()
 
 /** 技能类型标签映射 */
@@ -188,10 +154,6 @@ const columns = [
       { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openSkillDialog(row) },
       { type: 'primary', label: '参数', size: 'small', renderType: 'link', click: ({ row }: any) => openParamEditor(row) },
       { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该技能吗？' }, click: ({ row }: any) => onDeleteSkill(row) },
-      { type: 'primary', label: '模块绑定', size: 'small', renderType: 'link', click: ({ row }: any) => openBindingDialog(row) },
-      { type: 'primary', label: '执行测试', size: 'small', renderType: 'link', click: ({ row }: any) => openExecuteDialog(row) },
-      { type: 'primary', label: '调试', size: 'small', renderType: 'link', click: ({ row }: any) => openDebugDialog(row) },
-      { type: 'primary', label: '执行日志', size: 'small', renderType: 'link', click: ({ row }: any) => openLogDialog(row) },
     ],
   },
 ]

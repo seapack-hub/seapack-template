@@ -67,7 +67,7 @@ export function useSkill() {
   const skillDialogIsEdit = ref(false)
   const skillFormData = ref<Skill>({
     name: '', code: '', categoryId: undefined, description: '',
-    skillType: 'tool', endpoint: '', timeoutMs: 30000, inputSchema: '',
+    skillType: 'tool', inputSchema: '',
     version: 'v1.0.0', sortOrder: 0, status: 1,
   })
 
@@ -79,7 +79,7 @@ export function useSkill() {
     } else {
       skillFormData.value = {
         name: '', code: '', categoryId: activeCategoryId.value, description: '',
-        skillType: 'tool', endpoint: '', timeoutMs: 30000, inputSchema: '',
+        skillType: 'tool', inputSchema: '',
         version: 'v1.0.0', sortOrder: 0, status: 1,
       }
       skillDialogIsEdit.value = false
@@ -112,39 +112,13 @@ export function useSkill() {
     } catch { /* error already handled by axios interceptor */ }
   }
 
-  // ===== 操作弹窗（参数/绑定/执行/日志） =====
+  // ===== 操作弹窗（参数） =====
   const currentSkillId = ref(0)
-  const currentSkillName = ref('')
   const paramEditorVisible = ref(false)
-  const bindingDialogVisible = ref(false)
-  const executeDialogVisible = ref(false)
-  const debugDialogVisible = ref(false)
-  const logDialogVisible = ref(false)
 
   function openParamEditor(row: Skill) {
     currentSkillId.value = row.id!
     paramEditorVisible.value = true
-  }
-
-  function openBindingDialog(row: Skill) {
-    currentSkillId.value = row.id!
-    currentSkillName.value = row.name
-    bindingDialogVisible.value = true
-  }
-
-  function openExecuteDialog(row: Skill) {
-    currentSkillId.value = row.id!
-    executeDialogVisible.value = true
-  }
-
-  function openDebugDialog(row: Skill) {
-    currentSkillId.value = row.id!
-    debugDialogVisible.value = true
-  }
-
-  function openLogDialog(row: Skill) {
-    currentSkillId.value = row.id!
-    logDialogVisible.value = true
   }
 
   return {
@@ -170,16 +144,7 @@ export function useSkill() {
     onStatusChange,
     // 操作弹窗
     currentSkillId,
-    currentSkillName,
     paramEditorVisible,
-    bindingDialogVisible,
-    executeDialogVisible,
-    debugDialogVisible,
-    logDialogVisible,
     openParamEditor,
-    openBindingDialog,
-    openExecuteDialog,
-    openDebugDialog,
-    openLogDialog,
   }
 }

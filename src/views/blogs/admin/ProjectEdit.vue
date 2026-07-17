@@ -95,12 +95,11 @@
       </el-card>
     </el-form>
 
-    <!-- AI 技能执行通用弹框 -->
-    <AiSkillExecutor
+    <!-- AI Agent 执行通用弹框 -->
+    <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="blogsManagement"
       position="project-editor"
-      :skill-id="activeSkillId"
       :context="aiContext"
       @done="handleAiResult"
     />
@@ -113,9 +112,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { ProjectAPI } from '@/api/blogs/project.ts'
 import { ElMessage } from 'element-plus'
 import { MagicStick } from '@element-plus/icons-vue'
-import { useAiBindings } from '@/hooks/useAiBindings'
+import { useSceneBindings } from '@/hooks/useSceneBindings'
 import type { FormInstance } from 'element-plus'
-import type { AiExecutionResult } from '@/api/ai/skill'
 
 const route = useRoute()
 const router = useRouter()
@@ -124,15 +122,13 @@ const isEdit = computed(() => !!route.params.id)
 const saving = ref(false)
 
 /** AI 辅助 */
-const { bindings: aiBindings } = useAiBindings('blogsManagement', 'project-editor')
+const { bindings: aiBindings } = useSceneBindings('blogsManagement', 'project-editor')
 const aiDialogVisible = ref(false)
-const activeSkillId = ref<number | undefined>()
 const aiTarget = ref<'name' | 'description'>('description')
 const aiContext = ref({ projectName: '', projectDescription: '' })
 
 function openAiDialog(target: 'name' | 'description') {
   aiTarget.value = target
-  activeSkillId.value = undefined
   aiContext.value = {
     projectName: form.name || '',
     projectDescription: form.description || '',
@@ -140,8 +136,8 @@ function openAiDialog(target: 'name' | 'description') {
   aiDialogVisible.value = true
 }
 
-function handleAiResult(result: AiExecutionResult) {
-  if (!result.success) {
+function handleAiResult(result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
+  if (!result.content) {
     ElMessage.error('AI 生成失败，请重试')
     return
   }
@@ -151,7 +147,7 @@ function handleAiResult(result: AiExecutionResult) {
   } else {
     form.description = content.slice(0, 500)
   }
-  ElMessage.success(`${result.skillName} 内容已填充`)
+  ElMessage.success(`${result.agentName} 内容已填充`)
 }
 
 const form = reactive({

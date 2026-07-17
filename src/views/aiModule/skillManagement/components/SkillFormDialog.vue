@@ -60,18 +60,6 @@
       <el-form-item label="描述" prop="description">
         <el-input v-model="form.description" type="textarea" :rows="2" placeholder="技能功能描述" />
       </el-form-item>
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <el-form-item label="API 端点" prop="endpoint">
-            <el-input v-model="form.endpoint" placeholder="https://api.example.com/execute" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="超时时间(ms)" prop="timeoutMs">
-            <el-input-number v-model="form.timeoutMs" :min="1000" :max="300000" :step="1000" style="width: 100%" />
-          </el-form-item>
-        </el-col>
-      </el-row>
       <el-form-item label="输入 Schema" prop="inputSchema">
         <JsonEditor v-model="inputSchemaJson" height="300px" mode="code" />
       </el-form-item>
@@ -123,8 +111,6 @@ const form = defineModel<Skill>('form', {
     icon: '',
     description: '',
     skillType: 'tool',
-    endpoint: '',
-    timeoutMs: 30000,
     inputSchema: '',
     version: 'v1.0.0',
     sortOrder: 0,
