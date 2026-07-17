@@ -2,24 +2,27 @@
   技能分类树组件
   左侧面板，展示全部分类入口和分类列表
   支持选中状态（蓝色左侧竖条）、hover 编辑/删除操作、客户端搜索过滤
+  内部管理分类的增删改查逻辑
 -->
 <template>
   <el-card class="category-panel h-100% flex flex-col" shadow="never">
     <template #header>
       <div class="flex items-center justify-between">
         <span class="text-16px text-[var(--el-text-color-primary)]">技能分类</span>
-        <el-button type="primary" icon="plus" @click="$emit('add')" />
+        <div class="flex items-center gap-3px">
+          <el-button type="" icon="refresh" :loading="loading" circle size="small" @click="handleRefresh" />
+          <el-button type="" icon="plus" circle size="small" @click="openCategoryDialog()" />
+        </div>
       </div>
     </template>
     <!-- 分类搜索过滤 -->
     <div class="category-search mb-6">
       <el-input
-        :model-value="search"
+        v-model="categorySearch"
         placeholder="搜索分类..."
         clearable
         size="small"
         prefix-icon="search"
-        @update:model-value="$emit('update:search', $event)"
       />
     </div>
     <!-- 分类列表 -->
@@ -30,13 +33,13 @@
         <span class="ml-6 text-12px text-[var(--el-text-color-secondary)]">加载中...</span>
       </div>
       <!-- 空状态 -->
-      <el-empty v-else-if="!filteredCategories.length" :description="search ? '未匹配到分类' : '暂无分类'" :image-size="60" />
+      <el-empty v-else-if="!filteredCategories.length" :description="categorySearch ? '未匹配到分类' : '暂无分类'" :image-size="60" />
       <!-- 全部分类入口 -->
       <template v-else>
         <div
           class="category-item"
-          :class="{ 'is-active': !activeId }"
-          @click="$emit('select', undefined)"
+          :class="{ 'is-active': !activeCategoryId }"
+          @click="onSelectCategory(undefined)"
         >
           <Icon name="list" :size="15" />
           <span class="item-label">全部分类</span>
@@ -46,18 +49,17 @@
           v-for="cat in filteredCategories"
           :key="cat.id"
           class="category-item"
-          :class="{ 'is-active': activeId === cat.id }"
-          @click="$emit('select', cat.id)"
+          :class="{ 'is-active': activeCategoryId === cat.id }"
+          @click="onSelectCategory(cat.id)"
         >
-          <!-- 统一通过 Icon 组件渲染，自动识别 EP 图标或 SVG 精灵 -->
           <Icon :name="cat.icon || 'category'" :size="15" />
           <span class="item-label">{{ cat.name }}</span>
           <!-- hover 时显示操作按钮 -->
           <span class="item-actions">
-            <span class="action-btn" title="编辑" @click.stop="$emit('edit', cat)">
+            <span class="action-btn" title="编辑" @click.stop="openCategoryDialog(cat)">
               <Edit style="width: 14px; height: 14px" />
             </span>
-            <span class="action-btn action-btn--danger" title="删除" @click.stop="$emit('delete', cat)">
+            <span class="action-btn action-btn--danger" title="删除" @click.stop="onDeleteCategory(cat)">
               <Delete style="width: 14px; height: 14px" />
             </span>
           </span>
@@ -65,44 +67,123 @@
       </template>
     </div>
   </el-card>
+
+  <!-- 分类新增/编辑弹窗 -->
+  <SkillCategoryDialog
+    v-model:visible="categoryDialogVisible"
+    v-model:is-edit="categoryDialogIsEdit"
+    v-model:form="categoryFormData"
+    @confirm="onCategoryFormConfirm"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { Loading } from '@element-plus/icons-vue'
-import type { SkillCategory } from '@/api/ai/skillCategory';
+import { SkillCategoryAPI, type SkillCategory } from '@/api/ai/skillCategory'
+import SkillCategoryDialog from './SkillCategoryDialog.vue'
 
 const props = defineProps<{
-  /** 分类列表 */
-  categories: SkillCategory[];
   /** 当前选中的分类ID，undefined 表示"全部分类" */
-  activeId?: number;
-  /** 客户端搜索关键字 */
-  search?: string;
-  /** 加载中状态 */
-  loading?: boolean;
+  activeCategoryId?: number;
 }>();
 
 const emit = defineEmits<{
   /** 选中分类，undefined 表示全部分类 */
-  select: [categoryId: number | undefined];
-  /** 新增分类 */
-  add: [];
-  /** 编辑分类 */
-  edit: [category: SkillCategory];
-  /** 删除分类 */
-  delete: [category: SkillCategory];
-  /** 搜索关键字更新 */
-  'update:search': [value: string];
+  'update:activeCategoryId': [categoryId: number | undefined];
+  /** 分类数据发生变化（新增/编辑/删除后触发，通知父组件刷新技能列表） */
+  'categories-change': [categories: SkillCategory[]];
 }>();
+
+// ===== 分类数据 =====
+const categories = ref<SkillCategory[]>([])
+const categoryLoading = ref(false)
+const categorySearch = ref('')
+const activeCategoryId = ref<number | undefined>(props.activeCategoryId)
+
+// 监听外部传入的 activeCategoryId 变化
+watch(() => props.activeCategoryId, (val) => {
+  activeCategoryId.value = val
+})
+
+const loading = computed(() => categoryLoading.value)
 
 /** 客户端搜索过滤：按名称/编码匹配 */
 const filteredCategories = computed(() => {
-  const kw = props.search?.trim().toLowerCase()
-  if (!kw) return props.categories
-  return props.categories.filter(
+  const kw = categorySearch.value?.trim().toLowerCase()
+  if (!kw) return categories.value
+  return categories.value.filter(
     cat => cat.name.toLowerCase().includes(kw) || cat.code.toLowerCase().includes(kw),
   )
+})
+
+/** 从后端加载全部分类列表 */
+async function fetchCategories(force = false) {
+  if (!force && categories.value.length > 0) return
+  categoryLoading.value = true
+  try {
+    const { list } = await SkillCategoryAPI.page({ pageNum: 1, pageSize: 9999 })
+    categories.value = list || []
+  } catch {
+    categories.value = []
+  } finally {
+    categoryLoading.value = false
+  }
+}
+
+/** 刷新分类列表 */
+function handleRefresh() {
+  fetchCategories(true)
+}
+
+/** 选中分类 */
+function onSelectCategory(id: number | undefined) {
+  activeCategoryId.value = id
+  emit('update:activeCategoryId', id)
+}
+
+// ===== 分类弹窗：新增/编辑/删除 =====
+const categoryDialogVisible = ref(false)
+const categoryDialogIsEdit = ref(false)
+const categoryFormData = ref<SkillCategory>({ name: '', code: '', icon: '', description: '', sortOrder: 0, status: 1 })
+
+/** 打开分类弹窗，编辑时回填数据、新增时重置为默认值 */
+function openCategoryDialog(row?: SkillCategory) {
+  if (row) {
+    categoryFormData.value = { ...row }
+    categoryDialogIsEdit.value = true
+  } else {
+    categoryFormData.value = { name: '', code: '', icon: '', description: '', sortOrder: 0, status: 1 }
+    categoryDialogIsEdit.value = false
+  }
+  categoryDialogVisible.value = true
+}
+
+/** 分类表单提交：编辑调 update、新增调 insert，完成后刷新分类列表 */
+async function onCategoryFormConfirm(form: SkillCategory, isEdit: boolean) {
+  const api = isEdit ? (d: SkillCategory) => SkillCategoryAPI.update(form.id!, d) : SkillCategoryAPI.insert
+  await api(form)
+  ElMessage.success(isEdit ? '更新成功' : '新增成功')
+  categoryDialogVisible.value = false
+  await fetchCategories(true)
+  emit('categories-change', categories.value)
+}
+
+/** 删除分类：二次确认后删除，如果当前正选中该分类则清除筛选状态 */
+async function onDeleteCategory(cat: SkillCategory) {
+  await ElMessageBox.confirm(`确认删除分类【${cat.name}】？删除后该分类下的技能将变为"未分类"。`, '警告', { type: 'warning' })
+  await SkillCategoryAPI.delete(cat.id!)
+  ElMessage.success('删除成功')
+  if (activeCategoryId.value === cat.id) {
+    onSelectCategory(undefined)
+  }
+  await fetchCategories(true)
+  emit('categories-change', categories.value)
+}
+
+// ===== 初始化 =====
+onMounted(() => {
+  fetchCategories()
 })
 </script>
 
@@ -177,7 +258,7 @@ const filteredCategories = computed(() => {
 
     .item-label {
       line-height: 20px;
-      width:200px;
+      width: 200px;
       font-weight: 600;
     }
 

@@ -6,17 +6,11 @@
 <template>
   <div class="app-container w-100% h-100% flex flex-col">
     <div class="flex flex-1 overflow-hidden gap-10">
-      <!-- 左侧分类树 -->
+      <!-- 左侧分类树（内部管理增删改查逻辑） -->
       <div class="w-[220px] flex-shrink-0">
         <SkillCategoryTree
-          v-model:search="categorySearch"
-          :categories="categories"
-          :active-id="activeCategoryId"
-          :loading="categoryLoading"
-          @select="onCategorySelect"
-          @add="openCategoryDialog()"
-          @edit="openCategoryDialog($event)"
-          @delete="onDeleteCategory"
+          v-model:active-category-id="activeCategoryId"
+          @categories-change="onCategoriesChange"
         />
       </div>
       <!-- 右侧技能列表 -->
@@ -64,7 +58,7 @@
                       :model-value="row.status"
                       :active-value="1"
                       :inactive-value="0"
-                      @change="(val: number) => onStatusChange(row, val)"
+                      @change="(val) => onStatusChange(row as any, val as number)"
                     />
                   </template>
                 </el-table-column>
@@ -83,13 +77,6 @@
       </div>
     </div>
 
-    <!-- 分类新增/编辑弹窗 -->
-    <SkillCategoryDialog
-      v-model:visible="categoryDialogVisible"
-      v-model:is-edit="categoryDialogIsEdit"
-      v-model:form="categoryFormData"
-      @confirm="onCategoryFormConfirm"
-    />
     <!-- 技能新增/编辑弹窗 -->
     <SkillFormDialog
       v-model:visible="skillDialogVisible"
@@ -128,13 +115,12 @@
 </template>
 
 <script setup lang="ts">
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { SkillCategoryAPI, type SkillCategory } from '@/api/ai/skillCategory'
+import { ElMessage } from 'element-plus'
 import { SkillAPI, type Skill } from '@/api/ai/skill'
+import type { SkillCategory } from '@/api/ai/skillCategory'
 import { SKILL_LIST_COLUMNS } from './utils'
 import { SKILL_STATUS_OPTIONS } from './utils/moduleOptions'
 import SkillCategoryTree from './components/SkillCategoryTree.vue'
-import SkillCategoryDialog from './components/SkillCategoryDialog.vue'
 import SkillFormDialog from './components/SkillFormDialog.vue'
 import SkillParamEditor from './components/SkillParamEditor.vue'
 import SkillBindingDialog from './components/SkillBindingDialog.vue'
@@ -142,74 +128,13 @@ import SkillExecuteDialog from './components/SkillExecuteDialog.vue'
 import SkillDebugDialog from './components/SkillDebugDialog.vue'
 import SkillLogDialog from './components/SkillLogDialog.vue'
 
-// ===== 分类管理：加载分类列表、选中过滤、CRUD 弹窗控制 =====
+// ===== 分类相关：从 SkillCategoryTree 获取分类数据 =====
 const categories = ref<SkillCategory[]>([])
 const activeCategoryId = ref<number | undefined>(undefined)
-const categoryLoading = ref(false)
-/** 分类树搜索关键字（客户端过滤） */
-const categorySearch = ref('')
-/** 是否已加载过分类（缓存标记，避免重复请求） */
-let categoriesLoaded = false
 
-/** 从后端加载全部分类列表（只加载一次，后续使用缓存） */
-async function fetchCategories(force = false) {
-  if (categoriesLoaded && !force) return
-  categoryLoading.value = true
-  try {
-    categories.value = await SkillCategoryAPI.list() || []
-    categoriesLoaded = true
-  } catch {
-    categories.value = []
-  } finally {
-    categoryLoading.value = false
-  }
-}
-
-/** 切换分类筛选：选中分类后重置分页并刷新列表 */
-function onCategorySelect(id: number | undefined) {
-  activeCategoryId.value = id
-  queryParams.pageNum = 1
-  queryParams.categoryId = id
-  handleQuery()
-}
-
-// ===== 分类弹窗：新增/编辑/删除 =====
-const categoryDialogVisible = ref(false)
-const categoryDialogIsEdit = ref(false)
-const categoryFormData = ref<SkillCategory>({ name: '', code: '', icon: '', description: '', sortOrder: 0, status: 1 })
-
-/** 打开分类弹窗，编辑时回填数据、新增时重置为默认值 */
-function openCategoryDialog(row?: SkillCategory) {
-  if (row) {
-    categoryFormData.value = { ...row }
-    categoryDialogIsEdit.value = true
-  } else {
-    categoryFormData.value = { name: '', code: '', icon: '', description: '', sortOrder: 0, status: 1 }
-    categoryDialogIsEdit.value = false
-  }
-  categoryDialogVisible.value = true
-}
-
-/** 分类表单提交：编辑调 update、新增调 insert，完成后刷新分类列表 */
-async function onCategoryFormConfirm(form: SkillCategory, isEdit: boolean) {
-  const api = isEdit ? (d: SkillCategory) => SkillCategoryAPI.update(form.id!, d) : SkillCategoryAPI.insert
-  await api(form)
-  ElMessage.success(isEdit ? '更新成功' : '新增成功')
-  categoryDialogVisible.value = false
-  await fetchCategories(true)
-}
-
-/** 删除分类：二次确认后删除，如果当前正选中该分类则清除筛选状态 */
-async function onDeleteCategory(cat: SkillCategory) {
-  await ElMessageBox.confirm(`确认删除分类【${cat.name}】？删除后该分类下的技能将变为"未分类"。`, '警告', { type: 'warning' })
-  await SkillCategoryAPI.delete(cat.id!)
-  ElMessage.success('删除成功')
-  if (activeCategoryId.value === cat.id) {
-    activeCategoryId.value = undefined
-    queryParams.categoryId = undefined
-  }
-  await fetchCategories(true)
-  await handleQuery()
+/** 分类数据变化时同步更新（SkillCategoryTree 内部管理增删改查） */
+function onCategoriesChange(updatedCategories: SkillCategory[]) {
+  categories.value = updatedCategories
 }
 
 // ===== 技能列表：分页查询 + 表格列定义 + 状态切换 =====
@@ -220,6 +145,13 @@ const queryParams = reactive<{ pageNum: number; pageSize: number; categoryId?: n
 const tableData = ref<Skill[]>([])
 const total = ref(0)
 const loading = ref(false)
+
+/** 监听分类切换，重置分页并刷新列表 */
+watch(activeCategoryId, (val) => {
+  queryParams.pageNum = 1
+  queryParams.categoryId = val
+  handleQuery()
+})
 
 /** SpTable 列配置，从共享常量中获取基础列，追加操作栏按钮 */
 const columns = [
@@ -341,10 +273,9 @@ function openLogDialog(row: Skill) {
   logDialogVisible.value = true
 }
 
-// ===== 初始化：页面加载时获取分类和技能列表 =====
-onMounted(async () => {
-  await fetchCategories()
-  await handleQuery()
+// ===== 初始化：页面加载时获取技能列表 =====
+onMounted(() => {
+  handleQuery()
 })
 </script>
 

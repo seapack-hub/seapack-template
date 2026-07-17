@@ -6,6 +6,62 @@
   "description": "sea-pack-template",
   "glyphs": [
     {
+      "icon_id": "400834",
+      "name": "image",
+      "font_class": "image",
+      "unicode": "e752",
+      "unicode_decimal": 59218
+    },
+    {
+      "icon_id": "737145",
+      "name": "voice",
+      "font_class": "voice",
+      "unicode": "e7ad",
+      "unicode_decimal": 59309
+    },
+    {
+      "icon_id": "980791",
+      "name": "knowledge",
+      "font_class": "knowledge",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "5428337",
+      "name": "code",
+      "font_class": "code",
+      "unicode": "e6b0",
+      "unicode_decimal": 59056
+    },
+    {
+      "icon_id": "6808490",
+      "name": "Office",
+      "font_class": "Office",
+      "unicode": "edcd",
+      "unicode_decimal": 60877
+    },
+    {
+      "icon_id": "7712648",
+      "name": "data",
+      "font_class": "data",
+      "unicode": "e729",
+      "unicode_decimal": 59177
+    },
+    {
+      "icon_id": "10972130",
+      "name": "video",
+      "font_class": "video",
+      "unicode": "e6a1",
+      "unicode_decimal": 59041
+    },
+    {
+      "icon_id": "47461555",
+      "name": "content-gen",
+      "font_class": "content-gen",
+      "unicode": "ea4a",
+      "unicode_decimal": 59978
+    },
+    {
       "icon_id": "22913832",
       "name": "juejin",
       "font_class": "juejin",
@@ -372,7 +428,7 @@
     {
       "icon_id": "42227529",
       "name": "robot",
-      "font_class": "robot-2-fill",
+      "font_class": "robot",
       "unicode": "e7a2",
       "unicode_decimal": 59298
     },

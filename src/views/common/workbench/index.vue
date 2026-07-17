@@ -20,19 +20,19 @@
         :key="mod.key"
         class="module-card"
         :style="{
-          '--accent': moduleColors[mod.key] || '#667eea',
+          '--accent': mod.color,
           '--delay': `${idx * 0.12}s`,
-          '--icon-bg': moduleColors[mod.key] || '#667eea',
+          '--icon-bg': mod.color,
         }"
         @click="enterModule(mod)"
       >
         <div class="card-accent"></div>
         <div class="card-icon">
-          <Icon :name="moduleIcons[mod.key] || 'home'" :size="28" color="#ffffff" />
+          <Icon :name="mod.icon" :size="28" color="#ffffff" />
         </div>
         <div class="card-body">
           <h3 class="card-title">{{ mod.title }}</h3>
-          <p class="card-desc">{{ moduleDescs[mod.key] || '' }}</p>
+          <p class="card-desc">{{ mod.description }}</p>
         </div>
         <div class="card-arrow">
           <el-icon><ArrowRight /></el-icon>
@@ -50,45 +50,6 @@ import { MODULE_DEFS } from '@/config/modules'
 
 const router = useRouter()
 const userStore = useUserStore()
-
-const moduleIcons: Record<string, string> = {
-  systemManagement: 'system',
-  workflowModule: 'workflow',
-  gis2d: 'two-d-layers',
-  gis3d: 'three-d-layers',
-  bigScreen: 'screen',
-  universalTemplate: 'basic-dashboard',
-  blogsManagement: 'blogs',
-  stockFund: 'trend-charts',
-  aiModule: 'ai-interaction',
-  devTools: 'tool',
-}
-
-const moduleColors: Record<string, string> = {
-  systemManagement: '#409EFF',
-  workflowModule: '#00BCD4',
-  gis2d: '#26A69A',
-  gis3d: '#7E57C2',
-  bigScreen: '#FF6D00',
-  universalTemplate: '#F06292',
-  blogsManagement: '#E040FB',
-  stockFund: '#F44336',
-  aiModule: '#9C27B0',
-  devTools: '#607D8B',
-}
-
-const moduleDescs: Record<string, string> = {
-  systemManagement: '用户、部门、菜单权限、系统配置等管理功能',
-  workflowModule: '可视化工作流编排、执行与监控',
-  gis2d: 'OpenLayers 二维地图展示与交互',
-  gis3d: 'Cesium 三维GIS地图与特效',
-  bigScreen: '智慧运营数据可视化大屏',
-  universalTemplate: '通用大屏模板（Cesium 三维）',
-  blogsManagement: '博客阅读与管理',
-  stockFund: '股票行情、基金信息与行业分类',
-  aiModule: 'RAG知识库、智能体交互、图片生成',
-  devTools: '组件封装、图形化、ECharts图表',
-}
 
 const accessibleModules = computed(() => {
   if (userStore.username === 'admin') return MODULE_DEFS
