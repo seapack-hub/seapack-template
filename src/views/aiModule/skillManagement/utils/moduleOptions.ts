@@ -22,6 +22,7 @@ export const PARAM_TYPE_OPTIONS = [
   { label: '字符串', value: 'string' },
   { label: '数字', value: 'number' },
   { label: '布尔', value: 'boolean' },
+  { label: '选择', value: 'select' },
   { label: 'Json', value: 'json' },
 ]
 

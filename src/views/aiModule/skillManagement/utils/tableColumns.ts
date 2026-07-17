@@ -8,10 +8,12 @@
 export const SKILL_LIST_COLUMNS = [
   { label: '技能名称', prop: 'name', minWidth: '140px' },
   { label: '技能编码', prop: 'code', minWidth: '120px' },
-  { label: '所属分类', prop: 'categoryName', minWidth: '120px' },
+  { label: '所属分类', prop: 'categoryName', minWidth: '100px' },
+  { label: '技能类型', prop: 'skillType', width: '90px', align: 'center', slotName: 'skillType' },
+  { label: 'API端点', prop: 'endpoint', minWidth: '160px', showOverflowTooltip: true },
   { label: '版本', prop: 'version', width: '80px', align: 'center' },
-  { label: '使用次数', prop: 'useCount', width: '100px', align: 'center' },
-  { label: '状态', prop: 'status', width: '100px', align: 'center', slotName: 'status' },
+  { label: '使用次数', prop: 'useCount', width: '80px', align: 'center' },
+  { label: '状态', prop: 'status', width: '80px', align: 'center', slotName: 'status' },
 ]
 
 /** 技能参数表格列（不含操作列） */

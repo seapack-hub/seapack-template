@@ -21,7 +21,13 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="所属分类" prop="categoryId">
-            <el-select v-model="form.categoryId" placeholder="选择分类" clearable style="width: 100%">
+            <el-select
+              v-model="form.categoryId"
+              placeholder="选择分类"
+              clearable
+              :disabled="categoryDisabled"
+              style="width: 100%"
+            >
               <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id as any" />
             </el-select>
           </el-form-item>
@@ -36,6 +42,18 @@
                 :value="opt.value"
               />
             </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="技能图标" prop="icon">
+            <IconPicker v-model="form.icon" placeholder="选择图标" clearable />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="版本号" prop="version">
+            <el-input v-model="form.version" placeholder="v1.0.0" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -55,19 +73,9 @@
         </el-col>
       </el-row>
       <el-form-item label="输入 Schema" prop="inputSchema">
-        <el-input
-          v-model="form.inputSchema"
-          type="textarea"
-          :rows="4"
-          placeholder="JSON Schema 定义输入参数结构（可选）"
-        />
+        <JsonEditor v-model="inputSchemaJson" height="300px" mode="code" />
       </el-form-item>
       <el-row :gutter="20">
-        <el-col :span="8">
-          <el-form-item label="版本号" prop="version">
-            <el-input v-model="form.version" placeholder="v1.0.0" />
-          </el-form-item>
-        </el-col>
         <el-col :span="8">
           <el-form-item label="排序号" prop="sortOrder">
             <el-input-number v-model="form.sortOrder" :min="0" :max="999" style="width: 100%" />
@@ -76,6 +84,11 @@
         <el-col :span="8">
           <el-form-item label="状态">
             <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" />
+          </el-form-item>
+        </el-col>
+        <el-col v-if="isEdit" :span="8">
+          <el-form-item label="使用次数">
+            <el-input-number :model-value="form.useCount || 0" disabled style="width: 100%" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -92,18 +105,35 @@
 import type { Skill } from '@/api/ai/skill';
 import type { SkillCategory } from '@/api/ai/skillCategory';
 import { SKILL_TYPE_OPTIONS } from '../utils/moduleOptions'
+import JsonEditor from '@/components/JsonEditor/index.vue'
+
+const props = defineProps<{
+  categories: SkillCategory[]
+  /** 左侧分类树当前选中的分类ID，undefined 表示"全部分类" */
+  activeCategoryId?: number
+}>()
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
 const form = defineModel<Skill>('form', {
   default: () => ({
-    name: '', code: '', categoryId: undefined, description: '',
-    skillType: 'llm', endpoint: '', timeoutMs: 30000, inputSchema: '',
-    version: 'v1.0.0', sortOrder: 0, status: 1,
+    name: '',
+    code: '',
+    categoryId: undefined,
+    icon: '',
+    description: '',
+    skillType: 'tool',
+    endpoint: '',
+    timeoutMs: 30000,
+    inputSchema: '',
+    version: 'v1.0.0',
+    sortOrder: 0,
+    status: 1,
   }),
 })
 
-defineProps<{ categories: SkillCategory[] }>()
+/** 所属分类是否禁用：左侧选中了具体分类时禁用，选"全部分类"时可选 */
+const categoryDisabled = computed(() => props.activeCategoryId !== undefined)
 
 const emit = defineEmits<{ confirm: [formData: Skill, isEdit: boolean] }>()
 
@@ -114,6 +144,18 @@ const formRules = {
 
 const formRef = ref<any>(null)
 const submitting = ref(false)
+
+/** inputSchema 字符串 ↔ JSON 对象双向转换 */
+const inputSchemaJson = computed({
+  get() {
+    const raw = form.value.inputSchema
+    if (!raw) return undefined
+    try { return JSON.parse(raw) } catch { return undefined }
+  },
+  set(val: any) {
+    form.value.inputSchema = val ? JSON.stringify(val) : ''
+  },
+})
 
 function onClosed() {
   isEdit.value = false

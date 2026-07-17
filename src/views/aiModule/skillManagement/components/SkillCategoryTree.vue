@@ -182,8 +182,9 @@ async function onDeleteCategory(cat: SkillCategory) {
 }
 
 // ===== 初始化 =====
-onMounted(() => {
-  fetchCategories()
+onMounted(async () => {
+  await fetchCategories()
+  emit('categories-change', categories.value)
 })
 </script>
 

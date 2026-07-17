@@ -14,10 +14,12 @@
 <template>
   <div class="json-editor-wrapper" :style="{ height: height }">
     <JsonEditorVue
+      class="json-editor"
       :content="contentData"
-      :mode="currentMode"
-      :main-menu-bar="false"
-      :navigation-bar="false"
+      :mode="currentMode as any"
+      :show-btns="true"
+      :main-menu-bar="true"
+      :navigation-bar="true"
       :status-bar="true"
       :read-only="readOnly"
       :on-change="handleChange"
@@ -44,7 +46,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: any]
 }>()
 
-const currentMode = ref(props.mode || 'tree')
+const currentMode = ref(props.mode || 'code')
 
 /** 将 modelValue 转换为 vanilla-jsoneditor 所需的 { text, json } 格式 */
 const contentData = computed(() => {
@@ -75,12 +77,15 @@ function handleChange(content: any) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .json-editor-wrapper {
   width: 100%;
-  border: 1px solid var(--el-border-color-light);
+  border: 1px solid var(--el-border-color-light); 
   border-radius: 6px;
   overflow: hidden;
+  .json-editor{
+    height: 100%;
+  }
 }
 
 .json-editor-wrapper :deep(.jse-theme-dark) {

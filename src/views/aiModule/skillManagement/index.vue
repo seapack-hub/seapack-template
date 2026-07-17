@@ -51,6 +51,15 @@
               :data="tableData"
               :show-index="true"
             >
+              <template #skillType>
+                <el-table-column label="技能类型" prop="skillType" width="90px" align="center" slot-name="skillType">
+                  <template #default="{ row }">
+                    <el-tag size="small" :type="skillTypeTagMap[row.skillType] as any || 'info'">
+                      {{ skillTypeLabelMap[row.skillType] || row.skillType }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+              </template>
               <template #status>
                 <el-table-column label="状态" min-width="80px" align="center" slot-name="status">
                   <template #default="{ row }">
@@ -83,6 +92,7 @@
       v-model:is-edit="skillDialogIsEdit"
       v-model:form="skillFormData"
       :categories="categories"
+      :active-category-id="activeCategoryId"
       @confirm="onSkillFormConfirm"
     />
     <!-- 参数管理弹窗 -->
@@ -115,11 +125,9 @@
 </template>
 
 <script setup lang="ts">
-import { ElMessage } from 'element-plus'
-import { SkillAPI, type Skill } from '@/api/ai/skill'
-import type { SkillCategory } from '@/api/ai/skillCategory'
 import { SKILL_LIST_COLUMNS } from './utils'
 import { SKILL_STATUS_OPTIONS } from './utils/moduleOptions'
+import { useSkill } from './utils/useSkill'
 import SkillCategoryTree from './components/SkillCategoryTree.vue'
 import SkillFormDialog from './components/SkillFormDialog.vue'
 import SkillParamEditor from './components/SkillParamEditor.vue'
@@ -128,32 +136,50 @@ import SkillExecuteDialog from './components/SkillExecuteDialog.vue'
 import SkillDebugDialog from './components/SkillDebugDialog.vue'
 import SkillLogDialog from './components/SkillLogDialog.vue'
 
-// ===== 分类相关：从 SkillCategoryTree 获取分类数据 =====
-const categories = ref<SkillCategory[]>([])
-const activeCategoryId = ref<number | undefined>(undefined)
+const {
+  categories,
+  activeCategoryId,
+  onCategoriesChange,
+  queryParams,
+  tableData,
+  total,
+  loading,
+  handleQuery,
+  handleReset,
+  skillDialogVisible,
+  skillDialogIsEdit,
+  skillFormData,
+  openSkillDialog,
+  onSkillFormConfirm,
+  onDeleteSkill,
+  onStatusChange,
+  currentSkillId,
+  currentSkillName,
+  paramEditorVisible,
+  bindingDialogVisible,
+  executeDialogVisible,
+  debugDialogVisible,
+  logDialogVisible,
+  openParamEditor,
+  openBindingDialog,
+  openExecuteDialog,
+  openDebugDialog,
+  openLogDialog,
+} = useSkill()
 
-/** 分类数据变化时同步更新（SkillCategoryTree 内部管理增删改查） */
-function onCategoriesChange(updatedCategories: SkillCategory[]) {
-  categories.value = updatedCategories
+/** 技能类型标签映射 */
+const skillTypeLabelMap: Record<string, string> = {
+  tool: '工具调用',
+  rag: '知识检索',
+  hybrid: '混合',
+}
+const skillTypeTagMap: Record<string, string> = {
+  tool: 'info',
+  rag: 'success',
+  hybrid: 'warning',
 }
 
-// ===== 技能列表：分页查询 + 表格列定义 + 状态切换 =====
-const queryParams = reactive<{ pageNum: number; pageSize: number; categoryId?: number; status?: number; keyword?: string }>({
-  pageNum: 1,
-  pageSize: 10,
-})
-const tableData = ref<Skill[]>([])
-const total = ref(0)
-const loading = ref(false)
-
-/** 监听分类切换，重置分页并刷新列表 */
-watch(activeCategoryId, (val) => {
-  queryParams.pageNum = 1
-  queryParams.categoryId = val
-  handleQuery()
-})
-
-/** SpTable 列配置，从共享常量中获取基础列，追加操作栏按钮 */
+/** SpTable 列配置 */
 const columns = [
   ...SKILL_LIST_COLUMNS,
   {
@@ -169,109 +195,6 @@ const columns = [
     ],
   },
 ]
-
-/** 通用分页查询 */
-async function handleQuery() {
-  loading.value = true
-  try {
-    const res = await SkillAPI.page(queryParams)
-    tableData.value = res.list || []
-    total.value = res.total || 0
-  } finally { loading.value = false }
-}
-
-/** 重置搜索条件并重新查询 */
-function handleReset() {
-  queryParams.keyword = ''
-  queryParams.status = undefined
-  queryParams.pageNum = 1
-  handleQuery()
-}
-
-/** 表格内行级状态切换开关 */
-async function onStatusChange(row: Skill, val: number) {
-  try {
-    await SkillAPI.update(row.id!, { status: val })
-    row.status = val
-    ElMessage.success(val === 1 ? '已启用' : '已禁用')
-  } catch { /* error already handled by axios interceptor */ }
-}
-
-// ===== 技能弹窗：新增/编辑/删除 =====
-const skillDialogVisible = ref(false)
-const skillDialogIsEdit = ref(false)
-const skillFormData = ref<Skill>({
-  name: '', code: '', categoryId: undefined, description: '',
-  skillType: 'llm', endpoint: '', timeoutMs: 30000, inputSchema: '',
-  version: 'v1.0.0', sortOrder: 0, status: 1,
-})
-
-/** 打开技能弹窗，编辑时回填、新增时自动选中当前分类 */
-function openSkillDialog(row?: Skill) {
-  if (row) {
-    skillFormData.value = { ...row }
-    skillDialogIsEdit.value = true
-  } else {
-    skillFormData.value = {
-      name: '', code: '', categoryId: activeCategoryId.value, description: '',
-      skillType: 'llm', endpoint: '', timeoutMs: 30000, inputSchema: '',
-      version: 'v1.0.0', sortOrder: 0, status: 1,
-    }
-    skillDialogIsEdit.value = false
-  }
-  skillDialogVisible.value = true
-}
-
-/** 技能表单提交 */
-async function onSkillFormConfirm(form: Skill, isEdit: boolean) {
-  const api = isEdit ? (d: Skill) => SkillAPI.update(form.id!, d) : SkillAPI.insert
-  await api(form)
-  ElMessage.success(isEdit ? '更新成功' : '新增成功')
-  skillDialogVisible.value = false
-  await handleQuery()
-}
-
-/** 删除技能后刷新列表 */
-async function onDeleteSkill(row: Skill) {
-  await SkillAPI.delete(row.id!)
-  ElMessage.success('删除成功')
-  await handleQuery()
-}
-
-// ===== 操作弹窗（参数/绑定/执行/日志）：统一管理 currentSkillId =====
-const currentSkillId = ref(0)
-const currentSkillName = ref('')
-const paramEditorVisible = ref(false)
-const bindingDialogVisible = ref(false)
-const executeDialogVisible = ref(false)
-const debugDialogVisible = ref(false)
-const logDialogVisible = ref(false)
-
-function openParamEditor(row: Skill) {
-  currentSkillId.value = row.id!
-  paramEditorVisible.value = true
-}
-
-function openBindingDialog(row: Skill) {
-  currentSkillId.value = row.id!
-  currentSkillName.value = row.name
-  bindingDialogVisible.value = true
-}
-
-function openExecuteDialog(row: Skill) {
-  currentSkillId.value = row.id!
-  executeDialogVisible.value = true
-}
-
-function openDebugDialog(row: Skill) {
-  currentSkillId.value = row.id!
-  debugDialogVisible.value = true
-}
-
-function openLogDialog(row: Skill) {
-  currentSkillId.value = row.id!
-  logDialogVisible.value = true
-}
 
 // ===== 初始化：页面加载时获取技能列表 =====
 onMounted(() => {

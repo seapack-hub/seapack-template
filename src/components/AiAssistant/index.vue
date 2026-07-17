@@ -7,7 +7,7 @@
       @mousedown="startDrag"
       @click="visible = true"
     >
-      <Icon name="robot-2-fill" :size="25" color="#fff"/>
+      <Icon name="robot" :size="30" color="#fff" />
     </div>
 
     <el-drawer
