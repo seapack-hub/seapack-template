@@ -23,7 +23,7 @@
                 <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
               </el-form-item>
               <el-form-item label="状态">
-                <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 120px">
+                <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 200px">
                   <el-option
                     v-for="opt in SKILL_STATUS_OPTIONS"
                     :key="String(opt.value)"
@@ -149,7 +149,7 @@ const skillTypeTagMap: Record<string, string> = {
 const columns = [
   ...SKILL_LIST_COLUMNS,
   {
-    columnType: 'operate', label: '操作', width: '160px', fixed: 'right',
+    columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
     buttons: [
       { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openSkillDialog(row) },
       { type: 'primary', label: '参数', size: 'small', renderType: 'link', click: ({ row }: any) => openParamEditor(row) },

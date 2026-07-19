@@ -25,7 +25,7 @@ export const SkillAPI = {
   /** 分页查询技能列表 */
   page(query: SkillQuery) {
     return request<any, PageResult<Skill[]>>({ 
-      url: `${BASE_URL}/ai/skills`, 
+      url: `${BASE_URL}/ai/skills/page/list`, 
       method: 'get', 
       params: query 
     });
@@ -34,7 +34,7 @@ export const SkillAPI = {
   /** 查询技能详情 */
   getById(id: number) {
     return request<any, Skill>({ 
-      url: `${BASE_URL}/ai/skills/${id}`,
+      url: `${BASE_URL}/ai/skills/detail/${id}`,
       method: 'get' 
     });
   },
@@ -42,26 +42,26 @@ export const SkillAPI = {
   /** 新增技能 */
   insert(data: Partial<Skill>) {
     return request<any, any>({ 
-      url: `${BASE_URL}/ai/skills`, 
+      url: `${BASE_URL}/ai/skills/insert`, 
       method: 'post', 
       data 
     });
   },
 
-  /** 编辑技能 */
+  /** 编辑技能（data 中需包含 id） */
   update(id: number, data: Partial<Skill>) {
     return request<any, any>({ 
-      url: `${BASE_URL}/ai/skills/${id}`, 
-      method: 'put', 
-      data 
+      url: `${BASE_URL}/ai/skills/update`, 
+      method: 'post', 
+      data: { ...data, id }
     });
   },
 
   /** 删除技能 */
   delete(id: number) {
     return request<any, any>({ 
-      url: `${BASE_URL}/ai/skills/${id}`, 
-      method: 'delete' 
+      url: `${BASE_URL}/ai/skills/delete/${id}`, 
+      method: 'post' 
     });
   },
 
@@ -82,26 +82,26 @@ export const SkillAPI = {
   /** 新增参数（自动序列化 options 数组 → JSON） */
   async addParam(skillId: number, data: Partial<SkillParam>) {
     return request<any, any>({ 
-      url: `${BASE_URL}/ai/skills/${skillId}/params`, 
+      url: `${BASE_URL}/ai/skills/${skillId}/add-param`, 
       method: 'post', 
       data: { ...data, options: serializeOptions(data.options as any) },
     });
   },
 
-  /** 编辑参数（自动序列化 options 数组 → JSON） */
+  /** 编辑参数（自动序列化 options 数组 → JSON；data 中需包含 id） */
   async updateParam(skillId: number, paramId: number, data: Partial<SkillParam>) {
     return request<any, any>({ 
-      url: `${BASE_URL}/ai/skills/${skillId}/params/${paramId}`, 
-      method: 'put', 
-      data: { ...data, options: serializeOptions(data.options as any) },
+      url: `${BASE_URL}/ai/skills/${skillId}/update-param`, 
+      method: 'post', 
+      data: { ...data, id: paramId, options: serializeOptions(data.options as any) },
     });
   },
 
   /** 删除参数 */
   deleteParam(skillId: number, paramId: number) {
     return request<any, any>({ 
-      url: `${BASE_URL}/ai/skills/${skillId}/params/${paramId}`, 
-      method: 'delete' 
+      url: `${BASE_URL}/ai/skills/${skillId}/delete-param/${paramId}`, 
+      method: 'post' 
     });
   },
 };

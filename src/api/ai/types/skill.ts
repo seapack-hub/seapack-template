@@ -23,6 +23,10 @@ export interface Skill {
   description?: string
   /** 技能类型：tool/rag/hybrid */
   skillType?: string
+  /** API 端点 */
+  endpoint?: string
+  /** 超时时间（毫秒） */
+  timeoutMs?: number
   /** 输入参数 JSON Schema */
   inputSchema?: string
   /** 当前版本号 */
@@ -43,6 +47,8 @@ export interface SkillQuery {
   pageSize: number
   /** 分类ID（可选） */
   categoryId?: number
+  /** 技能类型筛选（可选） */
+  skillType?: string
   /** 状态筛选（可选） */
   status?: number
   /** 关键词搜索（名称/编码） */

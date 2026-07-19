@@ -42,34 +42,16 @@
           <div v-if="tableData.length === 0 && !loading" class="col-span-full">
             <el-empty description="暂无 Agent" />
           </div>
-          <div v-for="row in tableData" :key="row.id" class="agent-card">
-            <div class="flex items-center gap-10px">
-              <div class="card-avatar">{{ row.avatar || row.name?.charAt(0) || 'A' }}</div>
-              <div class="flex-1 min-w-0">
-                <div class="text-14px font-600 color-[var(--el-text-color-primary)] overflow-hidden text-ellipsis whitespace-nowrap">{{ row.name }}</div>
-                <div class="text-12px text-[var(--el-text-color-secondary)] overflow-hidden text-ellipsis whitespace-nowrap">{{ row.code }}</div>
-              </div>
-              <el-switch
-                :model-value="row.status"
-                :active-value="1"
-                :inactive-value="0"
-                size="small"
-                @change="(val) => onStatusChange(row, val as any)"
-              />
-            </div>
-            <div class="text-12px text-[var(--el-text-color-secondary)]">{{ row.description || '暂无描述' }}</div>
-            <div class="flex items-center gap-8px">
-              <el-tag size="small" type="info">{{ row.modelCode }}</el-tag>
-              <span class="text-12px text-[var(--el-text-color-secondary)]">v{{ row.version }}</span>
-              <span class="text-12px text-[var(--el-text-color-secondary)]">使用 {{ row.useCount || 0 }} 次</span>
-            </div>
-            <div class="flex gap-4px border-t border-[var(--el-border-color-extra-light)] pt-10px">
-              <el-button link type="primary" size="small" @click="openEditDialog(row)">编辑</el-button>
-              <el-button link type="primary" size="small" @click="openConfigDrawer(row)">配置</el-button>
-              <el-button link type="primary" size="small" @click="openTestDrawer(row)">测试</el-button>
-              <el-button link type="primary" size="small" @click="handleCopy(row)">复制</el-button>
-              <el-button link type="danger" size="small" @click="handleCardDelete(row)">删除</el-button>
-            </div>
+          <div v-for="row in tableData" :key="row.id">
+            <AgentCard
+              :agent="row"
+              @edit="openEditDialog"
+              @config="openConfigDrawer"
+              @test="openTestDrawer"
+              @copy="handleCopy"
+              @delete="handleCardDelete"
+              @status-change="onStatusChange"
+            />
           </div>
         </div>
 
@@ -135,6 +117,7 @@ import { useAgent } from './utils/useAgent'
 import AgentFormDialog from './components/AgentFormDialog.vue'
 import AgentConfigDrawer from './components/AgentConfigDrawer.vue'
 import AgentTestDrawer from './components/AgentTestDrawer.vue'
+import AgentCard from './components/AgentCard.vue'
 
 const {
   queryParams, 
@@ -204,34 +187,6 @@ async function handleCardDelete(row: Agent) {
 
 .col-span-full {
   grid-column: 1 / -1;
-}
-
-.agent-card {
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  transition: box-shadow 0.2s;
-
-  &:hover {
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  }
-}
-
-.card-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--el-color-primary-light-3), var(--el-color-primary));
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 600;
-  flex-shrink: 0;
 }
 
 /* 视图切换过渡 */

@@ -4,6 +4,7 @@
  * 封装技能列表的分页查询、CRUD 操作、分类数据管理等公共逻辑，
  * 供 index.vue 消费。
  */
+import { watch } from 'vue'
 import { SkillAPI, type Skill, type SkillQuery } from '@/api/ai/skill'
 import { SkillCategoryAPI, type SkillCategory } from '@/api/ai/skillCategory'
 
@@ -32,6 +33,13 @@ export function useSkill() {
   function onCategoriesChange(updatedCategories: SkillCategory[]) {
     categories.value = updatedCategories
   }
+
+  /** 选中分类变化时联动刷新技能列表 */
+  watch(activeCategoryId, (id) => {
+    queryParams.categoryId = id
+    queryParams.pageNum = 1
+    handleQuery()
+  })
 
   // ===== 查询状态 =====
   const queryParams = reactive<SkillQuery>({
