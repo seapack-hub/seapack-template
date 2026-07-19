@@ -21,20 +21,30 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item label="描述" prop="description">
-        <el-input v-model="form.description" type="textarea" :rows="2" placeholder="场景用途说明" />
-      </el-form-item>
-      <el-form-item label="图标">
-        <IconPicker v-model="form.icon" clearable />
-      </el-form-item>
-      <el-form-item label="卡片颜色">
-        <div class="flex items-center gap-8px">
-          <el-color-picker v-model="form.coverColor" show-alpha :predefine="PREDEFINE_COLORS" />
-          <span class="text-12px text-gray-400">支持任意颜色值</span>
-        </div>
-      </el-form-item>
       <el-row :gutter="20">
-        <el-col :span="8">
+        <el-col :span="24">
+          <el-form-item label="描述" prop="description">
+            <el-input v-model="form.description" type="textarea" :rows="2" placeholder="场景用途说明" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="图标">
+            <IconPicker v-model="form.icon" clearable />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="卡片颜色">
+            <div class="flex items-center justify-start gap-8px">
+              <el-color-picker v-model="form.coverColor" show-alpha :predefine="PREDEFINE_COLORS" />
+              <span class="text-12px text-gray-400">支持任意颜色值</span>
+            </div>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
           <el-form-item label="前端模块">
             <el-cascader
               v-model="form.moduleKey"
@@ -46,22 +56,26 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+        <el-col :span="12">
           <el-form-item label="可见性">
             <el-select v-model="form.isPublic" style="width: 100%">
               <el-option v-for="opt in SCENE_PUBLIC_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
           <el-form-item label="状态">
             <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" />
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="排序号">
+            <el-input-number v-model="form.sortOrder" :min="0" :max="999" style="width: 200px" />
+          </el-form-item>
+        </el-col>
       </el-row>
-      <el-form-item label="排序号">
-        <el-input-number v-model="form.sortOrder" :min="0" :max="999" style="width: 200px" />
-      </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="visible = false">取消</el-button>

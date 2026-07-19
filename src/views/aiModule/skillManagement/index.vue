@@ -1,12 +1,11 @@
- <!--
+  <!--
   技能管理主页面
-  左侧分类树 + 右侧技能列表的布局结构
-  管理技能的分类、参数和基本信息
+  左侧分类树 + 右侧技能列表（卡片/列表双模式）
 -->
 <template>
   <div class="app-container w-100% h-100% flex flex-col">
     <div class="flex flex-1 overflow-hidden gap-10">
-      <!-- 左侧分类树（内部管理增删改查逻辑） -->
+      <!-- 左侧分类树 -->
       <div class="w-[220px] flex-shrink-0">
         <SkillCategoryTree
           v-model:active-category-id="activeCategoryId"
@@ -16,7 +15,7 @@
       <!-- 右侧技能列表 -->
       <div class="flex-1 flex flex-col overflow-hidden">
         <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
-          <!-- 搜索栏：按名称/编码关键字 + 状态筛选 -->
+          <!-- 搜索栏 -->
           <div class="search-bar h-[50px]">
             <el-form :inline="true" :model="queryParams">
               <el-form-item label="技能名称">
@@ -24,12 +23,7 @@
               </el-form-item>
               <el-form-item label="状态">
                 <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 200px">
-                  <el-option
-                    v-for="opt in SKILL_STATUS_OPTIONS"
-                    :key="String(opt.value)"
-                    :label="opt.label"
-                    :value="opt.value"
-                  />
+                  <el-option v-for="opt in SKILL_STATUS_OPTIONS" :key="String(opt.value)" :label="opt.label" :value="opt.value" />
                 </el-select>
               </el-form-item>
               <el-form-item>
@@ -39,49 +33,71 @@
             </el-form>
           </div>
           <!-- 工具栏 -->
-          <div class="table-toolbar">
+          <div class="h-[40px] flex justify-between items-center">
             <el-button type="success" icon="plus" @click="openSkillDialog()">新增技能</el-button>
+            <el-radio-group v-model="viewMode">
+              <el-radio-button value="card">
+                <el-icon><Grid /></el-icon>
+              </el-radio-button>
+              <el-radio-button value="list">
+                <el-icon><List /></el-icon>
+              </el-radio-button>
+            </el-radio-group>
           </div>
-          <!-- 技能表格：使用 SpTable + 内联状态切换 + Pagination -->
-          <div class="flex-1 flex flex-col justify-between overflow-hidden border">
-            <SpTable
-              class="flex-1"
-              :loading="loading"
-              :columns="columns"
-              :data="tableData"
-              :show-index="true"
-            >
-              <template #skillType>
-                <el-table-column label="技能类型" prop="skillType" width="90px" align="center" slot-name="skillType">
-                  <template #default="{ row }">
-                    <el-tag size="small" :type="skillTypeTagMap[row.skillType] as any || 'info'">
-                      {{ skillTypeLabelMap[row.skillType] || row.skillType }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-              </template>
-              <template #status>
-                <el-table-column label="状态" min-width="80px" align="center" slot-name="status">
-                  <template #default="{ row }">
-                    <el-switch
-                      :model-value="row.status"
-                      :active-value="1"
-                      :inactive-value="0"
-                      @change="(val) => onStatusChange(row as any, val as number)"
-                    />
-                  </template>
-                </el-table-column>
-              </template>
-            </SpTable>
-            <div class="h-[40px] mt-10px">
-              <Pagination
-                v-model:total="total"
-                v-model:page="queryParams.pageNum"
-                v-model:limit="queryParams.pageSize"
-                @pagination="handleQuery"
+
+          <!-- 卡片 + 列表 模式切换 -->
+          <Transition name="view-fade" mode="out-in">
+            <!-- 卡片模式 -->
+            <div v-if="viewMode === 'card'" key="card" class="card-grid">
+              <div v-if="tableData.length === 0 && !loading" class="col-span-full">
+                <el-empty description="暂无技能" />
+              </div>
+              <SkillCard
+                v-for="row in tableData"
+                :key="row.id"
+                :skill="row"
+                @edit="openSkillDialog"
+                @params="openParamEditor"
+                @delete="handleCardDelete"
+                @status-change="onStatusChange"
               />
             </div>
-          </div>
+
+            <!-- 列表模式 -->
+            <div v-else key="list" class="flex-1 flex flex-col justify-between overflow-hidden border">
+              <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">
+                <template #skillType>
+                  <el-table-column label="技能类型" prop="skillType" width="90px" align="center" slot-name="skillType">
+                    <template #default="{ row }">
+                      <el-tag size="small" :type="skillTypeTagMap[row.skillType] as any || 'info'">
+                        {{ skillTypeLabelMap[row.skillType] || row.skillType }}
+                      </el-tag>
+                    </template>
+                  </el-table-column>
+                </template>
+                <template #status>
+                  <el-table-column label="状态" min-width="80px" align="center" slot-name="status">
+                    <template #default="{ row }">
+                      <el-switch
+                        :model-value="row.status"
+                        :active-value="1"
+                        :inactive-value="0"
+                        @change="(val) => onStatusChange(row as any, val as number)"
+                      />
+                    </template>
+                  </el-table-column>
+                </template>
+              </SpTable>
+              <div class="h-[40px] mt-10px">
+                <Pagination
+                  v-model:total="total"
+                  v-model:page="queryParams.pageNum"
+                  v-model:limit="queryParams.pageSize"
+                  @pagination="handleQuery"
+                />
+              </div>
+            </div>
+          </Transition>
         </el-card>
       </div>
     </div>
@@ -104,12 +120,14 @@
 </template>
 
 <script setup lang="ts">
+import { ElMessageBox } from 'element-plus'
 import { SKILL_LIST_COLUMNS } from './utils'
 import { SKILL_STATUS_OPTIONS } from './utils/moduleOptions'
 import { useSkill } from './utils/useSkill'
 import SkillCategoryTree from './components/SkillCategoryTree.vue'
 import SkillFormDialog from './components/SkillFormDialog.vue'
 import SkillParamEditor from './components/SkillParamEditor.vue'
+import SkillCard from './components/SkillCard.vue'
 
 const {
   categories,
@@ -133,11 +151,15 @@ const {
   openParamEditor,
 } = useSkill()
 
-/** 技能类型标签映射 */
+const viewMode = ref<'card' | 'list'>('list')
+
 const skillTypeLabelMap: Record<string, string> = {
   tool: '工具调用',
   rag: '知识检索',
   hybrid: '混合',
+  llm: 'LLM',
+  function: '函数',
+  workflow: '工作流',
 }
 const skillTypeTagMap: Record<string, string> = {
   tool: 'info',
@@ -145,7 +167,6 @@ const skillTypeTagMap: Record<string, string> = {
   hybrid: 'warning',
 }
 
-/** SpTable 列配置 */
 const columns = [
   ...SKILL_LIST_COLUMNS,
   {
@@ -158,7 +179,11 @@ const columns = [
   },
 ]
 
-// ===== 初始化：页面加载时获取技能列表 =====
+async function handleCardDelete(row: any) {
+  await ElMessageBox.confirm(`确认删除技能【${row.name}】？`, '提示', { type: 'warning' })
+  await onDeleteSkill(row)
+}
+
 onMounted(() => {
   handleQuery()
 })
@@ -172,9 +197,33 @@ onMounted(() => {
   gap: 10px;
 }
 
-.table-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  align-content: start;
+  gap: 16px;
+  overflow-y: auto;
+  flex: 1;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--el-border-color-lighter);
+}
+
+.col-span-full {
+  grid-column: 1 / -1;
+}
+
+/* 视图切换过渡 */
+.view-fade-enter-active,
+.view-fade-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.view-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.view-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 </style>

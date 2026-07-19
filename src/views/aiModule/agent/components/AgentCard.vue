@@ -28,7 +28,7 @@
     </p>
 
     <!-- 元信息 -->
-    <div class="flex items-center gap-6px flex-wrap">
+    <div class="flex items-center justify-between gap-6px flex-wrap">
       <el-tag v-if="agent.modelCode" size="small" type="info" class="!text-11px">{{ agent.modelCode }}</el-tag>
       <span class="text-11px color-[var(--el-text-color-placeholder)]">v{{ agent.version || '1.0.0' }}</span>
       <span class="text-11px color-[var(--el-text-color-placeholder)]">{{ agent.useCount || 0 }} 次使用</span>
@@ -36,7 +36,7 @@
 
     <!-- 底栏 -->
     <div class="flex items-center justify-between pt-10px border-t border-t-solid border-t-[var(--el-border-color-extra-light)]">
-      <span class="text-11px color-[var(--el-text-color-placeholder)]">Agent</span>
+      <span class="text-12px color-[var(--el-text-color-placeholder)]">Agent</span>
       <div class="flex items-center gap-2px">
         <span class="w-26px h-26px inline-flex items-center justify-center rounded-6px color-[var(--el-text-color-secondary)] cursor-pointer transition-all-150 hover:bg-[var(--el-fill-color-light)] hover:text-[var(--el-color-primary)]" title="编辑" @click="emit('edit', agent)">
           <el-icon :size="13"><Edit /></el-icon>

@@ -12,17 +12,17 @@
     <el-tabs v-model="activeTab" class="px-16px">
       <!-- 关联 Agent Tab -->
       <el-tab-pane name="agent">
-        <template #label><span class="inline-flex items-center gap-4px text-13px"><el-icon><User /></el-icon> 关联助手</span></template>
+        <template #label><span class="inline-flex items-center gap-4px text-13px"><el-icon><User /></el-icon> 关联agent</span></template>
         <div class="min-h-300px">
           <div class="flex items-center justify-between mb-8px">
-            <span class="text-14px font-600">关联助手</span>
-            <el-button type="primary" size="small" icon="plus" @click="openAddAgent">添加助手</el-button>
+            <span class="text-14px font-600">关联agent</span>
+            <el-button type="primary" size="small" icon="plus" @click="openAddAgent">添加agent</el-button>
           </div>
           <SpTable :data="agents" :columns="agentColumns" :show-index="true" size="small">
             <template #isDefault>
               <el-table-column label="类型" prop="isDefault" width="90" align="center" slot-name="isDefault">
                 <template #default="{ row }">
-                  <el-tag :type="row.isDefault === 1 ? 'danger' : 'info'" size="small">{{ row.isDefault === 1 ? '默认助手' : '普通' }}</el-tag>
+                  <el-tag :type="row.isDefault === 1 ? 'danger' : 'info'" size="small">{{ row.isDefault === 1 ? '默认agent' : '普通' }}</el-tag>
                 </template>
               </el-table-column>
             </template>
@@ -68,17 +68,17 @@
   </el-drawer>
 
   <!-- 关联 Agent 子弹窗 -->
-  <el-dialog v-model="agentDialogVisible" :title="agentFormIsEdit ? '编辑关联助手' : '添加关联助手'" width="420px" append-to-body>
+  <el-dialog v-model="agentDialogVisible" :title="agentFormIsEdit ? '编辑关联agent' : '添加关联agent'" width="420px" append-to-body>
     <el-form :model="agentForm" label-width="80px">
-      <el-form-item label="助手">
-        <el-select v-model="agentForm.agentId" placeholder="选择助手" style="width: 100%" :disabled="agentFormIsEdit">
+      <el-form-item label="agent">
+        <el-select v-model="agentForm.agentId" placeholder="选择agent" style="width: 100%" :disabled="agentFormIsEdit">
           <el-option v-for="a in allAgents" :key="a.id" :label="a.name" :value="a.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="类型">
         <el-radio-group v-model="agentForm.isDefault">
-          <el-radio :value="1">默认助手</el-radio>
-          <el-radio :value="0">普通助手</el-radio>
+          <el-radio :value="1">默认agent</el-radio>
+          <el-radio :value="0">普通agent</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="排序号">
@@ -168,7 +168,7 @@ function editAgent(row: SceneAgent) {
 }
 
 async function onAgentSubmit() {
-  if (!agentForm.value.agentId) { ElMessage.warning('请选择助手'); return }
+  if (!agentForm.value.agentId) { ElMessage.warning('请选择agent'); return }
   if (agentFormIsEdit.value && agentForm.value.id) {
     await SceneAPI.updateAgent(props.sceneId, agentForm.value.id, agentForm.value)
   } else {
@@ -180,7 +180,7 @@ async function onAgentSubmit() {
 }
 
 async function removeAgent(row: SceneAgent) {
-  await ElMessageBox.confirm('确认删除该关联助手？', '提示', { type: 'warning' })
+  await ElMessageBox.confirm('确认删除该关联agent？', '提示', { type: 'warning' })
   await SceneAPI.deleteAgent(props.sceneId, row.id!)
   ElMessage.success('删除成功')
   await loadAgents()

@@ -6,7 +6,7 @@
   <div class="app-container w-100% h-100% flex flex-col">
     <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
       <!-- 搜索栏 -->
-      <div class="h-[50px]">
+      <div class="search-bar h-[50px]">
         <el-form :inline="true" :model="queryParams">
           <el-form-item label="知识库名称">
             <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
@@ -186,7 +186,7 @@ onMounted(() => {
   gap: 16px;
   overflow-y: auto;
   flex: 10px;
-  padding: 1px;
+  padding: 10px;
   box-sizing: border-box;
   border: 1px solid var(--el-border-color-lighter);
 }

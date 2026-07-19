@@ -48,3 +48,21 @@ export const STATUS_OPTIONS = [
   { label: '启用', value: 1 },
   { label: '禁用', value: 0 },
 ]
+
+/** 分类标签文案 */
+export function categoryLabel(category?: string) {
+  return TEMPLATE_CATEGORY_OPTIONS.find(o => o.value === category)?.label || category || '-'
+}
+
+/** 分类标签颜色映射 */
+const CATEGORY_TAG_MAP: Record<string, string> = {
+  stock_analysis: 'danger',
+  content_gen: '',
+  data_qa: 'success',
+  general: 'info',
+}
+
+/** 分类标签 type */
+export function categoryTagType(category?: string): string {
+  return CATEGORY_TAG_MAP[category || ''] || 'info'
+}

@@ -125,7 +125,7 @@ const viewMode = ref<'card' | 'list'>('card')
 const columns = [
   ...SCENE_LIST_COLUMNS,
   {
-    columnType: 'operate', label: '操作', width: '170px', fixed: 'right',
+    columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
     buttons: [
       { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openEditDialog(row) },
       { type: 'primary', label: '配置', size: 'small', renderType: 'link', click: ({ row }: any) => openConfigDrawer(row) },
