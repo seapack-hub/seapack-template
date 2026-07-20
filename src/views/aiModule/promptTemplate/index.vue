@@ -44,10 +44,16 @@
       <!-- 卡片 + 列表 模式切换 -->
       <Transition name="view-fade" mode="out-in">
         <!-- 卡片模式 -->
-        <div v-if="viewMode === 'card'" key="card" class="card-grid">
-          <div v-if="tableData.length === 0 && !loading" class="col-span-full">
-            <el-empty description="暂无模板" />
-          </div>
+        <CardGrid
+          v-if="viewMode === 'card'"
+          key="card"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          :total="total"
+          :loading="loading"
+          empty-text="暂无模板"
+          @pagination="handleQuery"
+        >
           <PromptTemplateCard
             v-for="row in tableData"
             :key="row.id"
@@ -58,7 +64,7 @@
             @delete="handleCardDelete"
             @status-change="onStatusChange"
           />
-        </div>
+        </CardGrid>
 
         <!-- 列表模式 -->
         <div v-else key="list" class="flex-1 flex flex-col justify-between overflow-hidden border">
@@ -67,15 +73,6 @@
               <el-table-column label="分类" prop="category" min-width="100" align="center" slot-name="category">
                 <template #default="{ row }">
                   <el-tag :type="categoryTagType(row.category) as any">{{ categoryLabel(row.category) }}</el-tag>
-                </template>
-              </el-table-column>
-            </template>
-            <template #type>
-              <el-table-column label="类型" prop="type" width="90" align="center" slot-name="type">
-                <template #default="{ row }">
-                  <el-tag :type="row.type === 1 ? 'warning' : 'info'" >
-                    {{ row.type === 1 ? '系统预设' : '自定义' }}
-                  </el-tag>
                 </template>
               </el-table-column>
             </template>
@@ -192,22 +189,6 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  align-content: start;
-  gap: 16px;
-  overflow-y: auto;
-  flex: 1;
-  padding: 10px;
-  box-sizing: border-box;
-  border: 1px solid var(--el-border-color-lighter);
-}
-
-.col-span-full {
-  grid-column: 1 / -1;
 }
 
 /* 视图切换过渡 */

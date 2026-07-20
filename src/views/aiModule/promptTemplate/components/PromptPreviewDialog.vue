@@ -60,6 +60,16 @@
                     :value="opt.value"
                   />
                 </el-select>
+                <el-input
+                  v-else-if="v.varType === 'text'"
+                  v-model="varValues[v.varName]"
+                  type="textarea"
+                  :rows="3"
+                  :placeholder="v.placeholder || `请输入${v.label}`"
+                  clearable
+                />
+                <!-- json -->
+                <JsonEditor v-if="v.varType === 'json'" v-model="varValues[v.varName]" height="240px" mode="code" />
               </el-form-item>
               <el-form-item label="补充消息">
                 <el-input

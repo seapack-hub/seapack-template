@@ -14,6 +14,7 @@ declare module 'vue' {
     BaseCharts: typeof import('./src/components/baseCharts/index.vue')['default']
     BaseNode: typeof import('./src/components/X6Nodes/BaseNode.vue')['default']
     Breadcrumb: typeof import('./src/components/baseComponents/Breadcrumb/index.vue')['default']
+    CardGrid: typeof import('./src/components/CardGrid/index.vue')['default']
     ChangeLanguage: typeof import('./src/components/changeLanguage/index.vue')['default']
     ChatPanel: typeof import('./src/components/AiAssistant/ChatPanel.vue')['default']
     ConditionNode: typeof import('./src/components/X6Nodes/nodes/ConditionNode.vue')['default']

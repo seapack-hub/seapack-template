@@ -7,7 +7,7 @@ export const TEMPLATE_LIST_COLUMNS = [
   { label: '模板名称', prop: 'name', minWidth: '140px' },
   { label: '模板编码', prop: 'code', minWidth: '120px' },
   { label: '分类', prop: 'category', minWidth: '100px', align: 'center', slotName: 'category' },
-  { label: '类型', prop: 'type', width: '90px', align: 'center', slotName: 'type' },
+  { label: '用途', prop: 'description', minWidth: '200px' },
   { label: '输出格式', prop: 'outputFormat', width: '100px', align: 'center' },
   { label: '版本', prop: 'version', width: '80px', align: 'center' },
   { label: '使用次数', prop: 'useCount', width: '90px', align: 'center' },

@@ -36,12 +36,20 @@
         </el-radio-group>
       </div>
 
-      <!-- 卡片模式 -->
+      <!-- 卡片 + 列表 模式切换 -->
       <Transition name="view-fade" mode="out-in">
-        <div v-if="viewMode === 'card'" key="card" class="card-grid">
-          <div v-if="tableData.length === 0 && !loading" class="col-span-full">
-            <el-empty description="暂无 Agent" />
-          </div>
+        <!-- 卡片模式 -->
+        <CardGrid
+          v-if="viewMode === 'card'"
+          key="card"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          :total="total"
+          :loading="loading"
+          empty-text="暂无 Agent"
+          min-column-width="300px"
+          @pagination="handleQuery"
+        >
           <div v-for="row in tableData" :key="row.id">
             <AgentCard
               :agent="row"
@@ -53,7 +61,7 @@
               @status-change="onStatusChange"
             />
           </div>
-        </div>
+        </CardGrid>
 
         <!-- 列表模式 -->
         <div v-else key="list" class="flex-1 flex flex-col justify-between overflow-hidden border">
@@ -171,22 +179,6 @@ async function handleCardDelete(row: Agent) {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  align-content: start;
-  gap: 16px;
-  overflow-y: auto;
-  flex: 1;
-  padding: 10px;
-  box-sizing: border-box;
-  border: 1px solid var(--el-border-color-lighter);
-}
-
-.col-span-full {
-  grid-column: 1 / -1;
 }
 
 /* 视图切换过渡 */
