@@ -47,10 +47,7 @@
         >
           <!-- 时间线连接线 -->
           <div class="step-line">
-            <div
-              class="step-dot"
-              :class="[`dot-${step.status}`]"
-            >
+            <div class="step-dot" :class="[`dot-${step.status}`]">
               <el-icon v-if="step.status === 'success'" :size="14"><CircleCheckFilled /></el-icon>
               <el-icon v-else-if="step.status === 'fail'" :size="14"><CircleCloseFilled /></el-icon>
               <el-icon v-else-if="step.status === 'skip'" :size="14"><RemoveFilled /></el-icon>
@@ -80,26 +77,81 @@
             <!-- 展开详情 -->
             <Transition name="expand">
               <div v-if="expandedSteps.has(idx)" class="step-detail">
-                <!-- Input -->
-                <div v-if="step.input" class="detail-section">
-                  <div class="detail-label">输入</div>
-                  <pre class="detail-code">{{ formatJsonOrText(step.input) }}</pre>
-                </div>
-                <!-- Output -->
-                <div v-if="step.output" class="detail-section">
-                  <div class="detail-label">输出</div>
-                  <pre class="detail-code">{{ formatJsonOrText(step.output) }}</pre>
-                </div>
-                <!-- Metadata -->
-                <div v-if="step.metadata && Object.keys(step.metadata).length > 0" class="detail-section">
-                  <div class="detail-label">元数据</div>
-                  <div class="metadata-grid">
-                    <div v-for="(val, key) in step.metadata" :key="key" class="metadata-item">
-                      <span class="metadata-key">{{ key }}</span>
-                      <span class="metadata-value tabular-nums">{{ formatMetadataValue(val) }}</span>
+                <!-- 技能调用 - 特殊处理 -->
+                <template v-if="step.stepType === 'skill_execution'">
+                  <!-- 技能汇总信息 -->
+                  <div v-if="step.metadata" class="skill-summary">
+                    <div class="skill-summary-item">
+                      <span class="skill-summary-label">技能总数</span>
+                      <span class="skill-summary-value tabular-nums">{{ step.metadata.skillCount || 0 }}</span>
+                    </div>
+                    <div class="skill-summary-item">
+                      <span class="skill-summary-label">执行成功</span>
+                      <span class="skill-summary-value tabular-nums text-[var(--el-color-success)]">{{ step.metadata.executedCount || 0 }}</span>
                     </div>
                   </div>
-                </div>
+                  <!-- 解析后的技能列表 -->
+                  <div v-if="parseSkillResults(step.output).length > 0" class="skill-list">
+                    <div
+                      v-for="(skill, sIdx) in parseSkillResults(step.output)"
+                      :key="sIdx"
+                      class="skill-card"
+                      :class="[skill.success ? 'skill-success' : 'skill-fail']"
+                    >
+                      <div class="skill-card-header" @click.stop="toggleSkillExpand(idx, sIdx)">
+                        <div class="flex items-center gap-8px flex-1 min-w-0">
+                          <el-icon v-if="skill.success" :size="16" class="text-[var(--el-color-success)]"><CircleCheckFilled /></el-icon>
+                          <el-icon v-else :size="16" class="text-[var(--el-color-danger)]"><CircleCloseFilled /></el-icon>
+                          <span class="text-13px font-600 color-[var(--el-text-color-primary)]">{{ skill.name }}</span>
+                        </div>
+                        <div class="flex items-center gap-8px">
+                          <el-tag :type="skill.success ? 'success' : 'danger'" size="small" effect="plain">
+                            {{ skill.success ? '成功' : '失败' }}
+                          </el-tag>
+                          <el-icon class="expand-icon" :class="{ 'is-expanded': isSkillExpanded(idx, sIdx) }"><ArrowDown /></el-icon>
+                        </div>
+                      </div>
+                      <Transition name="expand">
+                        <div v-if="isSkillExpanded(idx, sIdx)" class="skill-card-body">
+                          <div v-if="skill.input" class="detail-section">
+                            <div class="detail-label">输入</div>
+                            <pre class="detail-code">{{ formatJsonOrText(skill.input) }}</pre>
+                          </div>
+                          <div v-if="skill.output" class="detail-section">
+                            <div class="detail-label">输出</div>
+                            <pre class="detail-code">{{ formatJsonOrText(skill.output) }}</pre>
+                          </div>
+                        </div>
+                      </Transition>
+                    </div>
+                  </div>
+                  <!-- 无法解析时回退到原始输出 -->
+                  <div v-else-if="step.output" class="detail-section">
+                    <div class="detail-label">输出</div>
+                    <pre class="detail-code">{{ formatJsonOrText(step.output) }}</pre>
+                  </div>
+                </template>
+
+                <!-- 非技能步骤 - 普通展示 -->
+                <template v-else>
+                  <div v-if="step.input" class="detail-section">
+                    <div class="detail-label">输入</div>
+                    <pre class="detail-code">{{ formatJsonOrText(step.input) }}</pre>
+                  </div>
+                  <div v-if="step.output" class="detail-section">
+                    <div class="detail-label">输出</div>
+                    <pre class="detail-code">{{ formatJsonOrText(step.output) }}</pre>
+                  </div>
+                  <div v-if="step.metadata && Object.keys(step.metadata).length > 0" class="detail-section">
+                    <div class="detail-label">元数据</div>
+                    <div class="metadata-grid">
+                      <div v-for="(val, key) in step.metadata" :key="key" class="metadata-item">
+                        <span class="metadata-key">{{ key }}</span>
+                        <span class="metadata-value tabular-nums">{{ formatMetadataValue(val) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </template>
               </div>
             </Transition>
           </div>
@@ -111,22 +163,87 @@
 
 <script setup lang="ts">
 import { CircleCheckFilled, CircleCloseFilled, RemoveFilled, Connection, ArrowDown } from '@element-plus/icons-vue'
-import type { AgentTraceSnapshot, AgentTraceStep } from '@/api/ai/agent'
+import type { AgentTraceSnapshot } from '@/api/ai/agent'
 
 defineProps<{
   snapshot: AgentTraceSnapshot | null
 }>()
 
 const expandedSteps = ref(new Set<number>())
+const expandedSkills = ref(new Map<string, Set<number>>())
 
 function toggleExpand(idx: number) {
   const s = new Set(expandedSteps.value)
-  if (s.has(idx)) {
-    s.delete(idx)
-  } else {
-    s.add(idx)
-  }
+  if (s.has(idx)) s.delete(idx)
+  else s.add(idx)
   expandedSteps.value = s
+}
+
+function toggleSkillExpand(stepIdx: number, skillIdx: number) {
+  const key = `${stepIdx}`
+  const map = new Map(expandedSkills.value)
+  if (!map.has(key)) map.set(key, new Set())
+  const set = map.get(key)!
+  if (set.has(skillIdx)) set.delete(skillIdx)
+  else set.add(skillIdx)
+  expandedSkills.value = map
+}
+
+function isSkillExpanded(stepIdx: number, skillIdx: number): boolean {
+  return expandedSkills.value.get(`${stepIdx}`)?.has(skillIdx) || false
+}
+
+function parseSkillResults(output: string | undefined | null): Array<{ name: string; input: string | null; output: string; success: boolean }> {
+  if (!output) return []
+  const results: Array<{ name: string; input: string | null; output: string; success: boolean }> = []
+  // 匹配 【技能名】 后面的内容
+  const regex = /【(.+?)】[ \t]*\r?\n/g
+  const matches: Array<{ name: string; start: number }> = []
+  let match: RegExpExecArray | null
+  while ((match = regex.exec(output)) !== null) {
+    matches.push({ name: match[1], start: match.index + match[0].length })
+  }
+  if (matches.length === 0) return []
+  for (let i = 0; i < matches.length; i++) {
+    const endPos = i < matches.length - 1
+      ? output.lastIndexOf('【', matches[i + 1].start)
+      : output.length
+    const content = output.slice(matches[i].start, endPos > matches[i].start ? endPos : undefined).trim()
+    // 尝试提取技能名中的信息
+    let skillName = matches[i].name
+    let success = true
+    let parsedOutput = content
+    // 检查是否有内嵌的【】标记（如【分页查询股票行情数据】前缀）
+    const innerMatch = content.match(/^【(.+?)】\s*\n/)
+    if (innerMatch) {
+      skillName = innerMatch[1]
+    }
+    // 尝试解析 JSON
+    try {
+      // 去掉可能的前缀文本
+      const jsonStart = content.indexOf('{')
+      const jsonStartArr = content.indexOf('[')
+      const actualStart = jsonStart >= 0 && (jsonStartArr < 0 || jsonStart < jsonStartArr)
+        ? jsonStart
+        : jsonStartArr
+      if (actualStart >= 0) {
+        const jsonContent = content.slice(actualStart).trim()
+        const parsed = JSON.parse(jsonContent)
+        if (parsed.error || parsed.success === false) success = false
+        else if (parsed.list && Array.isArray(parsed.list)) {
+          // 分页查询结果，检查是否有数据
+          success = true
+        }
+        parsedOutput = JSON.stringify(parsed, null, 2)
+      } else {
+        if (content.includes('"error"') || content.includes('"success":false')) success = false
+      }
+    } catch {
+      if (content.includes('"error"') || content.includes('"success":false')) success = false
+    }
+    results.push({ name: skillName, input: null, output: parsedOutput, success })
+  }
+  return results
 }
 
 function formatDuration(ms: number): string {
@@ -346,6 +463,69 @@ function formatMetadataValue(val: any): string {
   font-size: 13px;
   font-weight: 500;
   color: var(--el-text-color-primary);
+}
+
+/* 技能调用特殊样式 */
+.skill-summary {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background: var(--el-fill-color-lighter);
+  border-radius: 6px;
+}
+.skill-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.skill-summary-label {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.skill-summary-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-card {
+  border: 1px solid var(--el-border-color-extra-light);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.skill-card:hover {
+  border-color: var(--el-border-color-light);
+}
+.skill-success {
+  border-left: 3px solid var(--el-color-success);
+}
+.skill-fail {
+  border-left: 3px solid var(--el-color-danger);
+}
+
+.skill-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.skill-card-header:hover {
+  background: var(--el-fill-color-lighter);
+}
+
+.skill-card-body {
+  padding: 0 12px 10px;
+  overflow: hidden;
 }
 
 .expand-enter-active,

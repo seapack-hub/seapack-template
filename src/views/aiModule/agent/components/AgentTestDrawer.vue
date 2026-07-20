@@ -110,7 +110,7 @@
           </el-divider>
           <div v-if="testSessions.length > 0" class="session-list">
             <div
-              v-for="session in testSessions"
+              v-for="session in displaySessions"
               :key="session.id"
               class="session-item"
               :class="{ 'is-active': activeSessionId === session.id }"
@@ -131,6 +131,13 @@
                 <el-icon><Delete /></el-icon>
               </el-button>
             </div>
+            <!-- 展开/收起按钮 -->
+            <div v-if="testSessions.length > defaultSessionLimit" class="session-toggle" @click="showAllSessions = !showAllSessions">
+              <span class="text-12px text-[var(--el-color-primary)]">
+                {{ showAllSessions ? '收起' : `查看全部 (${testSessions.length})` }}
+              </span>
+              <el-icon :class="{ 'rotate-180': showAllSessions }" class="text-[var(--el-color-primary)] transition-transform"><ArrowDown /></el-icon>
+            </div>
           </div>
         </div>
       </el-tab-pane>
@@ -139,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChatDotRound, Promotion, Connection, Delete } from '@element-plus/icons-vue'
+import { ChatDotRound, Promotion, Connection, Delete, ArrowDown } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import { AgentAPI, type AgentTraceSnapshot, type AgentTestSession } from '@/api/ai/agent'
 import AgentTraceDetail from './AgentTraceDetail.vue'
@@ -152,6 +159,8 @@ const props = defineProps<{
 }>()
 
 const activeTab = ref('chat')
+const showAllSessions = ref(false)
+const defaultSessionLimit = 5
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -173,6 +182,11 @@ const currentTrace = ref<AgentTraceSnapshot | null>(null)
 // ===== 历史会话 =====
 const testSessions = ref<AgentTestSession[]>([])
 const activeSessionId = ref<number | undefined>()
+
+const displaySessions = computed(() => {
+  if (showAllSessions.value) return testSessions.value
+  return testSessions.value.slice(0, defaultSessionLimit)
+})
 
 function onOpened() {
   messages.value = []
@@ -423,6 +437,7 @@ function formatDuration(ms?: number): string {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-bottom: 30px;
 }
 .session-item {
   display: flex;
@@ -444,6 +459,27 @@ function formatDuration(ms?: number): string {
 .session-content {
   flex: 1;
   min-width: 0;
+}
+
+.session-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.session-toggle:hover {
+  background: var(--el-fill-color-lighter);
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+.transition-transform {
+  transition: transform 0.2s;
 }
 
 .tabular-nums {
