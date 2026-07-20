@@ -91,8 +91,9 @@
           <!-- 当前会话追踪 -->
           <div v-if="currentTrace" class="mb-16px">
             <div class="flex items-center justify-between mb-12px">
-              <span class="text-14px font-600">当前会话链路</span>
-              <el-tag size="small" type="info">最近一次</el-tag>
+              <span class="text-14px font-600">会话链路</span>
+              <el-tag v-if="activeSessionId" size="small" type="info">历史记录</el-tag>
+              <el-tag v-else size="small" type="success">最近一次</el-tag>
             </div>
             <AgentTraceDetail :snapshot="currentTrace" />
           </div>
@@ -209,16 +210,22 @@ async function sendMessage() {
       message: msg,
       history,
     })
+    // traceSnapshot 可能是 JSON 字符串
+    let snapshot: AgentTraceSnapshot | null = null
+    if (res.traceSnapshot) {
+      const raw = res.traceSnapshot as any
+      snapshot = typeof raw === 'string' ? JSON.parse(raw) : raw
+    }
     messages.value.push({
       role: 'assistant',
       content: res.content,
       durationMs: res.durationMs,
       tokensPrompt: res.tokensPrompt,
       tokensCompletion: res.tokensCompletion,
-      traceSnapshot: res.traceSnapshot,
+      traceSnapshot: snapshot,
     })
     // 更新当前链路
-    currentTrace.value = res.traceSnapshot || null
+    currentTrace.value = snapshot
     // 刷新历史列表
     await fetchTestSessions()
   } catch(e) {
@@ -229,6 +236,7 @@ async function sendMessage() {
     })
   } finally {
     chatting.value = false
+    activeSessionId.value = undefined
     scrollToBottom()
   }
 }
@@ -236,10 +244,12 @@ async function sendMessage() {
 function clearMessages() {
   messages.value = []
   currentTrace.value = null
+  activeSessionId.value = undefined
 }
 
 function viewTrace(snapshot: AgentTraceSnapshot) {
   currentTrace.value = snapshot
+  activeSessionId.value = undefined
   activeTab.value = 'trace'
 }
 
@@ -258,7 +268,24 @@ async function loadSessionDetail(session: AgentTestSession) {
   activeSessionId.value = session.id
   try {
     const detail = await AgentAPI.getTestSessionDetail(props.agentId as number, session.id!)
-    currentTrace.value = detail.traceSnapshot || null
+    // traceSnapshot 可能是 JSON 字符串，需要解析
+    let trace: AgentTraceSnapshot | null = null
+    if (detail.traceSnapshot) {
+      const raw = detail.traceSnapshot as any
+      trace = typeof raw === 'string' ? JSON.parse(raw) : raw
+    }
+    // 若解析后仍无真实数据，从 session 顶层字段构建
+    if (!trace || !trace.totalDurationMs) {
+      trace = {
+        steps: trace?.steps || [],
+        totalDurationMs: detail.totalDurationMs || trace?.totalDurationMs || 0,
+        totalTokens: {
+          prompt: detail.tokensPrompt || trace?.totalTokens?.prompt || 0,
+          completion: detail.tokensCompletion || trace?.totalTokens?.completion || 0,
+        },
+      }
+    }
+    currentTrace.value = trace
     activeTab.value = 'trace'
   } catch {
     ElMessage.error('获取详情失败')
