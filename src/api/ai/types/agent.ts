@@ -137,29 +137,48 @@ export interface AgentTraceSnapshot {
   totalTokens: { prompt: number; completion: number }
 }
 
-/** 测试会话实体 */
+/** 测试会话实体（对应 ai_execution_session 表） */
 export interface AgentTestSession {
   id?: number
-  agentId?: number
-  agentName?: string
-  /** 用户输入 */
+  /** 业务类型：agent/skill/prompt/scene/knowledge */
+  bizType?: string
+  /** 业务ID（关联具体实体） */
+  bizId?: number
+  /** 业务名称（冗余，方便查询） */
+  bizName?: string
+  /** 会话ID，用于关联多轮对话 */
+  sessionId?: string
+  /** 外部请求幂等键 */
+  requestId?: string
+  /** 重试次数 */
+  retryCount?: number
+  /** 用户输入消息 */
   userMessage: string
-  /** Agent 回复 */
-  agentReply?: string
-  /** 链路追踪快照 */
+  /** 对话历史（JSON数组） */
+  historyMessages?: string
+  /** 输出结果 */
+  outputResult?: string
+  /** 完整调用链路快照（JSON） */
   traceSnapshot?: AgentTraceSnapshot
-  /** 总耗时 */
+  /** 总耗时（毫秒） */
   totalDurationMs?: number
-  /** Token 数 */
+  /** 提示词 Token 数 */
   tokensPrompt?: number
+  /** 补全 Token 数 */
   tokensCompletion?: number
-  /** 模型 */
+  /** 总 Token 数 */
+  tokensTotal?: number
+  /** 使用的模型 */
   modelName?: string
-  /** 状态 */
+  /** 状态：success/fail/timeout */
   status?: string
+  /** 逻辑删除：0-未删除，1-已删除 */
+  isDeleted?: number
   /** 错误信息 */
   errorMessage?: string
+  /** 操作人 */
   createdBy?: number
+  /** 操作时间 */
   createdAt?: string
 }
 

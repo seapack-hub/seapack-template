@@ -261,8 +261,8 @@ export const AgentAPI = {
   /** 删除测试会话 */
   deleteTestSession(agentId: number, sessionId: number) {
     return request<any, any>({
-      url: `${BASE_URL}/${agentId}/test-sessions/${sessionId}`,
-      method: 'delete',
+      url: `${BASE_URL}/${agentId}/test-sessions/delete/${sessionId}`,
+      method: 'post',
     })
   },
 }

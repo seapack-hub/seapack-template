@@ -117,13 +117,18 @@
             >
               <div class="session-content">
                 <div class="text-13px color-[var(--el-text-color-primary)] line-clamp-1">{{ session.userMessage }}</div>
-                <div class="flex items-center gap-8px mt-4px">
+                <div class="flex items-center gap-8px mt-4px flex-wrap">
                   <el-tag :type="session.status === 'success' ? 'success' : 'danger'" size="small">
-                    {{ session.status === 'success' ? '成功' : '失败' }}
+                    {{ session.status === 'success' ? '成功' : session.status === 'timeout' ? '超时' : '失败' }}
                   </el-tag>
+                  <span v-if="session.modelName" class="text-11px text-[var(--el-text-color-secondary)]">{{ session.modelName }}</span>
                   <span class="text-11px text-[var(--el-text-color-secondary)] tabular-nums">{{ formatDuration(session.totalDurationMs) }}</span>
-                  <span class="text-11px text-[var(--el-text-color-secondary)]">Token: {{ (session.tokensPrompt || 0) + (session.tokensCompletion || 0) }}</span>
+                  <span class="text-11px text-[var(--el-text-color-secondary)]">Token: {{ session.tokensTotal || ((session.tokensPrompt || 0) + (session.tokensCompletion || 0)) }}</span>
+                  <span v-if="session.retryCount && session.retryCount > 0" class="text-11px text-[var(--el-color-warning)]">重试{{ session.retryCount }}次</span>
                   <span class="text-11px text-[var(--el-text-color-secondary)]">{{ session.createdAt }}</span>
+                </div>
+                <div v-if="session.errorMessage" class="mt-4px text-11px text-[var(--el-color-danger)] line-clamp-1">
+                  {{ session.errorMessage }}
                 </div>
               </div>
               <el-button link type="danger" size="small" @click.stop="handleDeleteSession(session)">
