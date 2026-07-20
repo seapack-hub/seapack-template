@@ -145,7 +145,7 @@ import AgentTraceDetail from './AgentTraceDetail.vue'
 
 const visible = defineModel<boolean>('visible', { required: true })
 
-defineProps<{
+const props = defineProps<{
   agentId: number
   agentName: string
 }>()
@@ -205,7 +205,7 @@ async function sendMessage() {
     }))
     // 使用带链路追踪的 test-chat 接口
     const res = await AgentAPI.testChat({
-      agentId: useAttrs().agentId as number,
+      agentId: props.agentId as number,
       message: msg,
       history,
     })
@@ -221,7 +221,8 @@ async function sendMessage() {
     currentTrace.value = res.traceSnapshot || null
     // 刷新历史列表
     await fetchTestSessions()
-  } catch {
+  } catch(e) {
+    console.error(e)
     messages.value.push({
       role: 'assistant',
       content: '调用失败，请检查 Agent 配置',
@@ -246,7 +247,7 @@ function viewTrace(snapshot: AgentTraceSnapshot) {
 
 async function fetchTestSessions() {
   try {
-    const res = await AgentAPI.getTestSessions(useAttrs().agentId as number, { pageNum: 1, pageSize: 20 })
+    const res = await AgentAPI.getTestSessions(props.agentId as number, { pageNum: 1, pageSize: 20 })
     testSessions.value = res.list || []
   } catch {
     // 忽略，后端可能未实现
@@ -256,7 +257,7 @@ async function fetchTestSessions() {
 async function loadSessionDetail(session: AgentTestSession) {
   activeSessionId.value = session.id
   try {
-    const detail = await AgentAPI.getTestSessionDetail(useAttrs().agentId as number, session.id!)
+    const detail = await AgentAPI.getTestSessionDetail(props.agentId as number, session.id!)
     currentTrace.value = detail.traceSnapshot || null
     activeTab.value = 'trace'
   } catch {
@@ -267,7 +268,7 @@ async function loadSessionDetail(session: AgentTestSession) {
 async function handleDeleteSession(session: AgentTestSession) {
   await ElMessageBox.confirm('确认删除该测试记录？', '提示', { type: 'warning' })
   try {
-    await AgentAPI.deleteTestSession(useAttrs().agentId as number, session.id!)
+    await AgentAPI.deleteTestSession(props.agentId as number, session.id!)
     ElMessage.success('删除成功')
     await fetchTestSessions()
     if (activeSessionId.value === session.id) {

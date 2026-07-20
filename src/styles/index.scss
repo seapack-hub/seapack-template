@@ -4,6 +4,65 @@
 @import './layout/index.scss';
 //form样式
 @import './form.scss';
+
+// ============================================================
+// 全局滚动条样式优化
+// ============================================================
+// Webkit 浏览器（Chrome / Edge / Safari）
+* {
+  scrollbar-width: thin; // Firefox 细滚动条
+  scrollbar-color: rgba(144, 147, 153, 0.3) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px; // 垂直滚动条宽度
+  height: 6px; // 水平滚动条高度
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; // 滚动条轨道背景
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(144, 147, 153, 0.3); // 滚动条滑块
+  border-radius: 3px; // 圆角
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(144, 147, 153, 0.5); // 悬停时加深
+  }
+
+  &:active {
+    background: rgba(144, 147, 153, 0.7); // 按下时更深
+  }
+}
+
+// Element Plus 滚动条组件覆盖
+.el-scrollbar {
+  --el-scrollbar-opacity: 1;
+
+  .el-scrollbar__bar {
+    opacity: 1;
+
+    &.is-vertical {
+      width: 6px;
+    }
+
+    &.is-horizontal {
+      height: 6px;
+    }
+  }
+
+  .el-scrollbar__thumb {
+    background: rgba(144, 147, 153, 0.3);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(144, 147, 153, 0.5);
+    }
+  }
+}
+
 // 路由切换淡入淡出过渡
 .fade-enter-active,
 .fade-leave-active {
