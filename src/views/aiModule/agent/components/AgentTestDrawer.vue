@@ -395,7 +395,7 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
       if (event.traceSnapshot) {
         const raw = event.traceSnapshot
         lastMsg.traceSnapshot = typeof raw === 'string' ? JSON.parse(raw) : raw
-        currentTrace.value = lastMsg.traceSnapshot
+        currentTrace.value = lastMsg.traceSnapshot as AgentTraceSnapshot
       }
       activeSessionId.value = undefined
       fetchTestSessions()

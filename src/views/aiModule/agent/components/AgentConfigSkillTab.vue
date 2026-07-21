@@ -15,7 +15,7 @@
       <template #enabled>
         <el-table-column label="状态" prop="enabled" width="70" align="center" slot-name="enabled">
           <template #default="{ row }">
-            <el-switch :model-value="row.enabled" :active-value="1" :inactive-value="0" size="small" @change="(val: number) => toggleSkillEnabled(row, val)" />
+            <el-switch :model-value="row.enabled" :active-value="1" :inactive-value="0" size="small" @change="(val) => toggleSkillEnabled(row, val as number)" />
           </template>
         </el-table-column>
       </template>
@@ -33,7 +33,7 @@
       <el-form :model="skillForm" label-width="80px">
         <el-form-item label="技能">
           <el-select v-model="skillForm.skillId" placeholder="选择技能" style="width: 100%" :disabled="skillFormIsEdit">
-            <el-option v-for="s in allSkills" :key="s.id" :label="s.name" :value="s.id" />
+            <el-option v-for="s in allSkills" :key="s.id" :label="s.name" :value="s.id as number" />
           </el-select>
         </el-form-item>
         <el-form-item label="类型">

@@ -60,7 +60,7 @@
           <div class="step-body" @click="toggleExpand(idx)">
             <div class="step-header">
               <div class="flex items-center gap-8px flex-1 min-w-0">
-                <el-tag :type="getStepTypeTag(step.stepType)" size="small" effect="plain" class="flex-shrink-0">
+                <el-tag :type="getStepTypeTag(step.stepType) as any" size="small" effect="plain" class="flex-shrink-0">
                   {{ getStepTypeLabel(step.stepType) }}
                 </el-tag>
                 <span class="text-14px font-600 color-[var(--el-text-color-primary)] truncate">{{ step.stepName }}</span>
@@ -91,9 +91,9 @@
                     </div>
                   </div>
                   <!-- 解析后的技能列表 -->
-                  <div v-if="parseSkillResults(step.output).length > 0" class="skill-list">
+                  <div v-if="parseSkillResults(step.output as string).length > 0" class="skill-list">
                     <div
-                      v-for="(skill, sIdx) in parseSkillResults(step.output)"
+                      v-for="(skill, sIdx) in parseSkillResults(step.output as string)"
                       :key="sIdx"
                       class="skill-card"
                       :class="[skill.success ? 'skill-success' : 'skill-fail']"
@@ -289,13 +289,13 @@ function formatDuration(ms: number): string {
 /** 获取技能总数：优先从 metadata 读取，否则从解析结果推算 */
 function getSkillCount(step: AgentTraceStep): number {
   if (step.metadata?.skillCount) return step.metadata.skillCount
-  return parseSkillResults(step.output).length
+  return parseSkillResults(step.output as string).length
 }
 
 /** 获取执行成功数：优先从 metadata 读取，否则从解析结果推算 */
 function getExecutedCount(step: AgentTraceStep): number {
   if (step.metadata?.executedCount) return step.metadata.executedCount
-  return parseSkillResults(step.output).filter(s => s.success).length
+  return parseSkillResults(step.output as string).filter(s => s.success).length
 }
 
 function getStepTypeTag(type: string): string {
