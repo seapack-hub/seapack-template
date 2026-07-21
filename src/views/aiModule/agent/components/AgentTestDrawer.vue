@@ -91,8 +91,9 @@
           <!-- 当前会话追踪 -->
           <div v-if="currentTrace" class="mb-16px">
             <div class="flex items-center justify-between mb-12px">
-              <span class="text-14px font-600">当前会话链路</span>
-              <el-tag size="small" type="info">最近一次</el-tag>
+              <span class="text-14px font-600">会话链路</span>
+              <el-tag v-if="activeSessionId" size="small" type="info">历史记录</el-tag>
+              <el-tag v-else size="small" type="success">最近一次</el-tag>
             </div>
             <AgentTraceDetail :snapshot="currentTrace" />
           </div>
@@ -109,7 +110,7 @@
           </el-divider>
           <div v-if="testSessions.length > 0" class="session-list">
             <div
-              v-for="session in testSessions"
+              v-for="session in displaySessions"
               :key="session.id"
               class="session-item"
               :class="{ 'is-active': activeSessionId === session.id }"
@@ -135,6 +136,13 @@
                 <el-icon><Delete /></el-icon>
               </el-button>
             </div>
+            <!-- 展开/收起按钮 -->
+            <div v-if="testSessions.length > defaultSessionLimit" class="session-toggle" @click="showAllSessions = !showAllSessions">
+              <span class="text-12px text-[var(--el-color-primary)]">
+                {{ showAllSessions ? '收起' : `查看全部 (${testSessions.length})` }}
+              </span>
+              <el-icon :class="{ 'rotate-180': showAllSessions }" class="text-[var(--el-color-primary)] transition-transform"><ArrowDown /></el-icon>
+            </div>
           </div>
         </div>
       </el-tab-pane>
@@ -143,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChatDotRound, Promotion, Connection, Delete } from '@element-plus/icons-vue'
+import { ChatDotRound, Promotion, Connection, Delete, ArrowDown } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 import { AgentAPI, type AgentTraceSnapshot, type AgentTestSession } from '@/api/ai/agent'
 import AgentTraceDetail from './AgentTraceDetail.vue'
@@ -156,6 +164,8 @@ const props = defineProps<{
 }>()
 
 const activeTab = ref('chat')
+const showAllSessions = ref(false)
+const defaultSessionLimit = 5
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -177,6 +187,11 @@ const currentTrace = ref<AgentTraceSnapshot | null>(null)
 // ===== 历史会话 =====
 const testSessions = ref<AgentTestSession[]>([])
 const activeSessionId = ref<number | undefined>()
+
+const displaySessions = computed(() => {
+  if (showAllSessions.value) return testSessions.value
+  return testSessions.value.slice(0, defaultSessionLimit)
+})
 
 function onOpened() {
   messages.value = []
@@ -214,16 +229,22 @@ async function sendMessage() {
       message: msg,
       history,
     })
+    // traceSnapshot 可能是 JSON 字符串
+    let snapshot: AgentTraceSnapshot | null = null
+    if (res.traceSnapshot) {
+      const raw = res.traceSnapshot as any
+      snapshot = typeof raw === 'string' ? JSON.parse(raw) : raw
+    }
     messages.value.push({
       role: 'assistant',
       content: res.content,
       durationMs: res.durationMs,
       tokensPrompt: res.tokensPrompt,
       tokensCompletion: res.tokensCompletion,
-      traceSnapshot: res.traceSnapshot,
+      traceSnapshot: snapshot,
     })
     // 更新当前链路
-    currentTrace.value = res.traceSnapshot || null
+    currentTrace.value = snapshot
     // 刷新历史列表
     await fetchTestSessions()
   } catch(e) {
@@ -234,6 +255,7 @@ async function sendMessage() {
     })
   } finally {
     chatting.value = false
+    activeSessionId.value = undefined
     scrollToBottom()
   }
 }
@@ -241,10 +263,12 @@ async function sendMessage() {
 function clearMessages() {
   messages.value = []
   currentTrace.value = null
+  activeSessionId.value = undefined
 }
 
 function viewTrace(snapshot: AgentTraceSnapshot) {
   currentTrace.value = snapshot
+  activeSessionId.value = undefined
   activeTab.value = 'trace'
 }
 
@@ -263,7 +287,24 @@ async function loadSessionDetail(session: AgentTestSession) {
   activeSessionId.value = session.id
   try {
     const detail = await AgentAPI.getTestSessionDetail(props.agentId as number, session.id!)
-    currentTrace.value = detail.traceSnapshot || null
+    // traceSnapshot 可能是 JSON 字符串，需要解析
+    let trace: AgentTraceSnapshot | null = null
+    if (detail.traceSnapshot) {
+      const raw = detail.traceSnapshot as any
+      trace = typeof raw === 'string' ? JSON.parse(raw) : raw
+    }
+    // 若解析后仍无真实数据，从 session 顶层字段构建
+    if (!trace || !trace.totalDurationMs) {
+      trace = {
+        steps: trace?.steps || [],
+        totalDurationMs: detail.totalDurationMs || trace?.totalDurationMs || 0,
+        totalTokens: {
+          prompt: detail.tokensPrompt || trace?.totalTokens?.prompt || 0,
+          completion: detail.tokensCompletion || trace?.totalTokens?.completion || 0,
+        },
+      }
+    }
+    currentTrace.value = trace
     activeTab.value = 'trace'
   } catch {
     ElMessage.error('获取详情失败')
@@ -401,6 +442,7 @@ function formatDuration(ms?: number): string {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-bottom: 30px;
 }
 .session-item {
   display: flex;
@@ -422,6 +464,27 @@ function formatDuration(ms?: number): string {
 .session-content {
   flex: 1;
   min-width: 0;
+}
+
+.session-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.session-toggle:hover {
+  background: var(--el-fill-color-lighter);
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+.transition-transform {
+  transition: transform 0.2s;
 }
 
 .tabular-nums {
