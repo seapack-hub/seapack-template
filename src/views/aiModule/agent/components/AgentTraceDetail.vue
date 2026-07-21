@@ -83,11 +83,11 @@
                   <div v-if="step.metadata" class="skill-summary">
                     <div class="skill-summary-item">
                       <span class="skill-summary-label">技能总数</span>
-                      <span class="skill-summary-value tabular-nums">{{ step.metadata.skillCount || 0 }}</span>
+                      <span class="skill-summary-value tabular-nums">{{ getSkillCount(step) }}</span>
                     </div>
                     <div class="skill-summary-item">
                       <span class="skill-summary-label">执行成功</span>
-                      <span class="skill-summary-value tabular-nums text-[var(--el-color-success)]">{{ step.metadata.executedCount || 0 }}</span>
+                      <span class="skill-summary-value tabular-nums text-[var(--el-color-success)]">{{ getExecutedCount(step) }}</span>
                     </div>
                   </div>
                   <!-- 解析后的技能列表 -->
@@ -113,12 +113,20 @@
                       </div>
                       <Transition name="expand">
                         <div v-if="isSkillExpanded(idx, sIdx)" class="skill-card-body">
+                          <div v-if="skill.callPath" class="skill-meta">
+                            <span class="skill-meta-label">调用路径</span>
+                            <code class="skill-meta-value">{{ skill.callPath }}</code>
+                          </div>
+                          <div v-if="skill.callParams" class="skill-meta">
+                            <span class="skill-meta-label">调用参数</span>
+                            <pre class="skill-meta-value skill-meta-code">{{ formatJsonOrText(skill.callParams) }}</pre>
+                          </div>
                           <div v-if="skill.input" class="detail-section">
                             <div class="detail-label">输入</div>
                             <pre class="detail-code">{{ formatJsonOrText(skill.input) }}</pre>
                           </div>
                           <div v-if="skill.output" class="detail-section">
-                            <div class="detail-label">输出</div>
+                            <div class="detail-label">返回结果</div>
                             <pre class="detail-code">{{ formatJsonOrText(skill.output) }}</pre>
                           </div>
                         </div>
@@ -163,7 +171,7 @@
 
 <script setup lang="ts">
 import { CircleCheckFilled, CircleCloseFilled, RemoveFilled, Connection, ArrowDown } from '@element-plus/icons-vue'
-import type { AgentTraceSnapshot } from '@/api/ai/agent'
+import type { AgentTraceSnapshot, AgentTraceStep } from '@/api/ai/agent'
 
 defineProps<{
   snapshot: AgentTraceSnapshot | null
@@ -193,9 +201,18 @@ function isSkillExpanded(stepIdx: number, skillIdx: number): boolean {
   return expandedSkills.value.get(`${stepIdx}`)?.has(skillIdx) || false
 }
 
-function parseSkillResults(output: string | undefined | null): Array<{ name: string; input: string | null; output: string; success: boolean }> {
+interface SkillResult {
+  name: string
+  callPath: string | null
+  callParams: string | null
+  input: string | null
+  output: string
+  success: boolean
+}
+
+function parseSkillResults(output: string | undefined | null): SkillResult[] {
   if (!output) return []
-  const results: Array<{ name: string; input: string | null; output: string; success: boolean }> = []
+  const results: SkillResult[] = []
   // 匹配 【技能名】 后面的内容
   const regex = /【(.+?)】[ \t]*\r?\n/g
   const matches: Array<{ name: string; start: number }> = []
@@ -209,39 +226,56 @@ function parseSkillResults(output: string | undefined | null): Array<{ name: str
       ? output.lastIndexOf('【', matches[i + 1].start)
       : output.length
     const content = output.slice(matches[i].start, endPos > matches[i].start ? endPos : undefined).trim()
-    // 尝试提取技能名中的信息
     let skillName = matches[i].name
     let success = true
     let parsedOutput = content
+    let callPath: string | null = null
+    let callParams: string | null = null
     // 检查是否有内嵌的【】标记（如【分页查询股票行情数据】前缀）
     const innerMatch = content.match(/^【(.+?)】\s*\n/)
     if (innerMatch) {
       skillName = innerMatch[1]
     }
-    // 尝试解析 JSON
+    // 提取调用路径：调用路径: POST /path...
+    const callPathMatch = content.match(/^调用路径:\s*(.+)$/m)
+    if (callPathMatch) {
+      callPath = callPathMatch[1].trim()
+    }
+    // 提取调用参数：调用参数: {...}
+    const callParamsMatch = content.match(/^调用参数:\s*(.+)$/m)
+    if (callParamsMatch) {
+      callParams = callParamsMatch[1].trim()
+    }
+    // 从内容中移除调用路径、调用参数和分隔符行，只保留返回结果
+    let resultContent = content
+      .replace(/^调用路径:\s*.+$/m, '')
+      .replace(/^调用参数:\s*.+$/m, '')
+      .replace(/^---\s*返回结果\s*---$/m, '')
+      .trim()
+    // 尝试解析 JSON（返回结果部分）
     try {
-      // 去掉可能的前缀文本
-      const jsonStart = content.indexOf('{')
-      const jsonStartArr = content.indexOf('[')
+      const jsonStart = resultContent.indexOf('{')
+      const jsonStartArr = resultContent.indexOf('[')
       const actualStart = jsonStart >= 0 && (jsonStartArr < 0 || jsonStart < jsonStartArr)
         ? jsonStart
         : jsonStartArr
       if (actualStart >= 0) {
-        const jsonContent = content.slice(actualStart).trim()
+        const jsonContent = resultContent.slice(actualStart).trim()
         const parsed = JSON.parse(jsonContent)
         if (parsed.error || parsed.success === false) success = false
         else if (parsed.list && Array.isArray(parsed.list)) {
-          // 分页查询结果，检查是否有数据
           success = true
         }
         parsedOutput = JSON.stringify(parsed, null, 2)
       } else {
-        if (content.includes('"error"') || content.includes('"success":false')) success = false
+        parsedOutput = resultContent
+        if (resultContent.includes('"error"') || resultContent.includes('"success":false')) success = false
       }
     } catch {
-      if (content.includes('"error"') || content.includes('"success":false')) success = false
+      parsedOutput = resultContent
+      if (resultContent.includes('"error"') || resultContent.includes('"success":false')) success = false
     }
-    results.push({ name: skillName, input: null, output: parsedOutput, success })
+    results.push({ name: skillName, callPath, callParams, input: null, output: parsedOutput, success })
   }
   return results
 }
@@ -250,6 +284,18 @@ function formatDuration(ms: number): string {
   if (!ms) return '0ms'
   if (ms < 1000) return `${ms}ms`
   return `${(ms / 1000).toFixed(2)}s`
+}
+
+/** 获取技能总数：优先从 metadata 读取，否则从解析结果推算 */
+function getSkillCount(step: AgentTraceStep): number {
+  if (step.metadata?.skillCount) return step.metadata.skillCount
+  return parseSkillResults(step.output).length
+}
+
+/** 获取执行成功数：优先从 metadata 读取，否则从解析结果推算 */
+function getExecutedCount(step: AgentTraceStep): number {
+  if (step.metadata?.executedCount) return step.metadata.executedCount
+  return parseSkillResults(step.output).filter(s => s.success).length
 }
 
 function getStepTypeTag(type: string): string {
@@ -526,6 +572,36 @@ function formatMetadataValue(val: any): string {
 .skill-card-body {
   padding: 0 12px 10px;
   overflow: hidden;
+}
+
+.skill-meta {
+  margin-bottom: 8px;
+}
+.skill-meta-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.skill-meta-value {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-primary);
+  background: var(--el-fill-color);
+  border: 1px solid var(--el-border-color-extra-light);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: 0;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+.skill-meta-code {
+  max-height: 120px;
+  overflow-y: auto;
 }
 
 .expand-enter-active,

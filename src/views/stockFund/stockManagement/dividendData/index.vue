@@ -3,7 +3,7 @@
     <el-card shadow="never" class="flex-1 flex flex-col el-card-main">
       <!-- 搜索区域：关键字 + 年度 + 分红类型 + 实施状态 -->
       <div class="search-bar h-[50px]">
-        <DividendSearch :model="query" @search="handleQuery" @reset="handleReset" />
+        <DividendSearch v-model:model="query" @search="handleQuery" @reset="handleReset" />
       </div>
       <!-- 工具栏 -->
       <div class="table-toolbar h-[50px] flex items-center justify-between">
