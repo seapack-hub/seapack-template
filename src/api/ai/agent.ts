@@ -2,6 +2,7 @@
  * Agent 管理 API
  */
 import { request } from '@/utils/axios'
+import CacheKey from '@/constants/cache-key'
 import type {
   Agent,
   AgentPrompt,
@@ -15,6 +16,7 @@ import type {
   AgentTestSession,
   AgentTestChatRequest,
   AgentTestChatResponse,
+  AgentTestChatSSEEvent,
 } from './types/agent'
 
 export type {
@@ -30,6 +32,7 @@ export type {
   AgentTestSession,
   AgentTestChatRequest,
   AgentTestChatResponse,
+  AgentTestChatSSEEvent,
 }
 
 const BASE_URL = '/api/ai/agents'
@@ -241,6 +244,53 @@ export const AgentAPI = {
     })
   },
 
+  /** 测试对话（SSE 流式，POST + ReadableStream） */
+  async testChatStream(
+    req: AgentTestChatRequest,
+    onEvent: (event: AgentTestChatSSEEvent) => void,
+  ): Promise<void> {
+    currentAbortController?.abort()
+    currentAbortController = new AbortController()
+    const token = localStorage.getItem(CacheKey.TOKEN)
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (token) headers['Authorization'] = `Bearer ${token}`
+    const response = await fetch(`${BASE_URL}/test-chat`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(req),
+      signal: currentAbortController.signal,
+    })
+    if (!response.ok) {
+      throw new Error(`请求失败: ${response.status}`)
+    }
+    const reader = response.body!.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+    try {
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop()!
+        for (const line of lines) {
+          if (line.startsWith('data:')) {
+            const raw = line.slice(5).trim()
+            if (!raw) continue
+            try { onEvent(JSON.parse(raw)) } catch { /* ignore */ }
+          }
+        }
+      }
+      // 处理 buffer 中剩余数据
+      if (buffer.startsWith('data:')) {
+        const raw = buffer.slice(5).trim()
+        if (raw) { try { onEvent(JSON.parse(raw)) } catch { /* ignore */ } }
+      }
+    } finally {
+      reader.releaseLock()
+    }
+  },
+
   /** 测试会话历史列表 */
   getTestSessions(agentId: number, params?: { pageNum?: number; pageSize?: number }) {
     return request<any, PageResult<AgentTestSession[]>>({
@@ -265,4 +315,13 @@ export const AgentAPI = {
       method: 'post',
     })
   },
+}
+
+// ===== 流式对话控制 =====
+let currentAbortController: AbortController | null = null
+
+/** 取消当前进行中的流式测试对话 */
+export function abortTestChat() {
+  currentAbortController?.abort()
+  currentAbortController = null
 }

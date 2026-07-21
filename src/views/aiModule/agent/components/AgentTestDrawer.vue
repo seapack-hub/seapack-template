@@ -32,7 +32,33 @@
                 <span v-else>A</span>
               </div>
               <div class="max-w-80%">
-                <div class="message-text" v-html="msg.content"></div>
+                <!-- 步骤时间线（最后一条 assistant 消息展示，和正文共存） -->
+                <div v-if="msg.role === 'assistant' && i === messages.length - 1 && steps.length > 0" class="step-timeline">
+                  <div v-for="(step, si) in steps" :key="si" class="step-tl-item">
+                    <div class="step-tl-line-left">
+                      <div v-if="step.status === 'running'" class="step-tl-dot dot-running">
+                        <el-icon class="is-loading" :size="14"><Loading /></el-icon>
+                      </div>
+                      <div v-else-if="step.status === 'success'" class="step-tl-dot dot-success">
+                        <el-icon :size="14"><CircleCheckFilled /></el-icon>
+                      </div>
+                      <div v-else-if="step.status === 'fail'" class="step-tl-dot dot-fail">
+                        <el-icon :size="14"><CircleCloseFilled /></el-icon>
+                      </div>
+                      <div v-else class="step-tl-dot dot-skip">
+                        <el-icon :size="14"><RemoveFilled /></el-icon>
+                      </div>
+                      <div v-if="si < steps.length - 1" class="step-tl-line" />
+                    </div>
+                    <div class="step-tl-content">
+                      <span :class="['step-tl-name', step.status === 'running' ? 'text-[var(--el-color-primary)]' : '']">{{ step.stepName }}</span>
+                      <span v-if="step.status === 'running'" class="step-tl-status">执行中...</span>
+                      <span v-else class="step-tl-time">{{ step.durationMs }}ms</span>
+                    </div>
+                  </div>
+                  <div v-if="msg.content" class="step-tl-divider" />
+                </div>
+                <div v-if="msg.content" class="message-text" v-html="msg.content"></div>
                 <div v-if="msg.role === 'assistant' && msg.durationMs" class="mt-4px flex items-center justify-end gap-8px text-11px text-[var(--el-text-color-secondary)]">
                   <span>{{ msg.durationMs }}ms</span>
                   <span v-if="msg.tokensPrompt">| Token: {{ msg.tokensPrompt }}/{{ msg.tokensCompletion }}</span>
@@ -49,8 +75,8 @@
                 </div>
               </div>
             </div>
-            <!-- 加载中 -->
-            <div v-if="chatting" class="message-item assistant">
+            <!-- 加载中（无步骤时用三点） -->
+            <div v-if="chatting && !messages[messages.length - 1]?.content && steps.length === 0" class="message-item assistant">
               <div class="message-avatar"><span>A</span></div>
               <div class="max-w-80%">
                 <div class="message-text typing-indicator">
@@ -71,8 +97,9 @@
               @keydown.enter.ctrl="sendMessage"
             />
             <div class="flex justify-end gap-8px mt-8px">
-              <el-button type="primary" :loading="chatting" :disabled="!inputMessage.trim()" @click="sendMessage">
-                <el-icon v-if="!chatting"><Promotion /></el-icon> 发送
+              <el-button v-if="chatting" @click="cancelChat">取消</el-button>
+              <el-button type="primary" :loading="chatting" :disabled="!inputMessage.trim() && !chatting" @click="sendMessage">
+                <el-icon v-if="!chatting"><Promotion /></el-icon> {{ chatting ? '生成中...' : '发送' }}
               </el-button>
               <el-button :disabled="chatting" @click="clearMessages">清空对话</el-button>
             </div>
@@ -151,9 +178,10 @@
 </template>
 
 <script setup lang="ts">
-import { ChatDotRound, Promotion, Connection, Delete, ArrowDown } from '@element-plus/icons-vue'
+import { ChatDotRound, Promotion, Connection, Delete, ArrowDown, Loading, CircleCheckFilled, CircleCloseFilled, RemoveFilled } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
-import { AgentAPI, type AgentTraceSnapshot, type AgentTestSession } from '@/api/ai/agent'
+import { AgentAPI, type AgentTraceSnapshot, type AgentTestSession, type AgentTestChatSSEEvent } from '@/api/ai/agent'
+import CacheKey from '@/constants/cache-key'
 import AgentTraceDetail from './AgentTraceDetail.vue'
 
 const visible = defineModel<boolean>('visible', { required: true })
@@ -184,6 +212,17 @@ const messageListRef = ref<HTMLElement>()
 // ===== 链路追踪 =====
 const currentTrace = ref<AgentTraceSnapshot | null>(null)
 
+// ===== 步骤进度（流式） =====
+interface StepProgress {
+  stepName: string
+  status: 'running' | 'success' | 'fail' | 'skip'
+  durationMs?: number
+}
+const steps = ref<StepProgress[]>([])
+
+// ===== 流式控制 =====
+let currentAbortController: AbortController | null = null
+
 // ===== 历史会话 =====
 const testSessions = ref<AgentTestSession[]>([])
 const activeSessionId = ref<number | undefined>()
@@ -197,9 +236,15 @@ function onOpened() {
   messages.value = []
   inputMessage.value = ''
   currentTrace.value = null
+  steps.value = []
   activeTab.value = 'chat'
   fetchTestSessions()
 }
+
+onUnmounted(() => {
+  currentAbortController?.abort()
+  currentAbortController = null
+})
 
 function scrollToBottom() {
   nextTick(() => {
@@ -216,43 +261,89 @@ async function sendMessage() {
   messages.value.push({ role: 'user', content: msg })
   inputMessage.value = ''
   chatting.value = true
+  steps.value = []
   scrollToBottom()
 
+  // 先创建占位消息，后续通过 length-1 获取 reactive 代理
+  messages.value.push({ role: 'assistant', content: '' })
+
+  const history = messages.value.slice(0, -1).map(m => ({
+    role: m.role,
+    content: m.content,
+  }))
+
+  // 内联 SSE 流式处理（参考 streamChat 模式）
+  currentAbortController?.abort()
+  currentAbortController = new AbortController()
+
   try {
-    const history = messages.value.slice(0, -1).map(m => ({
-      role: m.role,
-      content: m.content,
-    }))
-    // 使用带链路追踪的 test-chat 接口
-    const res = await AgentAPI.testChat({
-      agentId: props.agentId as number,
-      message: msg,
-      history,
+    const token = localStorage.getItem(CacheKey.TOKEN)
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (token) headers['Authorization'] = `Bearer ${token}`
+
+    const response = await fetch('/api/ai/agents/test-chat', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        agentId: props.agentId,
+        message: msg,
+        history,
+      }),
+      signal: currentAbortController.signal,
     })
-    // traceSnapshot 可能是 JSON 字符串
-    let snapshot: AgentTraceSnapshot | null = null
-    if (res.traceSnapshot) {
-      const raw = res.traceSnapshot as any
-      snapshot = typeof raw === 'string' ? JSON.parse(raw) : raw
+
+    if (!response.ok) {
+      throw new Error(`请求失败: ${response.status}`)
     }
-    messages.value.push({
-      role: 'assistant',
-      content: res.content,
-      durationMs: res.durationMs,
-      tokensPrompt: res.tokensPrompt,
-      tokensCompletion: res.tokensCompletion,
-      traceSnapshot: snapshot,
-    })
-    // 更新当前链路
-    currentTrace.value = snapshot
-    // 刷新历史列表
-    await fetchTestSessions()
-  } catch(e) {
-    console.error(e)
-    messages.value.push({
-      role: 'assistant',
-      content: '调用失败，请检查 Agent 配置',
-    })
+    if (!response.body) {
+      throw new Error('响应体为空，无法读取流')
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder('utf-8')
+    let buffer = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
+
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (trimmed.startsWith('data:')) {
+          const jsonStr = trimmed.replace(/^data:\s*/, '')
+          if (!jsonStr) continue
+          try {
+            const event: AgentTestChatSSEEvent = JSON.parse(jsonStr)
+            handleSSEEvent(event)
+          } catch {
+            // 忽略解析失败的行
+          }
+        }
+      }
+    }
+
+    // 处理 buffer 剩余
+    if (buffer.trim().startsWith('data:')) {
+      const jsonStr = buffer.trim().replace(/^data:\s*/, '')
+      if (jsonStr) {
+        try {
+          const event: AgentTestChatSSEEvent = JSON.parse(jsonStr)
+          handleSSEEvent(event)
+        } catch { /* ignore */ }
+      }
+    }
+  } catch (e: any) {
+    const lastMsg = messages.value[messages.value.length - 1]
+    if (e.name === 'AbortError') {
+      if (lastMsg?.role === 'assistant') lastMsg.content += '\n\n[已取消]'
+    } else {
+      if (lastMsg?.role === 'assistant') lastMsg.content = '调用失败，请检查 Agent 配置'
+      console.error(e)
+    }
   } finally {
     chatting.value = false
     activeSessionId.value = undefined
@@ -264,6 +355,62 @@ function clearMessages() {
   messages.value = []
   currentTrace.value = null
   activeSessionId.value = undefined
+  steps.value = []
+}
+
+function handleSSEEvent(event: AgentTestChatSSEEvent) {
+  // 必须通过 messages.value 访问以确保获取 reactive 代理
+  const lastMsg = messages.value[messages.value.length - 1]
+  if (lastMsg?.role !== 'assistant') return
+
+  switch (event.type) {
+    case 'step_start':
+      steps.value.push({ stepName: event.stepName || '', status: 'running' })
+      scrollToBottom()
+      break
+    case 'step_done': {
+      const last = steps.value[steps.value.length - 1]
+      if (last) {
+        // skip 视为成功（跳过但无错误）
+        last.status = (event.status === 'skip' ? 'success' : (event.status as any)) || 'success'
+        last.durationMs = event.durationMs
+      }
+      scrollToBottom()
+      break
+    }
+    case 'content':
+      lastMsg.content += event.text || ''
+      scrollToBottom()
+      break
+    case 'done': {
+      // LLM 调用没有 step_done，done 事件代表它已完成
+      const llmStep = steps.value.find(s => s.status === 'running')
+      if (llmStep) {
+        llmStep.status = 'success'
+        llmStep.durationMs = event.totalDurationMs
+      }
+      lastMsg.durationMs = event.totalDurationMs
+      lastMsg.tokensPrompt = event.tokensPrompt
+      lastMsg.tokensCompletion = event.tokensCompletion
+      if (event.traceSnapshot) {
+        const raw = event.traceSnapshot
+        lastMsg.traceSnapshot = typeof raw === 'string' ? JSON.parse(raw) : raw
+        currentTrace.value = lastMsg.traceSnapshot
+      }
+      activeSessionId.value = undefined
+      fetchTestSessions()
+      break
+    }
+    case 'error':
+      lastMsg.content += `\n\n错误: ${event.message}`
+      scrollToBottom()
+      break
+  }
+}
+
+function cancelChat() {
+  currentAbortController?.abort()
+  currentAbortController = null
 }
 
 function viewTrace(snapshot: AgentTraceSnapshot) {
@@ -400,6 +547,84 @@ function formatDuration(ms?: number): string {
   line-height: 1.6;
   word-break: break-word;
   white-space: pre-wrap;
+}
+
+/* ===== 步骤时间线（嵌入 assistant 消息内） ===== */
+.step-timeline {
+  padding: 12px 14px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.step-tl-item {
+  display: flex;
+  gap: 10px;
+  min-height: 36px;
+}
+.step-tl-line-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20px;
+  flex-shrink: 0;
+}
+.step-tl-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.dot-running {
+  background: var(--el-color-primary-light-8);
+  color: var(--el-color-primary);
+}
+.dot-success {
+  background: var(--el-color-success-light-8);
+  color: var(--el-color-success);
+}
+.dot-fail {
+  background: var(--el-color-danger-light-8);
+  color: var(--el-color-danger);
+}
+.dot-skip {
+  background: var(--el-color-success-light-8);
+  color: var(--el-color-success);
+}
+.step-tl-line {
+  width: 2px;
+  flex: 1;
+  min-height: 8px;
+  background: var(--el-border-color-lighter);
+}
+.step-tl-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 4px;
+  min-height: 28px;
+}
+.step-tl-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
+}
+.step-tl-status {
+  font-size: 12px;
+  color: var(--el-color-primary);
+  font-weight: 500;
+}
+.step-tl-time {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.step-tl-divider {
+  height: 1px;
+  background: var(--el-border-color-extra-light);
+  margin: 6px 0 4px 30px;
 }
 .message-item.user .message-text {
   background: var(--el-color-primary);

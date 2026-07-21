@@ -198,3 +198,28 @@ export interface AgentTestChatResponse {
   /** 链路追踪快照 */
   traceSnapshot: AgentTraceSnapshot
 }
+
+// ===== SSE 流式事件 =====
+
+/** 测试对话 SSE 流式事件 */
+export interface AgentTestChatSSEEvent {
+  type: 'step_start' | 'step_done' | 'content' | 'done' | 'error'
+  /** step_start / step_done：步骤名称 */
+  stepName?: string
+  /** step_done：步骤状态 */
+  status?: 'success' | 'fail' | 'skip'
+  /** step_done：步骤耗时 ms */
+  durationMs?: number
+  /** content：文本片段 */
+  text?: string
+  /** done：完整链路快照 */
+  traceSnapshot?: AgentTraceSnapshot
+  /** done：提示词 token 数 */
+  tokensPrompt?: number
+  /** done：补全 token 数 */
+  tokensCompletion?: number
+  /** done：总耗时 ms */
+  totalDurationMs?: number
+  /** error：错误信息 */
+  message?: string
+}
