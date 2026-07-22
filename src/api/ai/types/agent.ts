@@ -214,9 +214,11 @@ export interface AgentTestChatSSEEvent {
   text?: string
   /** done：完整链路快照 */
   traceSnapshot?: AgentTraceSnapshot
-  /** done：提示词 token 数 */
+  /** done：token 统计（后端实际格式） */
+  tokens?: { prompt: number; completion: number }
+  /** done：提示词 token 数（兼容格式） */
   tokensPrompt?: number
-  /** done：补全 token 数 */
+  /** done：补全 token 数（兼容格式） */
   tokensCompletion?: number
   /** done：总耗时 ms */
   totalDurationMs?: number
