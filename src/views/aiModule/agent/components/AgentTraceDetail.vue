@@ -150,10 +150,37 @@
                     <div class="detail-label">输出</div>
                     <pre class="detail-code">{{ formatJsonOrText(step.output) }}</pre>
                   </div>
-                  <div v-if="step.metadata && Object.keys(step.metadata).length > 0" class="detail-section">
+
+                  <!-- 模板详情：卡片式展示（从 metadata.templateDetails 提取） -->
+                  <div v-if="getTemplateDetails(step).length > 0" class="detail-section">
+                    <div class="detail-label">模板详情</div>
+                    <div class="template-list">
+                      <div v-for="(tpl, tIdx) in getTemplateDetails(step)" :key="tIdx" class="template-card">
+                        <div class="template-card-header" @click.stop="toggleTemplateExpand(step.stepType, tIdx)">
+                          <div class="flex items-center gap-6px flex-1 min-w-0">
+                            <el-icon :size="14" class="text-[var(--el-color-primary)]"><Document /></el-icon>
+                            <span class="template-name">{{ tpl.templateName || `模板 ${tIdx + 1}` }}</span>
+                            <el-tag v-if="tpl.templateId" size="small" type="info" effect="plain" class="flex-shrink-0">ID: {{ tpl.templateId }}</el-tag>
+                          </div>
+                          <div class="flex items-center gap-8px">
+                            <span v-if="tpl.contentLength" class="text-11px text-[var(--el-text-color-secondary)]">{{ tpl.contentLength }} 字符</span>
+                            <el-icon class="expand-icon" :class="{ 'is-expanded': isTemplateExpanded(step.stepType, tIdx) }"><ArrowDown /></el-icon>
+                          </div>
+                        </div>
+                        <Transition name="expand">
+                          <div v-if="isTemplateExpanded(step.stepType, tIdx)" class="template-card-body">
+                            <pre class="detail-code">{{ tpl.content || tpl.contentPreview || '-' }}</pre>
+                          </div>
+                        </Transition>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 其他元数据（排除 templateDetails，避免重复展示） -->
+                  <div v-if="getOtherMetadata(step).length > 0" class="detail-section">
                     <div class="detail-label">元数据</div>
                     <div class="metadata-grid">
-                      <div v-for="(val, key) in step.metadata" :key="key" class="metadata-item">
+                      <div v-for="([key, val]) in getOtherMetadata(step)" :key="key" class="metadata-item">
                         <span class="metadata-key">{{ key }}</span>
                         <span class="metadata-value tabular-nums">{{ formatMetadataValue(val) }}</span>
                       </div>
@@ -170,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-import { CircleCheckFilled, CircleCloseFilled, RemoveFilled, Connection, ArrowDown } from '@element-plus/icons-vue'
+import { CircleCheckFilled, CircleCloseFilled, RemoveFilled, Connection, ArrowDown, Document } from '@element-plus/icons-vue'
 import type { AgentTraceSnapshot, AgentTraceStep } from '@/api/ai/agent'
 
 defineProps<{
@@ -179,6 +206,7 @@ defineProps<{
 
 const expandedSteps = ref(new Set<number>())
 const expandedSkills = ref(new Map<string, Set<number>>())
+const expandedTemplates = ref(new Map<string, Set<number>>())
 
 function toggleExpand(idx: number) {
   const s = new Set(expandedSteps.value)
@@ -199,6 +227,46 @@ function toggleSkillExpand(stepIdx: number, skillIdx: number) {
 
 function isSkillExpanded(stepIdx: number, skillIdx: number): boolean {
   return expandedSkills.value.get(`${stepIdx}`)?.has(skillIdx) || false
+}
+
+function toggleTemplateExpand(stepType: string | undefined, idx: number) {
+  const key = stepType || 'unknown'
+  const map = new Map(expandedTemplates.value)
+  if (!map.has(key)) map.set(key, new Set())
+  const set = map.get(key)!
+  if (set.has(idx)) set.delete(idx)
+  else set.add(idx)
+  expandedTemplates.value = map
+}
+
+function isTemplateExpanded(stepType: string | undefined, idx: number): boolean {
+  const key = stepType || 'unknown'
+  return expandedTemplates.value.get(key)?.has(idx) || false
+}
+
+interface TemplateDetail {
+  templateId?: number | string
+  templateName?: string
+  content?: string
+  contentPreview?: string
+  contentLength?: number
+}
+
+/** 从 step.metadata.templateDetails 中提取模板列表 */
+function getTemplateDetails(step: AgentTraceStep): TemplateDetail[] {
+  const raw = step.metadata?.templateDetails
+  if (!raw) return []
+  if (Array.isArray(raw)) return raw
+  if (typeof raw === 'string') {
+    try { return JSON.parse(raw) } catch { return [] }
+  }
+  return []
+}
+
+/** 获取除 templateDetails 外的其他元数据字段 */
+function getOtherMetadata(step: AgentTraceStep): [string, any][] {
+  if (!step.metadata) return []
+  return Object.entries(step.metadata).filter(([k]) => k !== 'templateDetails')
 }
 
 interface SkillResult {
@@ -509,6 +577,46 @@ function formatMetadataValue(val: any): string {
   font-size: 13px;
   font-weight: 500;
   color: var(--el-text-color-primary);
+}
+
+/* 模板详情卡片 */
+.template-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.template-card {
+  border: 1px solid var(--el-border-color-extra-light);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.template-card:hover {
+  border-color: var(--el-border-color-light);
+}
+.template-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  cursor: pointer;
+  background: var(--el-fill-color-blank);
+  transition: background 0.15s;
+}
+.template-card-header:hover {
+  background: var(--el-fill-color-lighter);
+}
+.template-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.template-card-body {
+  padding: 0 10px 8px;
+  overflow: hidden;
 }
 
 /* 技能调用特殊样式 */

@@ -201,15 +201,43 @@ export interface AgentTestChatResponse {
 
 // ===== SSE 流式事件 =====
 
+/**
+ * 步骤详情信息（来自 step_detail 事件）
+ * 统一格式：{ stepIndex, detailType, data: {...} }
+ * data 内部字段根据 detailType 不同而不同
+ */
+export interface StepDetail {
+  /** 详情类型：
+   * - agent_prompt: Agent 基础提示词
+   * - template_loaded: 加载的提示词模板
+   * - knowledge_result: 知识库检索结果
+   * - skill_params: 技能调用参数
+   * - skill_result: 技能调用结果
+   */
+  detailType: string
+  /** 详情数据（根据 detailType 结构不同） */
+  data?: Record<string, any>
+}
+
 /** 测试对话 SSE 流式事件 */
 export interface AgentTestChatSSEEvent {
-  type: 'step_start' | 'step_done' | 'content' | 'done' | 'error'
+  type: 'step_start' | 'step_progress' | 'step_detail' | 'step_done' | 'content' | 'done' | 'error'
+  /** 步骤索引 */
+  stepIndex?: number
+  /** step_start / step_done：步骤类型（prompt_assembly / knowledge_retrieval / skill_execution / llm_call） */
+  stepType?: string
   /** step_start / step_done：步骤名称 */
   stepName?: string
   /** step_done：步骤状态 */
   status?: 'success' | 'fail' | 'skip'
   /** step_done：步骤耗时 ms */
   durationMs?: number
+  /** step_progress：进度消息文本 */
+  message?: string
+  /** step_detail：详情类型 */
+  detailType?: string
+  /** step_detail：详情数据（扁平字段，后端直接发送到顶层） */
+  data?: Record<string, any>
   /** content：文本片段 */
   text?: string
   /** done：完整链路快照 */
@@ -222,6 +250,4 @@ export interface AgentTestChatSSEEvent {
   tokensCompletion?: number
   /** done：总耗时 ms */
   totalDurationMs?: number
-  /** error：错误信息 */
-  message?: string
 }

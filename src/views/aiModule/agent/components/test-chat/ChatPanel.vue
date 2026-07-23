@@ -9,7 +9,7 @@
 <template>
   <div class="flex flex-col h-full bg-el-fill-color-blank">
     <!-- ===== 消息列表区域 ===== -->
-    <div ref="messageListRef" class="flex-1 overflow-y-auto px-16px py-8px">
+    <div ref="messageListRef" class="message-list flex-1 overflow-y-auto px-16px py-8px">
       <!-- 空状态：无消息时显示引导提示 -->
       <div v-if="messages.length === 0" class="flex flex-col items-center justify-center h-full">
         <el-icon :size="48" color="var(--el-color-info-light-5)"><ChatDotRound /></el-icon>
@@ -44,7 +44,7 @@
       <el-input
         v-model="inputMessage"
         type="textarea"
-        :rows="2"
+        :rows="3"
         placeholder="输入消息测试 Agent... (Ctrl+Enter 发送)"
         :disabled="chatting"
         resize="none"
@@ -52,13 +52,13 @@
       />
       <div class="flex justify-end gap-8px mt-8px">
         <!-- 取消按钮：仅在生成中显示 -->
-        <el-button v-if="chatting" size="small" @click="cancelChat">取消</el-button>
+        <el-button v-if="chatting" @click="cancelChat">取消</el-button>
         <!-- 发送/生成中按钮 -->
-        <el-button type="primary" size="small" :loading="chatting" :disabled="!inputMessage.trim() && !chatting" @click="sendMessage">
+        <el-button type="primary" :loading="chatting" :disabled="!inputMessage.trim() && !chatting" @click="sendMessage">
           <el-icon v-if="!chatting"><Promotion /></el-icon> {{ chatting ? '生成中...' : '发送' }}
         </el-button>
         <!-- 清空按钮 -->
-        <el-button size="small" :disabled="chatting" @click="clearMessages">清空</el-button>
+        <el-button :disabled="chatting" @click="clearMessages">清空</el-button>
       </div>
     </div>
   </div>
@@ -280,12 +280,14 @@ async function sendMessage() {
  *
  * 根据 event.type 分发处理：
  * - step_start: 新增一个 running 状态的步骤到时间线
- * - step_done:  更新最后一个步骤的状态和耗时
+ * - step_progress / step_detail: 按 stepType 匹配步骤，追加进度/详情
+ * - step_done:  按 stepType 匹配步骤，更新状态和耗时
  * - content:    将文本片段追加到 assistant 消息内容
  * - done:       对话完成，设置 token 统计、链路快照，通知父组件
  * - error:      将错误信息追加到消息内容
  *
- * 注意：整个函数体包裹在 try-catch 中，防止解析错误阻塞流读取循环
+ * 注意：后端 step_progress / step_detail 的 stepIndex 可能硬编码为 0，
+ *       因此优先用 stepType 匹配步骤，而非 stepIndex。
  */
 function handleSSEEvent(event: AgentTestChatSSEEvent) {
   try {
@@ -293,20 +295,74 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
     const lastMsg = messages.value[messages.value.length - 1]
     if (lastMsg?.role !== 'assistant') return
 
+    /**
+     * 查找步骤：优先按 stepType 匹配（后端 stepIndex 不可靠），其次按 stepIndex
+     * @param stepIndex - 事件中的 stepIndex（可能为 0 硬编码）
+     * @param stepType  - 事件中的 stepType（如 prompt_assembly、skill_execution）
+     */
+    function findStep(stepIndex?: number, stepType?: string): StepProgress | undefined {
+      // 1. 如果有 stepType，优先按 stepType 匹配
+      if (stepType) {
+        const found = steps.value.find(s => s.stepType === stepType)
+        if (found) return found
+      }
+      // 2. 否则按 stepIndex 匹配（排除 0，因为后端可能硬编码为 0）
+      if (stepIndex != null && stepIndex > 0 && stepIndex < steps.value.length) {
+        return steps.value[stepIndex]
+      }
+      // 3. 兜底：返回最后一个 running 状态的步骤
+      return steps.value.find(s => s.status === 'running') || steps.value[steps.value.length - 1]
+    }
+
     switch (event.type) {
       // 后端开始执行某个步骤
       case 'step_start':
-        steps.value.push({ stepName: event.stepName || '', status: 'running' })
+        steps.value.push({
+          stepName: event.stepName || '',
+          stepType: event.stepType,
+          status: 'running',
+        })
         scrollToBottom()
         break
 
+      // 步骤执行过程中的进度消息（可多条）
+      // 注意：后端 step_progress 的 stepIndex 可能为 0（硬编码），需用 stepType 匹配
+      case 'step_progress': {
+        const step = findStep(event.stepIndex, event.stepType)
+        if (step) {
+          if (!step.progressList) step.progressList = []
+          step.progressList.push(event.message || '')
+        }
+        scrollToBottom()
+        break
+      }
+
+      // 步骤执行详情（技能参数、结果等，可多条）
+      case 'step_detail': {
+        const step = findStep(event.stepIndex, event.detailType === 'skill_params' || event.detailType === 'skill_result' ? 'skill_execution' : undefined)
+        if (step) {
+          if (!step.detailList) step.detailList = []
+          // 收集所有非标准字段到 data
+          const data: Record<string, any> = {}
+          const stdKeys = new Set(['type', 'stepIndex', 'detailType'])
+          for (const [key, val] of Object.entries(event)) {
+            if (!stdKeys.has(key)) data[key] = val
+          }
+          step.detailList.push({
+            detailType: event.detailType || 'unknown',
+            data,
+          })
+        }
+        scrollToBottom()
+        break
+      }
+
       // 某个步骤执行完成
       case 'step_done': {
-        const last = steps.value[steps.value.length - 1]
-        if (last) {
-          // skip 状态映射为 success（跳过≠失败）
-          last.status = event.status === 'skip' ? 'success' : (event.status as any) || 'success'
-          last.durationMs = event.durationMs
+        const step = findStep(event.stepIndex, event.stepType)
+        if (step) {
+          step.status = event.status === 'skip' ? 'success' : (event.status as any) || 'success'
+          step.durationMs = event.durationMs
         }
         scrollToBottom()
         break
@@ -384,8 +440,20 @@ onUnmounted(() => {
 <style scoped>
 /* 输入区域样式 */
 .input-area {
-  padding: 10px 16px 12px;
+  padding: 12px 16px 14px;
   border-top: 1px solid var(--el-border-color-lighter);
   background: var(--el-fill-color-blank);
+}
+
+/* 消息列表滚动条美化 */
+.message-list::-webkit-scrollbar {
+  width: 4px;
+}
+.message-list::-webkit-scrollbar-thumb {
+  background: var(--el-border-color);
+  border-radius: 2px;
+}
+.message-list::-webkit-scrollbar-thumb:hover {
+  background: var(--el-text-color-secondary);
 }
 </style>

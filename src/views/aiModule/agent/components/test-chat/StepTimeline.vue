@@ -1,182 +1,259 @@
-<!--
-  步骤时间线组件 (StepTimeline.vue)
-  =================================
-  功能：以纵向时间线形式展示 Agent 执行过程中的步骤进度
-  布局：左侧圆点+连接线，右侧步骤名称+耗时
-  状态：running（执行中-蓝色旋转）/ success（成功-绿色）/ fail（失败-红色）/ skip（跳过-绿色）
-  用途：嵌入在最后一条 assistant 消息气泡内，实时反映后端执行进度
--->
 <template>
   <div class="step-timeline">
-    <!-- 遍历每个步骤，渲染时间线节点 -->
-    <div v-for="(step, si) in steps" :key="si" class="step-item">
-      <!-- 左侧列：圆点 + 连接线 -->
-      <div class="step-dot-col">
-        <!-- 状态圆点：根据 step.status 显示不同图标和颜色 -->
-        <div class="step-dot" :class="step.status">
-          <!-- 执行中：旋转加载图标 -->
-          <el-icon v-if="step.status === 'running'" class="is-loading" :size="12"><Loading /></el-icon>
-          <!-- 成功：勾选图标 -->
-          <el-icon v-else-if="step.status === 'success'" :size="12"><CircleCheckFilled /></el-icon>
-          <!-- 失败：关闭图标 -->
-          <el-icon v-else-if="step.status === 'fail'" :size="12"><CircleCloseFilled /></el-icon>
-          <!-- 跳过：减号图标（与 success 同色） -->
-          <el-icon v-else :size="12"><RemoveFilled /></el-icon>
+    <TransitionGroup name="step" tag="div">
+      <div v-for="(step, si) in steps" :key="stepKey(step, si)" class="step-item" :style="{ '--i': si }">
+        <div class="step-dot-col">
+          <div class="step-dot" :class="step.status">
+            <el-icon v-if="step.status === 'running'" class="is-loading" :size="16"><Loading /></el-icon>
+            <el-icon v-else-if="step.status === 'success'" :size="16"><CircleCheckFilled /></el-icon>
+            <el-icon v-else-if="step.status === 'fail'" :size="16"><CircleCloseFilled /></el-icon>
+            <el-icon v-else :size="16"><RemoveFilled /></el-icon>
+          </div>
+          <div v-if="si < steps.length - 1" class="step-line" />
         </div>
-        <!-- 连接线：最后一个节点不显示 -->
-        <div v-if="si < steps.length - 1" class="step-line" />
-      </div>
 
-      <!-- 右侧列：步骤信息 -->
-      <div class="step-info">
-        <!-- 步骤名称：执行中时高亮为蓝色 -->
-        <span class="step-name" :class="{ 'is-running': step.status === 'running' }">{{ step.stepName }}</span>
-        <!-- 执行中状态文本 -->
-        <span v-if="step.status === 'running'" class="step-status">执行中</span>
-        <!-- 耗时（仅完成的步骤显示） -->
-        <span v-else-if="step.durationMs != null" class="step-time">{{ step.durationMs }}ms</span>
-      </div>
-    </div>
+        <div class="step-content">
+          <div class="step-info">
+            <span class="step-name" :class="{ 'is-running': step.status === 'running' }">{{ step.stepName }}</span>
+            <el-tag v-if="step.stepType" size="small" :type="getStepTypeTag(step.stepType) as any" effect="plain" class="step-type-tag">
+              {{ getStepTypeLabel(step.stepType) }}
+            </el-tag>
+            <span v-if="step.status === 'running'" class="step-status">执行中</span>
+            <span v-else-if="step.durationMs != null" class="step-time">{{ step.durationMs }}ms</span>
+          </div>
 
-    <!-- 底部分割线：当有消息内容时显示，分隔步骤和正文 -->
+          <div v-if="step.progressList && step.progressList.length > 0" class="step-progress-list">
+            <div v-for="(msg, pi) in step.progressList" :key="pi" class="step-progress-item">
+              <el-icon :size="16" class="text-el-color-info shrink-0 mt-2px"><InfoFilled /></el-icon>
+              <span class="step-progress-text">{{ msg }}</span>
+            </div>
+          </div>
+
+          <div v-if="step.detailList && step.detailList.length > 0" class="step-detail-list">
+            <div v-for="(detail, di) in step.detailList" :key="di" class="step-detail-item">
+              <template v-if="detail.detailType === 'agent_prompt'">
+                <div class="detail-header">
+                  <el-tag size="small" type="primary" effect="plain">基础提示词</el-tag>
+                  <span class="detail-sub">{{ detail.data?.contentLength }} 字符</span>
+                </div>
+                <pre class="detail-code">{{ truncateText(detail.data?.content, 200) }}</pre>
+              </template>
+
+              <template v-else-if="detail.detailType === 'template_loaded'">
+                <div class="detail-header">
+                  <el-tag size="small" type="success" effect="plain">模板</el-tag>
+                  <span class="detail-name">{{ detail.data?.templateName }}</span>
+                  <span class="detail-sub">ID: {{ detail.data?.templateId }}</span>
+                  <span class="detail-sub">{{ detail.data?.contentLength }} 字符</span>
+                </div>
+                <pre class="detail-code">{{ detail.data?.contentPreview }}</pre>
+              </template>
+
+              <template v-else-if="detail.detailType === 'knowledge_result'">
+                <div class="detail-header">
+                  <el-tag size="small" type="warning" effect="plain">知识库</el-tag>
+                  <span class="detail-name">{{ detail.data?.knowledgeName }}</span>
+                  <span class="detail-sub">命中 {{ detail.data?.foundCount }} 条</span>
+                </div>
+                <div v-if="detail.data?.chunks && detail.data.chunks.length > 0" class="knowledge-chunks">
+                  <div v-for="(chunk, ci) in detail.data.chunks" :key="ci" class="knowledge-chunk">
+                    <div class="chunk-preview">{{ chunk.contentPreview }}</div>
+                    <div class="chunk-score">相关度: {{ (chunk.score * 100).toFixed(1) }}%</div>
+                  </div>
+                </div>
+              </template>
+
+              <template v-else-if="detail.detailType === 'skill_params'">
+                <div class="detail-header">
+                  <el-tag size="small" type="warning" effect="plain">参数</el-tag>
+                  <span class="detail-name">{{ detail.data?.skillName }}</span>
+                </div>
+                <pre class="detail-code">{{ formatJson(detail.data?.params) }}</pre>
+              </template>
+
+              <template v-else-if="detail.detailType === 'skill_result' && detail.data?.status === 'success'">
+                <div class="detail-header">
+                  <el-tag size="small" type="success" effect="plain">结果</el-tag>
+                  <span class="detail-name">{{ detail.data?.skillName }}</span>
+                  <el-tag size="small" type="success" effect="plain" class="detail-url" :title="detail.data?.httpMethod + ' ' + detail.data?.url">
+                    {{ detail.data?.httpMethod }} {{ detail.data?.url }}
+                  </el-tag>
+                </div>
+                <pre class="detail-code">{{ detail.data?.resultPreview }}</pre>
+              </template>
+
+              <template v-else-if="detail.detailType === 'skill_result' && detail.data?.status === 'failed'">
+                <div class="detail-header">
+                  <el-tag size="small" type="danger" effect="plain">失败</el-tag>
+                  <span class="detail-name">{{ detail.data?.skillName }}</span>
+                </div>
+                <div class="detail-error">{{ detail.data?.errorMessage }}</div>
+              </template>
+
+              <template v-else>
+                <div class="detail-header">
+                  <el-tag size="small" effect="plain">{{ detail.detailType }}</el-tag>
+                </div>
+                <pre class="detail-code">{{ formatJson(detail.data) }}</pre>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </TransitionGroup>
+
     <div v-if="showDivider" class="step-divider" />
   </div>
 </template>
 
 <script setup lang="ts">
-/**
- * StepTimeline - 步骤时间线组件
- *
- * 展示 Agent 执行过程中的步骤进度，典型步骤包括：
- * 1. 提示词组装 (prompt_assembly)
- * 2. 知识库检索 (knowledge_retrieval)
- * 3. 技能调用 (skill_execution)
- * 4. LLM 调用 (llm_call)
- *
- * 数据来源：后端通过 SSE 事件逐步推送 step_start / step_done
- */
-import { Loading, CircleCheckFilled, CircleCloseFilled, RemoveFilled } from '@element-plus/icons-vue'
+import { Loading, CircleCheckFilled, CircleCloseFilled, RemoveFilled, InfoFilled } from '@element-plus/icons-vue'
 
-/**
- * 步骤进度数据结构
- * 导出供 ChatPanel.vue 和 MessageBubble.vue 使用
- */
-export interface StepProgress {
-  /** 步骤名称（如"提示词组装"、"技能调用"） */
-  stepName: string
-  /** 步骤状态：running=执行中, success=成功, fail=失败, skip=跳过 */
-  status: 'running' | 'success' | 'fail' | 'skip'
-  /** 执行耗时（毫秒），执行完成后由 step_done 事件设置 */
-  durationMs?: number
+export interface StepDetailItem {
+  detailType: string
+  data?: Record<string, any>
 }
 
-/** 组件属性 */
+export interface StepProgress {
+  stepName: string
+  stepType?: string
+  status: 'running' | 'success' | 'fail' | 'skip'
+  durationMs?: number
+  progressList?: string[]
+  detailList?: StepDetailItem[]
+}
+
 defineProps<{
-  /** 步骤进度列表 */
   steps: StepProgress[]
-  /** 是否显示底部分割线（用于分隔步骤和消息正文） */
   showDivider?: boolean
 }>()
+
+function stepKey(step: StepProgress, index: number): string {
+  return step.stepType || `step-${index}`
+}
+
+function getStepTypeTag(type: string): '' | 'success' | 'warning' | 'danger' | 'info' {
+  const map: Record<string, '' | 'success' | 'warning' | 'danger' | 'info'> = {
+    prompt_assembly: '',
+    knowledge_retrieval: 'success',
+    skill_execution: 'warning',
+    llm_call: 'danger',
+  }
+  return map[type] || 'info'
+}
+
+function getStepTypeLabel(type: string): string {
+  const map: Record<string, string> = {
+    prompt_assembly: '提示词',
+    knowledge_retrieval: '知识库',
+    skill_execution: '技能',
+    llm_call: 'LLM',
+  }
+  return map[type] || type
+}
+
+function truncateText(text: string | undefined, maxLen: number): string {
+  if (!text) return ''
+  return text.length > maxLen ? text.substring(0, maxLen) + '...' : text
+}
+
+function formatJson(data: any): string {
+  if (data === undefined || data === null) return ''
+  if (typeof data === 'string') return data
+  try {
+    return JSON.stringify(data, null, 2)
+  } catch {
+    return String(data)
+  }
+}
 </script>
 
 <style scoped>
-/* 时间线容器 */
-.step-timeline {
-  padding: 4px 0 2px;
+.step-enter-active {
+  animation: stepIn 0.3s ease-out both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+.step-leave-active {
+  animation: stepOut 0.2s ease-in both;
+}
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes stepOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-4px); }
+}
+.step-detail-enter-active {
+  animation: detailIn 0.25s ease-out both;
+}
+@keyframes detailIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* 单个步骤行 */
-.step-item {
-  display: flex;
-  gap: 8px;
-}
-
-/* 左侧列：圆点 + 连接线，固定宽度 18px */
+.step-timeline { padding: 4px 0 2px; }
+.step-item { display: flex; gap: 8px; }
 .step-dot-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 18px;
-  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center;
+  width: 18px; flex-shrink: 0;
 }
-
-/* 状态圆点：18px 圆形，居中显示图标 */
 .step-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-/* 执行中：蓝色背景 */
-.step-dot.running {
-  background: var(--el-color-primary-light-8);
-  color: var(--el-color-primary);
+.step-dot.running { background: var(--el-color-primary-light-8); color: var(--el-color-primary); }
+.step-dot.success { background: var(--el-color-success-light-8); color: var(--el-color-success); }
+.step-dot.fail { background: var(--el-color-danger-light-8); color: var(--el-color-danger); }
+.step-dot.skip { background: var(--el-color-success-light-8); color: var(--el-color-success); }
+.step-line { width: 2px; flex: 1; min-height: 6px; background: var(--el-border-color-lighter); }
+.step-content { flex: 1; min-width: 0; padding-bottom: 6px; }
+.step-info { display: flex; align-items: center; gap: 6px; min-height: 20px; flex-wrap: wrap; }
+.step-name { 
+  font-size: 12px; 
+  font-weight: 500; 
+  color: var(--el-text-color-primary); 
 }
-/* 成功：绿色背景 */
-.step-dot.success {
-  background: var(--el-color-success-light-8);
-  color: var(--el-color-success);
+.step-name.is-running { 
+  color: var(--el-color-primary); 
 }
-/* 失败：红色背景 */
-.step-dot.fail {
-  background: var(--el-color-danger-light-8);
-  color: var(--el-color-danger);
-}
-/* 跳过：绿色背景（与成功同色） */
-.step-dot.skip {
-  background: var(--el-color-success-light-8);
-  color: var(--el-color-success);
-}
+.step-type-tag { margin: 0; }
+.step-status { font-size: 11px; color: var(--el-color-primary); font-weight: 500; }
+.step-time { font-size: 11px; color: var(--el-text-color-secondary); font-variant-numeric: tabular-nums; }
 
-/* 连接线：2px 宽，填充剩余高度 */
-.step-line {
-  width: 2px;
-  flex: 1;
-  min-height: 6px;
-  background: var(--el-border-color-lighter);
-}
+.step-progress-list { margin-top: 4px; padding-left: 2px; }
+.step-progress-item { display: flex; align-items: flex-start; gap: 4px; margin-bottom: 2px; }
+.step-progress-text { font-size: 11px; color: var(--el-text-color-secondary); line-height: 16px; }
 
-/* 步骤信息行 */
-.step-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding-bottom: 4px;
-  min-height: 24px;
+.step-detail-list { margin-top: 6px; padding-left: 2px; display: flex; flex-direction: column; gap: 6px; }
+.step-detail-item {
+  border: 1px solid var(--el-border-color-extra-light);
+  border-radius: 6px; padding: 8px 10px; background: var(--el-fill-color-blank);
 }
+.detail-header { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.detail-url {
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 11px; vertical-align: middle;
+}
+.detail-name { font-size: 12px; font-weight: 500; color: var(--el-text-color-primary); }
+.detail-sub { font-size: 11px; color: var(--el-text-color-secondary); }
+.detail-code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11px; line-height: 1.5; color: var(--el-text-color-regular);
+  background: var(--el-fill-color); border: 1px solid var(--el-border-color-extra-light);
+  border-radius: 4px; padding: 6px 8px; margin: 6px 0 0;
+  overflow-x: auto; white-space: pre-wrap; word-break: break-all;
+  max-height: 150px; overflow-y: auto;
+}
+.detail-error { margin-top: 4px; font-size: 12px; color: var(--el-color-danger); line-height: 1.5; }
 
-/* 步骤名称 */
-.step-name {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--el-text-color-primary);
+.knowledge-chunks { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.knowledge-chunk {
+  padding: 6px 8px; background: var(--el-fill-color);
+  border-radius: 4px; border: 1px solid var(--el-border-color-extra-light);
 }
-/* 执行中时高亮为蓝色 */
-.step-name.is-running {
-  color: var(--el-color-primary);
-}
+.chunk-preview { font-size: 11px; color: var(--el-text-color-regular); line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
+.chunk-score { font-size: 10px; color: var(--el-text-color-secondary); margin-top: 2px; }
 
-/* 执行中状态文本 */
-.step-status {
-  font-size: 11px;
-  color: var(--el-color-primary);
-  font-weight: 500;
-}
-
-/* 耗时显示：使用等宽数字防止跳动 */
-.step-time {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-  font-variant-numeric: tabular-nums;
-}
-
-/* 底部分割线：左侧留空对齐步骤内容 */
-.step-divider {
-  height: 1px;
-  background: var(--el-border-color-extra-light);
-  margin: 4px 0 4px 26px;
-}
+.step-divider { height: 1px; background: var(--el-border-color-extra-light); margin: 4px 0 4px 26px; }
 </style>

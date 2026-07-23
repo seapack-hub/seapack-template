@@ -21,18 +21,19 @@
       <!-- 步骤时间线：仅在最后一条 assistant 消息中展示，与正文共存 -->
       <StepTimeline v-if="showSteps && steps && steps.length > 0" :steps="steps!" :show-divider="!!msg.content" />
 
-      <!-- 消息正文：支持 HTML 渲染（后端返回 Markdown 转 HTML） -->
-      <div v-if="msg.content" class="msg-bubble" :class="msg.role" v-html="msg.content" />
+      <!-- 消息正文：用户纯文本，助手 Markdown 渲染 -->
+      <div v-if="msg.content && msg.role === 'user'" class="msg-bubble user">{{ msg.content }}</div>
+      <MarkdownRenderer v-else-if="msg.content && msg.role === 'assistant'" :content="msg.content" class="msg-bubble assistant" />
 
-      <!-- 元信息行：耗时 / token 消耗 / 查看链路按钮 -->
+      <!-- 元信息行：耗时 / token 消耗 / 复制 / 查看链路 -->
       <div v-if="msg.role === 'assistant' && msg.durationMs" class="msg-meta">
-        <!-- 执行耗时 -->
         <span class="tabular-nums">{{ formatDuration(msg.durationMs) }}</span>
-        <!-- Token 消耗（prompt / completion） -->
         <span v-if="msg.tokensPrompt" class="tabular-nums"> | Token {{ msg.tokensPrompt }}/{{ msg.tokensCompletion }}</span>
-        <!-- 查看链路按钮：点击切换到链路追踪 Tab -->
         <el-button v-if="msg.traceSnapshot" link type="primary" size="small" class="!text-11px !p-0" @click="$emit('viewTrace', msg.traceSnapshot!)">
           查看链路
+        </el-button>
+        <el-button link type="text" size="small" class="!text-11px !p-0" @click="copyContent">
+          <el-icon :size="12"><CopyDocument /></el-icon>
         </el-button>
       </div>
     </div>
@@ -52,7 +53,10 @@
  * - ChatMessage: 消息数据结构，包含角色、内容、元信息
  * - StepProgress: 步骤进度数据结构（来自 StepTimeline.vue）
  */
+import { CopyDocument } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import type { AgentTraceSnapshot } from '@/api/ai/agent'
+import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer.vue'
 import StepTimeline from './StepTimeline.vue'
 import type { StepProgress } from './StepTimeline.vue'
 
@@ -76,7 +80,7 @@ export interface ChatMessage {
 }
 
 /** 组件属性 */
-defineProps<{
+const props = defineProps<{
   /** 消息数据 */
   msg: ChatMessage
   /** 步骤进度列表（仅最后一条 assistant 消息传入） */
@@ -100,6 +104,15 @@ function formatDuration(ms: number): string {
   if (ms < 1000) return `${ms}ms`
   return `${(ms / 1000).toFixed(1)}s`
 }
+
+async function copyContent() {
+  try {
+    await navigator.clipboard.writeText(props.msg.content)
+    ElMessage.success('已复制到剪贴板')
+  } catch {
+    ElMessage.error('复制失败')
+  }
+}
 </script>
 
 <style scoped>
@@ -116,14 +129,14 @@ function formatDuration(ms: number): string {
 
 /* ===== 头像样式 ===== */
 .msg-avatar {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: 2px; /* 与气泡顶部对齐 */
+  margin-top: 4px;
 }
 /* 用户头像：主色调 */
 .msg-avatar.user {
@@ -138,24 +151,30 @@ function formatDuration(ms: number): string {
 
 /* ===== 内容区域 ===== */
 .msg-body {
-  max-width: 75%; /* 气泡最大宽度限制 */
-  min-width: 0;   /* 防止 flex 子元素溢出 */
+  min-width: 0;
 }
-/* 用户消息：内容右对齐 */
+/* 用户消息：右对齐，宽度由内容决定 */
 .msg-body.user {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  width: fit-content;
+  max-width: 70%;
+}
+/* 助手消息：固定宽度占比 */
+.msg-body.assistant {
+  width: 90%;
 }
 
 /* ===== 气泡样式 ===== */
 .msg-bubble {
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.7;
   word-break: break-word;
-  white-space: pre-wrap; /* 保留换行和空格 */
+  white-space: pre-wrap;
+  box-sizing: border-box;
 }
 /* 用户气泡：蓝色背景，右上角小圆角 */
 .msg-bubble.user {
@@ -168,6 +187,8 @@ function formatDuration(ms: number): string {
   background: var(--el-fill-color-light);
   color: var(--el-text-color-primary);
   border-top-left-radius: 4px;
+  width: 100%;
+  white-space: normal;
 }
 
 /* ===== 元信息行（耗时/token/链路） ===== */
@@ -175,9 +196,14 @@ function formatDuration(ms: number): string {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
-  margin-top: 2px;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 0 4px;
   font-size: 11px;
   color: var(--el-text-color-secondary);
+}
+.msg-meta :deep(.el-button) {
+  margin-left: 4px;
+  padding: 0 !important;
 }
 </style>

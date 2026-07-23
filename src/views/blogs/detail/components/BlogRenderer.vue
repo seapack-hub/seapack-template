@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import { renderSafeHtml } from '@/views/blogs/utils/sanitize.ts'
-import { highlightCode, injectHeadingIds, injectCopyButtons } from '@/views/blogs/utils/highlight.ts'
-import '@/views/blogs/styles/content.scss'
+import { highlightCode, injectCopyButtons, injectHeadingIds } from '@/utils/highlight'
+import '@/styles/content.scss'
 
 const props = defineProps<{
   contentHtml: string

@@ -8,6 +8,21 @@ export async function highlightCode(container: HTMLElement | null) {
   })
 }
 
+/**
+ * 为正文中所有 h1/h2/h3 标题元素注入 id（供 ArticleToc 锚点定位）
+ * 使用 base64 编码确保 id 唯一且无特殊字符
+ */
+export function injectHeadingIds(container: HTMLElement | null) {
+  if (!container) return
+  const headings = container.querySelectorAll('h1, h2, h3')
+  headings.forEach((el) => {
+    const text = el.textContent?.trim() || ''
+    if (text && !el.id) {
+      el.id = `toc-${btoa(encodeURIComponent(text)).slice(0, 32)}`
+    }
+  })
+}
+
 /** 在每个代码块右上角注入复制按钮 */
 export function injectCopyButtons(container: HTMLElement | null) {
   if (!container) return
@@ -35,20 +50,5 @@ export function injectCopyButtons(container: HTMLElement | null) {
     })
 
     pre.appendChild(btn)
-  })
-}
-
-/**
- * 为正文中所有 h1/h2/h3 标题元素注入 id（供 ArticleToc 锚点定位）
- * 使用 base64 编码确保 id 唯一且无特殊字符
- */
-export function injectHeadingIds(container: HTMLElement | null) {
-  if (!container) return
-  const headings = container.querySelectorAll('h1, h2, h3')
-  headings.forEach((el) => {
-    const text = el.textContent?.trim() || ''
-    if (text && !el.id) {
-      el.id = `toc-${btoa(encodeURIComponent(text)).slice(0, 32)}`
-    }
   })
 }
