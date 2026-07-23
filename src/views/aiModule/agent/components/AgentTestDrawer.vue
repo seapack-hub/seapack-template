@@ -89,7 +89,7 @@ function onTraceUpdate(snapshot: AgentTraceSnapshot) {
 
 async function fetchTestSessions() {
   try {
-    const res = await AgentAPI.getTestSessions(props.agentId, { pageNum: 1, pageSize: 20 })
+    const res = await AgentAPI.getTestSessions(props.agentId, { pageNum: 1, pageSize: 999 })
     testSessions.value = res.list || []
   } catch { /* 忽略 */ }
 }
