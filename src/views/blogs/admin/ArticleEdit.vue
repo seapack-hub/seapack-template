@@ -37,7 +37,7 @@
     <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="blogsManagement"
-      position="editor-toolbar"
+      position-key="editor-toolbar"
       :context="aiContext"
       @done="handleAiResult"
     />

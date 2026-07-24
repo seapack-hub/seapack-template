@@ -6,18 +6,18 @@
   <div class="app-container w-100% h-100% flex flex-col">
     <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
       <!-- 搜索栏 -->
-      <div class="search-bar h-[50px]">
-        <el-form :inline="true" :model="queryParams">
+      <div class="search-bar">
+        <el-form :inline="true" :model="queryParams" @submit.prevent="handleQuery">
           <el-form-item label="模板名称">
             <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="分类">
-            <el-select v-model="queryParams.category" placeholder="全部" clearable style="width: 200px">
+            <el-select v-model="queryParams.category" placeholder="全部" clearable style="width: 140px">
               <el-option v-for="opt in TEMPLATE_CATEGORY_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
             </el-select>
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 200px">
+            <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 120px">
               <el-option v-for="opt in STATUS_OPTIONS" :key="String(opt.value)" :label="opt.label" :value="opt.value" />
             </el-select>
           </el-form-item>
@@ -29,9 +29,9 @@
       </div>
 
       <!-- 工具栏 -->
-      <div class="h-[40px] flex justify-between items-center">
+      <div class="toolbar">
         <el-button type="success" icon="plus" @click="openAddDialog()">新增模板</el-button>
-        <el-radio-group v-model="viewMode">
+        <el-radio-group v-model="viewMode" class="view-switcher">
           <el-radio-button value="card">
             <el-icon><Grid /></el-icon>
           </el-radio-button>
@@ -72,7 +72,7 @@
             <template #category>
               <el-table-column label="分类" prop="category" min-width="100" align="center" slot-name="category">
                 <template #default="{ row }">
-                  <el-tag :type="categoryTagType(row.category) as any">{{ categoryLabel(row.category) }}</el-tag>
+                  <el-tag :type="categoryTagType(row.category) as any" effect="light">{{ categoryLabel(row.category) }}</el-tag>
                 </template>
               </el-table-column>
             </template>
@@ -189,6 +189,18 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.view-switcher {
+  :deep(.el-radio-button__inner) {
+    padding: 6px 10px;
+  }
 }
 
 /* 视图切换过渡 */

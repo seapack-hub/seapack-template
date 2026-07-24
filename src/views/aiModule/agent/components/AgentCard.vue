@@ -3,16 +3,14 @@
   头像+名称同一行 + 描述 + 元信息 + 操作栏
 -->
 <template>
-  <div
-    class="bg-white border border-solid border-[var(--el-border-color-lighter)] rounded-xl p-16px flex flex-col gap-12px transition-all-250 cursor-default hover:-translate-y-2px hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:border-[var(--el-color-primary-light-7)]"
-  >
+  <div class="agent-card">
     <!-- 顶栏：头像 + 名称 + 状态开关 -->
     <div class="flex items-center gap-10px">
-      <div class="flex-shrink-0 w-40px h-40px rounded-lg flex items-center justify-center shadow-[0_3px_10px_rgba(0,0,0,0.08)] bg-gradient-to-br from-[#667eea] to-[#764ba2]">
-        <Icon v-if="agent.avatar" :name="agent.avatar" :size="30" color="#fff" />
-        <span v-else class="color-white text-16px fw-700">{{ agent.name?.charAt(0) || 'A' }}</span>
+      <div class="agent-card__avatar">
+        <Icon v-if="agent.avatar" :name="agent.avatar" :size="22" color="#fff" />
+        <span v-else class="color-white text-14px fw-700">{{ agent.name?.charAt(0) || 'A' }}</span>
       </div>
-      <span class="flex-1 truncate text-15px fw-600 color-[var(--el-text-color-primary)]">{{ agent.name }}</span>
+      <span class="flex-1 truncate text-14px fw-600 color-[var(--el-text-color-primary)]">{{ agent.name }}</span>
       <el-switch
         :model-value="agent.status"
         :active-value="1"
@@ -23,36 +21,47 @@
     </div>
 
     <!-- 描述 -->
-    <p class="m-0 text-12px lh-17px color-[var(--el-text-color-secondary)] line-clamp-2 min-h-[34px]">
+    <p class="agent-card__desc">
       {{ agent.description || '暂无描述' }}
     </p>
 
     <!-- 元信息 -->
-    <div class="flex items-center justify-between gap-6px flex-wrap">
-      <el-tag v-if="agent.modelCode" size="small" type="info" class="!text-11px">{{ agent.modelCode }}</el-tag>
-      <span class="text-11px color-[var(--el-text-color-placeholder)]">v{{ agent.version || '1.0.0' }}</span>
-      <span class="text-11px color-[var(--el-text-color-placeholder)]">{{ agent.useCount || 0 }} 次使用</span>
+    <div class="agent-card__meta">
+      <el-tag v-if="agent.modelCode" size="small" type="info" effect="plain" class="!text-11px">{{ agent.modelCode }}</el-tag>
+      <span class="agent-card__version">v{{ agent.version || '1.0.0' }}</span>
+      <span class="agent-card__usage">{{ agent.useCount || 0 }} 次使用</span>
     </div>
 
     <!-- 底栏 -->
-    <div class="flex items-center justify-between pt-10px border-t border-t-solid border-t-[var(--el-border-color-extra-light)]">
-      <span class="text-12px color-[var(--el-text-color-placeholder)]">Agent</span>
-      <div class="flex items-center gap-2px">
-        <span class="w-26px h-26px inline-flex items-center justify-center rounded-6px color-[var(--el-text-color-secondary)] cursor-pointer transition-all-150 hover:bg-[var(--el-fill-color-light)] hover:text-[var(--el-color-primary)]" title="编辑" @click="emit('edit', agent)">
-          <el-icon :size="13"><Edit /></el-icon>
-        </span>
-        <span class="w-26px h-26px inline-flex items-center justify-center rounded-6px color-[var(--el-text-color-secondary)] cursor-pointer transition-all-150 hover:bg-[var(--el-fill-color-light)] hover:text-[var(--el-color-primary)]" title="配置" @click="emit('config', agent)">
-          <el-icon :size="13"><Setting /></el-icon>
-        </span>
-        <span class="w-26px h-26px inline-flex items-center justify-center rounded-6px color-[var(--el-text-color-secondary)] cursor-pointer transition-all-150 hover:bg-[var(--el-fill-color-light)] hover:text-[var(--el-color-primary)]" title="测试" @click="emit('test', agent)">
-          <el-icon :size="13"><Promotion /></el-icon>
-        </span>
-        <span class="w-26px h-26px inline-flex items-center justify-center rounded-6px color-[var(--el-text-color-secondary)] cursor-pointer transition-all-150 hover:bg-[var(--el-fill-color-light)] hover:text-[var(--el-color-primary)]" title="复制" @click="emit('copy', agent)">
-          <el-icon :size="13"><CopyDocument /></el-icon>
-        </span>
-        <span class="w-26px h-26px inline-flex items-center justify-center rounded-6px color-[var(--el-text-color-secondary)] cursor-pointer transition-all-150 hover:bg-[var(--el-color-danger-light-9)] hover:text-[var(--el-color-danger)]" title="删除" @click="emit('delete', agent)">
-          <el-icon :size="13"><Delete /></el-icon>
-        </span>
+    <div class="agent-card__footer">
+      <span class="agent-card__type">Agent</span>
+      <div class="agent-card__actions">
+        <el-tooltip content="编辑" placement="top" :show-after="400">
+          <button class="agent-card__action" @click="emit('edit', agent)">
+            <el-icon :size="14"><Edit /></el-icon>
+          </button>
+        </el-tooltip>
+        <el-tooltip content="配置" placement="top" :show-after="400">
+          <button class="agent-card__action" @click="emit('config', agent)">
+            <el-icon :size="14"><Setting /></el-icon>
+          </button>
+        </el-tooltip>
+        <el-tooltip content="测试" placement="top" :show-after="400">
+          <button class="agent-card__action" @click="emit('test', agent)">
+            <el-icon :size="14"><Promotion /></el-icon>
+          </button>
+        </el-tooltip>
+        <el-tooltip content="复制" placement="top" :show-after="400">
+          <button class="agent-card__action" @click="emit('copy', agent)">
+            <el-icon :size="14"><CopyDocument /></el-icon>
+          </button>
+        </el-tooltip>
+        <div class="agent-card__divider" />
+        <el-tooltip content="删除" placement="top" :show-after="400">
+          <button class="agent-card__action agent-card__action--danger" @click="emit('delete', agent)">
+            <el-icon :size="14"><Delete /></el-icon>
+          </button>
+        </el-tooltip>
       </div>
     </div>
   </div>
@@ -74,3 +83,113 @@ const emit = defineEmits<{
   statusChange: [agent: Agent, val: number]
 }>()
 </script>
+
+<style lang="scss" scoped>
+.agent-card {
+  background: #fff;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border-color: var(--el-color-primary-light-7);
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &__desc {
+    margin: 0;
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--el-text-color-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 36px;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__version {
+    font-size: 11px;
+    color: var(--el-text-color-placeholder);
+  }
+
+  &__usage {
+    font-size: 11px;
+    color: var(--el-text-color-placeholder);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid var(--el-border-color-extra-light);
+  }
+
+  &__type {
+    font-size: 12px;
+    color: var(--el-text-color-placeholder);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  &__action {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--el-text-color-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: var(--el-fill-color-light);
+      color: var(--el-color-primary);
+    }
+
+    &--danger:hover {
+      background: var(--el-color-danger-light-9);
+      color: var(--el-color-danger);
+    }
+  }
+
+  &__divider {
+    width: 1px;
+    height: 12px;
+    background: var(--el-border-color-lighter);
+    margin: 0 2px;
+  }
+}
+</style>

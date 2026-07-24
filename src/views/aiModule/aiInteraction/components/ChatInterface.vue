@@ -135,7 +135,7 @@
     <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="aiModule"
-      position="chat-sidebar"
+      position-key="chat-sidebar"
       :context="aiContext"
       @done="handleAiResult"
     />

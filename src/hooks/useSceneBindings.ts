@@ -11,7 +11,7 @@ import { computed, onMounted } from 'vue'
 import { useSceneBindingsStore } from '@/store/modules/sceneBindings'
 import type { SceneBindingInfo } from '@/api/ai/scene'
 
-export function useSceneBindings(moduleKey: string, position: string) {
+export function useSceneBindings(moduleKey: string, positionKey: string) {
   const store = useSceneBindingsStore()
 
   onMounted(() => {
@@ -20,7 +20,7 @@ export function useSceneBindings(moduleKey: string, position: string) {
 
   /** 该位置的所有绑定（含禁用） */
   const allBindings = computed<SceneBindingInfo[]>(() => {
-    return store.getByModuleAndPosition(moduleKey, position)
+    return store.getByModuleAndPosition(moduleKey, positionKey)
   })
 
   /** 仅启用的绑定 */

@@ -14,11 +14,11 @@ export const useSceneBindingsStore = defineStore('sceneBindings', () => {
   const loaded = ref(false)
   const loading = ref(false)
 
-  /** 按 `${moduleKey}:${position}` 建立索引 */
+  /** 按 `${moduleKey}:${positionKey}` 建立索引 */
   const bindingsIndex = computed(() => {
     const map = new Map<string, SceneBindingInfo[]>()
     for (const item of bindings.value) {
-      const key = `${item.moduleKey}:${item.position || ''}`
+      const key = `${item.moduleKey}:${item.positionKey || ''}`
       if (!map.has(key)) map.set(key, [])
       map.get(key)!.push(item)
     }
@@ -26,8 +26,8 @@ export const useSceneBindingsStore = defineStore('sceneBindings', () => {
   })
 
   /** 根据模块标识和位置过滤 */
-  function getByModuleAndPosition(moduleKey: string, position?: string): SceneBindingInfo[] {
-    const key = `${moduleKey}:${position || ''}`
+  function getByModuleAndPosition(moduleKey: string, positionKey?: string): SceneBindingInfo[] {
+    const key = `${moduleKey}:${positionKey || ''}`
     return bindingsIndex.value.get(key) || []
   }
 

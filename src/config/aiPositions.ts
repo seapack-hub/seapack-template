@@ -10,55 +10,51 @@
 import type { SceneBindingInfo } from '@/api/ai/scene'
 
 export interface AiPosition {
-  /** 模块标识，对应 MODULE_DEFS.key */
   moduleKey: string
   /** 模块内唯一的位置标识 */
-  position: string
-  /** 管理员看到的可读名称 */
+  positionKey: string
   label: string
-  /** 该位置用途说明 */
   description: string
-  /** 参考组件路径（方便开发定位） */
   component?: string
 }
 
 export const AI_POSITIONS: AiPosition[] = [
   {
     moduleKey: 'blogsManagement',
-    position: 'editor-toolbar',
+    positionKey: 'editor-toolbar',
     label: '文章编辑器工具栏',
     description: '文章编辑页顶部工具栏按钮区，用于 AI 写作、续写、润色等',
     component: 'ArticleEdit',
   },
   {
     moduleKey: 'stockFund',
-    position: 'detail-toolbar',
+    positionKey: 'detail-toolbar',
     label: '股票详情工具栏',
     description: '股票详情页顶部操作栏，用于 AI 分析建议',
   },
   {
     moduleKey: 'aiModule',
-    position: 'chat-sidebar',
+    positionKey: 'chat-sidebar',
     label: 'AI 聊天侧边栏',
     description: 'AI 对话页侧边栏，用于切换客服/知识库等模式',
   },
   {
     moduleKey: 'blogsManagement',
-    position: 'settings-drawer',
+    positionKey: 'settings-drawer',
     label: '文章设置抽屉',
     description: '文章编辑页右侧设置抽屉，用于 AI 生成标题、摘要等',
     component: 'ArticleSettingsDrawer',
   },
   {
     moduleKey: 'aiModule',
-    position: 'skill-editor',
+    positionKey: 'skill-editor',
     label: '技能编辑器',
     description: 'AI 技能管理编辑弹窗，用于 AI 辅助编写提示词模板',
     component: 'SkillFormDialog',
   },
   {
     moduleKey: 'blogsManagement',
-    position: 'project-editor',
+    positionKey: 'project-editor',
     label: '项目编辑器',
     description: '博客项目编辑页，用于 AI 生成项目描述等',
     component: 'ProjectEdit',
@@ -70,19 +66,19 @@ export function getPositionsByModule(moduleKey: string): AiPosition[] {
   return AI_POSITIONS.filter(p => p.moduleKey === moduleKey)
 }
 
-/** 根据 moduleKey + position 获取位置可读标签 */
-export function getPositionLabel(moduleKey: string, position: string): string {
-  const found = AI_POSITIONS.find(p => p.moduleKey === moduleKey && p.position === position)
-  return found?.label || position
+/** 根据 moduleKey + positionKey 获取位置可读标签 */
+export function getPositionLabel(moduleKey: string, positionKey: string): string {
+  const found = AI_POSITIONS.find(p => p.moduleKey === moduleKey && p.positionKey === positionKey)
+  return found?.label || positionKey
 }
 
-/** 根据 position 获取位置可读标签（无需 moduleKey，但 position 需全局唯一） */
-export function getPositionLabelByPosition(position: string): string {
-  const found = AI_POSITIONS.find(p => p.position === position)
-  return found?.label || position
+/** 根据 positionKey 获取位置可读标签（无需 moduleKey，但 positionKey 需全局唯一） */
+export function getPositionLabelByPositionKey(positionKey: string): string {
+  const found = AI_POSITIONS.find(p => p.positionKey === positionKey)
+  return found?.label || positionKey
 }
 
-/** 将绑定列表转换为按 moduleKey 分组的 Map，方便消费方按模块渲染 */
+/** 将绑定列表转换为按 moduleKey 分组的 Map */
 export function groupBindingsByModule(bindings: SceneBindingInfo[]): Map<string, SceneBindingInfo[]> {
   const map = new Map<string, SceneBindingInfo[]>()
   for (const b of bindings) {

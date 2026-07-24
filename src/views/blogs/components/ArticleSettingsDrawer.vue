@@ -93,7 +93,7 @@
     <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="blogsManagement"
-      position="settings-drawer"
+      position-key="settings-drawer"
       :context="aiContext"
       @done="handleAiResult"
     />

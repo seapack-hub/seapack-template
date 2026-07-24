@@ -144,7 +144,7 @@ import type { SceneBindingInfo } from '@/api/ai/scene'
 
 const props = defineProps<{
   moduleKey: string
-  position: string
+  positionKey: string
   context?: Record<string, any>
   /** 指定场景 ID，传入时跳过选择器 */
   sceneId?: number
@@ -161,7 +161,7 @@ const dialogVisible = computed({
   set: (val: boolean) => { visible.value = val },
 })
 
-const { bindings, loading, loaded } = useSceneBindings(props.moduleKey, props.position)
+const { bindings, loading, loaded } = useSceneBindings(props.moduleKey, props.positionKey)
 
 const selectedBinding = ref<SceneBindingInfo | null>(null)
 

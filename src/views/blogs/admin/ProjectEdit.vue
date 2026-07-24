@@ -99,7 +99,7 @@
     <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="blogsManagement"
-      position="project-editor"
+      position-key="project-editor"
       :context="aiContext"
       @done="handleAiResult"
     />

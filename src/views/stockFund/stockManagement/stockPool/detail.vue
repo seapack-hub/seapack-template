@@ -41,7 +41,7 @@
     <AiAgentExecutor
       v-model:visible="aiDialogVisible"
       module-key="stockFund"
-      position="detail-toolbar"
+      position-key="detail-toolbar"
       :context="aiContext"
       @done="handleAiResult"
     />
