@@ -6,7 +6,7 @@
   <el-dialog
     v-model="visible"
     :title="isEdit ? '编辑部署' : '添加部署'"
-    width="480px"
+    width="600px"
     append-to-body
     @closed="resetForm"
   >
@@ -29,7 +29,7 @@
           <el-input v-model="buttonText" placeholder="如 AI 写作" clearable />
         </el-form-item>
         <el-form-item label="图标">
-          <el-input v-model="buttonIcon" placeholder="如 Edit" clearable />
+          <IconPicker v-model="buttonIcon" placeholder="如 Edit" clearable />
         </el-form-item>
         <el-form-item label="提示文案">
           <el-input v-model="buttonTooltip" placeholder="悬停提示" clearable />
@@ -38,10 +38,17 @@
 
       <el-row :gutter="20">
         <el-col :span="12">
+          <el-form-item label="状态">
+            <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
           <el-form-item label="设为默认">
             <el-switch v-model="form.isDefault" :active-value="1" :inactive-value="0" />
           </el-form-item>
         </el-col>
+      </el-row>
+      <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="排序号">
             <el-input-number v-model="form.sortOrder" :min="0" :max="999" style="width: 100%" />
@@ -59,6 +66,7 @@
 <script setup lang="ts">
 import type { SceneDeployment } from '@/api/ai/scene'
 import { AI_POSITIONS, getPositionsByModule } from '@/config/aiPositions'
+import IconPicker from '@/components/IconPicker/index.vue'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
