@@ -26,10 +26,36 @@ export interface Session {
   systemPrompt: string;
   /** 绑定的知识库命名空间 */
   namespace: string;
+  /** 对话模式：llm（裸 LLM 对话）| agent（绑定 Agent 的专业对话） */
+  mode: 'llm' | 'agent';
+  /** Agent 模式下绑定的 Agent 信息，LLM 模式时为 null */
+  agentBinding: AgentBinding | null;
   /** 创建时间戳 */
   createdAt: number;
   /** 最后活跃时间戳 */
   updatedAt: number;
+}
+
+/** Agent 绑定信息（从 SceneBindingInfo 中提取的关键字段） */
+export interface AgentBinding {
+  /** Agent ID */
+  agentId: number;
+  /** Agent 名称 */
+  agentName: string;
+  /** 所属场景 ID */
+  sceneId: number;
+  /** 所属场景名称 */
+  sceneName: string;
+  /** 场景级模型覆盖（null 表示使用 Agent 默认） */
+  agentModel?: string;
+  /** 场景级温度覆盖 */
+  agentTemperature?: number;
+  /** 场景级最大输出 Token 覆盖 */
+  agentMaxTokens?: number;
+  /** 场景级系统提示词覆盖 */
+  agentSystemPrompt?: string;
+  /** 关联的知识库 ID 列表 */
+  knowledgeIds?: number[];
 }
 
 /** 默认系统提示词 */
@@ -56,6 +82,8 @@ function createSession(systemPrompt = ''): Session {
     messages: [],
     systemPrompt: systemPrompt || DEFAULT_SYSTEM_PROMPT,
     namespace: '',
+    mode: 'llm',            // 默认 LLM 通用对话模式
+    agentBinding: null,      // 默认不绑定 Agent
     createdAt: now,
     updatedAt: now,
   };
@@ -111,6 +139,12 @@ export const useChatStore = defineStore(
 
     /** 是否有超过一条会话 */
     const hasMultipleSessions = computed(() => sessions.value.length > 1);
+
+    /** 当前会话是否为 Agent 模式 */
+    const isAgentMode = computed(() => currentSession.value?.mode === 'agent');
+
+    /** 当前会话绑定的 Agent 信息（LLM 模式时为 null） */
+    const currentAgentBinding = computed(() => currentSession.value?.agentBinding ?? null);
 
     // ==================== Actions ====================
 
@@ -228,6 +262,43 @@ export const useChatStore = defineStore(
     }
 
     /**
+     * 切换当前会话的对话模式
+     * @param mode 'llm' = 通用 LLM 对话 | 'agent' = Agent 专业对话
+     */
+    function setMode(mode: 'llm' | 'agent') {
+      if (!currentSession.value) return;
+      currentSession.value.mode = mode;
+      touchSession();
+    }
+
+    /**
+     * 将 Agent 绑定到当前会话
+     * 绑定后自动切换到 Agent 模式，并使用 Agent 的系统提示词（如有）
+     *
+     * @param binding Agent 绑定信息，包含 agentId、agentName、场景配置等
+     */
+    function bindAgent(binding: AgentBinding) {
+      if (!currentSession.value) return;
+      currentSession.value.agentBinding = binding;
+      currentSession.value.mode = 'agent';
+      // 如果 Agent 有自定义系统提示词，覆盖会话的 systemPrompt
+      if (binding.agentSystemPrompt) {
+        currentSession.value.systemPrompt = binding.agentSystemPrompt;
+      }
+      touchSession();
+    }
+
+    /**
+     * 解绑当前会话的 Agent，恢复到 LLM 通用对话模式
+     */
+    function unbindAgent() {
+      if (!currentSession.value) return;
+      currentSession.value.agentBinding = null;
+      currentSession.value.mode = 'llm';
+      touchSession();
+    }
+
+    /**
      * 初始化：如果没有会话则创建默认会话
      */
     function ensureSession() {
@@ -251,6 +322,8 @@ export const useChatStore = defineStore(
       namespace,
       tokenCount,
       hasMultipleSessions,
+      isAgentMode,
+      currentAgentBinding,
       // actions
       createSessionAndSwitch,
       deleteSession,
@@ -259,6 +332,9 @@ export const useChatStore = defineStore(
       updateLastMessage,
       getContextMessages,
       clearMessages,
+      setMode,
+      bindAgent,
+      unbindAgent,
       ensureSession,
     };
   },

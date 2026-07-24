@@ -40,6 +40,8 @@ const aiModuleRoute: Array<RouterObject> = [
               description: 'RAG知识库',
               icon: 'rag',
               permKey: 'rag',
+              /** AI 助手位置：AI 聊天侧边栏 */
+              aiPosition: { moduleKey: 'aiModule', positionKey: 'chat-sidebar' },
             },
           },
           //智能体交互
@@ -52,6 +54,8 @@ const aiModuleRoute: Array<RouterObject> = [
               description: '智能体交互',
               icon: 'agent',
               permKey: 'agent',
+              /** AI 助手位置：AI 聊天侧边栏 */
+              aiPosition: { moduleKey: 'aiModule', positionKey: 'chat-sidebar' },
             },
           },
           //图片生成

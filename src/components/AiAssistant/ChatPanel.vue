@@ -1,20 +1,50 @@
+<!--
+  AiAssistant/ChatPanel.vue — 聊天面板
+
+  职责：
+    1. 展示消息列表 + 输入框
+    2. Agent 模式下显示 Agent 选择器（多 binding 时）
+    3. 通过 useChatExecution 统一处理 LLM / Agent 对话
+
+  Props：
+    - bindings: 当前页面绑定的 SceneBindingInfo 列表
+    - deploymentConfig: 部署配置覆盖（预留，暂未使用）
+
+  数据流：
+    用户输入 → useChatExecution.sendMessage()
+              → 根据 session.mode 选择 streamChat / AgentAPI.chat
+              → 消息填充到 chatStore
+-->
 <template>
   <div class="chat-panel">
-    <div class="chat-header">
-      <span class="header-title">AI 对话</span>
-      <el-tag v-if="store.tokenCount > 0" type="info" effect="plain">
-        {{ store.tokenCount }} tokens
-      </el-tag>
-      <el-button text :icon="Delete" @click="handleClear">清空</el-button>
+    <!-- Agent 选择器：Agent 模式 + 多个 binding 时显示 -->
+    <div v-if="showAgentSelector" class="agent-selector">
+      <span class="selector-label">当前 Agent：</span>
+      <el-select
+        v-model="selectedAgentId"
+        size="small"
+        placeholder="选择 Agent"
+        style="flex: 1"
+      >
+        <el-option
+          v-for="b in bindings"
+          :key="b.agentId"
+          :label="b.agentName"
+          :value="b.agentId"
+        />
+      </el-select>
     </div>
 
+    <!-- 消息列表 -->
     <div ref="messageContainer" class="chat-messages">
+      <!-- 空状态 -->
       <div v-if="store.messages.length === 0" class="empty-state">
         <el-icon :size="40" color="#dcdfe6"><ChatLineSquare /></el-icon>
-        <p>开始一段新对话</p>
+        <p>{{ isAgentMode ? '开始 Agent 对话' : '开始一段新对话' }}</p>
         <p class="empty-hint">输入问题后按 Enter 发送</p>
       </div>
 
+      <!-- 消息气泡 -->
       <div
         v-for="(msg, index) in store.messages"
         :key="index"
@@ -26,23 +56,28 @@
           <span v-else>🤖</span>
         </div>
         <div class="message-bubble">
-          <div class="message-role">{{ msg.role === 'user' ? '用户' : 'AI 助手' }}</div>
+          <!-- 角色标签：Agent 模式下 assistant 显示 Agent 名称 -->
+          <div class="message-role">
+            {{ msg.role === 'user' ? '用户' : agentDisplayName }}
+          </div>
           <div class="message-content markdown-body" v-html="renderMarkdown(msg.content)" />
         </div>
       </div>
 
+      <!-- 加载指示器 -->
       <div v-if="store.loading" class="loading-indicator">
         <el-icon class="is-loading"><Loading /></el-icon>
-        <span>AI 思考中...</span>
+        <span>{{ isAgentMode ? 'Agent 思考中...' : 'AI 思考中...' }}</span>
       </div>
     </div>
 
+    <!-- 输入区域 -->
     <div class="chat-input-area">
       <el-input
         v-model="inputText"
         type="textarea"
         :rows="2"
-        placeholder="输入问题（Enter 发送，Shift+Enter 换行）"
+        :placeholder="isAgentMode ? '向 Agent 提问（Enter 发送）' : '输入问题（Enter 发送，Shift+Enter 换行）'"
         :disabled="store.loading"
         resize="none"
         @keyup.enter="handleSend"
@@ -57,64 +92,112 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted } from 'vue';
-import { Delete, Promotion, ChatLineSquare, Loading } from '@element-plus/icons-vue';
-import { useChatStore } from '@/store/modules/chat';
-import { streamChat } from '@/api/ai/index';
-import { ElMessageBox, ElMessage } from 'element-plus';
-import MarkdownIt from 'markdown-it';
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { Delete, Promotion, ChatLineSquare, Loading } from '@element-plus/icons-vue'
+import { useChatStore } from '@/store/modules/chat'
+import { useChatExecution } from '@/hooks/useChatExecution'
+import { ElMessageBox, ElMessage } from 'element-plus'
+import MarkdownIt from 'markdown-it'
+import type { SceneBindingInfo } from '@/api/ai/scene'
 
-const store = useChatStore();
-const md = new MarkdownIt({ html: false, linkify: true, typographer: true });
+// ===== Props =====
+const props = defineProps<{
+  /** 当前页面绑定的场景列表 */
+  bindings: SceneBindingInfo[]
+  /** 部署配置覆盖 */
+  deploymentConfig: Record<string, any>
+}>()
 
-const inputText = ref('');
-const messageContainer = ref<HTMLElement>();
+// ===== Store & Composable =====
+const store = useChatStore()
+const { sendMessage } = useChatExecution()
+const md = new MarkdownIt({ html: false, linkify: true, typographer: true })
 
+// ===== 状态 =====
+const inputText = ref('')
+const messageContainer = ref<HTMLElement>()
+
+// ===== Agent 选择器 =====
+/**
+ * 是否显示 Agent 选择器
+ * 条件：Agent 模式 + 有多个 binding（单个时自动绑定，无需选择）
+ */
+const showAgentSelector = computed(() => {
+  return isAgentMode.value && props.bindings.length > 1
+})
+
+const isAgentMode = computed(() => store.isAgentMode)
+
+/**
+ * Agent 选择器绑定值
+ * 读取当前 session 的 agentBinding.agentId，切换时更新绑定
+ */
+const selectedAgentId = computed({
+  get: () => store.currentAgentBinding?.agentId || undefined,
+  set: (agentId: number | undefined) => {
+    if (!agentId) return
+    const binding = props.bindings.find(b => b.agentId === agentId)
+    if (binding) {
+      store.bindAgent({
+        agentId: binding.agentId,
+        agentName: binding.agentName,
+        sceneId: binding.sceneId,
+        sceneName: binding.sceneName,
+        agentModel: binding.agentModel,
+        agentTemperature: binding.agentTemperature,
+        agentMaxTokens: binding.agentMaxTokens,
+        agentSystemPrompt: binding.agentSystemPrompt,
+        knowledgeIds: binding.knowledgeIds,
+      })
+    }
+  },
+})
+
+/**
+ * 消息气泡中 assistant 的显示名称
+ * Agent 模式显示 Agent 名称，LLM 模式显示 "AI 助手"
+ */
+const agentDisplayName = computed(() => {
+  if (isAgentMode.value && store.currentAgentBinding) {
+    return store.currentAgentBinding.agentName
+  }
+  return 'AI 助手'
+})
+
+// ===== Markdown 渲染 =====
 function renderMarkdown(text: string): string {
-  return md.render(text);
+  return md.render(text)
 }
 
+// ===== 发送消息 =====
 async function handleSend() {
-  const text = inputText.value.trim();
-  if (!text || store.loading) return;
-
-  store.addMessage({ role: 'user', content: text });
-  inputText.value = '';
-  store.loading = true;
-  store.addMessage({ role: 'assistant', content: '' });
-
-  const contextMessages = store.getContextMessages();
-  await streamChat(
-    contextMessages,
-    (chunk) => store.updateLastMessage(chunk),
-    () => { store.loading = false; },
-    (err) => {
-      store.updateLastMessage(`\n\n[错误: ${err.message}]`);
-      store.loading = false;
-    },
-    store.namespace,
-  );
+  const text = inputText.value.trim()
+  if (!text || store.loading) return
+  inputText.value = ''
+  await sendMessage(text)
 }
 
+// ===== 清空会话 =====
 function handleClear() {
   ElMessageBox.confirm('确定清空当前会话？', '提示', { type: 'info' })
-    .then(() => { store.clearMessages(); ElMessage.success('已清空'); })
-    .catch(() => {});
+    .then(() => { store.clearMessages(); ElMessage.success('已清空') })
+    .catch(() => {})
 }
 
+// ===== 自动滚动 =====
 function scrollToBottom() {
   nextTick(() => {
-    const el = messageContainer.value;
-    if (el) el.scrollTop = el.scrollHeight;
-  });
+    const el = messageContainer.value
+    if (el) el.scrollTop = el.scrollHeight
+  })
 }
 
-watch(() => store.messages.length, scrollToBottom);
-watch(() => store.loading, (v) => { if (!v) scrollToBottom(); });
+watch(() => store.messages.length, scrollToBottom)
+watch(() => store.loading, (v) => { if (!v) scrollToBottom() })
 
 onMounted(() => {
-  store.ensureSession();
-});
+  store.ensureSession()
+})
 </script>
 
 <style scoped lang="scss">
@@ -124,21 +207,20 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.chat-header {
-  height: 44px;
-  padding: 0 16px;
+/** Agent 选择器区域 */
+.agent-selector {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 8px 12px;
   border-bottom: 1px solid #e8e8e8;
   flex-shrink: 0;
 }
 
-.header-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #303133;
-  flex: 1;
+.selector-label {
+  font-size: 12px;
+  color: #909399;
+  white-space: nowrap;
 }
 
 .chat-messages {

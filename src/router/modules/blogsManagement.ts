@@ -73,6 +73,8 @@ const blogsManagementRoute: Array<RouterObject> = [
               description: '文章创作',
               icon: 'article-create',
               permKey: 'articleCreate',
+              /** AI 助手位置：文章编辑器工具栏 */
+              aiPosition: { moduleKey: 'blogsManagement', positionKey: 'editor-toolbar' },
             },
           },
           {
@@ -84,6 +86,8 @@ const blogsManagementRoute: Array<RouterObject> = [
               description: '编辑文章',
               hidden: true,
               permKey: 'articleEdit',
+              /** AI 助手位置：文章编辑器工具栏 */
+              aiPosition: { moduleKey: 'blogsManagement', positionKey: 'editor-toolbar' },
             },
           },
           {
@@ -106,6 +110,8 @@ const blogsManagementRoute: Array<RouterObject> = [
               description: '新增项目',
               hidden: true,
               permKey: 'projectCreate',
+              /** AI 助手位置：项目编辑器 */
+              aiPosition: { moduleKey: 'blogsManagement', positionKey: 'project-editor' },
             },
           },
           {
@@ -117,6 +123,8 @@ const blogsManagementRoute: Array<RouterObject> = [
               description: '编辑项目',
               hidden: true,
               permKey: 'projectEdit',
+              /** AI 助手位置：项目编辑器 */
+              aiPosition: { moduleKey: 'blogsManagement', positionKey: 'project-editor' },
             },
           },
           {

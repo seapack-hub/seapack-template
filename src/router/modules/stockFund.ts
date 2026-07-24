@@ -89,6 +89,8 @@ const stockFundRoute: Array<RouterObject> = [
               description: '股票详情',
               hidden: true,
               permKey: 'stockPoolDetail',
+              /** AI 助手位置：股票详情工具栏 */
+              aiPosition: { moduleKey: 'stockFund', positionKey: 'detail-toolbar' },
             }
           },
           //分红数据维护
