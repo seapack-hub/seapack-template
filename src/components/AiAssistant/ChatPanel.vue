@@ -93,10 +93,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
-import { Delete, Promotion, ChatLineSquare, Loading } from '@element-plus/icons-vue'
+import { Promotion, ChatLineSquare, Loading } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/modules/chat'
 import { useChatExecution } from '@/hooks/useChatExecution'
-import { ElMessageBox, ElMessage } from 'element-plus'
 import MarkdownIt from 'markdown-it'
 import type { SceneBindingInfo } from '@/api/ai/scene'
 
@@ -175,13 +174,6 @@ async function handleSend() {
   if (!text || store.loading) return
   inputText.value = ''
   await sendMessage(text)
-}
-
-// ===== 清空会话 =====
-function handleClear() {
-  ElMessageBox.confirm('确定清空当前会话？', '提示', { type: 'info' })
-    .then(() => { store.clearMessages(); ElMessage.success('已清空') })
-    .catch(() => {})
 }
 
 // ===== 自动滚动 =====

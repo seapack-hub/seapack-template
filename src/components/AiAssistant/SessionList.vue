@@ -22,6 +22,16 @@
           <span v-if="editingId !== session.id" class="session-title" :title="session.title">
             {{ session.title }}
           </span>
+          <!-- 会话模式标签：Agent 模式显示绿色标签，LLM 模式不显示 -->
+          <el-tag
+            v-if="editingId !== session.id && session.mode === 'agent'"
+            size="small"
+            type="success"
+            effect="plain"
+            class="mode-badge"
+          >
+            Agent
+          </el-tag>
           <el-input
             v-else
             ref="editInputRef"
@@ -165,6 +175,13 @@ async function handleDelete(sessionId: string) {
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
+}
+
+/** Agent 模式标签 */
+.mode-badge {
+  flex-shrink: 0;
+  transform: scale(0.85);
+  transform-origin: center;
 }
 
 .session-actions {

@@ -300,8 +300,15 @@ export const useChatStore = defineStore(
 
     /**
      * 初始化：如果没有会话则创建默认会话
+     * 同时迁移旧版 localStorage 数据（补充新增字段）
      */
     function ensureSession() {
+      // 迁移旧数据：为旧版 session 补充 mode 和 agentBinding 字段
+      sessions.value.forEach(s => {
+        if (!s.mode) s.mode = 'llm'
+        if (s.agentBinding === undefined) s.agentBinding = null
+      })
+
       if (sessions.value.length === 0) {
         createSessionAndSwitch();
       } else if (!currentSessionId.value || !currentSession.value) {

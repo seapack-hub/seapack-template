@@ -15,7 +15,9 @@
 <template>
   <div class="ai-assistant-wrapper">
     <!-- FAB 悬浮按钮：可拖拽，根据 deploymentConfig 覆盖图标/颜色/提示 -->
+    <!-- display_mode='hidden' 时隐藏 FAB（可通过路由参数等方式触发打开） -->
     <div
+      v-if="showFab"
       ref="dragEl"
       class="ai-trigger"
       :style="fabStyle"
@@ -95,20 +97,23 @@ import ContextPanel from './ContextPanel.vue'
 const chatStore = useChatStore()
 const { aiPosition } = useRouteAiPosition()
 
+console.log('aiPosition：', aiPosition.value);
+
 // ===== Drawer 状态 =====
 const drawerVisible = ref(false)
 const activeTab = ref('chat')
 
 // ===== 场景绑定 =====
 // 根据当前路由的 aiPosition 动态加载绑定的 Agent 列表
-// 未配置 aiPosition 的页面返回空数组（降级为纯 LLM 模式）
+// 未配置 aiPosition 的页面传入空字符串，useSceneBindings 内部返回空数组
 const currentModuleKey = computed(() => aiPosition.value?.moduleKey || '')
 const currentPositionKey = computed(() => aiPosition.value?.positionKey || '')
 
-// 仅当有有效的 aiPosition 时才调用 useSceneBindings
-const { bindings: activeBindings, loading: bindingsLoading } = currentModuleKey.value
-  ? useSceneBindings(currentModuleKey.value, currentPositionKey.value)
-  : { bindings: ref([]), loading: ref(false) }
+// 始终调用（Vue composable 不能条件调用），空值由 hook 内部处理
+const { bindings: activeBindings, loading: bindingsLoading } = useSceneBindings(
+  currentModuleKey.value,
+  currentPositionKey.value,
+)
 
 /** 当前页面是否有 Agent 绑定（决定是否显示模式切换按钮） */
 const hasAgentBindings = computed(() => activeBindings.value.length > 0)
@@ -123,6 +128,12 @@ const deploymentConfig = computed(() => {
 })
 
 // ===== UI 覆盖（基于 deploymentConfig） =====
+/** 是否显示 FAB 按钮（display_mode: 'hidden' 时隐藏） */
+const showFab = computed(() => {
+  const displayMode = deploymentConfig.value.display_mode
+  // 'hidden' = 隐藏 FAB，其余情况均显示
+  return displayMode !== 'hidden'
+})
 /** Drawer 标题 */
 const headerTitle = computed(() => deploymentConfig.value.header_title || 'AI 助手')
 /** Drawer 宽度 */
@@ -147,29 +158,28 @@ const currentAgentName = computed(() => chatStore.currentAgentBinding?.agentName
 // ===== 模式切换 =====
 /**
  * 切换对话模式
- * - LLM → Agent：自动绑定第一个 Agent
+ * - LLM → Agent：自动绑定默认 Agent（isDefault=1），否则取第一个
  * - Agent → LLM：解绑 Agent
  */
 function toggleMode() {
   if (isAgentMode.value) {
     // Agent → LLM：解绑
     chatStore.unbindAgent()
-  } else if (activeBindings.value.length === 1) {
-    // 只有一个 binding，直接绑定（无需选择器）
-    const b = activeBindings.value[0]
+  } else if (activeBindings.value.length > 0) {
+    // 优先选中 isDefault=1 的 binding，否则取第一个
+    const binding = activeBindings.value.find(b => b.isDefault === 1) || activeBindings.value[0]
     chatStore.bindAgent({
-      agentId: b.agentId,
-      agentName: b.agentName,
-      sceneId: b.sceneId,
-      sceneName: b.sceneName,
-      agentModel: b.agentModel,
-      agentTemperature: b.agentTemperature,
-      agentMaxTokens: b.agentMaxTokens,
-      agentSystemPrompt: b.agentSystemPrompt,
-      knowledgeIds: b.knowledgeIds,
+      agentId: binding.agentId,
+      agentName: binding.agentName,
+      sceneId: binding.sceneId,
+      sceneName: binding.sceneName,
+      agentModel: binding.agentModel,
+      agentTemperature: binding.agentTemperature,
+      agentMaxTokens: binding.agentMaxTokens,
+      agentSystemPrompt: binding.agentSystemPrompt,
+      knowledgeIds: binding.knowledgeIds,
     })
   }
-  // 多个 binding 时，由 ChatPanel 内部的 Agent 选择器处理
 }
 
 // ===== FAB 拖拽 =====

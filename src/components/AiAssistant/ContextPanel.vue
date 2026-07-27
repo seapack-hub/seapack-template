@@ -17,6 +17,34 @@
       </div>
     </div>
 
+    <!-- Agent 绑定信息：Agent 模式下显示当前绑定的 Agent 详情 -->
+    <template v-if="isAgentMode && agentBinding">
+      <el-divider />
+      <div class="panel-header">Agent 信息</div>
+      <div class="agent-info">
+        <div class="info-item">
+          <span class="info-label">Agent 名称</span>
+          <span class="info-value">{{ agentBinding.agentName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">所属场景</span>
+          <span class="info-value">{{ agentBinding.sceneName }}</span>
+        </div>
+        <div v-if="agentBinding.agentModel" class="info-item">
+          <span class="info-label">模型覆盖</span>
+          <span class="info-value code">{{ agentBinding.agentModel }}</span>
+        </div>
+        <div v-if="agentBinding.agentTemperature != null" class="info-item">
+          <span class="info-label">温度覆盖</span>
+          <span class="info-value">{{ agentBinding.agentTemperature }}</span>
+        </div>
+        <div v-if="agentBinding.knowledgeIds?.length" class="info-item">
+          <span class="info-label">关联知识库</span>
+          <span class="info-value">{{ agentBinding.knowledgeIds.length }} 个</span>
+        </div>
+      </div>
+    </template>
+
     <el-divider />
 
     <div class="panel-header">页面上下文</div>
@@ -35,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { InfoFilled } from '@element-plus/icons-vue';
 import { useRoute } from 'vue-router';
 import { useRouteListener } from '@/hooks/useRouteListener';
@@ -44,6 +72,11 @@ import { useChatStore } from '@/store/modules/chat';
 const store = useChatStore();
 const route = useRoute();
 const { listenerRouteChange } = useRouteListener();
+
+/** 当前会话是否为 Agent 模式 */
+const isAgentMode = computed(() => store.isAgentMode);
+/** 当前绑定的 Agent 信息 */
+const agentBinding = computed(() => store.currentAgentBinding);
 
 const routeName = ref('');
 const routePath = ref('');
@@ -60,6 +93,10 @@ function updateContext() {
     `当前页面：${routeName.value}`,
     `路由路径：${routePath.value}`,
     routeDescription.value ? `页面描述：${routeDescription.value}` : '',
+    // Agent 模式下追加 Agent 信息到上下文
+    isAgentMode.value && agentBinding.value
+      ? `当前 Agent：${agentBinding.value.agentName}（${agentBinding.value.sceneName}）`
+      : '',
   ].filter(Boolean);
 }
 

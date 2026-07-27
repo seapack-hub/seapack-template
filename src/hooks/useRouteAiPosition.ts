@@ -30,6 +30,8 @@ export function useRouteAiPosition() {
   /** 当前路由声明的 AI 位置，未配置时为 null */
   const aiPosition = computed<AiPositionMeta | null>(() => {
     const raw = route.meta?.aiPosition
+    console.log('---route:---',route, route.meta, raw);
+    
     if (raw && typeof raw === 'object' && 'moduleKey' in raw && 'positionKey' in raw) {
       return raw as AiPositionMeta
     }

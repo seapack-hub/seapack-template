@@ -67,7 +67,7 @@ const allAgents = ref<Agent[]>([])
 // ===== 操作 =====
 const dialogVisible = ref(false)
 const isEdit = ref(false)
-const form = ref<Partial<SceneAgent>>({ agentId: undefined, isDefault: 0, sortOrder: 0 })
+const form = ref<Partial<SceneAgent>>({ agentId: undefined, isDefault: 1, sortOrder: 0 })
 
 const columns = createSceneAgentColumns({
   onEdit(row) {
