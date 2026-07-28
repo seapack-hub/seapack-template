@@ -6,6 +6,55 @@
   "description": "sea-pack-template",
   "glyphs": [
     {
+      "icon_id": "1417105",
+      "name": "bangzhuzhongxin",
+      "font_class": "bangzhuzhongxin",
+      "unicode": "e688",
+      "unicode_decimal": 59016
+    },
+    {
+      "icon_id": "35400293",
+      "name": "position-management",
+      "font_class": "position-management",
+      "unicode": "e89b",
+      "unicode_decimal": 59547
+    },
+    {
+      "icon_id": "151331",
+      "name": "add",
+      "font_class": "add",
+      "unicode": "e661",
+      "unicode_decimal": 58977
+    },
+    {
+      "icon_id": "668962",
+      "name": "update",
+      "font_class": "update",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "5394497",
+      "name": "delete",
+      "font_class": "delete",
+      "unicode": "e638",
+      "unicode_decimal": 58936
+    },
+    {
+      "icon_id": "22756841",
+      "name": "copy",
+      "font_class": "copy",
+      "unicode": "e67f",
+      "unicode_decimal": 59007
+    },
+    {
+      "icon_id": "11882918",
+      "name": "refresh",
+      "font_class": "refresh",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
       "icon_id": "400834",
       "name": "image",
       "font_class": "image",
