@@ -19,8 +19,7 @@
 import { ref } from 'vue'
 import { useChatStore, type Session } from '@/store/modules/chat'
 import { streamChat } from '@/api/ai/index'
-import { AgentAPI, abortTestChat } from '@/api/ai/agent'
-import { OrchestrationAPI } from '@/api/ai/orchestration'
+import { executeAgentStream, executeOrchestrationStream, abortChat } from '@/api/ai/chatExecute'
 import type { AgentTestChatSSEEvent } from '@/api/ai/types/agent'
 import type { OrchestrationSSEEvent } from '@/api/ai/types/orchestration'
 
@@ -59,7 +58,6 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
     tokenUsage.value = null
     // 添加空的 assistant 消息，后续流式填充内容
     chatStore.addMessage({ role: 'assistant', content: '' })
-
     // 根据模式选择对话接口
     if (session.mode === 'orchestration' && session.orchestrationBinding) {
       await sendOrchestrationMessage(text, session)
@@ -111,7 +109,7 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
   async function sendAgentMessage(text: string, session: Session) {
     try {
       const binding = session.agentBinding!
-      await AgentAPI.testChatStream(
+      await executeAgentStream(
         {
           agentId: binding.agentId,
           message: text,
@@ -168,7 +166,7 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
   async function sendOrchestrationMessage(text: string, session: Session) {
     try {
       const binding = session.orchestrationBinding!
-      await OrchestrationAPI.executeStream(
+      await executeOrchestrationStream(
         {
           orchestrationId: binding.orchestrationId,
           message: text,
@@ -261,7 +259,7 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
     abortController?.abort()
     abortController = null
     // 取消 Agent/编排模式的 SSE 流
-    abortTestChat()
+    abortChat()
     chatStore.loading = false
   }
 

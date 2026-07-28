@@ -40,8 +40,6 @@ const aiModuleRoute: Array<RouterObject> = [
               description: 'RAG知识库',
               icon: 'rag',
               permKey: 'rag',
-              /** AI 助手位置：AI 聊天侧边栏 */
-              aiPosition: { moduleKey: 'aiModule', positionKey: 'chat-sidebar' },
             },
           },
           //智能体交互
@@ -54,8 +52,6 @@ const aiModuleRoute: Array<RouterObject> = [
               description: '智能体交互',
               icon: 'agent',
               permKey: 'agent',
-              /** AI 助手位置：AI 聊天侧边栏 */
-              aiPosition: { moduleKey: 'aiModule', positionKey: 'chat-sidebar' },
             },
           },
           //图片生成
@@ -143,18 +139,6 @@ const aiModuleRoute: Array<RouterObject> = [
               description: '知识库管理',
               icon: 'knowledge-base',
               permKey: 'knowledgeBase',
-            },
-          },
-          //AI 助手位置管理
-          {
-            path: 'positionManagement',
-            name: 'positionManagement',
-            component: () => import('@/views/aiModule/positionManagement/index.vue'),
-            meta: {
-              title: 'positionManagement',
-              description: '位置管理',
-              icon: 'position-management',
-              permKey: 'positionManagement',
             },
           },
 

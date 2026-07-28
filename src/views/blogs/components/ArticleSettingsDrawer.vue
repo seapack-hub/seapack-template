@@ -8,13 +8,7 @@
   >
     <el-form ref="formRef" :model="form" label-width="80px" class="settings-form">
       <el-form-item label="标题" prop="title" :rules="[{ required: true, message: '请输入标题', trigger: 'blur' }]">
-        <el-input v-model="form.title" placeholder="请输入文章标题" maxlength="200" show-word-limit>
-          <template #suffix>
-            <el-tooltip content="AI 生成标题" placement="top">
-              <el-button link type="primary" size="small" :icon="MagicStick" @click="openAiDialogForTitle" />
-            </el-tooltip>
-          </template>
-        </el-input>
+        <el-input v-model="form.title" placeholder="请输入文章标题" maxlength="200" show-word-limit />
       </el-form-item>
 
       <el-form-item label="分类" prop="category" :rules="[{ required: true, message: '请选择分类', trigger: 'change' }]">
@@ -79,24 +73,9 @@
       <el-divider />
 
       <el-form-item label="摘要" prop="summary">
-        <el-input v-model="form.summary" type="textarea" :rows="4" placeholder="请输入文章摘要，将展示在文章卡片中" maxlength="500" show-word-limit>
-          <template #suffix>
-            <el-tooltip content="AI 生成摘要" placement="top">
-              <el-button link type="primary" size="small" :icon="MagicStick" @click="openAiDialogForSummary" />
-            </el-tooltip>
-          </template>
-        </el-input>
+        <el-input v-model="form.summary" type="textarea" :rows="4" placeholder="请输入文章摘要，将展示在文章卡片中" maxlength="500" show-word-limit />
       </el-form-item>
     </el-form>
-
-    <!-- AI Agent 执行通用弹框 -->
-    <AiAgentExecutor
-      v-model:visible="aiDialogVisible"
-      module-key="blogsManagement"
-      position-key="settings-drawer"
-      :context="aiContext"
-      @done="handleAiResult"
-    />
 
     <template #footer>
       <el-button @click="drawerModel = false">取消</el-button>
@@ -110,9 +89,6 @@ import { inject } from 'vue'
 import type { FormInstance } from 'element-plus'
 import type { BlogCategory } from '@/api/blogs/category'
 import type { ArticleForm } from '../admin/ArticleEdit.vue'
-import { ElMessage } from 'element-plus'
-import { useSceneBindings } from '@/hooks/useSceneBindings'
-import { MagicStick } from '@element-plus/icons-vue'
 
 const props = defineProps<{
   visible: boolean
@@ -131,43 +107,6 @@ const drawerModel = computed({
   get: () => props.visible,
   set: (val: boolean) => emit('update:visible', val),
 })
-
-/** AI 集成 */
-const { bindings: aiBindings } = useSceneBindings('blogsManagement', 'settings-drawer')
-const aiDialogVisible = ref(false)
-const aiContext = ref({ articleTitle: '', articleSummary: '', articleContent: '' })
-
-function openAiDialogForTitle() {
-  aiContext.value = {
-    articleTitle: form.title || '',
-    articleSummary: form.summary || '',
-    articleContent: '',
-  }
-  aiDialogVisible.value = true
-}
-
-function openAiDialogForSummary() {
-  aiContext.value = {
-    articleTitle: form.title || '',
-    articleSummary: form.summary || '',
-    articleContent: '',
-  }
-  aiDialogVisible.value = true
-}
-
-function handleAiResult(result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
-  if (!result.content) {
-    ElMessage.error('AI 生成失败，请重试')
-    return
-  }
-  // 根据技能和上下文智能判断填充到标题还是摘要
-  if (!form.title || result.content.length < 80) {
-    form.title = result.content.replace(/^["'「」【】\s]+|["'「」【】\s]+$/g, '').slice(0, 200)
-  } else {
-    form.summary = result.content.slice(0, 500)
-  }
-  ElMessage.success(`${result.agentName} 内容已填充`)
-}
 
 defineExpose({ formRef })
 </script>

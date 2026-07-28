@@ -38,7 +38,7 @@
         effect="plain"
         :class="{ 'is-disabled': d.status === 0 }"
       >
-        {{ getPositionLabel(d.moduleKey, d.positionKey) }}
+        {{ getModuleTitle(d.moduleKey) }}
       </el-tag>
     </div>
 
@@ -79,7 +79,7 @@
 import { computed } from 'vue'
 import { View, Edit, Setting, CopyDocument, Delete } from '@element-plus/icons-vue'
 import type { Scene } from '@/api/ai/scene'
-import { useAiPositionsStore } from '@/store/modules/aiPositions'
+import { MODULE_DEFS } from '@/config/modules'
 import Icon from '@/components/Icon/index.vue'
 
 const props = defineProps<{ scene: Scene }>()
@@ -92,11 +92,9 @@ const emit = defineEmits<{
   statusChange: [scene: Scene, val: number]
 }>()
 
-const positionsStore = useAiPositionsStore()
-
-/** 获取位置标签：从 store 缓存读取 */
-function getPositionLabel(moduleKey: string, positionKey: string): string {
-  return positionsStore.getLabel(moduleKey, positionKey)
+/** 获取模块中文名 */
+function getModuleTitle(moduleKey: string): string {
+  return MODULE_DEFS.find(m => m.key === moduleKey)?.title || moduleKey
 }
 
 /** 图标背景渐变 */

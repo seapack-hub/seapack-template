@@ -1,3 +1,11 @@
+<!--
+  ArticleEdit.vue — 文章编辑页面
+
+  AI 集成方式：
+    - 使用全局 AiAssistant（不再有页面内 AI 按钮）
+    - 页面注入上下文（文章标题、选中文本）到 chatStore
+    - 注册结果回调处理器，支持将 AI 结果插入编辑器
+-->
 <template>
   <div class="article-editor">
     <PageHeader :title="isEdit ? '编辑文章' : '文章创建'" :edit="false" :back="false">
@@ -8,39 +16,18 @@
         </el-button>
         <el-button :loading="saving" @click="saveDraft">存草稿</el-button>
         <el-button type="primary" :loading="saving" @click="publish">发布</el-button>
-        <template v-for="b in aiBindings" :key="b.sceneId">
-          <el-button
-            v-if="(b.config?.displayType || 'button') === 'button'"
-            :type="b.config?.type || 'primary'"
-            @click="openAiDialog()"
-          >
-            <el-icon style="vertical-align: -2px; margin-right: 4px">
-              <component :is="b.config?.icon || 'MagicStick'" />
-            </el-icon>
-            {{ b.config?.buttonText || b.agentName }}
-          </el-button>
-        </template>
       </template>
     </PageHeader>
 
     <div class="editor-area">
-      <ImportExportEditor 
-        ref="editorCompRef" 
-        :model-value="form.contentHtml ?? ''" 
-        :filename="form.title || 'article'" 
-        class="rich-editor" 
-        @update:model-value="form.contentHtml = $event" 
+      <ImportExportEditor
+        ref="editorCompRef"
+        :model-value="form.contentHtml ?? ''"
+        :filename="form.title || 'article'"
+        class="rich-editor"
+        @update:model-value="form.contentHtml = $event"
       />
     </div>
-
-    <!-- AI Agent 执行通用弹框：绑定博客编辑器工具栏位 -->
-    <AiAgentExecutor
-      v-model:visible="aiDialogVisible"
-      module-key="blogsManagement"
-      position-key="editor-toolbar"
-      :context="aiContext"
-      @done="handleAiResult"
-    />
 
     <ArticleSettingsDrawer
       ref="settingsRef"
@@ -52,40 +39,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, provide } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, provide } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBlogStore } from '@/store/modules/blog.ts'
 import { CategoryAPI, type BlogCategory } from '@/api/blogs/category.ts'
 import { ElMessage } from 'element-plus'
 import { Setting } from '@element-plus/icons-vue'
-import { useSceneBindings } from '@/hooks/useSceneBindings'
+import { useChatStore } from '@/store/modules/chat'
 import { renderToHtml } from '@/views/blogs/utils/sanitize'
 import ArticleSettingsDrawer from '../components/ArticleSettingsDrawer.vue'
 
 const route = useRoute()
 const router = useRouter()
 const store = useBlogStore()
+const chatStore = useChatStore()
 const settingsRef = ref<InstanceType<typeof ArticleSettingsDrawer>>()
 const editorCompRef = ref<any>(null)
 const isEdit = computed(() => !!route.params.id)
 const saving = ref(false)
 const drawerVisible = ref(false)
-const aiDialogVisible = ref(false)
 const categories = ref<BlogCategory[]>([])
-
-/** 从 Store 获取该位置所有启用的 AI 场景绑定 */
-const { bindings: aiBindings } = useSceneBindings('blogsManagement', 'editor-toolbar')
-
-/** AI 执行上下文：打开弹框时获取编辑器选中文本和文章标题 */
-const aiContext = ref({ selectedText: '', articleTitle: '' })
-
-function openAiDialog() {
-  aiContext.value = {
-    selectedText: editorCompRef.value?.getSelectedText?.() || '',
-    articleTitle: form.title || '',
-  }
-  aiDialogVisible.value = true
-}
 
 export interface ArticleForm {
   title: string
@@ -119,20 +92,46 @@ const form = reactive<ArticleForm>({
 
 provide('articleForm', form)
 
-/** AI 执行结果处理：将 markdown 转 HTML 后插入编辑器光标位置 */
-async function handleAiResult(result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
-  if (!result.content) {
-    ElMessage.error('AI 执行失败，请重试')
-    return
-  }
-  try {
-    const html = await renderToHtml(result.content)
-    editorCompRef.value?.insertContent(html)
-    ElMessage.success(`${result.agentName} 内容已插入`)
-  } catch (e) {
-    ElMessage.error('内容格式转换失败，请重试')
-  }
+// ===== AI 集成：注入页面上下文 + 注册结果回调 =====
+
+/** 注入页面上下文（文章标题、选中文本） */
+function updatePageContext() {
+  chatStore.setPageContext({
+    pageName: '文章编辑',
+    moduleKey: 'blogsManagement',
+    data: {
+      articleTitle: form.title,
+      articleSummary: form.summary,
+      selectedText: editorCompRef.value?.getSelectedText?.() || '',
+    },
+  })
 }
+
+/** 注册结果回调：将 AI 生成的内容插入编辑器 */
+chatStore.registerResultHandler({
+  name: '插入编辑器',
+  handler: async (result) => {
+    if (!result.content) {
+      ElMessage.error('AI 执行失败，请重试')
+      return
+    }
+    try {
+      const html = await renderToHtml(result.content)
+      editorCompRef.value?.insertContent(html)
+      ElMessage.success(`${result.agentName} 内容已插入`)
+    } catch (e) {
+      ElMessage.error('内容格式转换失败，请重试')
+    }
+  },
+})
+
+/** 页面卸载时清理 */
+onUnmounted(() => {
+  chatStore.unregisterResultHandler('插入编辑器')
+  chatStore.setPageContext(null)
+})
+
+// ===== 页面操作 =====
 
 async function saveDraft() { form.status = 0; await save() }
 
@@ -180,6 +179,8 @@ onMounted(async () => {
       form.sort = article.sort ?? 0
     }
   }
+  // 注入页面上下文
+  updatePageContext()
 })
 </script>
 

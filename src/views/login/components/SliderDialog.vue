@@ -23,7 +23,6 @@ import { UserAPI } from "@/api/system/baseInfo/user";
 import { useUserStore } from '@/store/modules/user';
 import { usePermissionStore } from '@/store/modules/permission'
 import { useSceneBindingsStore } from '@/store/modules/sceneBindings'
-import { useAiPositionsStore } from '@/store/modules/aiPositions'
 
 const router = useRouter();
 const props = defineProps<{
@@ -71,9 +70,6 @@ const onCaptchaSuccess = async ()=>{
     
     // 4. 加载 AI 场景绑定数据（低频变动，全量缓存供全局使用）
     useSceneBindingsStore().fetchAllBindings()
-
-    // 5. 加载 AI 助手位置数据（低频变动，全量缓存供部署配置/场景卡片使用）
-    useAiPositionsStore().fetchAllPositions()
 
     // 路由已在启动时全量加载，只需收集列表供侧边栏使用
     permissionStore.collectRoutes()

@@ -7,6 +7,8 @@
  *   - 上下文窗口控制：发送前自动裁剪超出 token 限制的旧消息
  *   - 系统提示词：每个会话独立管理 system prompt
  *   - Token 计数：实时估算当前上下文的 token 总量
+ *   - 页面上下文：页面可选注入当前页面信息
+ *   - 结果回写：页面可注册回调处理 AI 结果
  */
 
 import { defineStore } from 'pinia';
@@ -38,46 +40,47 @@ export interface Session {
   updatedAt: number;
 }
 
-/** Agent 绑定信息（从 SceneBindingInfo 中提取的关键字段） */
+/** Agent 绑定信息 */
 export interface AgentBinding {
-  /** Agent ID */
   agentId: number;
-  /** Agent 名称 */
   agentName: string;
-  /** 所属场景 ID */
   sceneId: number;
-  /** 所属场景名称 */
   sceneName: string;
-  /** 场景级模型覆盖（null 表示使用 Agent 默认） */
   agentModel?: string;
-  /** 场景级温度覆盖 */
   agentTemperature?: number;
-  /** 场景级最大输出 Token 覆盖 */
   agentMaxTokens?: number;
-  /** 场景级系统提示词覆盖 */
   agentSystemPrompt?: string;
-  /** 关联的知识库 ID 列表 */
   knowledgeIds?: number[];
 }
 
-/** 编排绑定信息（从 Orchestration 中提取的关键字段） */
+/** 编排绑定信息 */
 export interface OrchestrationBinding {
-  /** 编排 ID */
   orchestrationId: number;
-  /** 编排名称 */
   orchestrationName: string;
-  /** 编排编码 */
   orchestrationCode: string;
-  /** 编排描述 */
   orchestrationDescription?: string;
-  /** 执行策略 */
   strategy: string;
-  /** 所属场景 ID */
   sceneId: number;
-  /** 所属场景名称 */
   sceneName: string;
-  /** 步骤数量 */
   stepCount: number;
+}
+
+/** 页面上下文（页面可选注入） */
+export interface PageContext {
+  /** 页面名称 */
+  pageName: string;
+  /** 模块标识 */
+  moduleKey?: string;
+  /** 页面数据（选中文本、表单内容等） */
+  data?: Record<string, any>;
+}
+
+/** 结果回调处理器 */
+export interface ResultHandler {
+  /** 处理器名称 */
+  name: string;
+  /** 处理函数 */
+  handler: (result: { content: string; agentName: string; agentId: number; elapsedMs: number }) => void;
 }
 
 /** 默认系统提示词 */
@@ -125,6 +128,12 @@ export const useChatStore = defineStore(
 
     /** AI 回复加载状态（不持久化） */
     const loading = ref(false);
+
+    /** 页面上下文（页面可选注入，不持久化） */
+    const pageContext = ref<PageContext | null>(null);
+
+    /** 结果回调处理器列表（页面可注册，不持久化） */
+    const resultHandlers = ref<ResultHandler[]>([]);
 
     // ==================== Getters ====================
 
@@ -370,11 +379,55 @@ export const useChatStore = defineStore(
       }
     }
 
+    // ==================== 页面上下文（不持久化） ====================
+
+    /**
+     * 设置页面上下文（页面可选调用）
+     * 页面注入后，AI 助手可获取当前页面信息用于增强对话
+     */
+    function setPageContext(context: PageContext | null) {
+      pageContext.value = context;
+    }
+
+    /**
+     * 注册结果回调处理器（页面可选调用）
+     * 注册后，AI 助手的结果区域会显示对应操作按钮
+     */
+    function registerResultHandler(handler: ResultHandler) {
+      // 避免重复注册
+      const exists = resultHandlers.value.find(h => h.name === handler.name);
+      if (!exists) {
+        resultHandlers.value.push(handler);
+      }
+    }
+
+    /**
+     * 取消注册结果回调处理器
+     */
+    function unregisterResultHandler(name: string) {
+      const idx = resultHandlers.value.findIndex(h => h.name === name);
+      if (idx >= 0) {
+        resultHandlers.value.splice(idx, 1);
+      }
+    }
+
+    /**
+     * 调用指定的结果回调处理器
+     */
+    function callResultHandler(name: string, result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
+      const handler = resultHandlers.value.find(h => h.name === name);
+      if (handler) {
+        handler.handler(result);
+      }
+    }
+
     return {
       // state
       sessions,
       currentSessionId,
       loading,
+      pageContext,
+      resultHandlers,
       // getters
       currentSession,
       messages,
@@ -400,6 +453,11 @@ export const useChatStore = defineStore(
       bindOrchestration,
       unbindOrchestration,
       ensureSession,
+      // 页面上下文 & 结果回写
+      setPageContext,
+      registerResultHandler,
+      unregisterResultHandler,
+      callResultHandler,
     };
   },
   {

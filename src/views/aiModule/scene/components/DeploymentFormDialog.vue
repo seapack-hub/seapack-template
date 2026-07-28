@@ -12,13 +12,8 @@
   >
     <el-form ref="formRef" :model="form" :rules="rules" label-width="90px">
       <el-form-item label="前端模块" prop="moduleKey">
-        <el-select v-model="form.moduleKey" placeholder="选择模块" style="width: 100%" :disabled="isEdit" @change="onModuleChange">
-          <el-option v-for="m in moduleOptions" :key="m.key" :label="m.label" :value="m.key" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="位置" prop="positionKey">
-        <el-select v-model="form.positionKey" placeholder="请先选择模块" style="width: 100%" :disabled="isEdit || !form.moduleKey">
-          <el-option v-for="p in filteredPositions" :key="p.positionKey" :label="p.label" :value="p.positionKey" />
+        <el-select v-model="form.moduleKey" placeholder="选择模块" style="width: 100%" :disabled="isEdit">
+          <el-option v-for="m in moduleOptions" :key="m.value" :label="m.label" :value="m.value" />
         </el-select>
       </el-form-item>
 
@@ -65,7 +60,7 @@
 
 <script setup lang="ts">
 import type { SceneDeployment } from '@/api/ai/scene'
-import { useAiPositionsStore } from '@/store/modules/aiPositions'
+import { MODULE_DEFS } from '@/config/modules'
 import IconPicker from '@/components/IconPicker/index.vue'
 
 const visible = defineModel<boolean>('visible', { required: true })
@@ -77,21 +72,14 @@ const emit = defineEmits<{ confirm: [data: Partial<SceneDeployment>] }>()
 const formRef = ref<any>(null)
 const submitting = ref(false)
 
-const positionsStore = useAiPositionsStore()
-
 const rules = {
   moduleKey: [{ required: true, message: '请选择模块', trigger: 'change' }],
-  positionKey: [{ required: true, message: '请选择位置', trigger: 'change' }],
 }
 
-/** 模块下拉选项：从 store 缓存获取 */
-const moduleOptions = computed(() => positionsStore.moduleOptions)
-
-/** 位置下拉选项：根据选中模块过滤 */
-const filteredPositions = computed(() => {
-  if (!form.value.moduleKey) return []
-  return positionsStore.getByModule(form.value.moduleKey)
-})
+/** 模块下拉选项：从 MODULE_DEFS 获取 */
+const moduleOptions = computed(() =>
+  MODULE_DEFS.map(m => ({ value: m.key, label: m.title }))
+)
 
 const buttonText = computed({
   get: () => form.value.config?.button_text || '',
@@ -105,10 +93,6 @@ const buttonTooltip = computed({
   get: () => form.value.config?.tooltip || '',
   set: (v: string) => { form.value.config = { ...(form.value.config || {}), tooltip: v } },
 })
-
-function onModuleChange() {
-  form.value.positionKey = ''
-}
 
 function resetForm() {
   isEdit.value = false

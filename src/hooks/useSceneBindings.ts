@@ -21,7 +21,6 @@ import type { SceneBindingInfo } from '@/api/ai/scene'
 
 export function useSceneBindings(moduleKey: MaybeRef<string>, positionKey: MaybeRef<string>) {
 
-  console.log('useSceneBindings--moduleKey, positionKey:', toValue(moduleKey), toValue(positionKey))
   const store = useSceneBindingsStore()
 
   /** 是否为空模式（moduleKey 为空时返回空列表） */
