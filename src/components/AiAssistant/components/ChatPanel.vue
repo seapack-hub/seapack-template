@@ -17,30 +17,31 @@
     AI 结果 → 展示操作按钮 → 回写到页面
 -->
 <template>
-  <div class="chat-panel">
+  <div class="chat-panel h-full flex flex-col bg-[#f5f7fa]">
     <!-- 场景选择器：LLM 模式下显示（用于切换到场景模式） -->
-    <div v-if="!isSceneMode && !loading" class="scene-selector">
-      <div class="selector-header">
-        <span class="selector-label">选择场景开始专业对话</span>
+    <div v-if="!isSceneMode && !loading" class="px-12px pt-12px pb-8px" style="border-bottom: 1px solid var(--el-border-color-light)">
+      <div class="text-12px color-#909399 mb-8px">
+        <span>选择场景开始专业对话</span>
       </div>
-      <div class="scene-grid">
+      <div class="grid grid-cols-2 gap-8px max-h-170px overflow-y-auto">
         <div
           v-for="scene in scenes"
           :key="scene.id"
-          class="scene-card"
+          class="flex flex-col items-center gap-4px px-8px py-10px border rounded-8px cursor-pointer bg-#fff transition-all duration-200 hover:border-[var(--el-color-primary)] hover:bg-[var(--el-color-primary-light-9)]"
+          style="border-color: var(--el-border-color-lighter)"
           @click="selectScene(scene)"
         >
           <Icon :name="scene.icon || 'ChatDotSquare'" :size="20" :color="scene.coverColor || '#409eff'" />
-          <span class="scene-name">{{ scene.name }}</span>
-          <span class="scene-desc">{{ scene.description || '' }}</span>
+          <span class="text-12px font-500 color-#303133">{{ scene.name }}</span>
+          <span class="text-11px color-#909399 text-center overflow-hidden text-ellipsis whitespace-nowrap max-w-full">{{ scene.description || '' }}</span>
         </div>
       </div>
     </div>
 
     <!-- Agent 选择器：场景模式 + 多个 Agent 时显示 -->
-    <div v-if="showAgentSelector" class="agent-selector">
-      <div class="selector-row">
-        <span class="selector-label">当前 Agent：</span>
+    <div v-if="showAgentSelector" class="px-12px py-8px" style="border-bottom: 1px solid var(--el-border-color-light)">
+      <div class="flex items-center gap-8px">
+        <span class="text-12px color-#909399 whitespace-nowrap">当前 Agent：</span>
         <el-select
           v-model="selectedAgentId"
           size="small"
@@ -59,9 +60,9 @@
     </div>
 
     <!-- 编排选择器：场景模式 + 多个编排时显示 -->
-    <div v-if="showOrchestrationSelector" class="agent-selector">
-      <div class="selector-row">
-        <span class="selector-label">当前编排：</span>
+    <div v-if="showOrchestrationSelector" class="px-12px py-8px" style="border-bottom: 1px solid var(--el-border-color-light)">
+      <div class="flex items-center gap-8px">
+        <span class="text-12px color-#909399 whitespace-nowrap">当前编排：</span>
         <el-select
           v-model="selectedOrchestrationId"
           size="small"
@@ -79,16 +80,16 @@
     </div>
 
     <!-- 编排步骤进度条 -->
-    <div v-if="showStepProgress" class="step-progress">
-      <div class="progress-header">
+    <div v-if="showStepProgress" class="px-12px py-8px" style="border-bottom: 1px solid var(--el-border-color-light)">
+      <div class="flex items-center gap-6px text-12px color-#909399 mb-6px">
         <el-icon class="is-loading" :size="14"><Loading /></el-icon>
         <span>编排执行中</span>
       </div>
-      <div class="steps-list">
+      <div class="flex flex-col gap-4px">
         <div
           v-for="(step, index) in stepProgressList"
           :key="index"
-          class="step-item"
+          class="flex items-center gap-6px text-12px px-8px py-4px rounded-4px bg-#fff"
           :class="step.status"
         >
           <el-icon :size="14">
@@ -97,65 +98,71 @@
             <Loading v-else-if="step.status === 'running'" class="is-loading" />
             <MoreFilled v-else />
           </el-icon>
-          <span class="step-name">{{ step.stepName }}</span>
-          <span v-if="step.durationMs" class="step-duration">{{ formatDuration(step.durationMs) }}</span>
+          <span class="flex-1">{{ step.stepName }}</span>
+          <span v-if="step.durationMs" class="color-#c0c4cc">{{ formatDuration(step.durationMs) }}</span>
         </div>
       </div>
     </div>
 
     <!-- 消息列表 -->
-    <div ref="messageContainer" class="chat-messages">
-      <!-- 空状态 -->
-      <div v-if="store.messages.length === 0" class="empty-state">
-        <el-icon :size="40" color="#dcdfe6"><ChatLineSquare /></el-icon>
-        <p>{{ emptyStateText }}</p>
-        <p class="empty-hint">输入问题后按 Enter 发送</p>
-      </div>
-
-      <!-- 消息气泡 -->
-      <div
-        v-for="(msg, index) in store.messages"
-        :key="index"
-        class="message-item"
-        :class="msg.role"
-      >
-        <div class="message-avatar">
-          <span v-if="msg.role === 'user'">👤</span>
-          <span v-else>🤖</span>
+    <div ref="messageContainer" class="flex-1 overflow-y-auto px-12px">
+      <div class="py-8px">
+        <!-- 空状态 -->
+        <div v-if="store.messages.length === 0" class="flex flex-col items-center justify-center py-60px color-#909399 gap-8px">
+          <el-icon :size="40" color="#dcdfe6"><ChatLineSquare /></el-icon>
+          <p class="m-0 text-14px">{{ emptyStateText }}</p>
+          <p class="m-0 text-12px color-#c0c4cc">输入问题后按 Enter 发送</p>
         </div>
-        <div class="message-bubble">
-          <div class="message-role">
-            {{ msg.role === 'user' ? '用户' : displayName }}
+
+        <!-- 消息气泡 -->
+        <div
+          v-for="(msg, index) in store.messages"
+          :key="index"
+          class="flex gap-8px mb-16px"
+          :class="msg.role === 'assistant' ? 'flex-row' : 'flex-row-reverse'"
+        >
+          <div class="w-28px h-28px rounded-1/2 flex items-center justify-center text-16px flex-shrink-0">
+            <span v-if="msg.role === 'user'">👤</span>
+            <span v-else>🤖</span>
           </div>
-          <div class="message-content markdown-body" v-html="renderMarkdown(msg.content)" />
-          <!-- 结果操作按钮（仅 assistant 消息 + 场景模式） -->
-          <div v-if="msg.role === 'assistant' && isSceneMode && msg.content" class="message-actions">
-            <el-button size="small" text @click="copyResult(msg.content)">
-              <el-icon><CopyDocument /></el-icon> 复制
-            </el-button>
-            <el-button
-              v-for="handler in store.resultHandlers"
-              :key="handler.name"
-              size="small"
-              type="primary"
-              text
-              @click="callHandler(handler.name, msg)"
-            >
-              {{ handler.name }}
-            </el-button>
+          <div class="max-w-[calc(100%-36px)]">
+            <div class="text-11px color-#909399 mb-4px" :class="msg.role === 'user' ? 'text-right' : ''">
+              {{ msg.role === 'user' ? '用户' : displayName }}
+            </div>
+            <div
+              class="text-13px leading-[1.6] px-12px py-8px rounded-8px"
+              :class="msg.role === 'user' ? 'bg-[#ecf5ff]' : 'bg-[#fff]'"
+              v-html="renderMarkdown(msg.content)"
+            />
+            <!-- 结果操作按钮 -->
+            <div v-if="msg.role === 'assistant' && isSceneMode && msg.content" class="flex gap-4px mt-6px">
+              <el-button size="small" text @click="copyResult(msg.content)">
+                <el-icon><CopyDocument /></el-icon> 复制
+              </el-button>
+              <el-button
+                v-for="handler in store.resultHandlers"
+                :key="handler.name"
+                size="small"
+                type="primary"
+                text
+                @click="callHandler(handler.name, msg)"
+              >
+                {{ handler.name }}
+              </el-button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- 加载指示器 -->
-      <div v-if="store.loading" class="loading-indicator">
-        <el-icon class="is-loading"><Loading /></el-icon>
-        <span>{{ loadingText }}</span>
+        <!-- 加载指示器 -->
+        <div v-if="store.loading" class="flex items-center gap-6px py-8px text-12px color-#909399">
+          <el-icon class="is-loading"><Loading /></el-icon>
+          <span>{{ loadingText }}</span>
+        </div>
       </div>
     </div>
 
     <!-- 输入区域 -->
-    <div class="chat-input-area">
+    <div class="px-12px py-10px" style="border-top: 1px solid var(--el-border-color-light)">
       <el-input
         v-model="inputText"
         type="textarea"
@@ -165,7 +172,7 @@
         resize="none"
         @keyup.enter="handleSend"
       />
-      <div class="input-actions">
+      <div class="flex justify-end mt-6px">
         <el-button type="primary" :loading="store.loading" :icon="Promotion" @click="handleSend">
           {{ store.loading ? '生成中' : '发送' }}
         </el-button>
@@ -404,216 +411,10 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.chat-panel {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/** 场景选择器 */
-.scene-selector {
-  padding: 12px;
-  border-bottom: 1px solid #e8e8e8;
-  flex-shrink: 0;
-}
-
-.selector-header {
-  font-size: 12px;
-  color: #909399;
-  margin-bottom: 8px;
-}
-
-.scene-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  max-height: 170px;
-  overflow-y: auto;
-}
-
-.scene-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 10px 8px;
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    border-color: var(--el-color-primary);
-    background: var(--el-color-primary-light-9);
-  }
-}
-
-.scene-name {
-  font-size: 12px;
-  font-weight: 500;
-  color: #303133;
-}
-
-.scene-desc {
-  font-size: 11px;
-  color: #909399;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-
-/** Agent/编排选择器 */
-.agent-selector {
-  padding: 8px 12px;
-  border-bottom: 1px solid #e8e8e8;
-  flex-shrink: 0;
-}
-
-.selector-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.selector-label {
-  font-size: 12px;
-  color: #909399;
-  white-space: nowrap;
-}
-
-/** 编排步骤进度条 */
-.step-progress {
-  padding: 8px 12px;
-  border-bottom: 1px solid #e8e8e8;
-  flex-shrink: 0;
-}
-
-.progress-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #909399;
-  margin-bottom: 8px;
-}
-
-.steps-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.step-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #909399;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: #f5f7fa;
-
-  &.running { color: #e6a23c; background: #fdf6ec; }
-  &.success { color: #67c23a; background: #f0f9eb; }
-  &.fail    { color: #f56c6c; background: #fef0f0; }
-}
-
-.step-name { flex: 1; }
-.step-duration { color: #c0c4cc; }
-
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 0;
-  color: #909399;
-  gap: 8px;
-
-  p { margin: 0; font-size: 14px; }
-  .empty-hint { font-size: 12px; color: #c0c4cc; }
-}
-
-.message-item {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-
-  &.assistant { flex-direction: row; }
-  &.user { flex-direction: row-reverse; }
-}
-
-.message-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.message-bubble { max-width: calc(100% - 36px); }
-
-.message-role {
-  font-size: 11px;
-  color: #909399;
-  margin-bottom: 4px;
-
-  .user & { text-align: right; }
-}
-
-.message-content {
-  font-size: 13px;
-  line-height: 1.6;
-  color: #303133;
-  background: #f5f7fa;
-  padding: 8px 12px;
-  border-radius: 8px;
-
-  .user & {
-    background: #ecf5ff;
-    color: #303133;
-  }
-}
-
-/** 消息操作按钮 */
-.message-actions {
-  display: flex;
-  gap: 4px;
-  margin-top: 6px;
-}
-
-.loading-indicator {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 0;
-  font-size: 12px;
-  color: #909399;
-  margin-left: 36px;
-}
-
-.chat-input-area {
-  padding: 8px 12px;
-  border-top: 1px solid #e8e8e8;
-  flex-shrink: 0;
-}
-
-.input-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 6px;
-}
+/** 步骤进度项状态 */
+.running { background: #fdf6ec; color: #e6a23c; }
+.success { background: #f0f9eb; color: #67c23a; }
+.fail    { background: #fef0f0; color: #f56c6c; }
 
 :deep(.markdown-body) {
   font-size: 13px; line-height: 1.6; color: #303133;

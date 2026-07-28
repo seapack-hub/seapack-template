@@ -1,64 +1,65 @@
 <template>
-  <div class="session-list">
-    <div class="list-header">
-      <span class="list-title">会话列表</span>
+  <div class="session-list h-full flex flex-col bg-[#f5f7fa]">
+    <div class="px-16px py-12px flex items-center justify-between" style="border-bottom: 1px solid var(--el-border-color-light)">
+      <span class="text-13px font-600 color-#303133">会话列表</span>
       <el-button type="primary" :icon="Plus" @click="handleNewSession">
         新建
       </el-button>
     </div>
-    <el-scrollbar class="list-scroll">
-      <div
-        v-for="session in sessions"
-        :key="session.id"
-        class="session-item"
-        :class="{ active: session.id === currentSessionId }"
-        @click="switchSession(session.id)"
-      >
-        <div class="session-info">
-          <el-icon size="16" :class="session.id === currentSessionId ? 'active-icon' : 'inactive-icon'">
-            <ChatDotSquare v-if="session.id === currentSessionId" />
-            <ChatLineSquare v-else />
-          </el-icon>
-          <span v-if="editingId !== session.id" class="session-title" :title="session.title">
-            {{ session.title }}
-          </span>
-          <!-- 会话模式标签：Agent 模式显示绿色标签，编排模式显示橙色标签，LLM 模式不显示 -->
-          <el-tag
-            v-if="editingId !== session.id && session.mode === 'agent'"
-            size="small"
-            type="success"
-            effect="plain"
-            class="mode-badge"
-          >
-            Agent
-          </el-tag>
-          <el-tag
-            v-else-if="editingId !== session.id && session.mode === 'orchestration'"
-            size="small"
-            type="warning"
-            effect="plain"
-            class="mode-badge"
-          >
-            编排
-          </el-tag>
-          <el-input
-            v-else
-            ref="editInputRef"
-            v-model="editTitle"
-            @blur="confirmRename(session.id)"
-            @keyup.enter="confirmRename(session.id)"
-            @click.stop
-          />
-        </div>
-        <div class="session-actions" @click.stop>
-          <el-button text :icon="Edit" @click="startRename(session)" />
-          <el-button text type="danger" :icon="Delete" @click="handleDelete(session.id)" />
+    <el-scrollbar class="flex-1">
+      <div class="px-12px py-8px">
+        <div
+          v-for="session in sessions"
+          :key="session.id"
+          class="group flex items-center justify-between px-10px py-8px rounded-8px cursor-pointer mb-2px transition-all duration-150 hover:bg-#e8eaed"
+          :class="{ 'bg-[#ecf5ff]': session.id === currentSessionId }"
+          @click="switchSession(session.id)"
+        >
+          <div class="flex items-center gap-8px flex-1 min-w-0">
+            <el-icon :size="16" :class="session.id === currentSessionId ? 'color-#409eff' : 'color-#999999'">
+              <ChatDotSquare v-if="session.id === currentSessionId" />
+              <ChatLineSquare v-else />
+            </el-icon>
+            <span v-if="editingId !== session.id" class="text-13px overflow-hidden text-ellipsis whitespace-nowrap flex-1" :class="session.id === currentSessionId ? 'color-#409eff font-600' : 'color-#606266'" :title="session.title">
+              {{ session.title }}
+            </span>
+            <el-tag
+              v-if="editingId !== session.id && session.mode === 'agent'"
+              size="small"
+              type="success"
+              effect="plain"
+              class="flex-shrink-0 scale-85"
+            >
+              Agent
+            </el-tag>
+            <el-tag
+              v-else-if="editingId !== session.id && session.mode === 'orchestration'"
+              size="small"
+              type="warning"
+              effect="plain"
+              class="flex-shrink-0 scale-85"
+            >
+              编排
+            </el-tag>
+            <el-input
+              v-else
+              ref="editInputRef"
+              v-model="editTitle"
+              @blur="confirmRename(session.id)"
+              @keyup.enter="confirmRename(session.id)"
+              @click.stop
+            />
+          </div>
+          <div class="flex gap-2px opacity-0 group-hover:opacity-100 transition-opacity duration-150" @click.stop>
+            <el-button text :icon="Edit" @click="startRename(session)" />
+            <el-button text type="danger" :icon="Delete" @click="handleDelete(session.id)" />
+          </div>
         </div>
       </div>
     </el-scrollbar>
-    <div class="list-footer">
+    <div class="px-16px py-10px" style="border-top: 1px solid var(--el-border-color-light)">
       <el-tooltip content="当前上下文 Token 数" placement="top">
-        <span class="token-badge">
+        <span class="flex items-center gap-4px text-12px color-#909399">
           <el-icon size="20"><Coin /></el-icon>
           {{ tokenCount }} tokens
         </span>
@@ -117,100 +118,3 @@ async function handleDelete(sessionId: string) {
   } catch {}
 }
 </script>
-
-<style scoped lang="scss">
-.session-list {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.list-header {
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #e8e8e8;
-  flex-shrink: 0;
-}
-
-.list-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.list-scroll {
-  flex: 1;
-  padding: 8px;
-}
-
-.session-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-bottom: 2px;
-  transition: background-color 0.15s;
-
-  &:hover {
-    background-color: #f0f0f0;
-    .session-actions { opacity: 1; }
-  }
-
-  &.active {
-    background-color: #ecf5ff;
-    .session-title { color: #409eff; font-weight: 600; }
-  }
-}
-
-.session-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
-}
-
-.active-icon { color: #409eff; }
-.inactive-icon { color: #999; }
-
-.session-title {
-  font-size: 13px;
-  color: #606266;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-}
-
-/** Agent 模式标签 */
-.mode-badge {
-  flex-shrink: 0;
-  transform: scale(0.85);
-  transform-origin: center;
-}
-
-.session-actions {
-  display: flex;
-  gap: 2px;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-.list-footer {
-  padding: 8px 16px;
-  border-top: 1px solid #e8e8e8;
-  flex-shrink: 0;
-}
-
-.token-badge {
-  font-size: 12px;
-  color: #909399;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-</style>

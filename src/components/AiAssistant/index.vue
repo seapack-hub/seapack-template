@@ -18,15 +18,15 @@
     <!-- FAB 悬浮按钮：可拖拽 -->
     <div
       ref="dragEl"
-      class="ai-trigger"
+      class="ai-trigger pos-fixed z-9999 flex items-center justify-center cursor-pointer color-white shadow-lg transition-all duration-300"
       :style="fabStyle"
       title="AI 助手"
       @mousedown="startDrag"
       @click="drawerVisible = true"
     >
-      <Icon name="ai-interaction" :size="30" color="#fff" />
+      <Icon name="ai-interaction" :size="24" color="#fff" />
       <!-- 场景模式标签 -->
-      <span v-if="isSceneMode && currentScene" class="agent-badge">
+      <span v-if="isSceneMode && currentScene" class="agent-badge pos-absolute l-1/2 -translate-x-1/2 whitespace-nowrap text-11px color-white px-6px py-2px rounded-4px" style="background: rgba(0,0,0,0.6); top: calc(100% + 4px)">
         {{ currentScene.name }}
       </span>
     </div>
@@ -39,36 +39,44 @@
       direction="rtl"
       @open="handleOpen"
     >
-      <div class="assistant-container">
+      <div class="assistant-container h-full flex flex-col" style="background: #f5f7fa">
         <!-- 顶部标题栏 -->
-        <div class="assistant-header">
-          <div class="header-left">
-            <el-icon size="18" color="#409eff"><ChatDotSquare /></el-icon>
-            <span class="header-title">AI 助手</span>
+        <div class="assistant-header h-52px px-16px flex items-center justify-between flex-shrink-0" style="border-bottom: 1px solid var(--el-border-color-light); background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%)">
+          <div class="flex items-center gap-8px">
+            <div class="w-28px h-28px rounded-8px flex items-center justify-center" style="background: linear-gradient(135deg, #409eff, #337ecc)">
+              <Icon name="ai-interaction" :size="16" color="#fff" />
+            </div>
+            <span class="text-15px font-600 color-#303133">AI 助手</span>
           </div>
-          <div class="header-right">
+          <div class="flex items-center gap-8px">
             <!-- 模式切换标签 -->
             <el-tag
               size="small"
               :type="isSceneMode ? 'success' : 'info'"
-              class="mode-tag"
+              class="cursor-pointer transition-opacity duration-200 hover:opacity-80"
               @click="toggleMode"
             >
-              {{ isSceneMode ? `场景: ${currentScene?.name}` : '通用对话' }}
+              <span class="flex items-center gap-4px">
+                <el-icon :size="12">
+                  <Connection v-if="isSceneMode" />
+                  <ChatDotSquare v-else />
+                </el-icon>
+                {{ isSceneMode ? `场景: ${currentScene?.name}` : '通用对话' }}
+              </span>
             </el-tag>
-            <el-button text :icon="Close" @click="drawerVisible = false" />
+            <el-button text :icon="Close" class="!text-#909399 hover:!text-#303133" @click="drawerVisible = false" />
           </div>
         </div>
 
         <!-- Tab 导航 -->
-        <el-tabs v-model="activeTab" class="assistant-tabs">
+        <el-tabs v-model="activeTab" class="assistant-tabs flex-shrink-0 px-16px" style="border-bottom: 1px solid var(--el-border-color-light)">
           <el-tab-pane label="聊天" name="chat" />
           <el-tab-pane label="会话" name="sessions" />
           <el-tab-pane label="上下文" name="context" />
         </el-tabs>
 
         <!-- Tab 内容区 -->
-        <div class="assistant-body">
+        <div class="flex-1 overflow-hidden">
           <ChatPanel
             v-if="activeTab === 'chat'"
             :scenes="scenes"
@@ -84,7 +92,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue'
-import { ChatDotSquare, Close } from '@element-plus/icons-vue'
+import { ChatDotSquare, Close, Connection } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/modules/chat'
 import { SceneAPI, type Scene } from '@/api/ai/scene'
 import ChatPanel from './components/ChatPanel.vue'
@@ -185,95 +193,26 @@ function handleOpen() {
 
 // ===== FAB 按钮样式 =====
 const fabStyle = computed(() => ({
-  background: isSceneMode.value ? '#67c23a' : '#409eff',
+  background: isSceneMode.value ? 'linear-gradient(135deg, #67c23a, #529b2e)' : 'linear-gradient(135deg, #409eff, #337ecc)',
+  width: '44px',
+  height: '44px',
+  top: '300px',
+  right: '0',
+  borderRadius: '8px 0 0 8px',
 }))
 </script>
 
 <style scoped lang="scss">
 .ai-trigger {
-  width: 44px;
-  height: 44px;
-  background: #409eff;
-  position: fixed;
-  top: 300px;
-  right: 0;
-  border-radius: 6px 0 0 6px;
-  z-index: 1000;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 12px rgba(64, 158, 255, 0.3);
-  transition: all 0.3s;
+  box-shadow: 0 4px 20px rgba(64, 158, 255, 0.4);
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(64, 158, 255, 0.5);
-  }
-}
-
-/** 场景模式标签 */
-.agent-badge {
-  position: absolute;
-  bottom: -22px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  font-size: 11px;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.assistant-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.assistant-header {
-  height: 50px;
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #e8e8e8;
-  flex-shrink: 0;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.header-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #303133;
-}
-
-/** 模式切换标签 */
-.mode-tag {
-  cursor: pointer;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.8;
+    box-shadow: 0 6px 28px rgba(64, 158, 255, 0.6);
+    transform: translateX(-2px);
   }
 }
 
 .assistant-tabs {
-  flex-shrink: 0;
-  padding: 0 16px;
-
   :deep(.el-tabs__header) {
     margin: 0;
   }
@@ -284,13 +223,22 @@ const fabStyle = computed(() => ({
 
   :deep(.el-tabs__item) {
     font-size: 13px;
-    height: 36px;
-    line-height: 36px;
+    height: 40px;
+    line-height: 40px;
+
+    &:hover {
+      color: var(--el-color-primary);
+    }
+
+    &.is-active {
+      font-weight: 600;
+    }
+  }
+
+  :deep(.el-tabs__active-bar) {
+    height: 3px;
+    border-radius: 3px 3px 0 0;
   }
 }
 
-.assistant-body {
-  flex: 1;
-  overflow: hidden;
-}
 </style>
