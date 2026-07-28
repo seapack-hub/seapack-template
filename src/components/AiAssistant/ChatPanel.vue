@@ -4,15 +4,17 @@
   职责：
     1. 展示消息列表 + 输入框
     2. Agent 模式下显示 Agent 选择器（多 binding 时）
-    3. 通过 useChatExecution 统一处理 LLM / Agent 对话
+    3. 编排模式下显示编排选择器 + 步骤进度条
+    4. 通过 useChatExecution 统一处理 LLM / Agent / 编排 对话
 
   Props：
     - bindings: 当前页面绑定的 SceneBindingInfo 列表
+    - orchestrations: 当前页面场景下的编排列表
     - deploymentConfig: 部署配置覆盖（预留，暂未使用）
 
   数据流：
     用户输入 → useChatExecution.sendMessage()
-              → 根据 session.mode 选择 streamChat / AgentAPI.chat
+              → 根据 session.mode 选择 streamChat / AgentAPI.chat / OrchestrationAPI.executeStream
               → 消息填充到 chatStore
 -->
 <template>
@@ -35,12 +37,55 @@
       </el-select>
     </div>
 
+    <!-- 编排选择器：编排模式 + 多个编排时显示 -->
+    <div v-if="showOrchestrationSelector" class="agent-selector">
+      <span class="selector-label">当前编排：</span>
+      <el-select
+        v-model="selectedOrchestrationId"
+        size="small"
+        placeholder="选择编排"
+        style="flex: 1"
+      >
+        <el-option
+          v-for="o in orchestrations"
+          :key="o.id"
+          :label="o.name"
+          :value="o.id"
+        />
+      </el-select>
+    </div>
+
+    <!-- 编排步骤进度条：编排执行中显示 -->
+    <div v-if="showStepProgress" class="step-progress">
+      <div class="progress-header">
+        <el-icon class="is-loading" :size="14"><Loading /></el-icon>
+        <span>编排执行中</span>
+      </div>
+      <div class="steps-list">
+        <div
+          v-for="(step, index) in stepProgressList"
+          :key="index"
+          class="step-item"
+          :class="step.status"
+        >
+          <el-icon :size="14">
+            <SuccessFilled v-if="step.status === 'success'" />
+            <CircleCloseFilled v-else-if="step.status === 'fail'" />
+            <Loading v-else-if="step.status === 'running'" class="is-loading" />
+            <MoreFilled v-else />
+          </el-icon>
+          <span class="step-name">{{ step.stepName }}</span>
+          <span v-if="step.durationMs" class="step-duration">{{ formatDuration(step.durationMs) }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- 消息列表 -->
     <div ref="messageContainer" class="chat-messages">
       <!-- 空状态 -->
       <div v-if="store.messages.length === 0" class="empty-state">
         <el-icon :size="40" color="#dcdfe6"><ChatLineSquare /></el-icon>
-        <p>{{ isAgentMode ? '开始 Agent 对话' : '开始一段新对话' }}</p>
+        <p>{{ emptyStateText }}</p>
         <p class="empty-hint">输入问题后按 Enter 发送</p>
       </div>
 
@@ -56,9 +101,9 @@
           <span v-else>🤖</span>
         </div>
         <div class="message-bubble">
-          <!-- 角色标签：Agent 模式下 assistant 显示 Agent 名称 -->
+          <!-- 角色标签：Agent/编排模式下显示对应名称 -->
           <div class="message-role">
-            {{ msg.role === 'user' ? '用户' : agentDisplayName }}
+            {{ msg.role === 'user' ? '用户' : displayName }}
           </div>
           <div class="message-content markdown-body" v-html="renderMarkdown(msg.content)" />
         </div>
@@ -67,7 +112,7 @@
       <!-- 加载指示器 -->
       <div v-if="store.loading" class="loading-indicator">
         <el-icon class="is-loading"><Loading /></el-icon>
-        <span>{{ isAgentMode ? 'Agent 思考中...' : 'AI 思考中...' }}</span>
+        <span>{{ loadingText }}</span>
       </div>
     </div>
 
@@ -77,7 +122,7 @@
         v-model="inputText"
         type="textarea"
         :rows="2"
-        :placeholder="isAgentMode ? '向 Agent 提问（Enter 发送）' : '输入问题（Enter 发送，Shift+Enter 换行）'"
+        :placeholder="inputPlaceholder"
         :disabled="store.loading"
         resize="none"
         @keyup.enter="handleSend"
@@ -93,23 +138,37 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
-import { Promotion, ChatLineSquare, Loading } from '@element-plus/icons-vue'
+import { Promotion, ChatLineSquare, Loading, SuccessFilled, CircleCloseFilled, MoreFilled } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/modules/chat'
-import { useChatExecution } from '@/hooks/useChatExecution'
+import { useChatExecution, type StepProgress } from '@/hooks/useChatExecution'
 import MarkdownIt from 'markdown-it'
 import type { SceneBindingInfo } from '@/api/ai/scene'
+import type { Orchestration } from '@/api/ai/types/orchestration'
 
 // ===== Props =====
 const props = defineProps<{
   /** 当前页面绑定的场景列表 */
   bindings: SceneBindingInfo[]
+  /** 当前页面场景下的编排列表 */
+  orchestrations: Orchestration[]
   /** 部署配置覆盖 */
   deploymentConfig: Record<string, any>
 }>()
 
+// ===== 编排步骤进度 =====
+const stepProgressList = ref<StepProgress[]>([])
+
 // ===== Store & Composable =====
 const store = useChatStore()
-const { sendMessage } = useChatExecution()
+const { sendMessage } = useChatExecution((progress) => {
+  // 更新步骤进度列表
+  const idx = stepProgressList.value.findIndex(s => s.stepIndex === progress.stepIndex)
+  if (idx >= 0) {
+    stepProgressList.value[idx] = { ...stepProgressList.value[idx], ...progress }
+  } else {
+    stepProgressList.value.push(progress)
+  }
+})
 const md = new MarkdownIt({ html: false, linkify: true, typographer: true })
 
 // ===== 状态 =====
@@ -117,20 +176,12 @@ const inputText = ref('')
 const messageContainer = ref<HTMLElement>()
 
 // ===== Agent 选择器 =====
-/**
- * 是否显示 Agent 选择器
- * 条件：Agent 模式 + 有多个 binding（单个时自动绑定，无需选择）
- */
 const showAgentSelector = computed(() => {
   return isAgentMode.value && props.bindings.length > 1
 })
 
 const isAgentMode = computed(() => store.isAgentMode)
 
-/**
- * Agent 选择器绑定值
- * 读取当前 session 的 agentBinding.agentId，切换时更新绑定
- */
 const selectedAgentId = computed({
   get: () => store.currentAgentBinding?.agentId || undefined,
   set: (agentId: number | undefined) => {
@@ -152,16 +203,74 @@ const selectedAgentId = computed({
   },
 })
 
-/**
- * 消息气泡中 assistant 的显示名称
- * Agent 模式显示 Agent 名称，LLM 模式显示 "AI 助手"
- */
+// ===== 编排选择器 =====
+const isOrchestrationMode = computed(() => store.isOrchestrationMode)
+
+const showOrchestrationSelector = computed(() => {
+  return isOrchestrationMode.value && props.orchestrations.length > 1
+})
+
+const selectedOrchestrationId = computed({
+  get: () => store.currentOrchestrationBinding?.orchestrationId || undefined,
+  set: (orchId: number | undefined) => {
+    if (!orchId) return
+    const orch = props.orchestrations.find(o => o.id === orchId)
+    if (orch) {
+      store.bindOrchestration({
+        orchestrationId: orch.id!,
+        orchestrationName: orch.name,
+        orchestrationCode: orch.code,
+        orchestrationDescription: orch.description,
+        strategy: orch.strategy,
+        sceneId: orch.sceneId,
+        sceneName: '',
+        stepCount: orch.steps?.length ?? 0,
+      })
+    }
+  },
+})
+
+/** 是否显示步骤进度条 */
+const showStepProgress = computed(() => {
+  return isOrchestrationMode.value && store.loading && stepProgressList.value.length > 0
+})
+
+// ===== 显示文本 =====
 const agentDisplayName = computed(() => {
   if (isAgentMode.value && store.currentAgentBinding) {
     return store.currentAgentBinding.agentName
   }
+  if (isOrchestrationMode.value && store.currentOrchestrationBinding) {
+    return store.currentOrchestrationBinding.orchestrationName
+  }
   return 'AI 助手'
 })
+
+const displayName = computed(() => agentDisplayName.value)
+
+const emptyStateText = computed(() => {
+  if (isOrchestrationMode.value) return '开始编排对话'
+  if (isAgentMode.value) return '开始 Agent 对话'
+  return '开始一段新对话'
+})
+
+const loadingText = computed(() => {
+  if (isOrchestrationMode.value) return '编排执行中...'
+  if (isAgentMode.value) return 'Agent 思考中...'
+  return 'AI 思考中...'
+})
+
+const inputPlaceholder = computed(() => {
+  if (isOrchestrationMode.value) return '向编排提问（Enter 发送）'
+  if (isAgentMode.value) return '向 Agent 提问（Enter 发送）'
+  return '输入问题（Enter 发送，Shift+Enter 换行）'
+})
+
+// ===== 工具函数 =====
+function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`
+  return `${(ms / 1000).toFixed(1)}s`
+}
 
 // ===== Markdown 渲染 =====
 function renderMarkdown(text: string): string {
@@ -173,6 +282,8 @@ async function handleSend() {
   const text = inputText.value.trim()
   if (!text || store.loading) return
   inputText.value = ''
+  // 发送前清空步骤进度
+  stepProgressList.value = []
   await sendMessage(text)
 }
 
@@ -199,7 +310,7 @@ onMounted(() => {
   flex-direction: column;
 }
 
-/** Agent 选择器区域 */
+/** Agent/编排选择器区域 */
 .agent-selector {
   display: flex;
   align-items: center;
@@ -213,6 +324,51 @@ onMounted(() => {
   font-size: 12px;
   color: #909399;
   white-space: nowrap;
+}
+
+/** 编排步骤进度条 */
+.step-progress {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e8e8e8;
+  flex-shrink: 0;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #909399;
+  margin-bottom: 8px;
+}
+
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #909399;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #f5f7fa;
+
+  &.running { color: #e6a23c; background: #fdf6ec; }
+  &.success { color: #67c23a; background: #f0f9eb; }
+  &.fail    { color: #f56c6c; background: #fef0f0; }
+}
+
+.step-name {
+  flex: 1;
+}
+
+.step-duration {
+  color: #c0c4cc;
 }
 
 .chat-messages {

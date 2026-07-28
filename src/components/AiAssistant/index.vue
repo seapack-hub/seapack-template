@@ -48,15 +48,15 @@
             <span class="header-title">{{ headerTitle }}</span>
           </div>
           <div class="header-right">
-            <!-- 模式切换标签：有 Agent 绑定时可切换 -->
+            <!-- 模式切换标签：有 Agent 或编排绑定时可切换 -->
             <el-tag
-              v-if="hasAgentBindings"
+              v-if="hasModeTag"
               size="small"
-              :type="isAgentMode ? 'success' : 'info'"
+              :type="modeTagType"
               class="mode-tag"
               @click="toggleMode"
             >
-              {{ isAgentMode ? `Agent: ${currentAgentName}` : '通用对话' }}
+              {{ modeTagText }}
             </el-tag>
             <el-button text :icon="Close" @click="drawerVisible = false" />
           </div>
@@ -74,6 +74,7 @@
           <ChatPanel
             v-if="activeTab === 'chat'"
             :bindings="activeBindings"
+            :orchestrations="orchestrations"
             :deployment-config="deploymentConfig"
           />
           <SessionList v-else-if="activeTab === 'sessions'" />
@@ -90,14 +91,14 @@ import { ChatDotSquare, Close } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/modules/chat'
 import { useRouteAiPosition } from '@/hooks/useRouteAiPosition'
 import { useSceneBindings } from '@/hooks/useSceneBindings'
+import { OrchestrationAPI } from '@/api/ai/orchestration'
+import type { Orchestration } from '@/api/ai/types/orchestration'
 import ChatPanel from './ChatPanel.vue'
 import SessionList from './SessionList.vue'
 import ContextPanel from './ContextPanel.vue'
 
 const chatStore = useChatStore()
 const { aiPosition } = useRouteAiPosition()
-
-console.log('aiPosition：', aiPosition.value);
 
 // ===== Drawer 状态 =====
 const drawerVisible = ref(false)
@@ -118,6 +119,35 @@ const { bindings: activeBindings, loading: bindingsLoading } = useSceneBindings(
 
 /** 当前页面是否有 Agent 绑定（决定是否显示模式切换按钮） */
 const hasAgentBindings = computed(() => activeBindings.value.length > 0)
+
+// ===== 编排列表 =====
+/** 当前页面场景下的编排列表 */
+const orchestrations = ref<Orchestration[]>([])
+/** 是否有编排（决定是否显示编排切换按钮） */
+const hasOrchestrations = computed(() => orchestrations.value.length > 0)
+
+/** 加载编排列表（根据第一个 binding 的 sceneId） */
+async function loadOrchestrations() {
+  if (!activeBindings.value.length) {
+    orchestrations.value = []
+    return
+  }
+  const sceneId = activeBindings.value[0]?.sceneId
+  if (!sceneId) {
+    orchestrations.value = []
+    return
+  }
+  try {
+    orchestrations.value = await OrchestrationAPI.list({ sceneId, status: 1 })
+  } catch {
+    orchestrations.value = []
+  }
+}
+
+// 当 binding 加载完成后，自动加载编排列表
+watch(() => activeBindings.value, () => {
+  loadOrchestrations()
+}, { immediate: true })
 
 // ===== deploymentConfig（部署配置覆盖） =====
 // 从 binding 中提取 deploymentConfig，用于覆盖 Drawer 的 UI 展示
@@ -150,24 +180,64 @@ const fabStyle = computed(() => ({
   background: deploymentConfig.value.fab_color || '#409eff',
 }))
 
-// ===== Agent 模式状态 =====
+// ===== 模式状态 =====
 /** 当前会话是否为 Agent 模式 */
 const isAgentMode = computed(() => chatStore.isAgentMode)
+/** 当前会话是否为编排模式 */
+const isOrchestrationMode = computed(() => chatStore.isOrchestrationMode)
 /** 当前绑定的 Agent 名称 */
 const currentAgentName = computed(() => chatStore.currentAgentBinding?.agentName)
+/** 当前绑定的编排名称 */
+const currentOrchestrationName = computed(() => chatStore.currentOrchestrationBinding?.orchestrationName)
+
+/** 是否显示模式切换标签 */
+const hasModeTag = computed(() => hasAgentBindings.value || hasOrchestrations.value)
+
+/** 模式标签文本 */
+const modeTagText = computed(() => {
+  if (isOrchestrationMode.value) return `编排: ${currentOrchestrationName.value}`
+  if (isAgentMode.value) return `Agent: ${currentAgentName.value}`
+  return '通用对话'
+})
+
+/** 模式标签类型 */
+const modeTagType = computed(() => {
+  if (isOrchestrationMode.value) return 'warning'
+  if (isAgentMode.value) return 'success'
+  return 'info'
+})
 
 // ===== 模式切换 =====
 /**
  * 切换对话模式
- * - LLM → Agent：自动绑定默认 Agent（isDefault=1），否则取第一个
- * - Agent → LLM：解绑 Agent
+ * - LLM → Agent → Orchestration → LLM 循环切换
+ * - 根据可用资源决定跳过哪些模式
  */
 function toggleMode() {
-  if (isAgentMode.value) {
-    // Agent → LLM：解绑
-    chatStore.unbindAgent()
+  if (isOrchestrationMode.value) {
+    // Orchestration → LLM：解绑编排
+    chatStore.unbindOrchestration()
+  } else if (isAgentMode.value) {
+    if (hasOrchestrations.value) {
+      // Agent → Orchestration：解绑 Agent，绑定第一个编排
+      chatStore.unbindAgent()
+      const orch = orchestrations.value[0]
+      chatStore.bindOrchestration({
+        orchestrationId: orch.id!,
+        orchestrationName: orch.name,
+        orchestrationCode: orch.code,
+        orchestrationDescription: orch.description,
+        strategy: orch.strategy,
+        sceneId: orch.sceneId,
+        sceneName: '',
+        stepCount: orch.steps?.length ?? 0,
+      })
+    } else {
+      // Agent → LLM：解绑 Agent
+      chatStore.unbindAgent()
+    }
   } else if (activeBindings.value.length > 0) {
-    // 优先选中 isDefault=1 的 binding，否则取第一个
+    // LLM → Agent：绑定默认 Agent（isDefault=1），否则取第一个
     const binding = activeBindings.value.find(b => b.isDefault === 1) || activeBindings.value[0]
     chatStore.bindAgent({
       agentId: binding.agentId,
@@ -219,8 +289,9 @@ function handleOpen() {
 // ===== 路由变化时的处理 =====
 // 当路由变化到没有 aiPosition 的页面时，自动切回 LLM 模式
 watch(() => aiPosition.value, (newPos) => {
-  if (!newPos && isAgentMode.value) {
-    chatStore.unbindAgent()
+  if (!newPos) {
+    if (isAgentMode.value) chatStore.unbindAgent()
+    if (isOrchestrationMode.value) chatStore.unbindOrchestration()
   }
 })
 </script>

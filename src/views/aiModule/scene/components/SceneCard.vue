@@ -79,7 +79,7 @@
 import { computed } from 'vue'
 import { View, Edit, Setting, CopyDocument, Delete } from '@element-plus/icons-vue'
 import type { Scene } from '@/api/ai/scene'
-import { getPositionLabel } from '@/config/aiPositions'
+import { useAiPositionsStore } from '@/store/modules/aiPositions'
 import Icon from '@/components/Icon/index.vue'
 
 const props = defineProps<{ scene: Scene }>()
@@ -91,6 +91,13 @@ const emit = defineEmits<{
   delete: [scene: Scene]
   statusChange: [scene: Scene, val: number]
 }>()
+
+const positionsStore = useAiPositionsStore()
+
+/** 获取位置标签：从 store 缓存读取 */
+function getPositionLabel(moduleKey: string, positionKey: string): string {
+  return positionsStore.getLabel(moduleKey, positionKey)
+}
 
 /** 图标背景渐变 */
 const coverGradient = computed(() => {

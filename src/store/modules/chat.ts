@@ -26,10 +26,12 @@ export interface Session {
   systemPrompt: string;
   /** 绑定的知识库命名空间 */
   namespace: string;
-  /** 对话模式：llm（裸 LLM 对话）| agent（绑定 Agent 的专业对话） */
-  mode: 'llm' | 'agent';
-  /** Agent 模式下绑定的 Agent 信息，LLM 模式时为 null */
+  /** 对话模式：llm（裸 LLM 对话）| agent（绑定 Agent 的专业对话）| orchestration（编排模式） */
+  mode: 'llm' | 'agent' | 'orchestration';
+  /** Agent 模式下绑定的 Agent 信息，LLM 和编排模式时为 null */
   agentBinding: AgentBinding | null;
+  /** 编排模式下绑定的编排信息，LLM 和 Agent 模式时为 null */
+  orchestrationBinding: OrchestrationBinding | null;
   /** 创建时间戳 */
   createdAt: number;
   /** 最后活跃时间戳 */
@@ -58,6 +60,26 @@ export interface AgentBinding {
   knowledgeIds?: number[];
 }
 
+/** 编排绑定信息（从 Orchestration 中提取的关键字段） */
+export interface OrchestrationBinding {
+  /** 编排 ID */
+  orchestrationId: number;
+  /** 编排名称 */
+  orchestrationName: string;
+  /** 编排编码 */
+  orchestrationCode: string;
+  /** 编排描述 */
+  orchestrationDescription?: string;
+  /** 执行策略 */
+  strategy: string;
+  /** 所属场景 ID */
+  sceneId: number;
+  /** 所属场景名称 */
+  sceneName: string;
+  /** 步骤数量 */
+  stepCount: number;
+}
+
 /** 默认系统提示词 */
 const DEFAULT_SYSTEM_PROMPT = '你是一个智能助手，请基于提供的上下文准确回答用户问题。';
 
@@ -84,6 +106,7 @@ function createSession(systemPrompt = ''): Session {
     namespace: '',
     mode: 'llm',            // 默认 LLM 通用对话模式
     agentBinding: null,      // 默认不绑定 Agent
+    orchestrationBinding: null, // 默认不绑定编排
     createdAt: now,
     updatedAt: now,
   };
@@ -145,6 +168,12 @@ export const useChatStore = defineStore(
 
     /** 当前会话绑定的 Agent 信息（LLM 模式时为 null） */
     const currentAgentBinding = computed(() => currentSession.value?.agentBinding ?? null);
+
+    /** 当前会话是否为编排模式 */
+    const isOrchestrationMode = computed(() => currentSession.value?.mode === 'orchestration');
+
+    /** 当前会话绑定的编排信息（LLM/Agent 模式时为 null） */
+    const currentOrchestrationBinding = computed(() => currentSession.value?.orchestrationBinding ?? null);
 
     // ==================== Actions ====================
 
@@ -263,9 +292,9 @@ export const useChatStore = defineStore(
 
     /**
      * 切换当前会话的对话模式
-     * @param mode 'llm' = 通用 LLM 对话 | 'agent' = Agent 专业对话
+     * @param mode 'llm' = 通用 LLM 对话 | 'agent' = Agent 专业对话 | 'orchestration' = 编排模式
      */
-    function setMode(mode: 'llm' | 'agent') {
+    function setMode(mode: 'llm' | 'agent' | 'orchestration') {
       if (!currentSession.value) return;
       currentSession.value.mode = mode;
       touchSession();
@@ -299,14 +328,38 @@ export const useChatStore = defineStore(
     }
 
     /**
+     * 将编排绑定到当前会话
+     * 绑定后自动切换到编排模式
+     *
+     * @param binding 编排绑定信息
+     */
+    function bindOrchestration(binding: OrchestrationBinding) {
+      if (!currentSession.value) return;
+      currentSession.value.orchestrationBinding = binding;
+      currentSession.value.mode = 'orchestration';
+      touchSession();
+    }
+
+    /**
+     * 解绑当前会话的编排，恢复到 LLM 通用对话模式
+     */
+    function unbindOrchestration() {
+      if (!currentSession.value) return;
+      currentSession.value.orchestrationBinding = null;
+      currentSession.value.mode = 'llm';
+      touchSession();
+    }
+
+    /**
      * 初始化：如果没有会话则创建默认会话
      * 同时迁移旧版 localStorage 数据（补充新增字段）
      */
     function ensureSession() {
-      // 迁移旧数据：为旧版 session 补充 mode 和 agentBinding 字段
+      // 迁移旧数据：为旧版 session 补充 mode、agentBinding、orchestrationBinding 字段
       sessions.value.forEach(s => {
         if (!s.mode) s.mode = 'llm'
         if (s.agentBinding === undefined) s.agentBinding = null
+        if (s.orchestrationBinding === undefined) s.orchestrationBinding = null
       })
 
       if (sessions.value.length === 0) {
@@ -331,6 +384,8 @@ export const useChatStore = defineStore(
       hasMultipleSessions,
       isAgentMode,
       currentAgentBinding,
+      isOrchestrationMode,
+      currentOrchestrationBinding,
       // actions
       createSessionAndSwitch,
       deleteSession,
@@ -342,6 +397,8 @@ export const useChatStore = defineStore(
       setMode,
       bindAgent,
       unbindAgent,
+      bindOrchestration,
+      unbindOrchestration,
       ensureSession,
     };
   },

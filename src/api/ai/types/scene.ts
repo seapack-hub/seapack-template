@@ -29,7 +29,7 @@ export interface SceneDeployment {
   sceneId?: number
   /** 前端模块标识，对应 config/modules.ts 的 key */
   moduleKey: string
-  /** 模块内位置标识，对应 aiPositions.ts 的 position */
+  /** 模块内位置标识，对应 ai_position 表的 positionKey */
   positionKey: string
   /** 部署配置 JSON（按钮文案、图标、tooltip 等） */
   config?: Record<string, any>

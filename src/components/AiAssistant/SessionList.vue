@@ -22,7 +22,7 @@
           <span v-if="editingId !== session.id" class="session-title" :title="session.title">
             {{ session.title }}
           </span>
-          <!-- 会话模式标签：Agent 模式显示绿色标签，LLM 模式不显示 -->
+          <!-- 会话模式标签：Agent 模式显示绿色标签，编排模式显示橙色标签，LLM 模式不显示 -->
           <el-tag
             v-if="editingId !== session.id && session.mode === 'agent'"
             size="small"
@@ -31,6 +31,15 @@
             class="mode-badge"
           >
             Agent
+          </el-tag>
+          <el-tag
+            v-else-if="editingId !== session.id && session.mode === 'orchestration'"
+            size="small"
+            type="warning"
+            effect="plain"
+            class="mode-badge"
+          >
+            编排
           </el-tag>
           <el-input
             v-else

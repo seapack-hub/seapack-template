@@ -145,6 +145,18 @@ const aiModuleRoute: Array<RouterObject> = [
               permKey: 'knowledgeBase',
             },
           },
+          //AI 助手位置管理
+          {
+            path: 'positionManagement',
+            name: 'positionManagement',
+            component: () => import('@/views/aiModule/positionManagement/index.vue'),
+            meta: {
+              title: 'positionManagement',
+              description: '位置管理',
+              icon: 'position-management',
+              permKey: 'positionManagement',
+            },
+          },
 
         ],
       },

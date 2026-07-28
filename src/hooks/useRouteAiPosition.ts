@@ -18,7 +18,7 @@ import { useRoute } from 'vue-router'
 
 /** 路由 meta 中 aiPosition 的类型定义 */
 export interface AiPositionMeta {
-  /** 前端模块标识，对应 aiPositions.ts 中的 moduleKey */
+  /** 前端模块标识，对应 ai_position 表的 moduleKey */
   moduleKey: string
   /** 模块内位置标识，对应 aiPositions.ts 中的 positionKey */
   positionKey: string

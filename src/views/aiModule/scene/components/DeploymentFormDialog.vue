@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import type { SceneDeployment } from '@/api/ai/scene'
-import { AI_POSITIONS, getPositionsByModule } from '@/config/aiPositions'
+import { useAiPositionsStore } from '@/store/modules/aiPositions'
 import IconPicker from '@/components/IconPicker/index.vue'
 
 const visible = defineModel<boolean>('visible', { required: true })
@@ -77,22 +77,20 @@ const emit = defineEmits<{ confirm: [data: Partial<SceneDeployment>] }>()
 const formRef = ref<any>(null)
 const submitting = ref(false)
 
+const positionsStore = useAiPositionsStore()
+
 const rules = {
   moduleKey: [{ required: true, message: '请选择模块', trigger: 'change' }],
   positionKey: [{ required: true, message: '请选择位置', trigger: 'change' }],
 }
 
-const moduleOptions = computed(() => {
-  const seen = new Map<string, string>()
-  for (const p of AI_POSITIONS) {
-    if (!seen.has(p.moduleKey)) seen.set(p.moduleKey, p.label.split('-')[0] || p.moduleKey)
-  }
-  return Array.from(seen.entries()).map(([key, label]) => ({ key, label }))
-})
+/** 模块下拉选项：从 store 缓存获取 */
+const moduleOptions = computed(() => positionsStore.moduleOptions)
 
+/** 位置下拉选项：根据选中模块过滤 */
 const filteredPositions = computed(() => {
   if (!form.value.moduleKey) return []
-  return getPositionsByModule(form.value.moduleKey)
+  return positionsStore.getByModule(form.value.moduleKey)
 })
 
 const buttonText = computed({

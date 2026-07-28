@@ -45,6 +45,34 @@
       </div>
     </template>
 
+    <!-- 编排绑定信息：编排模式下显示当前绑定的编排详情 -->
+    <template v-if="isOrchestrationMode && orchestrationBinding">
+      <el-divider />
+      <div class="panel-header">编排信息</div>
+      <div class="agent-info">
+        <div class="info-item">
+          <span class="info-label">编排名称</span>
+          <span class="info-value">{{ orchestrationBinding.orchestrationName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">编排编码</span>
+          <span class="info-value code">{{ orchestrationBinding.orchestrationCode }}</span>
+        </div>
+        <div v-if="orchestrationBinding.orchestrationDescription" class="info-item">
+          <span class="info-label">编排描述</span>
+          <span class="info-value">{{ orchestrationBinding.orchestrationDescription }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">执行策略</span>
+          <span class="info-value">{{ strategyLabel(orchestrationBinding.strategy) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">步骤数量</span>
+          <span class="info-value">{{ orchestrationBinding.stepCount }} 步</span>
+        </div>
+      </div>
+    </template>
+
     <el-divider />
 
     <div class="panel-header">页面上下文</div>
@@ -78,6 +106,23 @@ const isAgentMode = computed(() => store.isAgentMode);
 /** 当前绑定的 Agent 信息 */
 const agentBinding = computed(() => store.currentAgentBinding);
 
+/** 当前会话是否为编排模式 */
+const isOrchestrationMode = computed(() => store.isOrchestrationMode);
+/** 当前绑定的编排信息 */
+const orchestrationBinding = computed(() => store.currentOrchestrationBinding);
+
+/** 策略标签映射 */
+const strategyMap: Record<string, string> = {
+  sequential: '顺序执行',
+  parallel: '并行执行',
+  llm_tool: 'LLM 决策',
+  auto: '自动选择',
+}
+
+function strategyLabel(strategy: string): string {
+  return strategyMap[strategy] || strategy
+}
+
 const routeName = ref('');
 const routePath = ref('');
 const routeDescription = ref('');
@@ -96,6 +141,10 @@ function updateContext() {
     // Agent 模式下追加 Agent 信息到上下文
     isAgentMode.value && agentBinding.value
       ? `当前 Agent：${agentBinding.value.agentName}（${agentBinding.value.sceneName}）`
+      : '',
+    // 编排模式下追加编排信息到上下文
+    isOrchestrationMode.value && orchestrationBinding.value
+      ? `当前编排：${orchestrationBinding.value.orchestrationName}（${orchestrationBinding.value.orchestrationCode}，${strategyLabel(orchestrationBinding.value.strategy)}）`
       : '',
   ].filter(Boolean);
 }
