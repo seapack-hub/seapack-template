@@ -110,9 +110,10 @@ const currentModuleKey = computed(() => aiPosition.value?.moduleKey || '')
 const currentPositionKey = computed(() => aiPosition.value?.positionKey || '')
 
 // 始终调用（Vue composable 不能条件调用），空值由 hook 内部处理
+// 传入 computed 引用而非 .value 快照，确保路由重定向后仍能响应
 const { bindings: activeBindings, loading: bindingsLoading } = useSceneBindings(
-  currentModuleKey.value,
-  currentPositionKey.value,
+  currentModuleKey,
+  currentPositionKey,
 )
 
 /** 当前页面是否有 Agent 绑定（决定是否显示模式切换按钮） */

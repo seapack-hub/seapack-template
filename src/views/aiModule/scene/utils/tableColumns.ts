@@ -96,3 +96,57 @@ export function createSceneAgentConfigColumns(handlers: SceneAgentConfigHandlers
     },
   ]
 }
+
+// ===== 编排管理 =====
+export interface OrchestrationHandlers {
+  onEdit: (row: any) => void
+  onDelete: (row: any) => void
+  onCopy: (row: any) => void
+  onToggleStatus: (row: any) => void
+  onSteps: (row: any) => void
+}
+
+export function createOrchestrationColumns(handlers: OrchestrationHandlers) {
+  return [
+    { prop: 'name', label: '编排名称', minWidth: 140 },
+    { prop: 'code', label: '编码', minWidth: 120 },
+    { prop: 'strategy', label: '执行策略', minWidth: 100, align: 'center' as const, slotName: 'strategy' },
+    { prop: 'status', label: '状态', minWidth: 70, align: 'center' as const, slotName: 'status' },
+    { prop: 'description', label: '描述', minWidth: 180, showOverflowTooltip: true },
+    { prop: 'createdAt', label: '创建时间', minWidth: 160 },
+    {
+      columnType: 'operate', label: '操作', width: 160, fixed: 'right',
+      buttons: [
+        { type: 'success', label: '步骤', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onSteps(row) },
+        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
+        { type: 'info', label: '复制', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onCopy(row) },
+        { type: 'warning', label: '启停', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onToggleStatus(row) },
+        { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该编排？' }, click: ({ row }: any) => handlers.onDelete(row) },
+      ],
+    },
+  ]
+}
+
+// ===== 编排步骤 =====
+export interface OrchestrationStepHandlers {
+  onEdit: (row: any) => void
+  onDelete: (row: any) => void
+}
+
+export function createOrchestrationStepColumns(handlers: OrchestrationStepHandlers) {
+  return [
+    { prop: 'stepIndex', label: '序号', width: 60, align: 'center' as const },
+    { prop: 'stepName', label: '步骤名称', minWidth: 140 },
+    { prop: 'agentName', label: '执行Agent', minWidth: 120 },
+    { prop: 'inputMapping', label: '输入映射', minWidth: 160, showOverflowTooltip: true, slotName: 'inputMapping' },
+    { prop: 'retryCount', label: '重试', width: 60, align: 'center' as const },
+    { prop: 'status', label: '状态', minWidth: 70, align: 'center' as const, slotName: 'status' },
+    {
+      columnType: 'operate', label: '操作', width: 120, fixed: 'right',
+      buttons: [
+        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
+        { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该步骤？' }, click: ({ row }: any) => handlers.onDelete(row) },
+      ],
+    },
+  ]
+}

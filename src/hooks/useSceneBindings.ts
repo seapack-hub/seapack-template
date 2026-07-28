@@ -15,22 +15,24 @@
  *   const { bindings, loading } = useSceneBindings('stockFund', 'detail-toolbar')
  *   const { bindings } = useSceneBindings('', '')  // 空模式，返回 []
  */
-import { computed } from 'vue'
+import { computed, type MaybeRef, toValue } from 'vue'
 import { useSceneBindingsStore } from '@/store/modules/sceneBindings'
 import type { SceneBindingInfo } from '@/api/ai/scene'
 
-export function useSceneBindings(moduleKey: string, positionKey: string) {
+export function useSceneBindings(moduleKey: MaybeRef<string>, positionKey: MaybeRef<string>) {
 
-  console.log('useSceneBindings--moduleKey, positionKey:', moduleKey, positionKey)
+  console.log('useSceneBindings--moduleKey, positionKey:', toValue(moduleKey), toValue(positionKey))
   const store = useSceneBindingsStore()
 
   /** 是否为空模式（moduleKey 为空时返回空列表） */
-  const isEmpty = computed(() => !moduleKey)
+  const isEmpty = computed(() => !toValue(moduleKey))
 
   /** 该位置的所有绑定（含禁用），参数变化时自动重新过滤 */
   const allBindings = computed<SceneBindingInfo[]>(() => {
-    if (isEmpty.value) return []
-    return store.getByModuleAndPosition(moduleKey, positionKey)
+    const mk = toValue(moduleKey)
+    const pk = toValue(positionKey)
+    if (!mk) return []
+    return store.getByModuleAndPosition(mk, pk)
   })
 
   console.log('allBindings:所有的绑定：', allBindings.value)

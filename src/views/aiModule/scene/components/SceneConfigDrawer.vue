@@ -6,7 +6,7 @@
   <el-drawer
     v-model="visible"
     :title="`场景配置 — ${sceneName}`"
-    size="750px"
+    size="850px"
     @opened="onOpened"
   >
     <!-- 顶部概览卡片 -->
@@ -26,6 +26,10 @@
       <div class="drawer-overview__item">
         <span class="drawer-overview__value">{{ tabStats.agentConfigs }}</span>
         <span class="drawer-overview__label">运行配置</span>
+      </div>
+      <div class="drawer-overview__item">
+        <span class="drawer-overview__value">{{ tabStats.orchestrations }}</span>
+        <span class="drawer-overview__label">编排流程</span>
       </div>
     </div>
 
@@ -53,17 +57,24 @@
         <template #label><span class="config-tab-label"><el-icon><Setting /></el-icon> 运行配置</span></template>
         <AgentConfigTab ref="agentConfigTabRef" :scene-id="sceneId" :linked-agents="linkedAgents" @update="tabStats.agentConfigs = $event" />
       </el-tab-pane>
+
+      <!-- Tab 5: 编排管理 -->
+      <el-tab-pane name="orchestration">
+        <template #label><span class="config-tab-label"><el-icon><Connection /></el-icon> 编排管理</span></template>
+        <OrchestrationTab ref="orchestrationTabRef" :scene-id="sceneId" :linked-agents="linkedAgents" @update="tabStats.orchestrations = $event" />
+      </el-tab-pane>
     </el-tabs>
   </el-drawer>
 </template>
 
 <script setup lang="ts">
-import { User, Collection, Position, Setting } from '@element-plus/icons-vue'
+import { User, Collection, Position, Setting, Connection } from '@element-plus/icons-vue'
 import { SceneAPI, type SceneAgent } from '@/api/ai/scene'
 import AgentTab from './tab/AgentTab.vue'
 import KnowledgeTab from './tab/KnowledgeTab.vue'
 import DeploymentTab from './tab/DeploymentTab.vue'
 import AgentConfigTab from './tab/AgentConfigTab.vue'
+import OrchestrationTab from './tab/OrchestrationTab.vue'
 
 const visible = defineModel<boolean>('visible', { required: true })
 
@@ -79,6 +90,7 @@ const tabStats = reactive({
   knowledge: 0,
   deployments: 0,
   agentConfigs: 0,
+  orchestrations: 0,
 })
 
 const linkedAgents = ref<SceneAgent[]>([])
@@ -88,6 +100,7 @@ const agentTabRef = ref<InstanceType<typeof AgentTab>>()
 const knowledgeTabRef = ref<InstanceType<typeof KnowledgeTab>>()
 const deploymentTabRef = ref<InstanceType<typeof DeploymentTab>>()
 const agentConfigTabRef = ref<InstanceType<typeof AgentConfigTab>>()
+const orchestrationTabRef = ref<InstanceType<typeof OrchestrationTab>>()
 
 async function onOpened() {
   // 加载关联 Agent 列表供运行配置 Tab 使用
@@ -99,13 +112,14 @@ async function onOpened() {
   knowledgeTabRef.value?.load()
   deploymentTabRef.value?.load()
   agentConfigTabRef.value?.load()
+  orchestrationTabRef.value?.load()
 }
 </script>
 
 <style lang="scss" scoped>
 .drawer-overview {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
   margin: 0 16px 16px;
   padding: 16px;

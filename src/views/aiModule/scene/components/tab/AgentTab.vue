@@ -30,7 +30,7 @@
       <el-form :model="form" label-width="80px">
         <el-form-item label="agent">
           <el-select v-model="form.agentId" placeholder="选择agent" style="width: 100%" :disabled="isEdit">
-            <el-option v-for="a in allAgents" :key="a.id" :label="a.name" :value="a.id" />
+            <el-option v-for="a in allAgents" :key="a.id" :label="a.name" :value="a.id || ''" />
           </el-select>
         </el-form-item>
         <el-form-item label="类型">
