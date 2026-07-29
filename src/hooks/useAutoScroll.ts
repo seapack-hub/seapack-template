@@ -105,13 +105,18 @@ export function useAutoScroll(
     })
   }
 
-  // 绑定滚动事件
+  // 绑定滚动事件，并初始化滚动位置
   onMounted(() => {
     const el = containerRef.value
     if (el) {
       el.addEventListener('scroll', handleScroll, { passive: true })
       // 初始检查
       checkIfAtBottom()
+      // 初始化时滚动到底部（处理已有内容的情况）
+      // 使用 setTimeout 确保 DOM 已完全渲染
+      setTimeout(() => {
+        scrollToBottom()
+      }, 0)
     }
   })
 

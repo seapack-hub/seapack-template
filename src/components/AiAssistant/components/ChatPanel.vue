@@ -200,10 +200,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import {
-  Promotion, ChatLineSquare, Loading, User, Monitor,
-  CopyDocument, Connection, Delete, Grid, CircleCloseFilled, CircleCheckFilled, RemoveFilled
+  Promotion, 
+  ChatLineSquare, 
+  Loading, 
+  CopyDocument, 
+  Connection, 
+  Delete, 
+  Grid, 
+  CircleCloseFilled, 
+  CircleCheckFilled, 
+  RemoveFilled
 } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/modules/chat'
 import { useChatExecution } from '@/hooks/useChatExecution'
@@ -220,14 +228,14 @@ const emit = defineEmits<{
 
 // ===== Store & Composable =====
 const store = useChatStore()
-const { sendMessage, abort, tokenUsage, llmSteps } = useChatExecution()
+const { sendMessage, abort, llmSteps } = useChatExecution()
 
 // ===== 状态 =====
 const inputText = ref('')
 const messageContainer = ref<HTMLElement>()
 
 // ===== 智能滚动 =====
-const { scrollToBottom } = useAutoScroll(messageContainer)
+const { scrollToBottom } = useAutoScroll(messageContainer as Ref<HTMLElement | null>)
 
 // ===== 场景列表 =====
 const scenes = ref<Scene[]>([])
