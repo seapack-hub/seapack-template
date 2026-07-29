@@ -1,109 +1,18 @@
 <!--
-  AiAssistant/ChatPanel.vue — 聊天面板
+  AiAssistant/ChatPanel.vue — 纯对话面板
 
   职责：
-    1. 展示消息列表 + 输入框
-    2. LLM 模式：直接对话
-    3. 场景模式：展示场景选择器 → 选择 Agent → 对话
-    4. 支持页面上下文注入和结果回写
+    1. 展示消息列表 + 输入框（职责单一）
+    2. LLM / Agent / 编排模式均可在此对话
+    3. 结果操作按钮（copy / 自定义 handler）
 
-  Props：
-    - scenes: 所有可用场景列表
-    - loading: 场景加载状态
-
-  数据流：
-    用户选择场景 → 加载场景的 Agent 列表 → 选择 Agent → 对话
-    页面上下文 → 自动注入到消息中
-    AI 结果 → 展示操作按钮 → 回写到页面
+  不包含：
+    - 场景选择（→ ScenePanel）
+    - Agent/编排选择（→ ScenePanel）
+    - 页面上下文（→ SettingsPanel）
 -->
 <template>
   <div class="chat-panel h-full flex flex-col bg-[#f5f7fa]">
-    <!-- 场景选择器：LLM 模式下显示（用于切换到场景模式） -->
-    <div v-if="!isSceneMode && !loading" class="px-12px pt-12px pb-8px" style="border-bottom: 1px solid var(--el-border-color-light)">
-      <div class="text-12px color-#909399 mb-8px">
-        <span>选择场景开始专业对话</span>
-      </div>
-      <div class="grid grid-cols-2 gap-8px max-h-170px overflow-y-auto">
-        <div
-          v-for="scene in scenes"
-          :key="scene.id"
-          class="flex flex-col items-center gap-4px px-8px py-10px border rounded-8px cursor-pointer bg-#fff transition-all duration-200 hover:border-[var(--el-color-primary)] hover:bg-[var(--el-color-primary-light-9)]"
-          style="border-color: var(--el-border-color-lighter)"
-          @click="selectScene(scene)"
-        >
-          <Icon :name="scene.icon || 'ChatDotSquare'" :size="20" :color="scene.coverColor || '#409eff'" />
-          <span class="text-12px font-500 color-#303133">{{ scene.name }}</span>
-          <span class="text-11px color-#909399 text-center overflow-hidden text-ellipsis whitespace-nowrap max-w-full">{{ scene.description || '' }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Agent 选择器：场景模式 + 多个 Agent 时显示 -->
-    <div v-if="showAgentSelector" class="px-12px py-8px" style="border-bottom: 1px solid var(--el-border-color-light)">
-      <div class="flex items-center gap-8px">
-        <span class="text-12px color-#909399 whitespace-nowrap">当前 Agent：</span>
-        <el-select
-          v-model="selectedAgentId"
-          size="small"
-          placeholder="选择 Agent"
-          style="flex: 1"
-        >
-          <el-option
-            v-for="a in agents"
-            :key="a.id"
-            :label="a.agentName || ''"
-            :value="a.id || ''"
-          />
-        </el-select>
-        <el-button size="small" text @click="backToLLM">返回通用</el-button>
-      </div>
-    </div>
-
-    <!-- 编排选择器：场景模式 + 多个编排时显示 -->
-    <div v-if="showOrchestrationSelector" class="px-12px py-8px" style="border-bottom: 1px solid var(--el-border-color-light)">
-      <div class="flex items-center gap-8px">
-        <span class="text-12px color-#909399 whitespace-nowrap">当前编排：</span>
-        <el-select
-          v-model="selectedOrchestrationId"
-          size="small"
-          placeholder="选择编排"
-          style="flex: 1"
-        >
-          <el-option
-            v-for="o in orchestrations"
-            :key="o.id"
-            :label="o.name"
-            :value="o.id || ''"
-          />
-        </el-select>
-      </div>
-    </div>
-
-    <!-- 编排步骤进度条 -->
-    <div v-if="showStepProgress" class="px-12px py-8px" style="border-bottom: 1px solid var(--el-border-color-light)">
-      <div class="flex items-center gap-6px text-12px color-#909399 mb-6px">
-        <el-icon class="is-loading" :size="14"><Loading /></el-icon>
-        <span>编排执行中</span>
-      </div>
-      <div class="flex flex-col gap-4px">
-        <div
-          v-for="(step, index) in stepProgressList"
-          :key="index"
-          class="flex items-center gap-6px text-12px px-8px py-4px rounded-4px bg-#fff"
-          :class="step.status"
-        >
-          <el-icon :size="14">
-            <SuccessFilled v-if="step.status === 'success'" />
-            <CircleCloseFilled v-else-if="step.status === 'fail'" />
-            <Loading v-else-if="step.status === 'running'" class="is-loading" />
-            <MoreFilled v-else />
-          </el-icon>
-          <span class="flex-1">{{ step.stepName }}</span>
-          <span v-if="step.durationMs" class="color-#c0c4cc">{{ formatDuration(step.durationMs) }}</span>
-        </div>
-      </div>
-    </div>
-
     <!-- 消息列表 -->
     <div ref="messageContainer" class="flex-1 overflow-y-auto px-12px">
       <div class="py-8px">
@@ -121,24 +30,68 @@
           class="flex gap-8px mb-16px"
           :class="msg.role === 'assistant' ? 'flex-row' : 'flex-row-reverse'"
         >
-          <div class="w-28px h-28px rounded-1/2 flex items-center justify-center text-16px flex-shrink-0">
-            <span v-if="msg.role === 'user'">👤</span>
-            <span v-else>🤖</span>
+          <!-- 头像 -->
+          <div
+            class="w-32px h-32px rounded-full flex items-center justify-center shrink-0 mt-4px"
+            :class="msg.role === 'user' ? 'bg-[var(--el-color-primary)] text-white' : 'bg-[var(--el-color-success)] text-white'"
+          >
+            <Icon v-if="msg.role === 'user'" name="user" size="24" />
+            <Icon v-else name="robot" size="24" />
           </div>
-          <div class="max-w-[calc(100%-36px)]">
+
+          <!-- 内容区域 -->
+          <div :class="msg.role === 'assistant' ? 'w-[90%]' : 'max-w-[70%]'">
+            <!-- 角色名 -->
             <div class="text-11px color-#909399 mb-4px" :class="msg.role === 'user' ? 'text-right' : ''">
               {{ msg.role === 'user' ? '用户' : displayName }}
             </div>
+
+            <!-- LLM 步骤时间线：仅在最后一条 assistant 消息中展示 -->
+            <div v-if="msg.role === 'assistant' && index === store.messages.length - 1 && llmSteps.length > 0" class="mb-6px">
+              <div class="step-timeline">
+                <div v-for="(step, si) in llmSteps" :key="si" class="flex gap-6px mb-2px">
+                  <div class="flex flex-col items-center w-18px shrink-0">
+                    <div class="w-18px h-18px rounded-full flex items-center justify-center" :class="'step-dot--' + step.status">
+                      <el-icon v-if="step.status === 'running'" class="is-loading" :size="14"><Loading /></el-icon>
+                      <el-icon v-else-if="step.status === 'success'" :size="14"><CircleCheckFilled /></el-icon>
+                      <el-icon v-else-if="step.status === 'skip'" :size="14"><Minus /></el-icon>
+                      <el-icon v-else-if="step.status === 'fail'" :size="14"><CircleCloseFilled /></el-icon>
+                    </div>
+                  </div>
+                  <div class="min-h-20px flex items-center gap-6px">
+                    <span class="text-12px font-500" :class="step.status === 'running' ? 'color-[var(--el-color-primary)]' : ''">
+                      {{ step.stepName }}
+                    </span>
+                    <span v-if="step.status === 'running'" class="text-11px color-[var(--el-color-primary)]">执行中</span>
+                    <span v-else-if="step.durationMs != null" class="text-11px color-[var(--el-text-color-secondary)] tabular-nums">{{ step.durationMs }}ms</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 消息正文：用户纯文本，助手 Markdown 渲染 -->
             <div
-              class="text-13px leading-[1.6] px-12px py-8px rounded-8px"
-              :class="msg.role === 'user' ? 'bg-[#ecf5ff]' : 'bg-[#fff]'"
-              v-html="renderMarkdown(msg.content)"
+              v-if="msg.content && msg.role === 'user'"
+              class="msg-bubble user text-13px leading-[1.7]"
+            >{{ msg.content }}</div>
+            <MarkdownRenderer
+              v-else-if="msg.content && msg.role === 'assistant'"
+              :content="msg.content"
+              class="msg-bubble assistant"
             />
-            <!-- 结果操作按钮 -->
-            <div v-if="msg.role === 'assistant' && isSceneMode && msg.content" class="flex gap-4px mt-6px">
-              <el-button size="small" text @click="copyResult(msg.content)">
-                <el-icon><CopyDocument /></el-icon> 复制
+
+            <!-- 元信息行：token / 复制（终止的对话不展示） -->
+            <div v-if="msg.role === 'assistant' && (msg.tokensPrompt != null || msg.content) && !msg.content.includes('**对话已终止**')" class="msg-meta-row">
+              <span v-if="msg.tokensPrompt != null" class="tabular-nums">
+                Token {{ msg.tokensPrompt }}/{{ msg.tokensCompletion }}
+              </span>
+              <el-button link size="small" class="!text-11px !p-0" @click="copyResult(msg.content)">
+                <el-icon :size="12"><CopyDocument /></el-icon>
               </el-button>
+            </div>
+
+            <!-- 结果操作按钮（场景模式下显示已注册的 handler） -->
+            <div v-if="msg.role === 'assistant' && isSceneMode && msg.content && store.resultHandlers.length > 0" class="flex gap-4px mt-6px">
               <el-button
                 v-for="handler in store.resultHandlers"
                 :key="handler.name"
@@ -150,32 +103,55 @@
                 {{ handler.name }}
               </el-button>
             </div>
-          </div>
-        </div>
 
-        <!-- 加载指示器 -->
-        <div v-if="store.loading" class="flex items-center gap-6px py-8px text-12px color-#909399">
-          <el-icon class="is-loading"><Loading /></el-icon>
-          <span>{{ loadingText }}</span>
+            <!-- 查看链路按钮 -->
+            <div
+              v-if="msg.role === 'assistant' && index === store.messages.length - 1 && store.currentTrace"
+              class="flex gap-4px mt-6px"
+            >
+              <el-button size="small" type="primary" text @click="emit('viewTrace')">
+                <el-icon :size="12" style="vertical-align: -2px; margin-right: 2px"><Connection /></el-icon>
+                查看链路
+              </el-button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- 输入区域 -->
-    <div class="px-12px py-10px" style="border-top: 1px solid var(--el-border-color-light)">
+    <div class="px-12px py-8px" style="border-top: 1px solid var(--el-border-color-light)">
       <el-input
         v-model="inputText"
         type="textarea"
-        :rows="4"
+        :rows="3"
         :placeholder="inputPlaceholder"
         :disabled="store.loading"
         resize="none"
         @keyup.enter="handleSend"
       />
-      <div class="flex justify-end mt-6px">
-        <el-button type="primary" :loading="store.loading" :icon="Promotion" @click="handleSend">
-          {{ store.loading ? '生成中' : '发送' }}
+      <div class="flex items-center justify-between mt-6px">
+        <el-button
+          v-if="store.loading"
+          size="small"
+          @click="handleStop"
+        >
+          <el-icon :size="14" style="margin-right: 2px"><CircleCloseFilled /></el-icon>
+          停止
         </el-button>
+        <span v-else />
+        <div class="flex items-center gap-6px">
+          <el-button size="small" :icon="Delete" @click="handleClear">清空</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            :icon="Promotion"
+            :disabled="store.loading || !inputText.trim()"
+            @click="handleSend"
+          >
+            发送
+          </el-button>
+        </div>
       </div>
     </div>
   </div>
@@ -184,65 +160,30 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import {
-  Promotion, ChatLineSquare, Loading, SuccessFilled,
-  CircleCloseFilled, MoreFilled, CopyDocument
+  Promotion, ChatLineSquare, Loading, CircleCheckFilled,
+  CopyDocument, Connection, Delete, CircleCloseFilled, Minus
 } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/modules/chat'
-import { useChatExecution, type StepProgress } from '@/hooks/useChatExecution'
-import { SceneAPI, type Scene, type SceneAgent } from '@/api/ai/scene'
-import { OrchestrationAPI, type Orchestration } from '@/api/ai/orchestration'
-// Markdown 渲染器
-// @ts-ignore
-import MarkdownIt from 'markdown-it'
-import { ElMessage } from 'element-plus'
+import { useChatExecution } from '@/hooks/useChatExecution'
+import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
-// ===== Props =====
-const props = defineProps<{
-  /** 所有可用场景列表 */
-  scenes: Scene[]
-  /** 场景加载状态 */
-  loading: boolean
+// ===== Emits =====
+const emit = defineEmits<{
+  viewTrace: []
 }>()
-
-// ===== 编排步骤进度 =====
-const stepProgressList = ref<StepProgress[]>([])
 
 // ===== Store & Composable =====
 const store = useChatStore()
-const { sendMessage } = useChatExecution((progress) => {
-  const idx = stepProgressList.value.findIndex(s => s.stepIndex === progress.stepIndex)
-  if (idx >= 0) {
-    stepProgressList.value[idx] = { ...stepProgressList.value[idx], ...progress }
-  } else {
-    stepProgressList.value.push(progress)
-  }
-})
-const md = new MarkdownIt({ html: false, linkify: true, typographer: true })
+const { sendMessage, abort, llmSteps } = useChatExecution()
 
 // ===== 状态 =====
 const inputText = ref('')
 const messageContainer = ref<HTMLElement>()
 
-// ===== 场景/Agent/编排 状态 =====
-const currentScene = ref<Scene | null>(null)
-const agents = ref<SceneAgent[]>([])
-const orchestrations = ref<Orchestration[]>([])
-
+// ===== 计算属性 =====
 const isSceneMode = computed(() => store.isAgentMode || store.isOrchestrationMode)
 
-const showAgentSelector = computed(() => {
-  return isSceneMode.value && agents.value.length > 1 && !store.isOrchestrationMode
-})
-
-const showOrchestrationSelector = computed(() => {
-  return isSceneMode.value && orchestrations.value.length > 1 && store.isOrchestrationMode
-})
-
-const showStepProgress = computed(() => {
-  return store.isOrchestrationMode && store.loading && stepProgressList.value.length > 0
-})
-
-// ===== 显示文本 =====
 const displayName = computed(() => {
   if (store.isAgentMode && store.currentAgentBinding) {
     return store.currentAgentBinding.agentName
@@ -258,119 +199,12 @@ const emptyStateText = computed(() => {
   return '开始一段新对话'
 })
 
-const loadingText = computed(() => {
-  if (store.isOrchestrationMode) return '编排执行中...'
-  if (store.isAgentMode) return 'Agent 思考中...'
-  return 'AI 思考中...'
-})
-
 const inputPlaceholder = computed(() => {
   if (isSceneMode.value) return '向 Agent 提问（Enter 发送）'
   return '输入问题（Enter 发送，Shift+Enter 换行）'
 })
 
-// ===== 工具函数 =====
-function formatDuration(ms: number): string {
-  if (ms < 1000) return `${ms}ms`
-  return `${(ms / 1000).toFixed(1)}s`
-}
-
-function renderMarkdown(text: string): string {
-  return md.render(text)
-}
-
-// ===== 选择场景 =====
-async function selectScene(scene: Scene) {
-  currentScene.value = scene
-
-  // 加载场景的 Agent 列表
-  try {
-    const sceneDetail = await SceneAPI.getById(scene.id!)
-    agents.value = [sceneDetail]
-  } catch {
-    agents.value = []
-  }
-
-  // 加载场景的编排列表
-  try {
-    orchestrations.value = await OrchestrationAPI.list({ sceneId: scene.id!, status: 1 })
-  } catch {
-    orchestrations.value = []
-  }
-
-  // 如果有编排，优先使用编排模式
-  if (orchestrations.value.length > 0) {
-    const orch = orchestrations.value[0]
-    store.bindOrchestration({
-      orchestrationId: orch.id!,
-      orchestrationName: orch.name,
-      orchestrationCode: orch.code,
-      orchestrationDescription: orch.description,
-      strategy: orch.strategy,
-      sceneId: orch.sceneId,
-      sceneName: scene.name || '',
-      stepCount: orch.steps?.length ?? 0,
-    })
-  } else if (agents.value.length > 0) {
-    // 否则使用 Agent 模式
-    const agent = agents.value.find(a => a.isDefault === 1) || agents.value[0]
-    store.bindAgent({
-      agentId: agent.agentId!,
-      agentName: agent.agentName || '',
-      sceneId: scene.id!,
-      sceneName: scene.name || '',
-    })
-  }
-}
-
-// ===== Agent 选择器 =====
-const selectedAgentId = computed({
-  get: () => store.currentAgentBinding?.agentId || undefined,
-  set: (agentId: number | undefined) => {
-    if (!agentId) return
-    const agent = agents.value.find(a => a.agentId === agentId)
-    if (agent && currentScene.value) {
-      store.bindAgent({
-        agentId: agent.agentId!,
-        agentName: agent.agentName || '',
-        sceneId: currentScene.value.id!,
-        sceneName: currentScene.value.name || '',
-      })
-    }
-  },
-})
-
-// ===== 编排选择器 =====
-const selectedOrchestrationId = computed({
-  get: () => store.currentOrchestrationBinding?.orchestrationId || undefined,
-  set: (orchId: number | undefined) => {
-    if (!orchId) return
-    const orch = orchestrations.value.find(o => o.id === orchId)
-    if (orch && currentScene.value) {
-      store.bindOrchestration({
-        orchestrationId: orch.id!,
-        orchestrationName: orch.name,
-        orchestrationCode: orch.code,
-        orchestrationDescription: orch.description,
-        strategy: orch.strategy,
-        sceneId: orch.sceneId,
-        sceneName: currentScene.value.name || '',
-        stepCount: orch.steps?.length ?? 0,
-      })
-    }
-  },
-})
-
-// ===== 返回 LLM 模式 =====
-function backToLLM() {
-  if (store.isAgentMode) store.unbindAgent()
-  if (store.isOrchestrationMode) store.unbindOrchestration()
-  currentScene.value = null
-  agents.value = []
-  orchestrations.value = []
-}
-
-// ===== 结果操作 =====
+// ===== 操作 =====
 function copyResult(content: string) {
   navigator.clipboard.writeText(content)
   ElMessage.success('已复制到剪贴板')
@@ -385,13 +219,21 @@ function callHandler(name: string, msg: { content: string }) {
   })
 }
 
-// ===== 发送消息 =====
-async function handleSend() {
+function handleSend() {
   const text = inputText.value.trim()
   if (!text || store.loading) return
   inputText.value = ''
-  stepProgressList.value = []
-  await sendMessage(text)
+  sendMessage(text)
+}
+
+function handleStop() {
+  abort()
+}
+
+function handleClear() {
+  ElMessageBox.confirm('确定清空当前会话的所有消息吗？', '提示', { type: 'info' })
+    .then(() => { store.clearMessages(); ElMessage.success('会话已清空') })
+    .catch(() => {})
 }
 
 // ===== 自动滚动 =====
@@ -411,17 +253,66 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-/** 步骤进度项状态 */
-.running { background: #fdf6ec; color: #e6a23c; }
-.success { background: #f0f9eb; color: #67c23a; }
-.fail    { background: #fef0f0; color: #f56c6c; }
+.msg-bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.7;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.msg-bubble.user {
+  background: var(--el-color-primary-light-8);
+  color: var(--el-text-color-primary);
+  border-top-right-radius: 4px;
+}
+.msg-bubble.assistant {
+  background: #fff;
+  color: var(--el-text-color-primary);
+  border-top-left-radius: 4px;
+  width: 100%;
+  white-space: normal;
+}
 
-:deep(.markdown-body) {
-  font-size: 13px; line-height: 1.6; color: #303133;
-  code { background: #e8eaed; padding: 1px 4px; border-radius: 3px; font-size: 12px; font-family: 'Courier New', monospace; }
-  pre { background: #f6f8fa; padding: 12px; border-radius: 6px; overflow: auto; border: 1px solid #eaeaea; margin: 8px 0; font-size: 12px; code { background: none; padding: 0; } }
-  p { margin: 6px 0; }
-  ul, ol { padding-left: 18px; margin: 4px 0; }
-  blockquote { border-left: 3px solid #409eff; padding-left: 10px; color: #606266; margin: 8px 0; font-size: 12px; }
+.msg-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 0 4px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+
+.step-timeline {
+  padding: 4px 0;
+}
+.step-dot--running {
+  background: var(--el-color-primary-light-8);
+  color: var(--el-color-primary);
+}
+.step-dot--success {
+  background: var(--el-color-success-light-8);
+  color: var(--el-color-success);
+}
+.step-dot--skip {
+  background: var(--el-color-warning-light-8);
+  color: var(--el-color-warning);
+}
+.step-dot--fail {
+  background: var(--el-color-danger-light-8);
+  color: var(--el-color-danger);
+}
+
+:deep(.chat-input .el-textarea__inner) {
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 8px 10px;
+  transition: border-color 0.2s;
+}
+:deep(.chat-input .el-textarea__inner:focus) {
+  border-color: var(--el-color-primary);
 }
 </style>

@@ -14,6 +14,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { ChatMessage } from '@/api/ai/index';
+import type { AgentTraceSnapshot } from '@/api/ai/types/agent';
 import { countMessagesTokens, trimContext } from '@/utils/tokenCounter';
 
 /** 会话数据结构 */
@@ -134,6 +135,9 @@ export const useChatStore = defineStore(
 
     /** 结果回调处理器列表（页面可注册，不持久化） */
     const resultHandlers = ref<ResultHandler[]>([]);
+
+    /** 当前 Agent 链路追踪快照（Agent/编排模式下由 SSE done 事件填充） */
+    const currentTrace = ref<AgentTraceSnapshot | null>(null);
 
     // ==================== Getters ====================
 
@@ -265,6 +269,20 @@ export const useChatStore = defineStore(
       const lastMsg = session.messages[session.messages.length - 1];
       if (lastMsg && lastMsg.role === 'assistant') {
         lastMsg.content += text;
+      }
+      touchSession();
+    }
+
+    /**
+     * 设置最后一条消息的 token 消耗统计
+     */
+    function setLastMessageTokens(prompt: number, completion: number) {
+      const session = currentSession.value;
+      if (!session) return;
+      const lastMsg = session.messages[session.messages.length - 1];
+      if (lastMsg && lastMsg.role === 'assistant') {
+        lastMsg.tokensPrompt = prompt;
+        lastMsg.tokensCompletion = completion;
       }
       touchSession();
     }
@@ -421,6 +439,22 @@ export const useChatStore = defineStore(
       }
     }
 
+    // ==================== 链路追踪（不持久化） ====================
+
+    /**
+     * 设置当前链路追踪快照（Agent/编排 SSE 完成时调用）
+     */
+    function setCurrentTrace(trace: AgentTraceSnapshot | null) {
+      currentTrace.value = trace;
+    }
+
+    /**
+     * 清空当前链路追踪快照
+     */
+    function clearCurrentTrace() {
+      currentTrace.value = null;
+    }
+
     return {
       // state
       sessions,
@@ -428,6 +462,7 @@ export const useChatStore = defineStore(
       loading,
       pageContext,
       resultHandlers,
+      currentTrace,
       // getters
       currentSession,
       messages,
@@ -445,6 +480,7 @@ export const useChatStore = defineStore(
       renameSession,
       addMessage,
       updateLastMessage,
+      setLastMessageTokens,
       getContextMessages,
       clearMessages,
       setMode,
@@ -458,6 +494,9 @@ export const useChatStore = defineStore(
       registerResultHandler,
       unregisterResultHandler,
       callResultHandler,
+      // 链路追踪
+      setCurrentTrace,
+      clearCurrentTrace,
     };
   },
   {

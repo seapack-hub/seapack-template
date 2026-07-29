@@ -13,8 +13,9 @@
  *   import { executeAgentStream, executeOrchestrationStream, abortChat } from '@/api/ai/chatExecute'
  */
 import CacheKey from '@/constants/cache-key'
-import type { AgentTestChatRequest, AgentTestChatSSEEvent } from './types/agent'
+import type { AgentTestChatRequest, AgentTestChatSSEEvent, LlmTestChatSSEEvent } from './types/agent'
 import type { OrchestrationExecuteRequest, OrchestrationSSEEvent } from './types/orchestration'
+import type { ChatMessage } from './index'
 
 // ===== AbortController 管理 =====
 let currentAbortController: AbortController | null = null
@@ -25,6 +26,25 @@ let currentAbortController: AbortController | null = null
 export function abortChat() {
   currentAbortController?.abort()
   currentAbortController = null
+}
+
+/**
+ * 通知后端优雅终止当前用户的 LLM 流式对话
+ * 后端会发送 stop 事件并正常关闭 SSE 连接
+ */
+export async function cancelChatStream(): Promise<void> {
+  const token = localStorage.getItem(CacheKey.TOKEN)
+  try {
+    await fetch('/api/chat/cancel', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    })
+  } catch {
+    // 忽略网络错误（仅通知后端，无需 await）
+  }
 }
 
 /**
@@ -107,6 +127,32 @@ export async function executeAgentStream(
   onEvent: (event: AgentTestChatSSEEvent) => void,
 ): Promise<void> {
   await readSseStream(`${AGENT_BASE_URL}/test-chat`, req, onEvent)
+}
+
+// ===== LLM 流式对话 =====
+
+const CHAT_BASE_URL = '/api/chat'
+
+/**
+ * LLM 测试对话（SSE 流式，含 token 统计和执行记录）
+ *
+ * 以 SSE 事件流形式逐 token 返回 AI 回复，完成时推送 token 消耗统计和耗时。
+ * 对话记录会自动保存到 ai_execution_session 表中。
+ *
+ * @param messages  对话消息列表
+ * @param namespace 知识库命名空间（可选）
+ * @param onEvent   事件回调，接收 LlmTestChatSSEEvent
+ */
+export async function executeLlmStream(
+  messages: ChatMessage[],
+  namespace: string | undefined,
+  onEvent: (event: LlmTestChatSSEEvent) => void,
+): Promise<void> {
+  await readSseStream(
+    `${CHAT_BASE_URL}/test-chat`,
+    { messages, namespace },
+    onEvent,
+  )
 }
 
 // ===== 编排流式执行 =====

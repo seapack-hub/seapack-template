@@ -1,8 +1,20 @@
 import type { ChatMessage } from './types/index'
+import CacheKey from '@/constants/cache-key'
 
 export type { ChatMessage }
 
 const USER_BASE_URL = "/api";
+
+function getAuthHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  const token = localStorage.getItem(CacheKey.TOKEN)
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  return headers
+}
 
 export async function streamChat(
   messages: ChatMessage[],
@@ -14,9 +26,7 @@ export async function streamChat(
   try {
     const response = await fetch(`${USER_BASE_URL}/chat/aiModel`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         messages: messages,
         namespace: namespace,

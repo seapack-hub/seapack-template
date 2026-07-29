@@ -18,15 +18,15 @@
  */
 import { ref } from 'vue'
 import { useChatStore, type Session } from '@/store/modules/chat'
-import { streamChat } from '@/api/ai/index'
-import { executeAgentStream, executeOrchestrationStream, abortChat } from '@/api/ai/chatExecute'
-import type { AgentTestChatSSEEvent } from '@/api/ai/types/agent'
+import { executeAgentStream, executeLlmStream, executeOrchestrationStream, abortChat, cancelChatStream } from '@/api/ai/chatExecute'
+import type { AgentTestChatSSEEvent, LlmTestChatSSEEvent } from '@/api/ai/types/agent'
 import type { OrchestrationSSEEvent } from '@/api/ai/types/orchestration'
 
-/** 编排步骤进度信息 */
+/** 编排步骤进度信息（LLM 模式也可复用） */
 export interface StepProgress {
   stepIndex: number
   stepName: string
+  stepType?: string
   status: 'running' | 'success' | 'fail' | 'skip'
   message?: string
   output?: string
@@ -36,11 +36,11 @@ export interface StepProgress {
 export function useChatExecution(onStepProgress?: (progress: StepProgress) => void) {
   const chatStore = useChatStore()
 
-  /** 当前请求的 AbortController（仅 LLM 模式使用） */
-  let abortController: AbortController | null = null
-
-  /** Agent/编排模式最近一次的 Token 消耗 */
+  /** 最近一次的 Token 消耗（LLM/Agent/编排模式均会记录） */
   const tokenUsage = ref<{ prompt: number; completion: number } | null>(null)
+
+  /** LLM 模式步骤进度列表（step_start / step_done 事件驱动） */
+  const llmSteps = ref<StepProgress[]>([])
 
   /**
    * 发送消息，根据当前会话模式自动选择对话接口
@@ -54,8 +54,10 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
     // 添加用户消息到会话
     chatStore.addMessage({ role: 'user', content: text })
     chatStore.loading = true
-    // 重置 token 统计
+    // 重置 token 统计、LLM 步骤和链路追踪
     tokenUsage.value = null
+    llmSteps.value = []
+    chatStore.clearCurrentTrace()
     // 添加空的 assistant 消息，后续流式填充内容
     chatStore.addMessage({ role: 'assistant', content: '' })
     // 根据模式选择对话接口
@@ -69,33 +71,99 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
   }
 
   /**
-   * LLM 模式：通过 streamChat 进行 SSE 流式对话
-   * 消息逐块追加到会话中
+   * LLM 模式：通过 executeLlmStream 进行 SSE 流式对话（含 token 统计和执行记录）
+   * 消息逐块追加到会话中，完成时记录 token 消耗
    */
   async function sendLlmMessage() {
-    abortController = new AbortController()
     const contextMessages = chatStore.getContextMessages()
-    await streamChat(
-      contextMessages,
-      // 流式追加 AI 回复的每个 chunk
-      (chunk) => chatStore.updateLastMessage(chunk),
-      // 流式结束
-      () => {
+    try {
+      await executeLlmStream(
+        contextMessages,
+        chatStore.namespace,
+        // 处理 SSE 事件
+        (event: LlmTestChatSSEEvent) => {
+          switch (event.type) {
+            // 步骤开始
+            case 'step_start':
+              llmSteps.value.push({
+                stepIndex: event.stepIndex ?? 1,
+                stepName: event.stepName || '',
+                stepType: event.stepType,
+                status: 'running',
+              })
+              break
+
+            // 步骤完成
+            case 'step_done':
+              const step = llmSteps.value.find(s => s.stepType === event.stepType)
+              if (step) {
+                step.status = (event.status as any) || 'success'
+                step.durationMs = event.durationMs
+              }
+              break
+
+            // 文本片段：逐字追加到消息
+            case 'content':
+              if (event.text) {
+                chatStore.updateLastMessage(event.text)
+              }
+              break
+
+            // 对话完成：记录 token 统计，标记 LLM 步骤为完成
+            case 'done':
+              chatStore.loading = false
+              if (event.tokens) {
+                tokenUsage.value = event.tokens
+                chatStore.setLastMessageTokens(event.tokens.prompt, event.tokens.completion)
+              } else if (event.tokensPrompt != null || event.tokensCompletion != null) {
+                tokenUsage.value = {
+                  prompt: event.tokensPrompt || 0,
+                  completion: event.tokensCompletion || 0,
+                }
+                chatStore.setLastMessageTokens(event.tokensPrompt || 0, event.tokensCompletion || 0)
+              }
+              // 兜底：如果 step_done 未触发，在 done 时标记运行中的步骤为完成
+              const runningStep = llmSteps.value.find(s => s.status === 'running')
+              if (runningStep) {
+                runningStep.status = 'success'
+                runningStep.durationMs = event.durationMs || event.totalDurationMs
+              }
+              break
+
+            // 用户终止（后端收到取消信号后发送）
+            case 'stop':
+              // 标记所有运行中的步骤为中止
+              llmSteps.value.forEach(s => {
+                if (s.status === 'running') s.status = 'skip'
+              })
+              // 标记助手消息为终止
+              {
+                const msgs = chatStore.messages
+                const lastMsg = msgs[msgs.length - 1]
+                if (lastMsg && lastMsg.role === 'assistant') {
+                  lastMsg.content = lastMsg.content
+                    ? `${lastMsg.content}\n\n---\n\n**对话已终止**`
+                    : '**对话已终止**'
+                }
+              }
+              break
+
+            // 错误
+            case 'error':
+              chatStore.updateLastMessage(`\n\n[错误: ${event.message || '未知错误'}]`)
+              chatStore.loading = false
+              break
+          }
+        },
+      )
+    } catch (err: any) {
+      if (err?.name === 'AbortError') {
         chatStore.loading = false
-        abortController = null
-      },
-      // 错误处理
-      (err) => {
-        // 忽略 AbortError（用户主动取消）
-        if (err.name !== 'AbortError') {
-          chatStore.updateLastMessage(`\n\n[错误: ${err.message}]`)
-        }
-        chatStore.loading = false
-        abortController = null
-      },
-      // 传入知识库命名空间（用于 RAG 检索范围限定）
-      chatStore.namespace,
-    )
+        return
+      }
+      chatStore.updateLastMessage(`\n\n[错误: ${(err as Error).message}]`)
+      chatStore.loading = false
+    }
   }
 
   /**
@@ -128,17 +196,25 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
               }
               break
 
-            // 对话完成：记录 token 统计
+            // 对话完成：记录 token 统计，并持久化到消息中
             case 'done':
               chatStore.loading = false
-              // 提取 token 消耗（兼容两种格式）
+              // 提取 token 消耗（兼容两种格式），并持久化到消息中
               if (event.tokens) {
                 tokenUsage.value = event.tokens
+                chatStore.setLastMessageTokens(event.tokens.prompt, event.tokens.completion)
               } else if (event.tokensPrompt != null || event.tokensCompletion != null) {
                 tokenUsage.value = {
                   prompt: event.tokensPrompt || 0,
                   completion: event.tokensCompletion || 0,
                 }
+                chatStore.setLastMessageTokens(event.tokensPrompt || 0, event.tokensCompletion || 0)
+              }
+              // 提取链路追踪快照（可能是 JSON 字符串或已解析的对象）
+              if (event.traceSnapshot) {
+                const raw = event.traceSnapshot
+                const snapshot = typeof raw === 'string' ? JSON.parse(raw) : raw
+                chatStore.setCurrentTrace(snapshot)
               }
               break
 
@@ -150,7 +226,11 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
           }
         },
       )
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.name === 'AbortError') {
+        chatStore.loading = false
+        return
+      }
       chatStore.updateLastMessage(`\n\n[错误: ${(err as Error).message}]`)
       chatStore.loading = false
     }
@@ -232,6 +312,7 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
               chatStore.loading = false
               if (event.tokens) {
                 tokenUsage.value = event.tokens
+                chatStore.setLastMessageTokens(event.tokens.prompt, event.tokens.completion)
               }
               break
 
@@ -243,7 +324,11 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
           }
         },
       )
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.name === 'AbortError') {
+        chatStore.loading = false
+        return
+      }
       chatStore.updateLastMessage(`\n\n[错误: ${(err as Error).message}]`)
       chatStore.loading = false
     }
@@ -251,17 +336,43 @@ export function useChatExecution(onStepProgress?: (progress: StepProgress) => vo
 
   /**
    * 取消当前进行中的对话请求
-   * LLM 模式通过 AbortController 取消 fetch
-   * Agent/编排模式通过 abortTestChat() 取消 SSE 流
+   * 1. 先通知后端优雅终止（发送 stop 事件后正常关闭 SSE）
+   * 2. 等一小段时间让后端有时间发送 stop 事件
+   * 3. 若后端未响应则强制中止 fetch 连接
+   * 4. 本地兜底：标记运行中的步骤为中止
    */
-  function abort() {
-    // 取消 LLM 模式的 fetch 请求
-    abortController?.abort()
-    abortController = null
-    // 取消 Agent/编排模式的 SSE 流
+  async function abort() {
+    // 1. 通知后端优雅终止
+    cancelChatStream()
+
+    // 2. 等一段窗口期让后端发送 stop 事件
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    // 3. 强制中止 fetch 连接
     abortChat()
     chatStore.loading = false
+
+    // 4. 本地兜底：标记运行中的 LLM 步骤为中止
+    let stepped = false
+    llmSteps.value.forEach(s => {
+      if (s.status === 'running') {
+        s.status = 'skip'
+        stepped = true
+      }
+    })
+    // 助手消息标记为终止（若 stop 事件已处理，不会重复添加）
+    if (stepped) {
+      const msgs = chatStore.messages
+      const lastMsg = msgs[msgs.length - 1]
+      if (lastMsg && lastMsg.role === 'assistant') {
+        if (!lastMsg.content.includes('对话已终止')) {
+          lastMsg.content = lastMsg.content
+            ? `${lastMsg.content}\n\n---\n\n**对话已终止**`
+            : '**对话已终止**'
+        }
+      }
+    }
   }
 
-  return { sendMessage, abort, tokenUsage }
+  return { sendMessage, abort, tokenUsage, llmSteps }
 }

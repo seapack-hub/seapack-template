@@ -219,6 +219,35 @@ export interface StepDetail {
   data?: Record<string, any>
 }
 
+/** LLM 测试对话 SSE 流式事件 */
+export interface LlmTestChatSSEEvent {
+  type: 'step_start' | 'step_done' | 'content' | 'done' | 'error' | 'stop'
+  /** step_start / step_done：步骤索引 */
+  stepIndex?: number
+  /** step_start / step_done：步骤类型 */
+  stepType?: string
+  /** step_start / step_done：步骤名称 */
+  stepName?: string
+  /** step_done：步骤状态 */
+  status?: 'success' | 'fail' | 'skip'
+  /** step_done：步骤耗时 ms */
+  durationMs?: number
+  /** content：文本片段 */
+  text?: string
+  /** done：token 统计 */
+  tokens?: { prompt: number; completion: number }
+  /** done：提示词 token 数（兼容格式） */
+  tokensPrompt?: number
+  /** done：补全 token 数（兼容格式） */
+  tokensCompletion?: number
+  /** done：总耗时 ms */
+  totalDurationMs?: number
+  /** done：使用的模型 */
+  model?: string
+  /** error：错误消息 */
+  message?: string
+}
+
 /** 测试对话 SSE 流式事件 */
 export interface AgentTestChatSSEEvent {
   type: 'step_start' | 'step_progress' | 'step_detail' | 'step_done' | 'content' | 'done' | 'error'

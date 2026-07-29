@@ -3,20 +3,22 @@
 
   职责：
     1. 渲染可拖拽的 FAB 按钮和侧边 Drawer
-    2. 支持两种模式：纯 LLM 对话 / 场景模式
-    3. 场景模式下展示场景列表，用户选择场景后再对话
-    4. 支持页面上下文注入和结果回写
+    2. 5-Tab 布局：对话 / 场景 / 会话 / 链路 / 设置
+    3. 支持两种模式：纯 LLM 对话 / 场景模式
 
   数据流：
     FAB 点击 → 打开 Drawer
-    用户选择模式 → LLM 模式直接对话 / 场景模式选择场景
-    页面可选注入 pageContext → 增强对话上下文
-    页面可注册 resultHandler → AI 结果回写页面
+    对话 Tab → 纯消息列表 + 输入框
+    场景 Tab → 场景选择 + Agent/编排选择
+    会话 Tab → 会话列表管理
+    链路 Tab → Agent 链路追踪可视化
+    设置 Tab → 页面上下文 + 结果回写配置
 -->
 <template>
   <div class="ai-assistant-wrapper">
     <!-- FAB 悬浮按钮：可拖拽 -->
     <div
+      v-show="!drawerVisible"
       ref="dragEl"
       class="ai-trigger pos-fixed z-9999 flex items-center justify-center cursor-pointer color-white shadow-lg transition-all duration-300"
       :style="fabStyle"
@@ -26,20 +28,20 @@
     >
       <Icon name="ai-interaction" :size="24" color="#fff" />
       <!-- 场景模式标签 -->
-      <span v-if="isSceneMode && currentScene" class="agent-badge pos-absolute l-1/2 -translate-x-1/2 whitespace-nowrap text-11px color-white px-6px py-2px rounded-4px" style="background: rgba(0,0,0,0.6); top: calc(100% + 4px)">
-        {{ currentScene.name }}
+      <span v-if="isSceneMode && currentSceneName" class="agent-badge pos-absolute l-1/2 -translate-x-1/2 whitespace-nowrap text-11px color-white px-6px py-2px rounded-4px" style="background: rgba(0,0,0,0.6); top: calc(100% + 4px)">
+        {{ currentSceneName }}
       </span>
     </div>
 
     <!-- 侧边 Drawer -->
     <el-drawer
       v-model="drawerVisible"
-      size="800px"
+      size="1000px"
       :with-header="false"
       direction="rtl"
       @open="handleOpen"
     >
-      <div class="assistant-container h-full flex flex-col" style="background: #f5f7fa">
+      <div class="assistant-container h-full flex flex-col" style="background: #f5f7ff">
         <!-- 顶部标题栏 -->
         <div class="assistant-header h-52px px-16px flex items-center justify-between flex-shrink-0" style="border-bottom: 1px solid var(--el-border-color-light); background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%)">
           <div class="flex items-center gap-8px">
@@ -49,19 +51,18 @@
             <span class="text-15px font-600 color-#303133">AI 助手</span>
           </div>
           <div class="flex items-center gap-8px">
-            <!-- 模式切换标签 -->
+            <!-- 模式标签 -->
             <el-tag
               size="small"
               :type="isSceneMode ? 'success' : 'info'"
               class="cursor-pointer transition-opacity duration-200 hover:opacity-80"
-              @click="toggleMode"
             >
               <span class="flex items-center gap-4px">
                 <el-icon :size="12">
                   <Connection v-if="isSceneMode" />
                   <ChatDotSquare v-else />
                 </el-icon>
-                {{ isSceneMode ? `场景: ${currentScene?.name}` : '通用对话' }}
+                {{ isSceneMode ? `场景: ${currentSceneName}` : '通用对话' }}
               </span>
             </el-tag>
             <el-button text :icon="Close" class="!text-#909399 hover:!text-#303133" @click="drawerVisible = false" />
@@ -70,20 +71,29 @@
 
         <!-- Tab 导航 -->
         <el-tabs v-model="activeTab" class="assistant-tabs flex-shrink-0 px-16px" style="border-bottom: 1px solid var(--el-border-color-light)">
-          <el-tab-pane label="聊天" name="chat" />
-          <el-tab-pane label="会话" name="sessions" />
-          <el-tab-pane label="上下文" name="context" />
+          <el-tab-pane label="普通对话" name="chat" />
+          <el-tab-pane label="场景对话" name="scene" />
+          <el-tab-pane label="会话列表" name="sessions" />
+          <el-tab-pane v-if="hasTrace" label="追踪链路" name="trace" />
+          <el-tab-pane label="对话设置" name="settings" />
         </el-tabs>
 
         <!-- Tab 内容区 -->
         <div class="flex-1 overflow-hidden">
           <ChatPanel
             v-if="activeTab === 'chat'"
+            @view-trace="activeTab = 'trace'"
+          />
+          <ScenePanel
+            v-else-if="activeTab === 'scene'"
             :scenes="scenes"
             :loading="scenesLoading"
           />
           <SessionList v-else-if="activeTab === 'sessions'" />
-          <ContextPanel v-else />
+          <div v-else-if="activeTab === 'trace'" class="h-full overflow-y-auto px-16px py-12px">
+            <AgentTraceDetail :snapshot="chatStore.currentTrace" />
+          </div>
+          <SettingsPanel v-else />
         </div>
       </div>
     </el-drawer>
@@ -96,8 +106,10 @@ import { ChatDotSquare, Close, Connection } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/modules/chat'
 import { SceneAPI, type Scene } from '@/api/ai/scene'
 import ChatPanel from './components/ChatPanel.vue'
+import ScenePanel from './components/ScenePanel.vue'
 import SessionList from './components/SessionList.vue'
-import ContextPanel from './components/ContextPanel.vue'
+import SettingsPanel from './components/SettingsPanel.vue'
+import AgentTraceDetail from '@/views/aiModule/agent/components/AgentTraceDetail.vue'
 import Icon from '@/components/Icon/index.vue'
 
 const chatStore = useChatStore()
@@ -123,36 +135,21 @@ async function loadScenes() {
 }
 
 // ===== 模式状态 =====
-/** 当前会话是否为场景模式（agent 或 orchestration） */
 const isSceneMode = computed(() =>
   chatStore.isAgentMode || chatStore.isOrchestrationMode
 )
 
-/** 当前场景信息 */
-const currentScene = computed(() => {
+const currentSceneName = computed(() => {
   if (chatStore.isAgentMode && chatStore.currentAgentBinding) {
-    return { name: chatStore.currentAgentBinding.sceneName }
+    return chatStore.currentAgentBinding.sceneName
   }
   if (chatStore.isOrchestrationMode && chatStore.currentOrchestrationBinding) {
-    return { name: chatStore.currentOrchestrationBinding.orchestrationName }
+    return chatStore.currentOrchestrationBinding.orchestrationName
   }
-  return null
+  return ''
 })
 
-// ===== 模式切换 =====
-/**
- * 切换对话模式
- * - LLM → 场景模式：显示场景选择（由 ChatPanel 处理）
- * - 场景模式 → LLM：解绑 Agent/编排
- */
-function toggleMode() {
-  if (isSceneMode.value) {
-    // 场景模式 → LLM
-    if (chatStore.isAgentMode) chatStore.unbindAgent()
-    if (chatStore.isOrchestrationMode) chatStore.unbindOrchestration()
-  }
-  // LLM → 场景模式：由 ChatPanel 中的场景选择器处理
-}
+const hasTrace = computed(() => chatStore.currentTrace !== null)
 
 // ===== FAB 拖拽 =====
 const dragEl = ref<HTMLElement>()
@@ -185,7 +182,6 @@ onBeforeUnmount(stopDrag)
 // ===== Drawer 打开时初始化 =====
 function handleOpen() {
   chatStore.ensureSession()
-  // 首次打开时加载场景列表
   if (scenes.value.length === 0) {
     loadScenes()
   }
@@ -240,5 +236,4 @@ const fabStyle = computed(() => ({
     border-radius: 3px 3px 0 0;
   }
 }
-
 </style>

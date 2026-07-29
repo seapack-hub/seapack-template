@@ -31,19 +31,10 @@
             </div>
           </div>
         </el-popover>
-        <!-- AI 技能按钮 -->
-        <template v-for="b in aiBindings" :key="b.sceneId">
-          <el-button
-            v-if="(b.config?.displayType || 'button') === 'button'"
-            :type="b.config?.type || 'primary'"
-            @click="openAiDialog()"
-          >
-            <el-icon style="vertical-align: -2px; margin-right: 4px">
-              <component :is="b.config?.icon || 'MagicStick'" />
-            </el-icon>
-            {{ b.config?.buttonText || b.agentName }}
-          </el-button>
-        </template>
+        <el-button text :icon="Delete" @click="handleClear">清空会话</el-button>
+      </div>
+          </div>
+        </el-popover>
         <el-button text :icon="Delete" @click="handleClear">清空会话</el-button>
       </div>
     </el-header>
@@ -130,25 +121,15 @@
       :interim-text="voice.interimText as any"
       :error-message="voice.errorMessage as any"
     />
-
-    <!-- AI Agent 执行通用弹框 -->
-    <AiAgentExecutor
-      v-model:visible="aiDialogVisible"
-      module-key="aiModule"
-      position-key="chat-sidebar"
-      :context="aiContext"
-      @done="handleAiResult"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, onMounted } from 'vue';
+import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import { Delete, Setting, Promotion, Microphone, ChatLineSquare } from '@element-plus/icons-vue';
 import { useChatStore } from '@/store/modules/chat';
 import { streamChat } from '@/api/ai/index';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
-import { useSceneBindings } from '@/hooks/useSceneBindings';
 import VoiceInputTip from './VoiceInputTip.vue';
 import emitter from '@/utils/bus';
 // @ts-ignore
@@ -156,30 +137,6 @@ import MarkdownIt from 'markdown-it';
 import { ElMessageBox, ElMessage } from 'element-plus';
 
 const store = useChatStore();
-
-/** 从 Store 获取聊天侧边栏位所有启用的 AI 场景绑定 */
-const { bindings: aiBindings } = useSceneBindings('aiModule', 'chat-sidebar')
-
-const aiDialogVisible = ref(false)
-const aiContext = ref({ inputText: '' })
-
-function openAiDialog() {
-  aiContext.value = { inputText: inputText.value }
-  aiDialogVisible.value = true
-}
-
-function handleAiResult(result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
-  if (!result.content) {
-    ElMessage.error('AI 执行失败，请重试')
-    return
-  }
-  store.addMessage({ role: 'user', content: `使用技能：${result.agentName}` })
-  store.addMessage({ role: 'assistant', content: result.content })
-  nextTick(() => {
-    const scrollWrap = scrollbarRef.value?.wrapRef
-    if (scrollWrap) scrollWrap.scrollTop = scrollWrap.scrollHeight
-  })
-}
 
 const md = new MarkdownIt({ html: false, linkify: true, typographer: true });
 
@@ -286,6 +243,16 @@ function setNamespace(ns: string) {
 onMounted(() => {
   store.ensureSession();
   emitter.on('update-namespace', setNamespace);
+  // 注入页面上下文，供全局 AI 助手使用
+  store.setPageContext({
+    pageName: 'AI 大模型对话',
+    moduleKey: 'aiModule',
+    data: { source: 'chat-interface' },
+  });
+});
+
+onUnmounted(() => {
+  store.setPageContext(null);
 });
 </script>
 
