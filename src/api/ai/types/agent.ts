@@ -250,7 +250,7 @@ export interface LlmTestChatSSEEvent {
 
 /** 测试对话 SSE 流式事件 */
 export interface AgentTestChatSSEEvent {
-  type: 'step_start' | 'step_progress' | 'step_detail' | 'step_done' | 'content' | 'done' | 'error'
+  type: 'step_start' | 'step_progress' | 'step_detail' | 'step_done' | 'content' | 'done' | 'error' | 'stop'
   /** 步骤索引 */
   stepIndex?: number
   /** step_start / step_done：步骤类型（prompt_assembly / knowledge_retrieval / skill_execution / llm_call） */
