@@ -4,7 +4,7 @@
   职责：
     1. 页面上下文展示与注入
     2. 结果回写配置（已注册的 resultHandler 列表）
-    3. Agent/编排绑定信息展示
+    3. 当前场景绑定信息展示
 -->
 <template>
   <div class="settings-panel h-full flex flex-col bg-[#f5f7fa] overflow-y-auto">
@@ -27,56 +27,21 @@
       </div>
     </div>
 
-    <!-- Agent 绑定信息 -->
-    <div v-if="isAgentMode && agentBinding" class="px-16px py-12px" style="border-bottom: 1px solid var(--el-border-color-light)">
-      <div class="text-13px font-600 color-#303133 mb-12px">Agent 信息</div>
+    <!-- 当前场景信息 -->
+    <div v-if="isSceneMode && sceneBinding" class="px-16px py-12px" style="border-bottom: 1px solid var(--el-border-color-light)">
+      <div class="text-13px font-600 color-#303133 mb-12px">当前场景</div>
       <div class="flex flex-col gap-8px">
         <div class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">Agent 名称</span>
-          <span class="text-13px color-#303133">{{ agentBinding.agentName }}</span>
+          <span class="text-11px color-#909399">场景名称</span>
+          <span class="text-13px color-#303133">{{ sceneBinding.sceneName }}</span>
         </div>
         <div class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">所属场景</span>
-          <span class="text-13px color-#303133">{{ agentBinding.sceneName }}</span>
-        </div>
-        <div v-if="agentBinding.agentModel" class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">模型覆盖</span>
-          <span class="text-12px font-mono bg-#fff px-6px py-2px rounded-4px color-#303133 border" style="border-color: var(--el-border-color-lighter)">{{ agentBinding.agentModel }}</span>
-        </div>
-        <div v-if="agentBinding.agentTemperature != null" class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">温度覆盖</span>
-          <span class="text-13px color-#303133">{{ agentBinding.agentTemperature }}</span>
-        </div>
-        <div v-if="agentBinding.knowledgeIds?.length" class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">关联知识库</span>
-          <span class="text-13px color-#303133">{{ agentBinding.knowledgeIds.length }} 个</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 编排绑定信息 -->
-    <div v-if="isOrchestrationMode && orchestrationBinding" class="px-16px py-12px" style="border-bottom: 1px solid var(--el-border-color-light)">
-      <div class="text-13px font-600 color-#303133 mb-12px">编排信息</div>
-      <div class="flex flex-col gap-8px">
-        <div class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">编排名称</span>
-          <span class="text-13px color-#303133">{{ orchestrationBinding.orchestrationName }}</span>
+          <span class="text-11px color-#909399">场景 ID</span>
+          <span class="text-12px font-mono bg-#fff px-6px py-2px rounded-4px color-#303133 border" style="border-color: var(--el-border-color-lighter)">{{ sceneBinding.sceneId }}</span>
         </div>
         <div class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">编排编码</span>
-          <span class="text-12px font-mono bg-#fff px-6px py-2px rounded-4px color-#303133 border" style="border-color: var(--el-border-color-lighter)">{{ orchestrationBinding.orchestrationCode }}</span>
-        </div>
-        <div v-if="orchestrationBinding.orchestrationDescription" class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">编排描述</span>
-          <span class="text-13px color-#303133">{{ orchestrationBinding.orchestrationDescription }}</span>
-        </div>
-        <div class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">执行策略</span>
-          <span class="text-13px color-#303133">{{ strategyLabel(orchestrationBinding.strategy) }}</span>
-        </div>
-        <div class="flex flex-col gap-2px">
-          <span class="text-11px color-#909399">步骤数量</span>
-          <span class="text-13px color-#303133">{{ orchestrationBinding.stepCount }} 步</span>
+          <span class="text-11px color-#909399">Agent 路由</span>
+          <span class="text-13px color-#67c23a">后端自动分配</span>
         </div>
       </div>
     </div>
@@ -128,23 +93,9 @@ const store = useChatStore()
 const route = useRoute()
 const { listenerRouteChange } = useRouteListener()
 
-// ===== 绑定信息 =====
-const isAgentMode = computed(() => store.isAgentMode)
-const agentBinding = computed(() => store.currentAgentBinding)
-const isOrchestrationMode = computed(() => store.isOrchestrationMode)
-const orchestrationBinding = computed(() => store.currentOrchestrationBinding)
-
-// ===== 策略标签 =====
-const strategyMap: Record<string, string> = {
-  sequential: '顺序执行',
-  parallel: '并行执行',
-  llm_tool: 'LLM 决策',
-  auto: '自动选择',
-}
-
-function strategyLabel(strategy: string): string {
-  return strategyMap[strategy] || strategy
-}
+// ===== 场景绑定信息 =====
+const isSceneMode = computed(() => store.isSceneMode)
+const sceneBinding = computed(() => store.currentSceneBinding)
 
 // ===== 页面上下文 =====
 const routeName = ref('')
@@ -162,11 +113,8 @@ function updateContext() {
     `当前页面：${routeName.value}`,
     `路由路径：${routePath.value}`,
     routeDescription.value ? `页面描述：${routeDescription.value}` : '',
-    isAgentMode.value && agentBinding.value
-      ? `当前 Agent：${agentBinding.value.agentName}（${agentBinding.value.sceneName}）`
-      : '',
-    isOrchestrationMode.value && orchestrationBinding.value
-      ? `当前编排：${orchestrationBinding.value.orchestrationName}（${orchestrationBinding.value.orchestrationCode}，${strategyLabel(orchestrationBinding.value.strategy)}）`
+    isSceneMode.value && sceneBinding.value
+      ? `当前场景：${sceneBinding.value.sceneName}`
       : '',
   ].filter(Boolean)
 }

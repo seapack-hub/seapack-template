@@ -33,10 +33,6 @@
         </el-popover>
         <el-button text :icon="Delete" @click="handleClear">清空会话</el-button>
       </div>
-          </div>
-        </el-popover>
-        <el-button text :icon="Delete" @click="handleClear">清空会话</el-button>
-      </div>
     </el-header>
 
     <!-- 消息列表 -->
@@ -130,6 +126,7 @@ import { Delete, Setting, Promotion, Microphone, ChatLineSquare } from '@element
 import { useChatStore } from '@/store/modules/chat';
 import { streamChat } from '@/api/ai/index';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+import { useAutoScroll } from '@/hooks/useAutoScroll';
 import VoiceInputTip from './VoiceInputTip.vue';
 import emitter from '@/utils/bus';
 // @ts-ignore
@@ -146,6 +143,16 @@ function renderMarkdown(text: string): string {
 
 const inputText = ref('');
 const scrollbarRef = ref();
+
+// ===== 智能滚动 =====
+const { containerRef, scrollToBottom } = useAutoScroll();
+
+// 将 el-scrollbar 的 wrapRef 绑定到 useAutoScroll
+watch(scrollbarRef, (val) => {
+  if (val?.wrapRef) {
+    containerRef.value = val.wrapRef;
+  }
+});
 
 // ===== 系统提示词编辑 =====
 const editSystemPrompt = ref('');
@@ -228,12 +235,21 @@ function handleClear() {
 }
 
 // ===== 自动滚动 =====
-watch(() => store.messages.length, () => {
-  nextTick(() => {
-    const scrollWrap = scrollbarRef.value?.wrapRef;
-    if (scrollWrap) { scrollWrap.scrollTop = scrollWrap.scrollHeight; }
-  });
-});
+// 监听新消息添加
+watch(() => store.messages.length, () => scrollToBottom());
+
+// 监听最后一条消息的内容变化（流式响应时内容会持续更新）
+watch(
+  () => {
+    const msgs = store.messages;
+    if (msgs.length === 0) return '';
+    return msgs[msgs.length - 1].content;
+  },
+  () => scrollToBottom()
+);
+
+// 监听 loading 状态变化（流结束时确保滚动到底部）
+watch(() => store.loading, (v) => { if (!v) scrollToBottom(); });
 
 // ===== 命名空间监听 =====
 function setNamespace(ns: string) {

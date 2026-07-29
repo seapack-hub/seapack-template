@@ -24,22 +24,13 @@
               {{ session.title }}
             </span>
             <el-tag
-              v-if="editingId !== session.id && session.mode === 'agent'"
+              v-if="editingId !== session.id && session.mode === 'scene'"
               size="small"
               type="success"
               effect="plain"
               class="flex-shrink-0 scale-85"
             >
-              Agent
-            </el-tag>
-            <el-tag
-              v-else-if="editingId !== session.id && session.mode === 'orchestration'"
-              size="small"
-              type="warning"
-              effect="plain"
-              class="flex-shrink-0 scale-85"
-            >
-              编排
+              场景
             </el-tag>
             <el-input
               v-else

@@ -7,6 +7,7 @@
  *   - 上下文窗口控制：发送前自动裁剪超出 token 限制的旧消息
  *   - 系统提示词：每个会话独立管理 system prompt
  *   - Token 计数：实时估算当前上下文的 token 总量
+ *   - 场景绑定：选择场景后，后端自动路由到合适的 Agent
  *   - 页面上下文：页面可选注入当前页面信息
  *   - 结果回写：页面可注册回调处理 AI 结果
  */
@@ -29,41 +30,20 @@ export interface Session {
   systemPrompt: string;
   /** 绑定的知识库命名空间 */
   namespace: string;
-  /** 对话模式：llm（裸 LLM 对话）| agent（绑定 Agent 的专业对话）| orchestration（编排模式） */
-  mode: 'llm' | 'agent' | 'orchestration';
-  /** Agent 模式下绑定的 Agent 信息，LLM 和编排模式时为 null */
-  agentBinding: AgentBinding | null;
-  /** 编排模式下绑定的编排信息，LLM 和 Agent 模式时为 null */
-  orchestrationBinding: OrchestrationBinding | null;
+  /** 对话模式：llm（通用对话）| scene（场景对话，后端自动路由 Agent） */
+  mode: 'llm' | 'scene';
+  /** 场景绑定信息，LLM 模式时为 null */
+  sceneBinding: SceneBinding | null;
   /** 创建时间戳 */
   createdAt: number;
   /** 最后活跃时间戳 */
   updatedAt: number;
 }
 
-/** Agent 绑定信息 */
-export interface AgentBinding {
-  agentId: number;
-  agentName: string;
+/** 场景绑定信息（只记录场景 ID 和名称，Agent 由后端自动路由） */
+export interface SceneBinding {
   sceneId: number;
   sceneName: string;
-  agentModel?: string;
-  agentTemperature?: number;
-  agentMaxTokens?: number;
-  agentSystemPrompt?: string;
-  knowledgeIds?: number[];
-}
-
-/** 编排绑定信息 */
-export interface OrchestrationBinding {
-  orchestrationId: number;
-  orchestrationName: string;
-  orchestrationCode: string;
-  orchestrationDescription?: string;
-  strategy: string;
-  sceneId: number;
-  sceneName: string;
-  stepCount: number;
 }
 
 /** 页面上下文（页面可选注入） */
@@ -81,7 +61,7 @@ export interface ResultHandler {
   /** 处理器名称 */
   name: string;
   /** 处理函数 */
-  handler: (result: { content: string; agentName: string; agentId: number; elapsedMs: number }) => void;
+  handler: (result: { content: string; sceneName: string; elapsedMs: number }) => void;
 }
 
 /** 默认系统提示词 */
@@ -108,9 +88,8 @@ function createSession(systemPrompt = ''): Session {
     messages: [],
     systemPrompt: systemPrompt || DEFAULT_SYSTEM_PROMPT,
     namespace: '',
-    mode: 'llm',            // 默认 LLM 通用对话模式
-    agentBinding: null,      // 默认不绑定 Agent
-    orchestrationBinding: null, // 默认不绑定编排
+    mode: 'llm',
+    sceneBinding: null,
     createdAt: now,
     updatedAt: now,
   };
@@ -136,7 +115,7 @@ export const useChatStore = defineStore(
     /** 结果回调处理器列表（页面可注册，不持久化） */
     const resultHandlers = ref<ResultHandler[]>([]);
 
-    /** 当前 Agent 链路追踪快照（Agent/编排模式下由 SSE done 事件填充） */
+    /** 当前链路追踪快照（场景模式下由 SSE done 事件填充） */
     const currentTrace = ref<AgentTraceSnapshot | null>(null);
 
     // ==================== Getters ====================
@@ -176,17 +155,11 @@ export const useChatStore = defineStore(
     /** 是否有超过一条会话 */
     const hasMultipleSessions = computed(() => sessions.value.length > 1);
 
-    /** 当前会话是否为 Agent 模式 */
-    const isAgentMode = computed(() => currentSession.value?.mode === 'agent');
+    /** 当前会话是否为场景模式 */
+    const isSceneMode = computed(() => currentSession.value?.mode === 'scene');
 
-    /** 当前会话绑定的 Agent 信息（LLM 模式时为 null） */
-    const currentAgentBinding = computed(() => currentSession.value?.agentBinding ?? null);
-
-    /** 当前会话是否为编排模式 */
-    const isOrchestrationMode = computed(() => currentSession.value?.mode === 'orchestration');
-
-    /** 当前会话绑定的编排信息（LLM/Agent 模式时为 null） */
-    const currentOrchestrationBinding = computed(() => currentSession.value?.orchestrationBinding ?? null);
+    /** 当前会话绑定的场景信息（LLM 模式时为 null） */
+    const currentSceneBinding = computed(() => currentSession.value?.sceneBinding ?? null);
 
     // ==================== Actions ====================
 
@@ -201,9 +174,6 @@ export const useChatStore = defineStore(
 
     /**
      * 创建新会话并切换过去
-     *
-     * @param systemPrompt 可选的自定义 system prompt
-     * @returns 新会话 ID
      */
     function createSessionAndSwitch(systemPrompt = ''): string {
       const session = createSession(systemPrompt);
@@ -214,21 +184,16 @@ export const useChatStore = defineStore(
 
     /**
      * 删除指定会话
-     *
-     * @param sessionId 要删除的会话 ID
      */
     function deleteSession(sessionId: string) {
       const idx = sessions.value.findIndex((s) => s.id === sessionId);
       if (idx === -1) return;
       sessions.value.splice(idx, 1);
 
-      // 如果删除的是当前会话，切换到下一个可用会话
       if (currentSessionId.value === sessionId) {
         if (sessions.value.length > 0) {
-          // 优先切换到同索引，如果越界则切换到最后一个
           currentSessionId.value = sessions.value[Math.min(idx, sessions.value.length - 1)].id;
         } else {
-          // 没有会话了，创建一个新的
           createSessionAndSwitch();
         }
       }
@@ -240,7 +205,7 @@ export const useChatStore = defineStore(
     function renameSession(sessionId: string, title: string) {
       const session = sessions.value.find((s) => s.id === sessionId);
       if (session) {
-        session.title = title.slice(0, 50); // 限制标题长度
+        session.title = title.slice(0, 50);
         touchSession();
       }
     }
@@ -253,7 +218,6 @@ export const useChatStore = defineStore(
       currentSession.value.messages.push(msg);
       touchSession();
 
-      // 如果是第一条用户消息，自动生成标题
       if (msg.role === 'user' && currentSession.value.title === '新对话') {
         const title = msg.content.slice(0, 30) + (msg.content.length > 30 ? '...' : '');
         currentSession.value.title = title;
@@ -289,25 +253,21 @@ export const useChatStore = defineStore(
 
     /**
      * 获取发送给 API 的完整消息列表（含 system prompt + 上下文裁剪）
-     *
-     * @returns 裁剪后的消息数组，头部自动插入 system prompt
      */
     function getContextMessages(): ChatMessage[] {
       const session = currentSession.value;
       if (!session) return [];
 
-      // 构建完整消息列表：system prompt + 对话历史
       const allMessages: ChatMessage[] = [
         { role: 'system', content: session.systemPrompt },
         ...session.messages,
       ];
 
-      // 上下文裁剪（超出 MAX_CONTEXT_TOKENS 时自动移除最早的对话）
       return trimContext(allMessages, MAX_CONTEXT_TOKENS);
     }
 
     /**
-     * 清空当前会话的所有消息（保留 system prompt 和 namespace）
+     * 清空当前会话的所有消息
      */
     function clearMessages() {
       if (currentSession.value) {
@@ -318,110 +278,68 @@ export const useChatStore = defineStore(
     }
 
     /**
-     * 切换当前会话的对话模式
-     * @param mode 'llm' = 通用 LLM 对话 | 'agent' = Agent 专业对话 | 'orchestration' = 编排模式
+     * 将场景绑定到当前会话
+     * 绑定后自动切换到场景模式，后端根据 sceneId 自动路由 Agent
      */
-    function setMode(mode: 'llm' | 'agent' | 'orchestration') {
+    function bindScene(sceneId: number, sceneName: string) {
       if (!currentSession.value) return;
-      currentSession.value.mode = mode;
+      currentSession.value.sceneBinding = { sceneId, sceneName };
+      currentSession.value.mode = 'scene';
       touchSession();
     }
 
     /**
-     * 将 Agent 绑定到当前会话
-     * 绑定后自动切换到 Agent 模式，并使用 Agent 的系统提示词（如有）
-     *
-     * @param binding Agent 绑定信息，包含 agentId、agentName、场景配置等
+     * 解绑当前会话的场景，恢复到 LLM 通用对话模式
      */
-    function bindAgent(binding: AgentBinding) {
+    function unbindScene() {
       if (!currentSession.value) return;
-      currentSession.value.agentBinding = binding;
-      currentSession.value.mode = 'agent';
-      // 如果 Agent 有自定义系统提示词，覆盖会话的 systemPrompt
-      if (binding.agentSystemPrompt) {
-        currentSession.value.systemPrompt = binding.agentSystemPrompt;
-      }
-      touchSession();
-    }
-
-    /**
-     * 解绑当前会话的 Agent，恢复到 LLM 通用对话模式
-     */
-    function unbindAgent() {
-      if (!currentSession.value) return;
-      currentSession.value.agentBinding = null;
-      currentSession.value.mode = 'llm';
-      touchSession();
-    }
-
-    /**
-     * 将编排绑定到当前会话
-     * 绑定后自动切换到编排模式
-     *
-     * @param binding 编排绑定信息
-     */
-    function bindOrchestration(binding: OrchestrationBinding) {
-      if (!currentSession.value) return;
-      currentSession.value.orchestrationBinding = binding;
-      currentSession.value.mode = 'orchestration';
-      touchSession();
-    }
-
-    /**
-     * 解绑当前会话的编排，恢复到 LLM 通用对话模式
-     */
-    function unbindOrchestration() {
-      if (!currentSession.value) return;
-      currentSession.value.orchestrationBinding = null;
+      currentSession.value.sceneBinding = null;
       currentSession.value.mode = 'llm';
       touchSession();
     }
 
     /**
      * 初始化：如果没有会话则创建默认会话
-     * 同时迁移旧版 localStorage 数据（补充新增字段）
      */
     function ensureSession() {
-      // 迁移旧数据：为旧版 session 补充 mode、agentBinding、orchestrationBinding 字段
       sessions.value.forEach(s => {
-        if (!s.mode) s.mode = 'llm'
-        if (s.agentBinding === undefined) s.agentBinding = null
-        if (s.orchestrationBinding === undefined) s.orchestrationBinding = null
-      })
+        if (!s.mode) s.mode = 'llm';
+        if (s.sceneBinding === undefined) s.sceneBinding = null;
+        // 迁移旧版 agentBinding/orchestrationBinding → sceneBinding
+        const anyS = s as any;
+        if (anyS.agentBinding && !s.sceneBinding) {
+          s.sceneBinding = { sceneId: anyS.agentBinding.sceneId, sceneName: anyS.agentBinding.sceneName };
+          s.mode = 'scene';
+          anyS.agentBinding = null;
+          anyS.orchestrationBinding = null;
+        } else if (anyS.orchestrationBinding && !s.sceneBinding) {
+          s.sceneBinding = { sceneId: anyS.orchestrationBinding.sceneId, sceneName: anyS.orchestrationBinding.orchestrationName };
+          s.mode = 'scene';
+          anyS.agentBinding = null;
+          anyS.orchestrationBinding = null;
+        }
+      });
 
       if (sessions.value.length === 0) {
         createSessionAndSwitch();
       } else if (!currentSessionId.value || !currentSession.value) {
-        // 如果 currentSessionId 无效，切换到第一个
         currentSessionId.value = sessions.value[0].id;
       }
     }
 
     // ==================== 页面上下文（不持久化） ====================
 
-    /**
-     * 设置页面上下文（页面可选调用）
-     * 页面注入后，AI 助手可获取当前页面信息用于增强对话
-     */
     function setPageContext(context: PageContext | null) {
       pageContext.value = context;
     }
 
-    /**
-     * 注册结果回调处理器（页面可选调用）
-     * 注册后，AI 助手的结果区域会显示对应操作按钮
-     */
     function registerResultHandler(handler: ResultHandler) {
-      // 避免重复注册
       const exists = resultHandlers.value.find(h => h.name === handler.name);
       if (!exists) {
         resultHandlers.value.push(handler);
       }
     }
 
-    /**
-     * 取消注册结果回调处理器
-     */
     function unregisterResultHandler(name: string) {
       const idx = resultHandlers.value.findIndex(h => h.name === name);
       if (idx >= 0) {
@@ -429,10 +347,7 @@ export const useChatStore = defineStore(
       }
     }
 
-    /**
-     * 调用指定的结果回调处理器
-     */
-    function callResultHandler(name: string, result: { content: string; agentName: string; agentId: number; elapsedMs: number }) {
+    function callResultHandler(name: string, result: { content: string; sceneName: string; elapsedMs: number }) {
       const handler = resultHandlers.value.find(h => h.name === name);
       if (handler) {
         handler.handler(result);
@@ -441,16 +356,10 @@ export const useChatStore = defineStore(
 
     // ==================== 链路追踪（不持久化） ====================
 
-    /**
-     * 设置当前链路追踪快照（Agent/编排 SSE 完成时调用）
-     */
     function setCurrentTrace(trace: AgentTraceSnapshot | null) {
       currentTrace.value = trace;
     }
 
-    /**
-     * 清空当前链路追踪快照
-     */
     function clearCurrentTrace() {
       currentTrace.value = null;
     }
@@ -470,10 +379,8 @@ export const useChatStore = defineStore(
       namespace,
       tokenCount,
       hasMultipleSessions,
-      isAgentMode,
-      currentAgentBinding,
-      isOrchestrationMode,
-      currentOrchestrationBinding,
+      isSceneMode,
+      currentSceneBinding,
       // actions
       createSessionAndSwitch,
       deleteSession,
@@ -483,11 +390,8 @@ export const useChatStore = defineStore(
       setLastMessageTokens,
       getContextMessages,
       clearMessages,
-      setMode,
-      bindAgent,
-      unbindAgent,
-      bindOrchestration,
-      unbindOrchestration,
+      bindScene,
+      unbindScene,
       ensureSession,
       // 页面上下文 & 结果回写
       setPageContext,
@@ -500,9 +404,7 @@ export const useChatStore = defineStore(
     };
   },
   {
-    // 持久化：自动保存 sessions 和 currentSessionId 到 localStorage
     persist: {
-      // 只持久化 sessions 和 currentSessionId，loading 不持久化
       paths: ['sessions', 'currentSessionId'],
     },
   },
