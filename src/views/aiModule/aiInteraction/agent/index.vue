@@ -66,28 +66,68 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import {InfoFilled, CircleCloseFilled } from '@element-plus/icons-vue'
-import { useChatStream } from '@/hooks/useChatStream' // 引入刚才封装的 Hook
+import { executeAgentStream } from '@/api/ai/chatExecute'
+
+interface LogItem {
+  type: 'system' | 'content' | 'error'
+  content: string
+}
 
 const userInput = ref('')
 const outputContainer = ref<HTMLElement | null>(null)
 
-// 直接解构使用 Hook 返回的所有状态和方法
-const { 
-  logs, 
-  isGenerating, 
-  hasStarted, 
-  currentStepIndex, 
-  startStream 
-} = useChatStream({
-  url: '/api/agent/run-agent',
-  scrollContainerRef: outputContainer // 传入自动滚动的容器 ref
-})
+const logs = ref<LogItem[]>([])
+const isGenerating = ref(false)
+const hasStarted = ref(false)
+const currentStepIndex = ref(0)
 
-const handleStart = () => {
-  if (!userInput.value.trim()) return
-  startStream(userInput.value)
+function addLog(type: LogItem['type'], content: string) {
+  logs.value.push({ type, content })
+  nextTick(() => {
+    if (outputContainer.value) {
+      outputContainer.value.scrollTop = outputContainer.value.scrollHeight
+    }
+  })
+}
+
+const handleStart = async () => {
+  if (!userInput.value.trim() || isGenerating.value) return
+  const task = userInput.value
+  userInput.value = ''
+
+  logs.value = []
+  isGenerating.value = true
+  hasStarted.value = true
+  currentStepIndex.value = 0
+
+  try {
+    await executeAgentStream(
+      { question: task },
+      (event) => {
+        if (event.type === 'step_start') {
+          currentStepIndex.value++
+          addLog('system', `▶ ${event.stepName || ''}`)
+        } else if (event.type === 'step_progress' && event.message) {
+          addLog('system', event.message)
+        } else if (event.type === 'content' && event.text) {
+          addLog('content', event.text)
+        } else if (event.type === 'done') {
+          isGenerating.value = false
+          addLog('system', '✅ 任务完成')
+        } else if (event.type === 'error' && event.message) {
+          addLog('error', event.message)
+          isGenerating.value = false
+        } else if (event.type === 'stop') {
+          isGenerating.value = false
+        }
+      },
+    )
+  } catch (err) {
+    addLog('error', (err as Error).message)
+    isGenerating.value = false
+  }
 }
 </script>
 

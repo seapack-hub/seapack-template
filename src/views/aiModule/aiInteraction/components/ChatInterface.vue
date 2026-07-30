@@ -124,7 +124,7 @@
 import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import { Delete, Setting, Promotion, Microphone, ChatLineSquare } from '@element-plus/icons-vue';
 import { useChatStore } from '@/store/modules/chat';
-import { streamChat } from '@/api/ai/index';
+import { executeLlmStream } from '@/api/ai/chatExecute';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { useAutoScroll } from '@/hooks/useAutoScroll';
 import VoiceInputTip from './VoiceInputTip.vue';
@@ -216,15 +216,22 @@ async function handleSend() {
 
   const contextMessages = store.getContextMessages();
 
-  await streamChat(
+  await executeLlmStream(
     contextMessages,
-    (chunk) => store.updateLastMessage(chunk),
-    () => { store.loading = false; },
-    (err) => {
-      store.updateLastMessage(`\n\n[错误: ${err.message}]`);
-      store.loading = false;
-    },
     store.currentSession?.namespace || '',
+    (event) => {
+      if (event.type === 'content' && event.text) {
+        store.updateLastMessage(event.text);
+      } else if (event.type === 'done') {
+        store.loading = false;
+        if (event.tokens) {
+          store.setLastMessageTokens(event.tokens.prompt, event.tokens.completion);
+        }
+      } else if (event.type === 'error' && event.message) {
+        store.updateLastMessage(`\n\n[错误: ${event.message}]`);
+        store.loading = false;
+      }
+    },
   );
 }
 

@@ -13,9 +13,11 @@
  *   import { executeAgentStream, executeOrchestrationStream, abortChat } from '@/api/ai/chatExecute'
  */
 import CacheKey from '@/constants/cache-key'
-import type { AgentTestChatRequest, AgentTestChatSSEEvent, LlmTestChatSSEEvent } from './types/agent'
+import type { AgentTestChatSSEEvent, LlmTestChatSSEEvent } from './types/agent'
 import type { OrchestrationExecuteRequest, OrchestrationSSEEvent } from './types/orchestration'
 import type { ChatMessage } from './index'
+
+const BASE_URL = '/api'
 
 // ===== AbortController 管理 =====
 let currentAbortController: AbortController | null = null
@@ -35,7 +37,7 @@ export function abortChat() {
 export async function cancelChatStream(): Promise<void> {
   const token = localStorage.getItem(CacheKey.TOKEN)
   try {
-    await fetch('/api/chat/cancel', {
+    await fetch('/api/ai/dialog/cancel', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -114,8 +116,6 @@ async function readSseStream(
 
 // ===== Agent 流式对话 =====
 
-const AGENT_BASE_URL = '/api/ai/agents'
-
 /**
  * Agent 测试对话（SSE 流式）
  *
@@ -123,16 +123,17 @@ const AGENT_BASE_URL = '/api/ai/agents'
  * @param onEvent 事件回调，接收 AgentTestChatSSEEvent
  */
 export async function executeAgentStream(
-  req: AgentTestChatRequest,
+  req: { agentId?: number; sceneId?: number; question: string; history?: { role: string; content: string }[] },
   onEvent: (event: AgentTestChatSSEEvent) => void,
 ): Promise<void> {
-  await readSseStream(`${AGENT_BASE_URL}/test-chat`, req, onEvent)
+  await readSseStream(
+    `${BASE_URL}/ai/dialog/agent-stream`,
+    { mode: 'agent_stream', ...req },
+    onEvent,
+  )
 }
 
 // ===== LLM 流式对话 =====
-
-const CHAT_BASE_URL = '/api/chat'
-
 /**
  * LLM 测试对话（SSE 流式，含 token 统计和执行记录）
  *
@@ -149,15 +150,13 @@ export async function executeLlmStream(
   onEvent: (event: LlmTestChatSSEEvent) => void,
 ): Promise<void> {
   await readSseStream(
-    `${CHAT_BASE_URL}/test-chat`,
-    { messages, namespace },
+    `${BASE_URL}/ai/dialog/stream`,
+    { mode: 'streaming_llm', messages, namespace },
     onEvent,
   )
 }
 
 // ===== 编排流式执行 =====
-
-const ORCHESTRATION_BASE_URL = '/api/ai/orchestrations'
 
 /**
  * 编排执行（SSE 流式）
@@ -172,5 +171,9 @@ export async function executeOrchestrationStream(
   req: OrchestrationExecuteRequest,
   onEvent: (event: OrchestrationSSEEvent) => void,
 ): Promise<void> {
-  await readSseStream(`${ORCHESTRATION_BASE_URL}/execute-stream`, req, onEvent)
+  await readSseStream(
+    `${BASE_URL}/ai/dialog/orchestration`,
+    { mode: 'orchestration', orchestrationId: req.orchestrationId, question: req.message, history: req.history, context: req.context },
+    onEvent,
+  )
 }

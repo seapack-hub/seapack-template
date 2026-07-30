@@ -184,10 +184,10 @@ async function sendMessage() {
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     // 发起 POST 请求，后端返回 SSE 流
-    const response = await fetch('/api/ai/agents/test-chat', {
+    const response = await fetch('/api/ai/dialog/agent-stream', {
       method: 'POST',
       headers,
-      body: JSON.stringify({ agentId: props.agentId, message: msg, history }),
+      body: JSON.stringify({ mode: 'agent_stream', agentId: props.agentId, question: msg, history }),
       signal: currentAbortController.signal,
     })
 

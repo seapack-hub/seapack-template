@@ -3,18 +3,20 @@
  *
  * 根据当前会话模式自动选择对话接口：
  *   - 'llm'   → executeLlmStream()（SSE 流式，直接调用 LLM）
- *   - 'scene' → executeAgentStream()（SSE 流式，传 sceneId，后端自动路由 Agent）
+ *   - 'scene' → executeOrchestrationStream()（SSE 流式，传 sceneId，后端自动路由编排）
  *
  * 支持：
  *   - 流式输出：两种模式均为逐字流式
+ *   - 步骤进度：LLM 模式和场景模式均支持步骤进度事件
  *   - 请求取消：通过 AbortController 取消进行中的请求
  *   - Token 消耗统计：场景模式下返回 tokenUsage
  *   - 链路追踪：场景模式下返回 traceSnapshot
  */
 import { ref } from 'vue'
 import { useChatStore, type Session } from '@/store/modules/chat'
-import { executeAgentStream, executeLlmStream, abortChat, cancelChatStream } from '@/api/ai/chatExecute'
-import type { AgentTestChatSSEEvent, LlmTestChatSSEEvent } from '@/api/ai/types/agent'
+import { executeOrchestrationStream, executeLlmStream, abortChat, cancelChatStream } from '@/api/ai/chatExecute'
+import type { OrchestrationSSEEvent } from '@/api/ai/types/orchestration'
+import type { LlmTestChatSSEEvent } from '@/api/ai/types/agent'
 
 /** 步骤进度信息 */
 export interface StepProgress {
@@ -139,27 +141,64 @@ export function useChatExecution() {
   }
 
   /**
-   * 场景模式：发送 sceneId，后端自动路由到合适的 Agent
+   * 场景模式：发送 sceneId，后端自动路由到合适的编排执行
    */
   async function sendSceneMessage(text: string, session: Session) {
     const binding = session.sceneBinding!
     try {
-      await executeAgentStream(
+      await executeOrchestrationStream(
         {
-          sceneId: binding.sceneId,
+          orchestrationId: binding.sceneId, // 后端根据 sceneId 路由到对应编排
           message: text,
           history: chatStore.messages.slice(0, -2).map(m => ({
             role: m.role as 'user' | 'assistant',
             content: m.content,
           })),
-        } as any,
-        (event: AgentTestChatSSEEvent) => {
+        } as any, // 后端支持 sceneId 字段
+        (event: OrchestrationSSEEvent) => {
           switch (event.type) {
+            // 步骤开始
+            case 'step_start':
+              llmSteps.value.push({
+                stepIndex: event.stepIndex ?? llmSteps.value.length + 1,
+                stepName: event.stepName || '',
+                stepType: event.stepName,
+                status: 'running',
+              })
+              break
+
+            // 步骤完成
+            case 'step_done':
+              {
+                const step = llmSteps.value.find(s => s.stepIndex === event.stepIndex)
+                if (step) {
+                  step.status = event.status || 'success'
+                  step.durationMs = event.durationMs
+                }
+              }
+              break
+
+            // 步骤错误
+            case 'step_error':
+              {
+                const step = llmSteps.value.find(s => s.stepIndex === event.stepIndex)
+                if (step) {
+                  step.status = 'fail'
+                  step.durationMs = event.durationMs
+                }
+              }
+              break
+
+            // 流式文本输出
             case 'content':
               if (event.text) chatStore.updateLastMessage(event.text)
               break
 
+            // 用户终止
             case 'stop':
+              llmSteps.value.forEach(s => {
+                if (s.status === 'running') s.status = 'skip'
+              })
               {
                 const msgs = chatStore.messages
                 const lastMsg = msgs[msgs.length - 1]
@@ -171,27 +210,33 @@ export function useChatExecution() {
               }
               break
 
+            // 对话完成
             case 'done':
               chatStore.loading = false
+              // Token 统计
               if (event.tokens) {
                 tokenUsage.value = event.tokens
                 chatStore.setLastMessageTokens(event.tokens.prompt, event.tokens.completion)
-              } else if (event.tokensPrompt != null || event.tokensCompletion != null) {
-                tokenUsage.value = {
-                  prompt: event.tokensPrompt || 0,
-                  completion: event.tokensCompletion || 0,
-                }
-                chatStore.setLastMessageTokens(event.tokensPrompt || 0, event.tokensCompletion || 0)
               }
-              if (event.traceSnapshot) {
-                const raw = event.traceSnapshot
+              // 链路追踪
+              if ((event as any).traceSnapshot) {
+                const raw = (event as any).traceSnapshot
                 const snapshot = typeof raw === 'string' ? JSON.parse(raw) : raw
                 chatStore.setCurrentTrace(snapshot)
               }
+              // 标记最后一步完成
+              {
+                const runningStep = llmSteps.value.find(s => s.status === 'running')
+                if (runningStep) {
+                  runningStep.status = 'success'
+                  runningStep.durationMs = event.totalDurationMs
+                }
+              }
               break
 
+            // 错误
             case 'error':
-              chatStore.updateLastMessage(`\n\n[错误: ${event.message || '未知错误'}]`)
+              chatStore.updateLastMessage(`\n\n[错误: ${event.errorMessage || '未知错误'}]`)
               chatStore.loading = false
               break
           }
