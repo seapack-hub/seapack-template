@@ -90,11 +90,13 @@ export interface OrchestrationExecuteRequest {
 /** 编排执行SSE事件 */
 export interface OrchestrationSSEEvent {
   /** 事件类型 */
-  type: 'step_start' | 'step_progress' | 'step_done' | 'step_error' | 'content' | 'done' | 'error'
+  type: 'step_start' | 'step_progress' | 'step_done' | 'step_error' | 'step_detail' | 'content' | 'done' | 'error' | 'stop' | 'routing' | 'route_result' | 'agent_select'
   /** 步骤索引 */
   stepIndex?: number
   /** 步骤名称 */
   stepName?: string
+  /** 步骤类型（prompt_assembly/knowledge_retrieval/skill_execution/llm_call） */
+  stepType?: string
   /** 步骤状态 */
   status?: 'success' | 'fail' | 'skip'
   /** 步骤耗时 ms */
@@ -103,6 +105,10 @@ export interface OrchestrationSSEEvent {
   output?: string
   /** 进度消息 */
   message?: string
+  /** 详情类型（step_detail事件） */
+  detailType?: string
+  /** step_detail：详情数据 */
+  data?: Record<string, any>
   /** 文本片段（content事件） */
   text?: string
   /** 完成事件：最终结果 */
@@ -113,4 +119,16 @@ export interface OrchestrationSSEEvent {
   tokens?: { prompt: number; completion: number }
   /** 错误事件：错误信息 */
   errorMessage?: string
+  /** 路由/route_result/agent_select：路由目标（agent/llm/orchestration/dynamic_orchestration） */
+  route?: string
+  /** 路由/agent_select：Agent列表 */
+  agents?: { id: number; name: string; reason?: string }[]
+  /** 路由/agent_select：执行策略 */
+  strategy?: string
+  /** route_result：编排名称 */
+  orchestrationName?: string
+  /** route_result：步骤数 */
+  stepCount?: number
+  /** route_result/agent_select：是否降级 */
+  fallback?: boolean
 }
