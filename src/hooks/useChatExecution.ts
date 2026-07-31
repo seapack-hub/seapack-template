@@ -51,24 +51,29 @@ export function useChatExecution() {
     const session = chatStore.currentSession
     if (!session) return
 
-    chatStore.addMessage({ role: 'user', content: text })
+    // 每条消息生成唯一消息ID（精确定位某一轮对话，前后端落库 request_id）
+    const requestId = `msg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+
+    chatStore.addMessage({ role: 'user', content: text, requestId })
     chatStore.loading = true
     tokenUsage.value = null
     llmSteps.value = []
     chatStore.clearCurrentTrace()
-    chatStore.addMessage({ role: 'assistant', content: '' })
+    // 助手消息与用户消息共用同一 requestId，便于点击气泡查看该轮完整链路
+    chatStore.addMessage({ role: 'assistant', content: '', requestId })
 
     if (session.mode === 'scene' && session.sceneBinding) {
-      await sendSceneMessage(text, session)
+      await sendSceneMessage(text, session, requestId)
     } else {
-      await sendLlmMessage()
+      await sendLlmMessage(requestId)
     }
   }
 
   /**
    * LLM 模式：直接调用 LLM
    */
-  async function sendLlmMessage() {
+  async function sendLlmMessage(requestId: string) {
+    const session = chatStore.currentSession
     const contextMessages = chatStore.getContextMessages()
     try {
       await executeLlmStream(
@@ -137,6 +142,11 @@ export function useChatExecution() {
               break
           }
         },
+        {
+          conversationId: session?.conversationId,
+          requestId,
+          sceneId: session?.sceneBinding?.sceneId,
+        },
       )
     } catch (err: any) {
       if (err?.name === 'AbortError') {
@@ -151,7 +161,7 @@ export function useChatExecution() {
   /**
    * 场景模式：发送 sceneId，后端自动路由到合适的编排执行
    */
-  async function sendSceneMessage(text: string, session: Session) {
+  async function sendSceneMessage(text: string, session: Session, requestId: string) {
     const binding = session.sceneBinding!
     try {
       await executeOrchestrationStream(
@@ -162,7 +172,10 @@ export function useChatExecution() {
             role: m.role as 'user' | 'assistant',
             content: m.content,
           })),
-        } as any, // 后端支持 sceneId 字段
+          sceneId: binding.sceneId,
+          conversationId: session.conversationId,
+          requestId,
+        },
         (event: OrchestrationSSEEvent) => {
           switch (event.type) {
             // 路由开始

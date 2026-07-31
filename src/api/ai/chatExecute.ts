@@ -143,15 +143,24 @@ export async function executeAgentStream(
  * @param messages  对话消息列表
  * @param namespace 知识库命名空间（可选）
  * @param onEvent   事件回调，接收 LlmTestChatSSEEvent
+ * @param options   会话定位参数（conversationId / requestId / sceneId，落库用）
  */
 export async function executeLlmStream(
   messages: ChatMessage[],
   namespace: string | undefined,
   onEvent: (event: LlmTestChatSSEEvent) => void,
+  options?: { conversationId?: string; requestId?: string; sceneId?: number },
 ): Promise<void> {
   await readSseStream(
     `${BASE_URL}/ai/dialog/stream`,
-    { mode: 'streaming_llm', messages, namespace },
+    {
+      mode: 'streaming_llm',
+      messages,
+      namespace,
+      conversationId: options?.conversationId,
+      requestId: options?.requestId,
+      sceneId: options?.sceneId,
+    },
     onEvent,
   )
 }
@@ -173,7 +182,16 @@ export async function executeOrchestrationStream(
 ): Promise<void> {
   await readSseStream(
     `${BASE_URL}/ai/dialog/orchestration`,
-    { mode: 'orchestration', orchestrationId: req.orchestrationId, question: req.message, history: req.history, context: req.context },
+    {
+      mode: 'orchestration',
+      orchestrationId: req.orchestrationId,
+      question: req.message,
+      history: req.history,
+      context: req.context,
+      sceneId: req.sceneId,
+      conversationId: req.conversationId,
+      requestId: req.requestId,
+    },
     onEvent,
   )
 }

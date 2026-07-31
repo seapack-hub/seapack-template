@@ -40,10 +40,9 @@
           :is-scene-mode="isSceneMode"
           :llm-steps="llmSteps"
           :result-handlers="store.resultHandlers"
-          :has-trace="!!store.currentTrace"
           @copy="copyResult"
           @call-handler="callHandler"
-          @view-trace="emit('viewTrace')"
+          @view-trace="(requestId?: string) => emit('viewTrace', requestId)"
         />
       </div>
     </div>
@@ -74,7 +73,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 
 // ===== Emits =====
 const emit = defineEmits<{
-  viewTrace: []
+  viewTrace: [requestId?: string]
 }>()
 
 // ===== Store & Composable =====

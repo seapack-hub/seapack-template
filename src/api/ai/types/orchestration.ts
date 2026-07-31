@@ -85,6 +85,12 @@ export interface OrchestrationExecuteRequest {
   history?: { role: 'user' | 'assistant'; content: string }[]
   /** 上下文变量（可选，用于 input_mapping 引用） */
   context?: Record<string, any>
+  /** 场景ID（前端传入，落库 scene_id） */
+  sceneId?: number
+  /** 对话ID：进入对话界面时生成一次，同一会话的所有轮次共享 */
+  conversationId?: string
+  /** 消息ID：每条消息唯一，精确定位某一轮对话 */
+  requestId?: string
 }
 
 /** 编排执行SSE事件 */

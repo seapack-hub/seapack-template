@@ -308,11 +308,46 @@ export const AgentAPI = {
     })
   },
 
+  /** 编排执行会话列表（支持场景ID，自动匹配该场景下编排的会话） */
+  getOrchestrationSessions(orchestrationId: number, params?: { pageNum?: number; pageSize?: number }) {
+    return request<any, PageResult<AgentTestSession[]>>({
+      url: `/api/ai/orchestrations/${orchestrationId}/sessions`,
+      method: 'get',
+      params,
+    })
+  },
+
+  /** 编排执行会话详情 */
+  getOrchestrationSessionDetail(orchestrationId: number, sessionId: number) {
+    return request<any, AgentTestSession>({
+      url: `/api/ai/orchestrations/${orchestrationId}/sessions/${sessionId}`,
+      method: 'get',
+    })
+  },
+
   /** 删除测试会话 */
   deleteTestSession(agentId: number, sessionId: number) {
     return request<any, any>({
       url: `${BASE_URL}/${agentId}/test-sessions/delete/${sessionId}`,
       method: 'post',
+    })
+  },
+
+  // ===== 执行会话精细查询（ai_execution_session 表） =====
+
+  /** 按消息ID查询单条执行记录（点击消息气泡查看该轮完整链路） */
+  getSessionByRequestId(requestId: string) {
+    return request<any, AgentTestSession>({
+      url: `/api/ai/dialog/sessions/request/${requestId}`,
+      method: 'get',
+    })
+  },
+
+  /** 按对话ID查询该会话的所有轮次（对话历史回显，按时间升序） */
+  getSessionsByConversationId(conversationId: string) {
+    return request<any, AgentTestSession[]>({
+      url: `/api/ai/dialog/sessions/conversation/${conversationId}`,
+      method: 'get',
     })
   },
 }

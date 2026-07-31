@@ -118,37 +118,74 @@ export interface AgentChatResponse {
 
 // ===== 测试会话 & 链路追踪 =====
 
-/** 链路追踪步骤 */
+/** 链路追踪步骤（编排执行步骤无 stepType/metadata，使用 agentId/agentName/model/tokens 顶层字段） */
 export interface AgentTraceStep {
   stepIndex: number
-  stepType: 'prompt_assembly' | 'knowledge_retrieval' | 'skill_execution' | 'llm_call'
+  stepType?: 'prompt_assembly' | 'knowledge_retrieval' | 'skill_execution' | 'llm_call' | string
   stepName: string
-  status: 'success' | 'fail' | 'skip'
+  status: 'success' | 'fail' | 'skip' | string
   durationMs: number
   input?: string
   output?: string | string[]
   metadata?: Record<string, any>
+  /** 编排步骤：关联 Agent ID */
+  agentId?: number
+  /** 编排步骤：Agent 名称 */
+  agentName?: string
+  /** 编排步骤：使用的模型 */
+  model?: string
+  /** 编排步骤：提示词 Token 数 */
+  tokensPrompt?: number
+  /** 编排步骤：补全 Token 数 */
+  tokensCompletion?: number
 }
 
-/** 链路追踪快照 */
+/** 链路追踪快照（新方案结构） */
 export interface AgentTraceSnapshot {
-  steps: AgentTraceStep[]
-  totalDurationMs: number
-  totalTokens: { prompt: number; completion: number }
+  /** 链路类型：agent / orchestration / llm */
+  route?: 'agent' | 'orchestration' | 'llm' | string
+  /** 链路名称（Agent 名 / 编排名） */
+  agentName?: string
+  /** 编排名（编排执行） */
+  orchestrationName?: string
+  /** 执行策略（编排执行） */
+  strategy?: string
+  /** 使用的模型 */
+  model?: string
+  /** 系统提示词长度（单 Agent 对话） */
+  systemPromptLength?: number
+  /** 提示词 Token 数（新方案顶层字段） */
+  tokensPrompt?: number
+  /** 补全 Token 数（新方案顶层字段） */
+  tokensCompletion?: number
+  /** 编排执行：总提示词 Token 数 */
+  totalTokensPrompt?: number
+  /** 编排执行：总补全 Token 数 */
+  totalTokensCompletion?: number
+  /** 调用链路步骤列表 */
+  steps?: AgentTraceStep[]
+  /** 总耗时（毫秒） */
+  totalDurationMs?: number
+  /** Token 汇总（旧结构兼容） */
+  totalTokens?: { prompt: number; completion: number }
 }
 
 /** 测试会话实体（对应 ai_execution_session 表） */
 export interface AgentTestSession {
   id?: number
-  /** 业务类型：agent/skill/prompt/scene/knowledge */
+  /** 业务类型：agent/orchestration/chat/skill/prompt/knowledge */
   bizType?: string
-  /** 业务ID（关联具体实体） */
+  /** 业务ID（关联具体实体，通用对话为0） */
   bizId?: number
   /** 业务名称（冗余，方便查询） */
   bizName?: string
-  /** 会话ID，用于关联多轮对话 */
+  /** 对话ID：同一会话的所有轮次共享（前端生成） */
+  conversationId?: string
+  /** 场景ID：关联 ai_scene 表 */
+  sceneId?: number
+  /** 会话ID（旧字段，兼容保留） */
   sessionId?: string
-  /** 外部请求幂等键 */
+  /** 消息ID：每条消息唯一（前端生成），精确定位某一轮对话 */
   requestId?: string
   /** 重试次数 */
   retryCount?: number

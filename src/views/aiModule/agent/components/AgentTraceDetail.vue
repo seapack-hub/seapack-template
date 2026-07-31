@@ -14,6 +14,14 @@
 
     <!-- 有追踪数据 -->
     <div v-else class="trace-content">
+      <!-- 链路基本信息（新方案 trace_snapshot 顶层字段） -->
+      <div v-if="snapshot.route || snapshot.orchestrationName || snapshot.agentName || snapshot.strategy || snapshot.model" class="trace-meta">
+        <el-tag v-if="getRouteLabel(snapshot.route)" size="small" type="primary" effect="plain">{{ getRouteLabel(snapshot.route) }}</el-tag>
+        <span v-if="snapshot.orchestrationName || snapshot.agentName" class="text-13px font-600 color-[var(--el-text-color-primary)]">{{ snapshot.orchestrationName || snapshot.agentName }}</span>
+        <span v-if="snapshot.strategy" class="text-12px text-[var(--el-text-color-secondary)]">策略：{{ snapshot.strategy === 'parallel' ? '并行' : '顺序' }}</span>
+        <span v-if="snapshot.model" class="text-12px text-[var(--el-text-color-secondary)]">模型：{{ snapshot.model }}</span>
+      </div>
+
       <!-- 汇总信息 -->
       <div class="trace-summary">
         <div class="summary-item">
@@ -22,12 +30,12 @@
         </div>
         <div class="summary-divider" />
         <div class="summary-item">
-          <span class="summary-value tabular-nums">{{ snapshot.totalTokens?.prompt || 0 }}</span>
+          <span class="summary-value tabular-nums">{{ snapshot.totalTokensPrompt ?? snapshot.totalTokens?.prompt ?? 0 }}</span>
           <span class="summary-label">Prompt Token</span>
         </div>
         <div class="summary-divider" />
         <div class="summary-item">
-          <span class="summary-value tabular-nums">{{ snapshot.totalTokens?.completion || 0 }}</span>
+          <span class="summary-value tabular-nums">{{ snapshot.totalTokensCompletion ?? snapshot.totalTokens?.completion ?? 0 }}</span>
           <span class="summary-label">Completion Token</span>
         </div>
         <div class="summary-divider" />
@@ -60,10 +68,12 @@
           <div class="step-body" @click="toggleExpand(idx)">
             <div class="step-header">
               <div class="flex items-center gap-8px flex-1 min-w-0">
-                <el-tag :type="getStepTypeTag(step.stepType) as any" size="small" effect="plain" class="flex-shrink-0">
+                <el-tag v-if="step.stepType" :type="getStepTypeTag(step.stepType) as any" size="small" effect="plain" class="flex-shrink-0">
                   {{ getStepTypeLabel(step.stepType) }}
                 </el-tag>
+                <el-tag v-else type="primary" size="small" effect="plain" class="flex-shrink-0">Agent</el-tag>
                 <span class="text-14px font-600 color-[var(--el-text-color-primary)] truncate">{{ step.stepName }}</span>
+                <span v-if="step.agentName" class="text-12px color-[var(--el-text-color-secondary)] flex-shrink-0">{{ step.agentName }}</span>
               </div>
               <div class="flex items-center gap-8px">
                 <el-tag :type="step.status === 'success' ? 'success' : step.status === 'fail' ? 'danger' : 'info'" size="small">
@@ -172,6 +182,29 @@
                             <pre class="detail-code">{{ tpl.content || tpl.contentPreview || '-' }}</pre>
                           </div>
                         </Transition>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Agent 信息（编排执行步骤顶层字段） -->
+                  <div v-if="step.agentName || step.model || step.tokensPrompt != null || step.tokensCompletion != null" class="detail-section">
+                    <div class="detail-label">Agent 信息</div>
+                    <div class="metadata-grid">
+                      <div v-if="step.agentName" class="metadata-item">
+                        <span class="metadata-key">agentName</span>
+                        <span class="metadata-value">{{ step.agentName }}</span>
+                      </div>
+                      <div v-if="step.model" class="metadata-item">
+                        <span class="metadata-key">model</span>
+                        <span class="metadata-value">{{ step.model }}</span>
+                      </div>
+                      <div v-if="step.tokensPrompt != null" class="metadata-item">
+                        <span class="metadata-key">tokensPrompt</span>
+                        <span class="metadata-value tabular-nums">{{ step.tokensPrompt }}</span>
+                      </div>
+                      <div v-if="step.tokensCompletion != null" class="metadata-item">
+                        <span class="metadata-key">tokensCompletion</span>
+                        <span class="metadata-value tabular-nums">{{ step.tokensCompletion }}</span>
                       </div>
                     </div>
                   </div>
@@ -348,7 +381,7 @@ function parseSkillResults(output: string | undefined | null): SkillResult[] {
   return results
 }
 
-function formatDuration(ms: number): string {
+function formatDuration(ms?: number): string {
   if (!ms) return '0ms'
   if (ms < 1000) return `${ms}ms`
   return `${(ms / 1000).toFixed(2)}s`
@@ -386,6 +419,16 @@ function getStepTypeLabel(type: string): string {
   return map[type] || type
 }
 
+function getRouteLabel(route?: string): string {
+  const map: Record<string, string> = {
+    orchestration: '编排执行',
+    agent: 'Agent 对话',
+    llm: '通用 LLM',
+    dynamic_orchestration: '动态编排',
+  }
+  return map[route || ''] || ''
+}
+
 function formatJsonOrText(val: any): string {
   if (typeof val === 'string') {
     try {
@@ -410,6 +453,17 @@ function formatMetadataValue(val: any): string {
 <style scoped>
 .trace-detail {
   padding: 0;
+}
+
+.trace-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  background: var(--el-fill-color-lighter);
+  border-radius: 8px;
 }
 
 .trace-summary {

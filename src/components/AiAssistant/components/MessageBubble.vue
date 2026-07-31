@@ -4,9 +4,8 @@
   职责：
     1. 显示用户/助手消息
     2. 显示 LLM 步骤时间线（仅最后一条助手消息）
-    3. 显示 Token 使用统计
+    3. 显示 Token 使用统计 + 链路按钮
     4. 显示结果操作按钮
-    5. 显示查看链路按钮
 
   Props：
     - message: 消息对象
@@ -16,7 +15,6 @@
     - isSceneMode: 是否处于场景模式
     - llmSteps: LLM 步骤列表
     - resultHandlers: 结果处理器列表
-    - hasTrace: 是否有链路数据
 
   Emits：
     - copy: 复制消息内容
@@ -160,11 +158,15 @@
         class="msg-bubble assistant"
       />
 
-      <!-- Token 使用统计（终止时不显示） -->
+      <!-- Token 使用统计 + 链路按钮（终止时不显示） -->
       <div v-if="message.role === 'assistant' && message.tokensPrompt != null && !message.content?.includes('对话已终止')" class="msg-meta-row">
         <span class="tabular-nums">
           Token {{ message.tokensPrompt }}/{{ message.tokensCompletion }}
         </span>
+        <el-button v-if="isLast" link type="primary" size="small" class="!text-11px !p-0" @click="emit('viewTrace', message.requestId)">
+          <el-icon :size="12" style="vertical-align: -2px; margin-right: 2px"><Connection /></el-icon>
+          追踪链路
+        </el-button>
         <el-button link size="small" class="!text-11px !p-0" @click="emit('copy', message.content || '')">
           <el-icon :size="12"><CopyDocument /></el-icon>
         </el-button>
@@ -181,17 +183,6 @@
           @click="emit('callHandler', handler.name, message)"
         >
           {{ handler.name }}
-        </el-button>
-      </div>
-
-      <!-- 查看链路按钮 -->
-      <div
-        v-if="message.role === 'assistant' && isLast && hasTrace"
-        class="flex gap-4px mt-6px"
-      >
-        <el-button size="small" type="primary" text @click="emit('viewTrace')">
-          <el-icon :size="12" style="vertical-align: -2px; margin-right: 2px"><Connection /></el-icon>
-          查看链路
         </el-button>
       </div>
     </div>
@@ -215,14 +206,13 @@ defineProps<{
   isSceneMode: boolean
   llmSteps: StepProgress[]
   resultHandlers: ResultHandler[]
-  hasTrace: boolean
 }>()
 
 // ===== Emits =====
 const emit = defineEmits<{
   copy: [content: string]
   callHandler: [name: string, msg: ChatMessage]
-  viewTrace: []
+  viewTrace: [requestId?: string]
 }>()
 
 // ===== 辅助函数 =====

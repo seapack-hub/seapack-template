@@ -22,6 +22,8 @@ import { countMessagesTokens, trimContext } from '@/utils/tokenCounter';
 export interface Session {
   /** 会话唯一标识（UUID） */
   id: string;
+  /** 对话ID：进入对话界面时生成一次，同一会话的所有轮次共享（后端落库 conversation_id） */
+  conversationId: string;
   /** 会话标题（自动取第一条用户消息，或设为 "新对话"） */
   title: string;
   /** 消息列表 */
@@ -78,12 +80,21 @@ function generateId(): string {
 }
 
 /**
+ * 生成对话ID（进入对话界面时生成一次，整个会话期间不变）
+ */
+function generateConversationId(): string {
+  const uid = localStorage.getItem('user_id') || 'anonymous';
+  return `conv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}_${uid}`;
+}
+
+/**
  * 创建新会话的工厂函数
  */
 function createSession(systemPrompt = ''): Session {
   const now = Date.now();
   return {
     id: generateId(),
+    conversationId: generateConversationId(),
     title: '新对话',
     messages: [],
     systemPrompt: systemPrompt || DEFAULT_SYSTEM_PROMPT,
@@ -305,6 +316,8 @@ export const useChatStore = defineStore(
       sessions.value.forEach(s => {
         if (!s.mode) s.mode = 'llm';
         if (s.sceneBinding === undefined) s.sceneBinding = null;
+        // 迁移旧版会话：补充 conversationId
+        if (!s.conversationId) s.conversationId = generateConversationId();
         // 迁移旧版 agentBinding/orchestrationBinding → sceneBinding
         const anyS = s as any;
         if (anyS.agentBinding && !s.sceneBinding) {

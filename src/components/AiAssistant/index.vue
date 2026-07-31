@@ -67,7 +67,7 @@
         <el-tabs v-model="activeTab" class="assistant-tabs flex-shrink-0 px-16px" style="border-bottom: 1px solid var(--el-border-color-light)">
           <el-tab-pane label="对话" name="chat" />
           <el-tab-pane label="会话" name="sessions" />
-          <el-tab-pane v-if="hasTrace" label="链路" name="trace" />
+          <el-tab-pane label="链路" name="trace" />
           <el-tab-pane label="设置" name="settings" />
         </el-tabs>
 
@@ -75,11 +75,12 @@
         <div class="flex-1 overflow-hidden">
           <ChatPanel
             v-if="activeTab === 'chat'"
-            @view-trace="activeTab = 'trace'"
+            @view-trace="handleViewTrace"
           />
           <SessionList v-else-if="activeTab === 'sessions'" />
           <div v-else-if="activeTab === 'trace'" class="h-full overflow-y-auto px-16px py-12px">
-            <AgentTraceDetail :snapshot="chatStore.currentTrace" />
+            <AgentTraceDetail v-if="currentTrace" :snapshot="currentTrace" />
+            <el-empty v-else description="暂无链路数据" :image-size="80" />
           </div>
           <SettingsPanel v-else />
         </div>
@@ -92,20 +93,22 @@
 import { ref, computed, onBeforeUnmount } from 'vue'
 import { Close, Connection } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/modules/chat'
+import { AgentAPI, type AgentTraceSnapshot } from '@/api/ai/agent'
 import ChatPanel from './components/ChatPanel.vue'
 import SessionList from './components/SessionList.vue'
 import SettingsPanel from './components/SettingsPanel.vue'
 import AgentTraceDetail from '@/views/aiModule/agent/components/AgentTraceDetail.vue'
 import Icon from '@/components/Icon/index.vue'
+import { ElMessage } from 'element-plus'
 
 const chatStore = useChatStore()
 
 const drawerVisible = ref(false)
 const activeTab = ref('chat')
+const currentTrace = ref<AgentTraceSnapshot | null>(null)
 
 const isSceneMode = computed(() => chatStore.isSceneMode)
 const currentSceneName = computed(() => chatStore.currentSceneBinding?.sceneName || '')
-const hasTrace = computed(() => chatStore.currentTrace !== null)
 
 // ===== FAB 拖拽 =====
 const dragEl = ref<HTMLElement>()
@@ -137,6 +140,83 @@ onBeforeUnmount(stopDrag)
 
 function handleOpen() {
   chatStore.ensureSession()
+}
+
+/**
+ * 解析 trace_snapshot（兼容字符串 / 对象，兼容多种字段命名）
+ *
+ * API 返回格式：
+ *   { model, route, tokensPrompt, tokensCompletion, ... }
+ *
+ * AgentTraceDetail 期望格式：
+ *   { totalTokensPrompt, totalTokensCompletion, totalTokens: { prompt, completion }, ... }
+ */
+function parseTrace(raw: any): AgentTraceSnapshot | null {
+  if (!raw) return null
+  let parsed: any
+  try {
+    parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+  } catch {
+    return null
+  }
+
+  // 字段映射：tokensPrompt → totalTokensPrompt, tokensCompletion → totalTokensCompletion
+  const tokensPrompt = parsed.tokensPrompt ?? parsed.totalTokensPrompt ?? parsed.totalTokens?.prompt ?? 0
+  const tokensCompletion = parsed.tokensCompletion ?? parsed.totalTokensCompletion ?? parsed.totalTokens?.completion ?? 0
+
+  return {
+    ...parsed,
+    totalTokensPrompt: tokensPrompt,
+    totalTokensCompletion: tokensCompletion,
+    totalTokens: { prompt: tokensPrompt, completion: tokensCompletion },
+    totalDurationMs: parsed.totalDurationMs || 0,
+    steps: parsed.steps || [],
+  }
+}
+
+/**
+ * 查看链路：优先使用当前链路，否则按 requestId 精确查询该轮链路，最后回退到最近历史会话
+ */
+async function handleViewTrace(requestId?: string) {
+  // 1. 优先使用当前链路数据（刚刚完成的对话）
+  if (chatStore.currentTrace) {
+    currentTrace.value = chatStore.currentTrace
+    activeTab.value = 'trace'
+    return
+  }
+
+  // 2. 按消息ID精确查询该轮完整链路（点击消息气泡查看详情）
+  if (requestId) {
+    try {
+      const detail = await AgentAPI.getSessionByRequestId(requestId)
+      const trace = parseTrace(detail?.traceSnapshot)
+      if (trace) currentTrace.value = trace
+    } catch {
+      ElMessage.error('获取链路详情失败')
+    }
+    activeTab.value = 'trace'
+    return
+  }
+
+  // 3. 回退：查询最近的历史会话链路
+  const session = chatStore.currentSession
+  if (!session || !session.sceneBinding) {
+    activeTab.value = 'trace'
+    return
+  }
+
+  try {
+    // 查询该场景最近的编排执行会话（场景模式对话落库为 orchestration 类型）
+    const res = await AgentAPI.getOrchestrationSessions(session.sceneBinding.sceneId, { pageNum: 1, pageSize: 1 })
+    if (res.list && res.list.length > 0) {
+      const detail = await AgentAPI.getOrchestrationSessionDetail(session.sceneBinding.sceneId, res.list[0].id!)
+      const trace = parseTrace(detail?.traceSnapshot)
+      if (trace) currentTrace.value = trace
+    }
+  } catch {
+    ElMessage.error('获取链路详情失败')
+  }
+  activeTab.value = 'trace'
 }
 
 const fabStyle = computed(() => ({
