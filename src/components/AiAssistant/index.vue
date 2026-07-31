@@ -3,15 +3,13 @@
 
   职责：
     1. 渲染可拖拽的 FAB 按钮和侧边 Drawer
-    2. 4-Tab 布局：对话 / 会话 / 链路 / 设置
+    2. 2-Tab 布局：对话 / 链路
     3. 对话 Tab 内置场景选择器
 
   数据流：
     FAB 点击 → 打开 Drawer（FAB 隐藏）
     对话 Tab → 场景选择 + 消息列表 + 输入框
-    会话 Tab → 会话列表管理
     链路 Tab → Agent 链路追踪可视化
-    设置 Tab → 页面上下文 + 结果回写配置
 -->
 <template>
   <div class="ai-assistant-wrapper">
@@ -66,9 +64,7 @@
         <!-- Tab 导航 -->
         <el-tabs v-model="activeTab" class="assistant-tabs flex-shrink-0 px-16px" style="border-bottom: 1px solid var(--el-border-color-light)">
           <el-tab-pane label="对话" name="chat" />
-          <el-tab-pane label="会话" name="sessions" />
           <el-tab-pane label="链路" name="trace" />
-          <el-tab-pane label="设置" name="settings" />
         </el-tabs>
 
         <!-- Tab 内容区 -->
@@ -77,12 +73,10 @@
             v-if="activeTab === 'chat'"
             @view-trace="handleViewTrace"
           />
-          <SessionList v-else-if="activeTab === 'sessions'" />
           <div v-else-if="activeTab === 'trace'" class="h-full overflow-y-auto px-16px py-12px">
             <AgentTraceDetail v-if="currentTrace" :snapshot="currentTrace" />
             <el-empty v-else description="暂无链路数据" :image-size="80" />
           </div>
-          <SettingsPanel v-else />
         </div>
       </div>
     </el-drawer>
@@ -95,8 +89,6 @@ import { Close, Connection } from '@element-plus/icons-vue'
 import { useChatStore } from '@/store/modules/chat'
 import { AgentAPI, type AgentTraceSnapshot } from '@/api/ai/agent'
 import ChatPanel from './components/ChatPanel.vue'
-import SessionList from './components/SessionList.vue'
-import SettingsPanel from './components/SettingsPanel.vue'
 import AgentTraceDetail from '@/views/aiModule/agent/components/AgentTraceDetail.vue'
 import Icon from '@/components/Icon/index.vue'
 import { ElMessage } from 'element-plus'
