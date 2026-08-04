@@ -158,6 +158,18 @@ watch(
 // 监听 loading 状态变化（流结束时确保滚动到底部）
 watch(() => store.loading, (v) => { if (!v) scrollToBottom() })
 
+// 监听 LLM 步骤时间线变化（步骤新增、进度更新、状态变化时滚动到底部）
+watch(() => llmSteps.value.length, () => scrollToBottom())
+watch(
+  () => {
+    const steps = llmSteps.value
+    if (steps.length === 0) return ''
+    const last = steps[steps.length - 1]
+    return `${last.status}-${last.progressList?.length}-${last.detailList?.length}`
+  },
+  () => scrollToBottom()
+)
+
 onMounted(() => {
   store.ensureSession()
 })
