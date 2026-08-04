@@ -1,29 +1,38 @@
 <!--
-  统计卡片组件
-  显示今日调用/Token/费用/成功率，含环比变化
+  统计卡片组件（单行三列布局）
+  左列：标题 + 环比 + 昨日
+  中列：数值（突出）
+  右列：图标
 -->
 <template>
   <div class="stat-card">
-    <div class="flex items-center gap-12px mb-12px">
-      <div class="card-icon" :style="{ background: bgColor }">
-        <el-icon :size="20" color="white"><component :is="icon" /></el-icon>
+    <!-- 左列：标题 + 信息 -->
+    <div class="flex flex-col gap-6px min-w-0">
+      <span class="text-15px font-600 color-[var(--el-text-color-primary)] truncate">{{ title }}</span>
+      <div class="flex items-center gap-6px text-13px">
+        <span :class="trendClass" class="font-500">
+          <template v-if="trend > 0">↑ +{{ trend }}%</template>
+          <template v-else-if="trend < 0">↓ {{ trend }}%</template>
+          <template v-else>持平</template>
+        </span>
+        <span class="color-[var(--el-text-color-secondary)]">·</span>
+        <span class="color-[var(--el-text-color-secondary)]">昨日 {{ yesterdayDisplay }}</span>
       </div>
-      <span class="text-13px text-[var(--el-text-color-secondary)]">{{ title }}</span>
     </div>
-    <div class="text-28px font-700 color-[var(--el-text-color-primary)] mb-6px tabular-nums">
+
+    <!-- 中列：数值 -->
+    <div class="text-28px font-bold color-[var(--el-text-color-primary)] tabular-nums whitespace-nowrap">
       {{ displayValue }}
     </div>
-    <div class="text-12px" :class="trendClass">
-      <span v-if="trend > 0">↑ +{{ trend }}%</span>
-      <span v-else-if="trend < 0">↓ {{ trend }}%</span>
-      <span v-else>— 持平</span>
-      <span class="color-[var(--el-text-color-secondary)] ml-4px">较昨日</span>
+
+    <!-- 右列：图标 -->
+    <div class="w-40px h-40px rounded-10px flex items-center justify-center flex-shrink-0" :style="{ background: `${bgColor}12`, color: bgColor }">
+      <el-icon :size="20"><component :is="icon" /></el-icon>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-
 const props = defineProps<{
   title: string
   value: number | string
@@ -31,13 +40,23 @@ const props = defineProps<{
   bgColor: string
   trend: number
   format?: 'number' | 'cost' | 'percent'
+  yesterdayValue?: number | string
 }>()
 
 const displayValue = computed(() => {
-  if (props.format === 'cost') return `¥${props.value}`
-  if (props.format === 'percent') return `${props.value}%`
-  if (typeof props.value === 'number') return props.value.toLocaleString()
-  return props.value
+  const v = props.value ?? 0
+  if (props.format === 'cost') return `¥${Number(v).toFixed(2)}`
+  if (props.format === 'percent') return `${Number(v).toFixed(1)}%`
+  if (typeof v === 'number') return v.toLocaleString()
+  return v
+})
+
+const yesterdayDisplay = computed(() => {
+  const v = props.yesterdayValue ?? 0
+  if (props.format === 'cost') return `¥${Number(v).toFixed(2)}`
+  if (props.format === 'percent') return `${Number(v).toFixed(1)}%`
+  if (typeof v === 'number') return v.toLocaleString()
+  return v
 })
 
 const trendClass = computed(() => {
@@ -49,25 +68,19 @@ const trendClass = computed(() => {
 
 <style scoped>
 .stat-card {
-  background: white;
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 10px;
-  padding: 20px;
-  transition: box-shadow 0.2s;
-}
-.stat-card:hover {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-}
-.card-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 24px;
+  background: white;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.2s, transform 0.2s;
 }
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 </style>

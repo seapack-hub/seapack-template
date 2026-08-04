@@ -2,11 +2,11 @@
   场景调用柱状图
 -->
 <template>
-  <div class="border border-[var(--el-border-color-lighter)] rounded-10px bg-white">
-    <div class="px-16px py-12px border-b border-[var(--el-border-color-lighter)]">
-      <span class="text-14px font-600">场景调用统计</span>
+  <div class="rounded-12px bg-white border border-[var(--el-border-color-lighter)] shadow-sm">
+    <div class="p-10 border-b border-[var(--el-border-color-lighter)]">
+      <span class="text-15px font-600 color-[var(--el-text-color-primary)]">场景调用统计</span>
     </div>
-    <div class="p-12px">
+    <div class="p-10px">
       <BaseCharts :options="chartOption" height="300px" />
     </div>
   </div>

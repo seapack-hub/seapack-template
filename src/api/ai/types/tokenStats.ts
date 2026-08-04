@@ -1,5 +1,7 @@
 /**
  * Token 用量统计 - 类型定义
+ *
+ * 后端接口：/api/ai/token-stats/*
  */
 
 /** 日统计汇总（对应 ai_token_usage_daily 表） */
@@ -21,22 +23,27 @@ export interface TokenUsageDaily {
   totalCostYuan: number
 }
 
-/** 调用明细（需 ai_token_usage_log 表支持） */
+/** 调用明细（对应 ai_token_usage_log 表） */
 export interface TokenUsageLog {
   id: number
   callTime: string
-  moduleKey: string
-  modelName: string
-  agentId?: number
-  agentName?: string
+  bizType?: string
+  bizId?: number
+  bizName?: string
+  conversationId?: string
   sceneId?: number
-  sceneName?: string
-  tokensInput: number
-  tokensOutput: number
-  durationMs: number
-  costYuan: number
-  status: 'success' | 'fail'
-  errorMsg?: string
+  requestId?: string
+  outputResult?: string
+  traceSnapshot?: string
+  totalDurationMs?: number
+  tokensPrompt?: number
+  tokensCompletion?: number
+  tokensTotal?: number
+  modelName?: string
+  status?: string
+  errorMessage?: string
+  createdBy?: number
+  createdAt?: string
 }
 
 /** 概览统计 */
@@ -86,25 +93,48 @@ export interface TokenCostSummaryItem {
   avgDurationMs: number
 }
 
+/** 用户 Token 消耗排行 */
+export interface TokenUserRankItem {
+  userId: number
+  userName: string
+  callCount: number
+  tokensInput: number
+  tokensOutput: number
+  tokensTotal: number
+  totalCostYuan: number
+}
+
 // ===== 查询参数 =====
 
+/** 通用统计查询参数 */
 export interface TokenStatsQuery {
   /** 起始日期 YYYY-MM-DD */
   startDate: string
   /** 结束日期 YYYY-MM-DD */
   endDate: string
-  /** 模型编码（可选筛选） */
+  /** 用户ID（可选） */
+  userId?: number
+  /** 用途（可选）：orchestration / agent / chat / skill */
+  bizType?: string
+  /** 模型编码（可选） */
   modelName?: string
-  /** 模块 key（可选筛选） */
-  moduleKey?: string
 }
 
+/** 最近调用记录查询参数 */
 export interface RecentCallsQuery {
   pageNum: number
   pageSize: number
   startDate?: string
   endDate?: string
+  userId?: number
+  bizType?: string
   modelName?: string
-  moduleKey?: string
-  status?: 'success' | 'fail'
+  status?: string
+}
+
+/** 用户排行查询参数 */
+export interface UserRankingQuery {
+  startDate: string
+  endDate: string
+  limit?: number
 }

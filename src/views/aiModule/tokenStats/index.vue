@@ -1,8 +1,14 @@
 <!--
   Token 用量统计仪表盘
+
+  布局结构：
+    1. 统计卡片（4列）— StatCard 组件自带白色卡片
+    2. 趋势 + 模型占比（3列 2:1）— 子组件自带白色卡片
+    3. 场景调用 + 费用汇总 + 用户排行（3列 1:1:1）
+    4. 最近调用记录（全宽）
 -->
 <template>
-  <div class="app-container overflow-y-auto">
+  <div class="token-stats-page bg-[var(--el-fill-color-light)] overflow-y-auto">
     <!-- 统计卡片 -->
     <div class="grid grid-cols-4 gap-16px mb-16px">
       <StatCard title="今日调用次数" :value="overview.todayCalls" :icon="TrendCharts" bg-color="#409EFF" :trend="callTrend" format="number" />
@@ -11,28 +17,28 @@
       <StatCard title="成功率" :value="overview.successRate" :icon="CircleCheck" bg-color="#F56C6C" :trend="rateTrend" format="percent" />
     </div>
 
-    <!-- Mock 提示 -->
-    <el-alert v-if="useMock" title="当前展示为 Mock 数据，后端接口对接后将自动切换" type="info" show-icon :closable="false" class="mb-16px" />
-
-    <!-- 图表行 -->
+    <!-- 趋势 + 模型占比 -->
     <div class="grid grid-cols-3 gap-16px mb-16px">
       <div class="col-span-2">
         <TrendChart :data="trendData" @range-change="onTrendRangeChange" />
       </div>
-      <ModelPieChart :data="modelPieData" />
+      <div>
+        <ModelPieChart :data="modelPieData" />
+      </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-16px mb-16px">
-      <div class="col-span-1">
+    <!-- 场景调用 + 费用汇总 + 用户排行 -->
+    <div class="grid grid-cols-3 gap-16px" style="grid-auto-rows: 1fr">
+      <div>
         <SceneBarChart :scenes="sceneBarData.scenes" :calls="sceneBarData.calls" />
       </div>
-      <div class="col-span-2">
+      <div>
         <CostTable :data="costSummary" />
       </div>
+      <div>
+        <UserRankingTable :data="userRanking" />
+      </div>
     </div>
-
-    <!-- 最近调用 -->
-    <RecentCallsTable :calls="recentCalls" />
   </div>
 </template>
 
@@ -44,16 +50,15 @@ import TrendChart from './components/TrendChart.vue'
 import ModelPieChart from './components/ModelPieChart.vue'
 import SceneBarChart from './components/SceneBarChart.vue'
 import CostTable from './components/CostTable.vue'
-import RecentCallsTable from './components/RecentCallsTable.vue'
+import UserRankingTable from './components/UserRankingTable.vue'
 
 const {
-  useMock,
   overview,
   trendData,
   modelPieData,
   sceneBarData,
   costSummary,
-  recentCalls,
+  userRanking,
   loadAll,
   fetchTrend,
 } = useTokenStats()
@@ -82,3 +87,14 @@ onMounted(() => {
   loadAll()
 })
 </script>
+
+<style scoped lang="scss">
+.token-stats-page {
+  min-height: 100%;
+  background: var(--el-fill-color-light);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+</style>

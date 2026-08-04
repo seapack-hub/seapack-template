@@ -27,3 +27,27 @@ export const MODEL_COLOR_MAP: Record<string, string> = {
   'qwen-plus': '#909399',
   'glm-4': '#b37feb',
 }
+
+/** 备用颜色列表（当模型不在颜色映射中时使用） */
+export const CHART_COLORS = [
+  '#409EFF',
+  '#67C23A',
+  '#E6A23C',
+  '#F56C6C',
+  '#909399',
+  '#b37feb',
+  '#00b2a9',
+  '#f759ab',
+  '#36cfc9',
+  '#597ef7',
+  '#9254de',
+  '#ff7a45',
+]
+
+/** 根据模型名称获取颜色（支持动态颜色） */
+export function getModelColor(name: string, index: number): string {
+  if (MODEL_COLOR_MAP[name]) {
+    return MODEL_COLOR_MAP[name]
+  }
+  return CHART_COLORS[index % CHART_COLORS.length]
+}

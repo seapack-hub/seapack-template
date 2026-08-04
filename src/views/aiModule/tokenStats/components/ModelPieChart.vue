@@ -2,12 +2,12 @@
   模型占比饼图
 -->
 <template>
-  <div class="border border-[var(--el-border-color-lighter)] rounded-10px bg-white">
-    <div class="px-16px py-12px border-b border-[var(--el-border-color-lighter)]">
-      <span class="text-14px font-600">模型 Token 占比</span>
+  <div class="rounded-12px bg-white border border-[var(--el-border-color-lighter)] shadow-sm">
+    <div class="px-20px py-16px border-b border-[var(--el-border-color-lighter)]">
+      <span class="text-15px font-600 color-[var(--el-text-color-primary)]">模型 Token 占比</span>
     </div>
-    <div class="p-12px">
-      <BaseCharts :options="chartOption" height="300px" />
+    <div class="p-10px">
+      <BaseCharts :options="chartOption" height="320px" />
     </div>
   </div>
 </template>
@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import type { EChartsOption } from 'echarts'
 import BaseCharts from '@/components/baseCharts/index.vue'
-import { MODEL_COLOR_MAP } from '../utils/moduleOptions'
+import { getModelColor } from '../utils/moduleOptions'
 
 const props = defineProps<{
   data: { name: string; value: number }[]
@@ -33,7 +33,21 @@ const chartOption = computed<EChartsOption>(() => ({
     orient: 'vertical',
     right: 10,
     top: 'center',
-    textStyle: { fontSize: 12 },
+    textStyle: {
+      fontSize: 12,
+      rich: {
+        dot: {
+          fontSize: 10,
+        },
+      },
+    },
+    formatter: (name: string) => {
+      const item = props.data.find(d => d.name === name)
+      if (item) {
+        return `${name}  {dot|●}  ${item.value.toLocaleString()}`
+      }
+      return name
+    },
   },
   series: [
     {
@@ -46,9 +60,9 @@ const chartOption = computed<EChartsOption>(() => ({
       emphasis: {
         label: { show: true, fontSize: 14, fontWeight: 'bold' },
       },
-      data: props.data.map(d => ({
+      data: props.data.map((d, index) => ({
         ...d,
-        itemStyle: { color: MODEL_COLOR_MAP[d.name] || '#409EFF' },
+        itemStyle: { color: getModelColor(d.name, index) },
       })),
     },
   ],

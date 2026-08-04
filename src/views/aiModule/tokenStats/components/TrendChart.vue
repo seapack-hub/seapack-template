@@ -3,15 +3,15 @@
   近7天/30天 Token 消耗趋势
 -->
 <template>
-  <div class="border border-[var(--el-border-color-lighter)] rounded-10px bg-white">
-    <div class="flex items-center justify-between px-16px py-12px border-b border-[var(--el-border-color-lighter)]">
-      <span class="text-14px font-600">Token 消耗趋势</span>
+  <div class="rounded-12px bg-white border border-[var(--el-border-color-lighter)] shadow-sm">
+    <div class="flex items-center justify-between px-20px py-16px border-b border-[var(--el-border-color-lighter)]">
+      <span class="text-15px font-600 color-[var(--el-text-color-primary)]">Token 消耗趋势</span>
       <el-radio-group v-model="rangeDays" size="small" @change="$emit('rangeChange', rangeDays)">
         <el-radio-button :value="7">7天</el-radio-button>
         <el-radio-button :value="30">30天</el-radio-button>
       </el-radio-group>
     </div>
-    <div class="p-12px">
+    <div class="p-10px">
       <BaseCharts :options="chartOption" height="320px" />
     </div>
   </div>

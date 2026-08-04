@@ -1,35 +1,39 @@
 /**
  * Token 用量统计 API
+ *
+ * 后端接口前缀：/api/ai/token-stats
  */
 import { request } from '@/utils/axios'
 import type {
-  TokenUsageDaily,
-  TokenUsageLog,
   TokenStatOverview,
   TokenTrendItem,
   TokenModelPieItem,
   TokenSceneBarItem,
   TokenCostSummaryItem,
+  TokenUserRankItem,
+  TokenUsageLog,
   TokenStatsQuery,
   RecentCallsQuery,
+  UserRankingQuery,
 } from './types/tokenStats'
 
 export type {
-  TokenUsageDaily,
-  TokenUsageLog,
   TokenStatOverview,
   TokenTrendItem,
   TokenModelPieItem,
   TokenSceneBarItem,
   TokenCostSummaryItem,
+  TokenUserRankItem,
+  TokenUsageLog,
   TokenStatsQuery,
   RecentCallsQuery,
+  UserRankingQuery,
 }
 
 const BASE_URL = '/api/ai/token-stats'
 
 export const TokenStatsAPI = {
-  /** 概览统计 */
+  /** 概览统计（今日 vs 昨日对比） */
   getOverview() {
     return request<any, TokenStatOverview>({
       url: `${BASE_URL}/overview`,
@@ -73,9 +77,18 @@ export const TokenStatsAPI = {
     })
   },
 
+  /** 用户 Token 消耗排行 */
+  getUserRanking(query: UserRankingQuery) {
+    return request<any, TokenUserRankItem[]>({
+      url: `${BASE_URL}/user-ranking`,
+      method: 'get',
+      params: query,
+    })
+  },
+
   /** 最近调用记录（分页） */
   getRecentCalls(query: RecentCallsQuery) {
-    return request<any, PageResult<TokenUsageLog[]>>({
+    return request<any, { list: TokenUsageLog[]; total: number }>({
       url: `${BASE_URL}/recent-calls`,
       method: 'get',
       params: query,
