@@ -169,6 +169,18 @@ const aiModuleRoute: Array<RouterObject> = [
               permKey: 'tokenStats'
             },
           },
+          //Token 额度管理
+          {
+            path: 'tokenQuota',
+            name: 'tokenQuota',
+            component: () => import('@/views/aiModule/tokenQuota/index.vue'),
+            meta: {
+              title: 'tokenQuota',
+              description: 'Token 额度',
+              icon: 'coin',
+              permKey: 'tokenQuota'
+            },
+          },
         ],
       },
     ],
