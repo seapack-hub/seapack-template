@@ -6,6 +6,132 @@
   "description": "sea-pack-template",
   "glyphs": [
     {
+      "icon_id": "29736767",
+      "name": "margin-trading",
+      "font_class": "margin-trading",
+      "unicode": "ed69",
+      "unicode_decimal": 60777
+    },
+    {
+      "icon_id": "1441391",
+      "name": "account-openings",
+      "font_class": "account-openings",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    },
+    {
+      "icon_id": "22285386",
+      "name": "sentiment",
+      "font_class": "sentiment",
+      "unicode": "e6dc",
+      "unicode_decimal": 59100
+    },
+    {
+      "icon_id": "4936696",
+      "name": "gold-reserves",
+      "font_class": "gold-reserves",
+      "unicode": "e872",
+      "unicode_decimal": 59506
+    },
+    {
+      "icon_id": "13618170",
+      "name": "forex-reserves",
+      "font_class": "forex-reserves",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "47488110",
+      "name": "reserves",
+      "font_class": "reserves",
+      "unicode": "e762",
+      "unicode_decimal": 59234
+    },
+    {
+      "icon_id": "41844619",
+      "name": "pmi",
+      "font_class": "pmi",
+      "unicode": "e76a",
+      "unicode_decimal": 59242
+    },
+    {
+      "icon_id": "37536763",
+      "name": "prosperity",
+      "font_class": "prosperity",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "44560688",
+      "name": "cpi-ppi",
+      "font_class": "cpi-ppi",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    },
+    {
+      "icon_id": "7508116",
+      "name": "price-index",
+      "font_class": "price-index",
+      "unicode": "e61c",
+      "unicode_decimal": 58908
+    },
+    {
+      "icon_id": "35763755",
+      "name": "new-loans",
+      "font_class": "new-loans",
+      "unicode": "e713",
+      "unicode_decimal": 59155
+    },
+    {
+      "icon_id": "19703473",
+      "name": "social-finance",
+      "font_class": "social-finance",
+      "unicode": "efa9",
+      "unicode_decimal": 61353
+    },
+    {
+      "icon_id": "40069057",
+      "name": "financing",
+      "font_class": "financing",
+      "unicode": "ea63",
+      "unicode_decimal": 60003
+    },
+    {
+      "icon_id": "26144217",
+      "name": "shibor-rate",
+      "font_class": "shibor-rate",
+      "unicode": "e662",
+      "unicode_decimal": 58978
+    },
+    {
+      "icon_id": "4163831",
+      "name": "lpr-rate",
+      "font_class": "lpr-rate",
+      "unicode": "e649",
+      "unicode_decimal": 58953
+    },
+    {
+      "icon_id": "4178215",
+      "name": "money-supply",
+      "font_class": "money-supply",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
+      "icon_id": "39504946",
+      "name": "monetary",
+      "font_class": "monetary",
+      "unicode": "e6fa",
+      "unicode_decimal": 59130
+    },
+    {
+      "icon_id": "41455417",
+      "name": "macro-data",
+      "font_class": "macro-data",
+      "unicode": "eb2f",
+      "unicode_decimal": 60207
+    },
+    {
       "icon_id": "1417105",
       "name": "bangzhuzhongxin",
       "font_class": "bangzhuzhongxin",

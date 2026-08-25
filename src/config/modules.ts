@@ -16,6 +16,7 @@ export const MODULE_DEFS: ModuleDef[] = [
   { key: 'aiModule', path: '/aiModule/interaction/rag', title: 'AI交互', icon: 'ai-interaction', color: '#9C27B0', description: 'RAG知识库、智能体交互、图片生成', permKey: 'aiModule' },
   { key: 'workflowModule', path: '/workflow/list', title: '工作流', icon: 'workflow', color: '#00BCD4', description: '可视化工作流编排、执行与监控', permKey: 'workflowModule' },
   { key: 'devTools', path: '/devTools/workbench', title: '开发工具', icon: 'dev-tools', color: '#607D8B', description: '组件封装、图形化、ECharts图表', permKey: 'devTools' },
+  { key: 'macroData', path: '/macroData/workbench', title: '宏观数据', icon: 'macro-data', color: '#FF9800', description: '货币供应、社会融资、物价指数、外汇储备等宏观经济指标分析', permKey: 'macroData' },
   { key: 'gis2d', path: '/gis2d/baseMap', title: '二维地图', icon: 'two-d-layers', color: '#26A69A', description: 'OpenLayers 二维地图展示与交互', permKey: 'gis2d' },
   { key: 'gis3d', path: '/gis3d/baseCesium', title: '三维GIS', icon: 'three-d-layers', color: '#7E57C2', description: 'Cesium 三维GIS地图与特效', permKey: 'gis3d' },
   { key: 'bigScreen', path: '/bigScreen', title: '智慧运营', icon: 'big-screen', color: '#FF6D00', description: '智慧运营数据可视化大屏', permKey: 'bigScreen' },
