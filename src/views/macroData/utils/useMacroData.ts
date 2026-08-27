@@ -219,10 +219,12 @@ export function useMacroData() {
   }
 
   // ===== 获取数据 =====
-  async function fetchMoneySupply() {
+  async function fetchMoneySupply(opts?: { frequency?: string; startDate?: string; endDate?: string }) {
+    const frequency = opts?.frequency ?? 'monthly'
+    const startDate = opts?.startDate ?? recentMonths(24)[0]
+    const endDate = opts?.endDate
     try {
-      const startDate = recentMonths(24)[0]
-      const result = await MacroDataAPI.queryPivot('monthly', ['M0', 'M1', 'M2', 'M0_YOY', 'M1_YOY', 'M2_YOY'], startDate)
+      const result = await MacroDataAPI.queryPivot(frequency, ['M0', 'M1', 'M2', 'M0_YOY', 'M1_YOY', 'M2_YOY'], startDate, endDate)
       moneySupply.value = pivotMonthly(result.dates, result.series, ['M0', 'M1', 'M2', 'M0_YOY', 'M1_YOY', 'M2_YOY'])
         .map((d: any) => ({ date: d.date, m0: d.M0, m1: d.M1, m2: d.M2, m0Yoy: d.M0_YOY, m1Yoy: d.M1_YOY, m2Yoy: d.M2_YOY }))
     } catch { moneySupply.value = generateMockMoneySupply() }
@@ -367,9 +369,18 @@ export function useMacroData() {
     kpiList, moneySupply, socialFinance, pmi, priceIndex, lpr,
     officialReserves, newLoans, shibor, accountOpenings, marginTrading,
     // 方法
-    fetchKpi, fetchMoneySupply, fetchSocialFinance, fetchPmi, fetchPriceIndex,
-    fetchLpr, fetchOfficialReserves, fetchNewLoans, fetchShibor,
-    fetchAccountOpenings, fetchMarginTrading, loadAll,
+    fetchKpi, 
+    fetchMoneySupply, 
+    fetchSocialFinance, 
+    fetchPmi, 
+    fetchPriceIndex, 
+    fetchLpr, 
+    fetchOfficialReserves, 
+    fetchNewLoans, 
+    fetchShibor, 
+    fetchAccountOpenings, 
+    fetchMarginTrading, 
+    loadAll,
     // 工具
     latest, prev, diff,
   }

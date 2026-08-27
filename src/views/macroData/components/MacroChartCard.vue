@@ -24,7 +24,13 @@ const props = withDefaults(
 
 const mergedOptions = computed<EChartsOption>(() => {
   const base: EChartsOption = {
-    grid: { left: 50, right: 24, top: 24, bottom: 30, containLabel: false },
+    grid: { 
+      left: 50, 
+      right: 24, 
+      top: 60, 
+      bottom: 30, 
+      containLabel: false 
+    },
     tooltip: {
       trigger: 'axis',
       backgroundColor: 'rgba(255,255,255,0.96)',
