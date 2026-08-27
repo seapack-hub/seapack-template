@@ -53,7 +53,7 @@ import type {
   MoneySupplyScissors,
   ScissorsVsStock,
   M2VsCpi,
-} from '@/api/macroData/types'
+} from '@/api/macroData/monetary/types'
 import { MONTHS_OPTIONS } from './utils/moduleOptions'
 import {
   useBalanceYoyOption,

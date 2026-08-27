@@ -10,7 +10,7 @@ import type {
   ScissorsVsStock,
   M2VsCpi,
   SocialFinanceVsM2,
-} from '../types'
+} from './types'
 
 const BASE_URL = '/api/macro/money-supply'
 

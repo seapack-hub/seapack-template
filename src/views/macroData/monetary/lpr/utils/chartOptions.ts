@@ -2,7 +2,7 @@
  * LPR 利率看板 — ECharts 图表配置
  */
 import type { EChartsOption } from 'echarts'
-import type { LprTrend } from '@/api/macroData/types'
+import type { LprTrend } from '@/api/macroData/monetary/types'
 
 const COLORS = { blue: '#409EFF', red: '#F56C6C', gray: '#909399' }
 

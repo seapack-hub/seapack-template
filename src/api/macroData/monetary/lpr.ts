@@ -2,7 +2,7 @@
  * LPR 利率看板专用 API
  */
 import { request } from '@/utils/axios'
-import type { LprOverview, LprTrend } from '../types'
+import type { LprOverview, LprTrend } from './types'
 
 const BASE_URL = '/api/macro/lpr'
 

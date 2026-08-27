@@ -48,7 +48,7 @@ import { Refresh, TrendCharts, Histogram, DataLine } from '@element-plus/icons-v
 import MacroChartCard from '@/views/macroData/components/MacroChartCard.vue'
 import SpTable from '@/components/baseComponents/SpTable/index.vue'
 import { LprAPI } from '@/api/macroData/monetary/lpr'
-import type { LprOverview, LprTrend } from '@/api/macroData/types'
+import type { LprOverview, LprTrend } from '@/api/macroData/monetary/types'
 import { MONTHS_OPTIONS, DETAIL_COLUMNS } from './utils/moduleOptions'
 import { useLprTrendOption } from './utils/chartOptions'
 import LprKpiCard from './components/LprKpiCard.vue'

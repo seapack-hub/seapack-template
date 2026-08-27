@@ -10,7 +10,7 @@ import type {
   ScissorsVsStock,
   M2VsCpi,
   SocialFinanceVsM2,
-} from '@/api/macroData/types'
+} from '@/api/macroData/monetary/types'
 
 // ==================== 公共样式常量 ====================
 
