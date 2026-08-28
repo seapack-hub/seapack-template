@@ -87,3 +87,36 @@ export interface LprTrend {
   lpr1y: number[]
   lpr5y: number[]
 }
+
+// ==================== SHIBOR 资金面看板专用类型 ====================
+
+/** SHIBOR 概览（KPI 卡片） */
+export interface ShiborOverview {
+  date: string
+  on: number
+  onBp: number
+  y1: number
+  y1Bp: number
+  spread: number
+  spreadBp: number
+}
+
+/** SHIBOR 多期限趋势（8条折线） */
+export interface ShiborTrend {
+  dates: string[]
+  SHIBOR_ON: number[]
+  SHIBOR_1W: number[]
+  SHIBOR_2W: number[]
+  SHIBOR_1M: number[]
+  SHIBOR_3M: number[]
+  SHIBOR_6M: number[]
+  SHIBOR_9M: number[]
+  SHIBOR_1Y: number[]
+}
+
+/** SHIBOR 今日期限结构曲线 */
+export interface ShiborCurve {
+  date: string
+  labels: string[]
+  values: number[]
+}

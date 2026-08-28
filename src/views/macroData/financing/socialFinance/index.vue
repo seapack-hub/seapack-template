@@ -1,56 +1,82 @@
 ﻿<template>
-  <div class="flex flex-col gap-16px">
-    <div class="grid grid-cols-3 gap-16px">
-      <MacroKpiCard label="最新存量" :value="latest?.stockAmount + '万亿'" :change="stockChange" unit="%" icon="Coin" color="#409EFF" />
-      <MacroKpiCard label="当月新增" :value="latest?.newAmount + '万亿'" icon="Plus" color="#67C23A" />
-      <MacroKpiCard label="存量同比增速" :value="latest?.yoyGrowth + '%'" icon="TrendCharts" color="#E6A23C" />
-    </div>
+  <div class="h-full flex flex-col gap-16px">
+    <!-- ==================== 1. Header ==================== -->
+    <SfHeader v-model:months="months" @refresh="fetchAll" />
 
-    <MacroChartCard title="社融存量与当月新增" :options="mainOption" height="360px" />
+    <!-- ==================== 2. KPI 卡片区 ==================== -->
+    <SfKpiBar :overview="overview" />
 
-    <div class="box-border p-x-15 p-y-10 flex flex-col rounded-12px bg-white border border-[var(--el-border-color-lighter)] shadow-sm overflow-hidden">
-      <div class="p-10 border-b border-[var(--el-border-color-lighter)]">
-        <span class="text-15px font-600 color-[var(--el-text-color-primary)]">历史数据</span>
-      </div>
-      <SpTable :columns="columns" :data="tableData" :show-empty="true" size="small" max-height="400" />
-    </div>
+    <!-- ==================== 3. Tab 分层：第一层 / 第二层 / 第三层 ==================== -->
+    <el-tabs v-model="activeTab">
+      <!-- ===== 第一层：宏观总览 ===== -->
+      <el-tab-pane label="宏观总览" name="overview" class="">
+        <SfTrendChart :trend="trend" />
+        <div class="flex gap-16px">
+          <SfStructurePie :structure="structure" class="w-[50%]" />
+          <SfCreditPulse :trend="trend" class="w-[50%]" />
+        </div>
+      </el-tab-pane>
+
+      <!-- ===== 第二层：结构下钻 ===== -->
+      <el-tab-pane label="结构分析" name="structure" class="flex-1 min-h-0 flex flex-col gap-16px">
+        <SfStructureArea :trend="trend" />
+      </el-tab-pane>
+
+      <!-- ===== 第三层：高级工具 ===== -->
+      <el-tab-pane label="高级工具" name="advanced" class="flex-1 min-h-0 flex flex-col gap-16px">
+        <SfCreditPulse :trend="trend" />
+        <SfQuadrant :trend="trend" />
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import type { EChartsOption } from 'echarts'
-import MacroKpiCard from '@/views/macroData/components/MacroKpiCard.vue'
-import MacroChartCard from '@/views/macroData/components/MacroChartCard.vue'
-import SpTable from '@/components/baseComponents/SpTable/index.vue'
-import { useMacroData } from '@/views/macroData/utils/useMacroData'
+import { ref, onMounted } from 'vue'
+import { SocialFinanceAPI } from '@/api/macroData/financing/socialFinance'
+import type { SfOverview, SfTrend, SfStructure } from '@/api/macroData/financing/types'
+import SfHeader from './components/SfHeader.vue'
+import SfKpiBar from './components/SfKpiBar.vue'
+import SfTrendChart from './components/SfTrendChart.vue'
+import SfStructurePie from './components/SfStructurePie.vue'
+import SfStructureArea from './components/SfStructureArea.vue'
+import SfCreditPulse from './components/SfCreditPulse.vue'
+import SfQuadrant from './components/SfQuadrant.vue'
 
-const { socialFinance, fetchSocialFinance } = useMacroData()
-const latest = computed(() => socialFinance.value[socialFinance.value.length - 1])
-const prev = computed(() => socialFinance.value[socialFinance.value.length - 2])
-const stockChange = computed(() => latest.value && prev.value ? +(latest.value.yoyGrowth - prev.value.yoyGrowth).toFixed(1) : 0)
-const tableData = computed(() => [...socialFinance.value].reverse())
-const dates = computed(() => socialFinance.value.map((d) => d.date))
+// ==================== 状态 ====================
+const months = ref(36)
+const activeTab = ref('overview')
+const overview = ref<SfOverview | null>(null)
+const trend = ref<SfTrend | null>(null)
+const structure = ref<SfStructure | null>(null)
 
-const columns = [
-  { prop: 'date', label: '月份', width: 100 },
-  { prop: 'stockAmount', label: '存量（万亿元）', align: 'center' as const },
-  { prop: 'newAmount', label: '当月新增（万亿元）', align: 'center' as const },
-  { prop: 'yoyGrowth', label: '同比增速（%）', align: 'center' as const },
-]
+// ==================== 数据加载 ====================
+async function fetchAll() {
+  const m = months.value
+  const [ov, tr, st] = await Promise.allSettled([
+    SocialFinanceAPI.getOverview(),
+    SocialFinanceAPI.getTrend(m),
+    SocialFinanceAPI.getStructure(m),
+  ])
+  if (ov.status === 'fulfilled') overview.value = ov.value as unknown as SfOverview
+  if (tr.status === 'fulfilled') trend.value = tr.value as unknown as SfTrend
+  if (st.status === 'fulfilled') structure.value = st.value as unknown as SfStructure
+}
 
-const mainOption = computed<EChartsOption>(() => ({
-  legend: { data: ['当月新增', '存量同比'], bottom: 0 },
-  xAxis: { type: 'category', data: dates.value },
-  yAxis: [
-    { type: 'value', name: '万亿元', position: 'left' },
-    { type: 'value', name: '%', position: 'right' },
-  ],
-  series: [
-    { name: '当月新增', type: 'bar', data: socialFinance.value.map((d) => d.newAmount), itemStyle: { color: '#409EFF', borderRadius: [4, 4, 0, 0] }, barMaxWidth: 20 },
-    { name: '存量同比', type: 'line', yAxisIndex: 1, data: socialFinance.value.map((d) => d.yoyGrowth), smooth: true, itemStyle: { color: '#F56C6C' } },
-  ],
-}))
-
-onMounted(() => { fetchSocialFinance() })
+onMounted(() => { fetchAll() })
 </script>
+
+<style scoped>
+:deep(.el-tabs__content) {
+  flex: 1;
+  min-height: 0;
+}
+:deep(.el-tab-pane) {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: auto;
+}
+</style>
