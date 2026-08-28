@@ -102,17 +102,6 @@ const macroDataRoute: Array<RouterObject> = [
               permKey: 'macroSocialFinance',
             },
           },
-          {
-            path: 'newLoans',
-            name: 'macroNewLoans',
-            component: () => import('@/views/macroData/financing/newLoans/index.vue'),
-            meta: {
-              title: 'macroNewLoans',
-              description: '新增人民币贷款',
-              icon: 'new-loans',
-              permKey: 'macroNewLoans',
-            },
-          },
         ],
       },
       // ===== 物价指数 =====

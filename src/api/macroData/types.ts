@@ -94,12 +94,6 @@ export interface OfficialReserveRecord {
   totalSdr: number
 }
 
-export interface NewLoansRecord {
-  date: string
-  newAmount: number
-  yoyChange: number
-}
-
 export interface ShiborRecord {
   date: string
   overnight: number

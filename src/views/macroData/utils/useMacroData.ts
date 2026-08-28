@@ -10,7 +10,6 @@ import type {
   PriceIndexRecord,
   LprRecord,
   OfficialReserveRecord,
-  NewLoansRecord,
   ShiborRecord,
   AccountOpeningsRecord,
   MarginTradingRecord,
@@ -129,14 +128,6 @@ function generateMockOfficialReserves(): OfficialReserveRecord[] {
   })
 }
 
-function generateMockNewLoans(): NewLoansRecord[] {
-  return recentMonths(24).map((date) => ({
-    date: date.slice(0, 7),
-    newAmount: fluctuate(12000, 0.3),
-    yoyChange: fluctuate(500, 0.8),
-  }))
-}
-
 function generateMockShibor(): ShiborRecord[] {
   const days: string[] = []
   const now = new Date()
@@ -202,7 +193,6 @@ export function useMacroData() {
   const priceIndex = ref<PriceIndexRecord[]>([])
   const lpr = ref<LprRecord[]>([])
   const officialReserves = ref<OfficialReserveRecord[]>([])
-  const newLoans = ref<NewLoansRecord[]>([])
   const shibor = ref<ShiborRecord[]>([])
   const accountOpenings = ref<AccountOpeningsRecord[]>([])
   const marginTrading = ref<MarginTradingRecord[]>([])
@@ -278,15 +268,6 @@ export function useMacroData() {
           goldOz: d.GOLD_OZ, goldChange: d.GOLD_CHG, otherUsd: 0, totalUsd: d.TOTAL_USD, totalSdr: d.TOTAL_SDR,
         }))
     } catch { officialReserves.value = generateMockOfficialReserves() }
-  }
-
-  async function fetchNewLoans() {
-    try {
-      const startDate = recentMonths(24)[0]
-      const result = await MacroDataAPI.queryPivot('monthly', ['LOAN_NEW', 'LOAN_YOY'], startDate)
-      newLoans.value = pivotMonthly(result.dates, result.series, ['LOAN_NEW', 'LOAN_YOY'])
-        .map((d: any) => ({ date: d.date, newAmount: d.LOAN_NEW, yoyChange: d.LOAN_YOY }))
-    } catch { newLoans.value = generateMockNewLoans() }
   }
 
   async function fetchShibor() {
@@ -367,7 +348,7 @@ export function useMacroData() {
     loading,
     // 数据
     kpiList, moneySupply, socialFinance, pmi, priceIndex, lpr,
-    officialReserves, newLoans, shibor, accountOpenings, marginTrading,
+    officialReserves, shibor, accountOpenings, marginTrading,
     // 方法
     fetchKpi, 
     fetchMoneySupply, 
@@ -376,7 +357,6 @@ export function useMacroData() {
     fetchPriceIndex, 
     fetchLpr, 
     fetchOfficialReserves, 
-    fetchNewLoans, 
     fetchShibor, 
     fetchAccountOpenings, 
     fetchMarginTrading, 
