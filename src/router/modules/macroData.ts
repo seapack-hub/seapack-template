@@ -156,42 +156,17 @@ const macroDataRoute: Array<RouterObject> = [
           },
         ],
       },
-      // ===== 外汇储备 =====
+      // ===== 储备资产 =====
       {
         path: 'reserves',
         name: 'macroReserves',
-        component: RouterView,
-        redirect: { name: 'macroForexReserves' },
+        component: () => import('@/views/macroData/reserves/overview/index.vue'),
         meta: {
           title: 'reserves',
-          description: '外汇储备',
+          description: '储备资产',
           icon: 'reserves',
           permKey: 'macroReserves',
         },
-        children: [
-          {
-            path: 'forex',
-            name: 'macroForexReserves',
-            component: () => import('@/views/macroData/reserves/forex/index.vue'),
-            meta: {
-              title: 'macroForexReserves',
-              description: '外汇储备',
-              icon: 'forex-reserves',
-              permKey: 'macroForexReserves',
-            },
-          },
-          {
-            path: 'gold',
-            name: 'macroGoldReserves',
-            component: () => import('@/views/macroData/reserves/gold/index.vue'),
-            meta: {
-              title: 'macroGoldReserves',
-              description: '黄金储备',
-              icon: 'gold-reserves',
-              permKey: 'macroGoldReserves',
-            },
-          },
-        ],
       },
       // ===== 市场情绪 =====
       {
