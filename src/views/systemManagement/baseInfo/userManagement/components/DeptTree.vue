@@ -77,10 +77,25 @@ onBeforeMount(() => {
 });
 </script>
 <style lang="scss" scoped>
-.card-body{
+.card-body {
   height: 100%;
-  .left-tree{
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  :deep(.el-card__body) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: hidden;
+  }
+
+  .left-tree {
+    flex: 1;
     margin-top: 12px;
+    overflow-y: auto;
+    min-height: 0;
   }
 }
 </style>

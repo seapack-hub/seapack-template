@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20" class="row-style">
+    <div class="main-layout">
       <!-- 左侧部门树 -->
-      <el-col :span="4">
+      <div class="left-panel">
         <DeptTree v-model="queryParams.deptId" @node-click="handleQuery" />
-      </el-col>
+      </div>
       <!-- 右侧用户列表 -->
-      <el-col :span="20">
+      <div class="right-panel">
         <!-- 搜索栏 -->
         <div class="search-bar">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
@@ -41,9 +41,9 @@
             </div>
           </div>
 
-          <!-- SpTable 表格 + 分页 -->
-          <div class="table-wrapper">
-            <SpTable :loading="loading" :columns="columns" :data="pageData" @selection-change="handleSelectionChange">
+          <!-- SpTable + 分页 -->
+          <div class="table-area">
+            <SpTable class="flex-1" :loading="loading" :columns="columns" :data="pageData" @selection-change="handleSelectionChange">
               <template #gender>
                 <el-table-column label="性别" min-width="70px" align="center" slot-name="gender">
                   <template #default="{ row }">
@@ -59,15 +59,13 @@
                 </el-table-column>
               </template>
             </SpTable>
-          </div>
-
-          <div class="mt-10px">
-            <Pagination v-if="total > 0" v-model:total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
+            <div class="h-[40px] mt-10px">
+              <Pagination v-if="total > 0" v-model:total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="handleQuery" />
+            </div>
           </div>
         </el-card>
-      </el-col>
-    </el-row>
-
+      </div>
+    </div>
     <UserFormDialog v-model:visible="formVisible" v-model:is-edit="formIsEdit" v-model:form="formData" @confirm="onFormConfirm" />
     <RoleAssignDialog v-model:visible="roleVisible" :user-id="roleUserId" :user-name="roleUserName" @refresh="handleQuery" />
   </div>
@@ -209,20 +207,64 @@ onMounted(() => { handleQuery() })
 
 <style lang="scss" scoped>
 .app-container {
-  .row-style {
-    height: calc(100vh - 130px);
-    .el-card-main {
-      height: calc(100% - 80px);
-      display: flex;
-      flex-direction: column;
-      .table-toolbar {
-        display: flex; justify-content: space-between; align-items: center;
-      }
-      .table-wrapper {
-        flex: 1; margin-top: 10px; overflow: auto;
-        :deep(.el-table__body-wrapper) { overflow-x: auto; }
-      }
-    }
+  height: calc(100vh - 130px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.main-layout {
+  flex: 1;
+  display: flex;
+  gap: 16px;
+  min-height: 0;
+}
+
+/* ── 左侧树：占比 1/6 ── */
+.left-panel {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── 右侧列表：占比 5/6 ── */
+.right-panel {
+  flex: 5;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.search-bar {
+  flex-shrink: 0;
+}
+
+.el-card-main {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+
+  &::v-deep(.el-card__body) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 }
 </style>

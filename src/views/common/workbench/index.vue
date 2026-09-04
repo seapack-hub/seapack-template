@@ -26,7 +26,6 @@
         }"
         @click="enterModule(mod)"
       >
-        <div class="card-accent"></div>
         <div class="card-icon">
           <Icon :name="mod.icon" :size="28" color="#ffffff" />
         </div>
@@ -75,7 +74,7 @@ function enterModule(mod: typeof MODULE_DEFS[number]) {
   align-items: center;
   min-height: 100vh;
   overflow: hidden;
-  background: linear-gradient(135deg, #1a1a3e 0%, #2d1b69 40%, #667eea 100%);
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
 }
 
 /* ── 浮动装饰球 ── */
@@ -89,43 +88,42 @@ function enterModule(mod: typeof MODULE_DEFS[number]) {
 .orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.3;
-  animation: orbFloat 8s ease-in-out infinite;
+  filter: blur(100px);
+  opacity: 0.25;
+  animation: orbFloat 12s ease-in-out infinite;
 }
 
 .orb-1 {
-  width: 400px;
-  height: 400px;
-  top: -100px;
+  width: 500px;
+  height: 500px;
+  top: -150px;
   right: -100px;
   background: #7c3aed;
   animation-delay: 0s;
 }
 
 .orb-2 {
-  width: 500px;
-  height: 500px;
-  bottom: -150px;
-  left: -150px;
+  width: 600px;
+  height: 600px;
+  bottom: -200px;
+  left: -200px;
   background: #3b82f6;
-  animation-delay: -3s;
+  animation-delay: -4s;
 }
 
 .orb-3 {
-  width: 300px;
-  height: 300px;
-  top: 50%;
-  left: 60%;
+  width: 400px;
+  height: 400px;
+  top: 40%;
+  left: 55%;
   background: #ec4899;
-  animation-delay: -6s;
+  animation-delay: -8s;
 }
 
 @keyframes orbFloat {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(30px, -40px) scale(1.1); }
-  50% { transform: translate(-20px, 20px) scale(0.95); }
-  75% { transform: translate(40px, 30px) scale(1.05); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-40px, 30px) scale(0.9); }
 }
 
 /* ── 头部 ── */
@@ -135,7 +133,7 @@ function enterModule(mod: typeof MODULE_DEFS[number]) {
   display: flex;
   justify-content: center;
   width: 100%;
-  padding: 60px 20px 32px;
+  padding: 56px 20px 40px;
 }
 
 .header-content {
@@ -150,28 +148,34 @@ function enterModule(mod: typeof MODULE_DEFS[number]) {
 
 .header-badge {
   display: inline-block;
-  padding: 4px 16px;
+  padding: 5px 18px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
-  letter-spacing: 1px;
-  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
 }
 
 .header-title {
-  font-size: 38px;
+  font-size: 42px;
   font-weight: 700;
   color: #fff;
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   letter-spacing: 2px;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .header-desc {
   font-size: 16px;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.55);
   margin: 0;
+  letter-spacing: 1px;
 }
 
 /* ── 模块网格 ── */
@@ -179,11 +183,11 @@ function enterModule(mod: typeof MODULE_DEFS[number]) {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  max-width: 720px;
+  max-width: 1400px;
   width: 100%;
-  padding: 0 20px 60px;
+  padding: 0 40px 60px;
 }
 
 /* ── 卡片 ── */
@@ -192,48 +196,39 @@ function enterModule(mod: typeof MODULE_DEFS[number]) {
   display: flex;
   align-items: center;
   gap: 16px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  padding: 24px;
+  padding: 24px 20px;
   cursor: pointer;
   overflow: hidden;
   animation: cardIn 0.5s ease both;
   animation-delay: var(--delay);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   &:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--accent) inset;
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+
+    .card-icon {
+      transform: scale(1.08);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
 
     .card-arrow {
-      color: var(--accent);
-      transform: translateX(4px);
       opacity: 1;
+      transform: translateX(4px);
+      color: rgba(255, 255, 255, 0.9);
     }
   }
 }
 
 @keyframes cardIn {
-  from { opacity: 0; transform: translateY(30px); }
+  from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-.card-accent {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--accent);
-  border-radius: 4px 0 0 4px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-
-  .module-card:hover & {
-    opacity: 1;
-  }
 }
 
 .card-icon {
@@ -245,11 +240,8 @@ function enterModule(mod: typeof MODULE_DEFS[number]) {
   justify-content: center;
   border-radius: 14px;
   background: var(--icon-bg);
-  transition: transform 0.3s ease;
-
-  .module-card:hover & {
-    transform: scale(1.1) rotate(-4deg);
-  }
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
 .card-body {
@@ -258,34 +250,56 @@ function enterModule(mod: typeof MODULE_DEFS[number]) {
 }
 
 .card-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: #fff;
   margin: 0 0 4px;
+  letter-spacing: 0.5px;
 }
 
 .card-desc {
   font-size: 13px;
-  color: #888;
+  color: rgba(255, 255, 255, 0.5);
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  transition: color 0.3s;
+
+  .module-card:hover & {
+    color: rgba(255, 255, 255, 0.7);
+  }
 }
 
 .card-arrow {
   flex-shrink: 0;
-  color: #ccc;
+  color: rgba(255, 255, 255, 0.25);
   opacity: 0;
-  transition: color 0.25s, transform 0.25s, opacity 0.25s;
+  transition: all 0.3s ease;
+}
+
+/* ── 响应式 ── */
+@media (max-width: 1200px) {
+  .module-grid {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 32px 60px;
+  }
+}
+
+@media (max-width: 900px) {
+  .module-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 24px 40px;
+  }
 }
 
 @media (max-width: 600px) {
   .module-grid {
     grid-template-columns: 1fr;
+    padding: 0 16px 32px;
   }
 
   .workbench-header {
@@ -294,6 +308,10 @@ function enterModule(mod: typeof MODULE_DEFS[number]) {
 
   .header-title {
     font-size: 28px;
+  }
+
+  .module-card {
+    padding: 20px 16px;
   }
 }
 </style>

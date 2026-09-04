@@ -66,7 +66,7 @@ const navList = ref<NavItem[]>([
   { label: '部门管理', desc: '组织架构', path: 'dept', icon: 'dept', color: '#9b59b6', bgColor: 'rgba(155,89,182,0.08)' },
   { label: '行业管理', desc: '行业树', path: 'industryManagement', icon: 'industry', color: '#00bcd4', bgColor: 'rgba(0,188,212,0.08)' },
   { label: '行业分类', desc: '基金行业', path: 'industryClassification', icon: 'classify', color: '#ff9800', bgColor: 'rgba(255,152,0,0.08)' },
-  { label: '字典设置', desc: '系统字典', path: 'dictSetting', icon: 'dict', color: '#f56c6c', bgColor: 'rgba(245,108,108,0.08)' },
+  { label: '字典设置', desc: '系统字典', path: 'dictSetting', icon: 'dict-setting', color: '#f56c6c', bgColor: 'rgba(245,108,108,0.08)' },
 ])
 
 /**

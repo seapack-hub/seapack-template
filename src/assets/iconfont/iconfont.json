@@ -6,6 +6,13 @@
   "description": "sea-pack-template",
   "glyphs": [
     {
+      "icon_id": "1081796",
+      "name": "dict",
+      "font_class": "dict",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
       "icon_id": "29736767",
       "name": "margin-trading",
       "font_class": "margin-trading",
@@ -596,7 +603,7 @@
     {
       "icon_id": "11440875",
       "name": "base-info",
-      "font_class": "jiben",
+      "font_class": "base-info",
       "unicode": "e826",
       "unicode_decimal": 59430
     },
