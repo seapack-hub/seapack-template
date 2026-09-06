@@ -13,14 +13,6 @@ export function fmtMoney(_: any, __: any, val: any) {
   return n.toFixed(2)
 }
 
-/* ========== Mock 数据生成（API 不可用时的降级数据） ========== */
-
-/** 生成本地模拟的历年每股股息数据 */
-export function generateMockDividend() {
-  const years = ['2024', '2023', '2022', '2021', '2020', '2019', '2018']
-  return years.map(y => ({ year: y, dividendPerShare: +(0.5 + Math.random() * 2).toFixed(3) }))
-}
-
 /** 生成约 12 个均匀间隔的模拟股价数据点（避免横坐标过密） */
 export function generateMockPrice() {
   const startPrice = 30 + Math.random() * 40
@@ -83,9 +75,6 @@ export function epsFormatter(_: any, __: any, v: any) {
 
 /** 历年分红柱状图，x 轴为年份，y 轴为每股股息 */
 export function buildDividendChartOption(data: any[]): EChartsOption {
-  if (!data?.length) {
-    data = generateMockDividend()
-  }
   const grouped: Record<string, number> = {}
   for (const d of data) {
     const year = String(d.year || d.dataTime?.slice(0, 4))
