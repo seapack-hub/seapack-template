@@ -20,7 +20,7 @@
 
     <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
       <div class="table-toolbar">
-        <el-button type="success" icon="plus" @click="openFormDialog()">新增</el-button>
+        <el-button v-permission="'systemManagement:permission:role:add'" type="success" icon="plus" @click="openFormDialog()">新增</el-button>
       </div>
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
         <SpTable class="flex-1" :loading="loading" :columns="columns" :data="tableData" :show-index="true">

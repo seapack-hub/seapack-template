@@ -18,10 +18,10 @@ export function createUserColumns(handlers: UserColumnHandlers) {
     {
       columnType: 'operate', label: '操作', width: '230px', fixed: 'right',
       buttons: [
-        { type: 'primary', label: '分配角色', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onAssignRole(row) },
-        { type: 'primary', label: '重置密码', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onResetPwd(row) },
-        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
-        { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该用户吗？' }, click: ({ row }: any) => handlers.onDelete(row) },
+        { type: 'primary', label: '分配角色', size: 'small', renderType: 'link', buttonPermission: 'systemManagement:baseInfo:user:assignRoles', click: ({ row }: any) => handlers.onAssignRole(row) },
+        { type: 'primary', label: '重置密码', size: 'small', renderType: 'link',buttonPermission: 'systemManagement:baseInfo:user:resetPassword',  click: ({ row }: any) => handlers.onResetPwd(row) },
+        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', buttonPermission: 'systemManagement:baseInfo:user:edit', click: ({ row }: any) => handlers.onEdit(row) },
+        { type: 'danger', label: '删除', size: 'small', renderType: 'link', buttonPermission: 'systemManagement:baseInfo:user:delete', popconFirm: { title: '确认删除该用户吗？' }, click: ({ row }: any) => handlers.onDelete(row) },
       ],
     },
   ]

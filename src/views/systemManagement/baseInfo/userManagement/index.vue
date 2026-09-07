@@ -33,11 +33,11 @@
           <!-- 工具栏 -->
           <div class="table-toolbar">
             <div>
-              <el-button type="success" icon="plus" @click="openFormDialog()">新增</el-button>
-              <el-button type="danger" icon="delete" :disabled="selectIds.length === 0" @click="handleBatchDelete">删除</el-button>
+              <el-button v-permission="'systemManagement:baseInfo:user:add'" type="success" icon="plus" @click="openFormDialog()">新增</el-button>
+              <el-button v-permission="'systemManagement:baseInfo:user:batchDelete'" type="danger" icon="delete" :disabled="selectIds.length === 0" @click="handleBatchDelete">批量删除</el-button>
             </div>
             <div>
-              <el-button icon="download" @click="handleExport">导出</el-button>
+              <el-button v-permission="'systemManagement:baseInfo:user:export'" icon="download" @click="handleExport">导出</el-button>
             </div>
           </div>
 

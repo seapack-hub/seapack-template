@@ -17,8 +17,23 @@ export function createRoleColumns(handlers: RoleColumnHandlers) {
       columnType: 'operate', label: '操作', width: '220px', fixed: 'right',
       buttons: [
         { type: 'primary', label: '分配权限', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onAssignPerm(row) },
-        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
-        { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该角色吗？' }, click: ({ row }: any) => handlers.onDelete(row) },
+        {
+          type: 'primary',
+          label: '编辑',
+          size: 'small',
+          renderType: 'link',
+          buttonPermission: 'systemManagement:permission:role:edit',
+          click: ({ row }: any) => handlers.onEdit(row)
+        },
+        {
+          type: 'danger',
+          label: '删除',
+          size: 'small',
+          renderType: 'link',
+          buttonPermission: 'systemManagement:permission:role:delete',
+          popconFirm: { title: '确认删除该角色吗？' },
+          click: ({ row }: any) => handlers.onDelete(row)
+        },
       ],
     },
   ]

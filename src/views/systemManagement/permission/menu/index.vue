@@ -38,7 +38,7 @@
         </div>
         <!-- 底部新增按钮 -->
         <div class="px-10px py-10px border-t border-[var(--el-border-color-lighter)]">
-          <el-button type="success" class="w-100%" icon="plus" @click="openAddRoot()">新增顶级目录</el-button>
+          <el-button v-permission="'systemManagement:permission:menu:addContents'" type="success" class="w-100%" icon="plus" @click="openAddRoot()">新增顶级目录</el-button>
         </div>
       </div>
 
@@ -67,8 +67,8 @@
                   </template>
                 </el-popconfirm>
               </template>
-              <el-button v-if="selectedNode" type="primary" icon="edit" size="small" :disabled="selectedIds.length > 0" @click="openEdit(selectedNode)">编辑当前</el-button>
-              <el-button v-if="selectedNode && selectedNode.type !== 3" type="success" icon="plus" size="small" :disabled="selectedIds.length > 0" @click="openAddChild()">新增子项</el-button>
+              <el-button v-if="selectedNode" v-permission="'systemManagement:permission:menu:edit'" type="primary" icon="edit" size="small" :disabled="selectedIds.length > 0" @click="openEdit(selectedNode)">编辑当前</el-button>
+              <el-button v-if="selectedNode && selectedNode.type !== 3" v-permission="'systemManagement:permission:menu:add'" type="success" icon="plus" size="small" :disabled="selectedIds.length > 0" @click="openAddChild()">新增子项</el-button>
             </div>
           </div>
 
@@ -92,7 +92,7 @@
               :header-cell-style="{ background: '#f8fafd', fontWeight: '600', fontSize: '13px' }"
               @selection-change="handleSelectionChange"
             >
-              <el-table-column type="selection" width="45" />
+              <el-table-column v-permission="'systemManagement:permission:menu:batchDelete'" type="selection" width="45" />
               <el-table-column label="权限名称" min-width="180">
                 <template #default="{ row }">
                   <span class="inline-flex items-center gap-6px cursor-pointer" @click="enterNode(row)">
@@ -118,11 +118,11 @@
               </el-table-column>
               <el-table-column label="操作" width="170" fixed="right" align="center">
                 <template #default="{ row }">
-                  <el-button v-if="row.type !== 3" type="primary" link size="small" @click="openAddChild(row)">新增子项</el-button>
-                  <el-button type="primary" link size="small" @click="openEdit(row)">编辑</el-button>
+                  <el-button v-if="row.type !== 3" v-permission="'systemManagement:permission:menu:add'" type="primary" link size="small" @click="openAddChild(row)">新增子项</el-button>
+                  <el-button type="primary" link size="small" v-permission="'systemManagement:permission:menu:edit'" @click="openEdit(row)">编辑</el-button>
                   <el-popconfirm title="确认删除该权限（及子项）吗？" @confirm="handleDelete(row)">
                     <template #reference>
-                      <el-button type="danger" link size="small">删除</el-button>
+                      <el-button type="danger" v-permission="'systemManagement:permission:menu:delete'" link size="small">删除</el-button>
                     </template>
                   </el-popconfirm>
                 </template>

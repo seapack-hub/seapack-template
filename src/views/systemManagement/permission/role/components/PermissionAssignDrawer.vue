@@ -8,6 +8,7 @@
         </span>
         <el-button
           type="primary"
+          v-permission="'systemManagement:permission:role:permissionEdit'"
           :icon="Edit"
           :disabled="isEditing"
           @click="isEditing = true"

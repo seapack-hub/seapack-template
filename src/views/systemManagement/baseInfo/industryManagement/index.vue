@@ -29,7 +29,7 @@
       <!-- 工具栏 -->
       <div class="table-search">
         <div>
-          <el-button type="success" icon="plus" @click="openDialog()">新增</el-button>
+          <el-button v-permission="'systemManagement:baseInfo:industryManagement:add'" type="success" icon="plus" @click="openDialog()">新增</el-button>
         </div>
       </div>
 
@@ -89,14 +89,16 @@ const columns = ref([
         type: 'primary', 
         label: '编辑', 
         size: 'small', 
-        renderType: 'link', 
+        renderType: 'link',
+        buttonPermission: 'systemManagement:baseInfo:industryManagement:edit',
         click: ({ row }: any) => openDialog(row) 
       },
       { 
         type: 'danger', 
         label: '删除', 
         size: 'small', 
-        renderType: 'link', 
+        renderType: 'link',
+        buttonPermission: 'systemManagement:baseInfo:industryManagement:delete',
         popconFirm: { title: '确认删除该行业吗？' }, 
         click: ({ row }: any) => handleDelete(row) 
       },

@@ -18,8 +18,7 @@
     <el-card class="el-card-main flex-1 flex flex-col gap-10 overflow-hidden" shadow="never">
       <div class="table-search">
         <div>
-          <el-button type="success" icon="plus" @click="openDialog()">新增</el-button>
-          <el-button type="danger" icon="delete" :disabled="selectIds.length === 0" @click="handleBatchDelete">删除</el-button>
+          <el-button v-permission="'systemManagement:baseInfo:dictSetting:add'" type="success" icon="plus" @click="openDialog()">新增</el-button>
         </div>
       </div>
 
@@ -56,8 +55,22 @@ const columns = ref([
   {
     columnType: 'operate', label: '操作', width: '130px', fixed: 'right',
     buttons: [
-      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openDialog(row) },
-      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该字典吗？' }, click: ({ row }: any) => handleDelete(row) },
+      {
+        type: 'primary',
+        label: '编辑',
+        size: 'small',
+        renderType: 'link',
+        buttonPermission: 'systemManagement:baseInfo:dictSetting:edit',
+        click: ({ row }: any) => openDialog(row)
+      },
+      {
+        type: 'danger',
+        label: '删除',
+        size: 'small',
+        renderType: 'link',
+        buttonPermission: 'systemManagement:baseInfo:dictSetting:delete',
+        popconFirm: { title: '确认删除该字典吗？' },
+        click: ({ row }: any) => handleDelete(row) },
     ],
   },
 ])
@@ -90,15 +103,6 @@ async function handleDelete(row: any) {
   await DictAPI.delete(row.id)
   ElMessage.success('删除成功')
   handleQuery()
-}
-
-async function handleBatchDelete() {
-  if (selectIds.value.length === 0) return
-  ElMessageBox.confirm('确认删除选中的字典？', '警告', { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }).then(async () => {
-    for (const id of selectIds.value) await DictAPI.delete(id)
-    ElMessage.success('删除成功')
-    handleQuery()
-  }).catch(() => ElMessage.info('已取消删除'))
 }
 
 function handleSelectionChange(selection: any[]) {
