@@ -67,8 +67,8 @@ const { isFocus, handleBlur, handleFocus } = useFocus();
 const showCaptcha = ref(false);
 /** 登录表单数据 */
 const loginFormData: LoginRequestData = reactive({
-  username: 'admin',
-  password: 'seapack',
+  username: 'guest',
+  password: '123456'
 });
 /** 登录表单元素的引用 */
 const loginFormRef = ref<FormInstance | null>(null);
