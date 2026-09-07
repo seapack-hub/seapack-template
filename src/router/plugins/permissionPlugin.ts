@@ -57,10 +57,7 @@ export const permissionPlugin: RouterPlugin = {
       }
     }
 
-    // 3. admin 跳过所有权限检查
-    if (userStore.username === 'admin') return undefined
-
-    // 4. 权限标识检查：从后端菜单树（getMenus）提取 permKey 作为数据源
+    // 3. 权限标识检查：从后端菜单树（getMenus）提取 permKey 作为数据源
     // 空字符串 permKey 视为无权限要求，公开访问
     const permKey = getValidPermKey(to.meta as Record<string, unknown>)
     if (permKey) {

@@ -51,7 +51,6 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const accessibleModules = computed(() => {
-  if (userStore.username === 'admin') return MODULE_DEFS
   return MODULE_DEFS.filter(m => !m.permKey || userStore.menuPermKeys.includes(m.permKey))
 })
 

@@ -14,8 +14,8 @@ export function createDeptColumns(handlers: DeptColumnHandlers) {
     {
       columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
       buttons: [
-        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
-        { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该部门及其子部门吗？' }, click: ({ row }: any) => handlers.onDelete(row) },
+        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', buttonPermission: 'systemManagement:baseInfo:dept:edit', click: ({ row }: any) => handlers.onEdit(row) },
+        { type: 'danger', label: '删除', size: 'small', renderType: 'link', buttonPermission: 'systemManagement:baseInfo:dept:delete', popconFirm: { title: '确认删除该部门及其子部门吗？' }, click: ({ row }: any) => handlers.onDelete(row) },
       ],
     },
   ]

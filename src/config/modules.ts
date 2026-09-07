@@ -19,8 +19,8 @@ export const MODULE_DEFS: ModuleDef[] = [
   { key: 'macroData', path: '/macroData/workbench', title: '宏观数据', icon: 'macro-data', color: '#FF9800', description: '货币供应、社会融资、物价指数、外汇储备等宏观经济指标分析', permKey: 'macroData' },
   { key: 'gis2d', path: '/gis2d/baseMap', title: '二维地图', icon: 'two-d-layers', color: '#26A69A', description: 'OpenLayers 二维地图展示与交互', permKey: 'gis2d' },
   { key: 'gis3d', path: '/gis3d/baseCesium', title: '三维GIS', icon: 'three-d-layers', color: '#7E57C2', description: 'Cesium 三维GIS地图与特效', permKey: 'gis3d' },
-  { key: 'bigScreen', path: '/bigScreen', title: '智慧运营', icon: 'big-screen', color: '#FF6D00', description: '智慧运营数据可视化大屏', permKey: 'bigScreen' },
-  { key: 'universalTemplate', path: '/universalTemplate', title: '通用大屏', icon: 'universal-template', color: '#F06292', description: '通用大屏模板（Cesium 三维）', permKey: 'universalTemplate' },
+  { key: 'bigScreen', path: '/bigScreen', title: '智慧运营', icon: 'big-screen', color: '#FF6D00', description: '智慧运营数据可视化大屏'},
+  { key: 'universalTemplate', path: '/universalTemplate', title: '通用大屏', icon: 'universal-template', color: '#F06292', description: '通用大屏模板（Cesium 三维）' },
 ]
 
 // 需要全量加载的模块路由 name，用于 startup 注册和 logout 清理

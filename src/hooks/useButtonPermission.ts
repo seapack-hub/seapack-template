@@ -2,12 +2,12 @@
  * useButtonPermission —— 操作列按钮级权限判断
  *
  * 同时兼容两套机制：
- *   1. 新系统：userStore.perms（来自后端 /auth/user-info 的扁平权限标识符集合）
+ *   1. 新系统：userStore.buttonPerms（来自后端 /auth/buttons 的完整路径权限标识符集合）
  *   2. 旧系统：route.meta.buttonList（静态路由元数据中的按钮级配置）
  *
  * buttonPermission 参数支持两种格式：
- *   - 字符串：'user:add'
- *   - 对象：{ permission: 'user:add', type: 'row', name: '新增' }
+ *   - 字符串：'sys:user:add'（完整路径格式）
+ *   - 对象：{ permission: 'sys:user:add', type: 'row', name: '新增' }
  */
 
 import { useRoute } from 'vue-router';
@@ -29,11 +29,11 @@ export default () => {
     const permKey = getPermKey(buttonPermission);
     if (!permKey) return true;
 
-    /* ---- 新系统：从 userStore.perms 查找 ---- */
-    const { perms } = userStore;
-    if (perms.length > 0) {
-      if (perms.includes('*:*:*') || perms.includes('*')) return true;
-      return perms.includes(permKey);
+    /* ---- 新系统：从 userStore.buttonPerms 查找（完整路径格式） ---- */
+    const { buttonPerms } = userStore;
+    if (buttonPerms.length > 0) {
+      if (buttonPerms.includes('*:*:*') || buttonPerms.includes('*')) return true;
+      return buttonPerms.includes(permKey);
     }
 
     /* ---- 旧系统：从 route.meta.buttonList 查找 ---- */

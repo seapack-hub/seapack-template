@@ -1,5 +1,5 @@
 <template>
-  <el-drawer v-model="visible" :title="`分配权限 - ${roleName}`" size="420px" @closed="onClosed">
+  <el-drawer v-model="visible" :title="`分配权限 - ${roleName}`" size="600px" @closed="onClosed">
     <div class="h-full flex flex-col">
       <div class="flex-1 overflow-auto">
         <el-tree
@@ -8,7 +8,6 @@
           :props="{ label: 'name', children: 'children' }"
           node-key="id"
           show-checkbox
-          check-strictly
           default-expand-all
           highlight-current
         />

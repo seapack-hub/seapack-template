@@ -7,6 +7,7 @@ import CacheKey from '@/constants/cache-key';
 interface AuthCache {
   roles: string[]
   perms: string[]
+  buttonPerms: string[]
   menuTree: MenuTree[]
 }
 
@@ -28,8 +29,10 @@ export const useUserStore = defineStore('user', {
     // ===== 权限相关 =====
     // 当前用户的角色编码列表
     roles: [] as string[],
-    // 当前用户的权限标识符集合，如 ['user:add', 'role:delete']
+    // 当前用户的菜单权限标识符集合（仅目录和菜单），如 ['system', 'system:user']
     perms: [] as string[],
+    // 当前用户的按钮权限标识符集合（完整路径），如 ['sys:user:add', 'sys:dept:delete']
+    buttonPerms: [] as string[],
     // 后端返回的已过滤菜单树（getMenus 结果），用作权限守卫的真实数据源
     menuTree: [] as MenuTree[],
     // 标记当前会话是否已完成权限加载（避免重复请求）
@@ -144,6 +147,7 @@ export const useUserStore = defineStore('user', {
     clearAuth() {
       this.roles = [];
       this.perms = [];
+      this.buttonPerms = [];
       this.menuTree = [];
       this.authLoaded = false;
     },
@@ -157,6 +161,7 @@ export const useUserStore = defineStore('user', {
         if (!cache.roles || !cache.perms || !cache.menuTree) return false
         this.roles = cache.roles
         this.perms = cache.perms
+        this.buttonPerms = cache.buttonPerms || []
         this.menuTree = cache.menuTree
         this.authLoaded = true
         return true
@@ -172,6 +177,7 @@ export const useUserStore = defineStore('user', {
         const cache: AuthCache = {
           roles: this.roles,
           perms: this.perms,
+          buttonPerms: this.buttonPerms,
           menuTree: this.menuTree,
         }
         sessionStorage.setItem(CacheKey.AUTH_CACHE, JSON.stringify(cache))
@@ -213,16 +219,20 @@ export const useUserStore = defineStore('user', {
 
     //从后端获取用户角色权限
     async fetchAuthPerms(userId: string) {
-      //获取用户权限数据
+      //获取用户权限数据（仅目录和菜单的 permKey）
       const authInfo = await AuthAPI.getUserInfo(userId);
       //赋值
       this.roles = authInfo.roles;
       this.perms = authInfo.perms;
 
+      //获取用户按钮权限（完整路径，如 sys:dept:add）
+      const buttonPerms = await AuthAPI.getButtons();
+      this.buttonPerms = buttonPerms;
+
       //获取用户权限菜单（已过滤的菜单树）
       const menu = await AuthAPI.getMenus(userId);
       this.menuTree = menu;
-
+      
       // 缓存到 sessionStorage，下次页面刷新直接恢复
       this.authLoaded = true
       this.saveAuthToCache()

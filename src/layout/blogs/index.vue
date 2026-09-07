@@ -61,7 +61,6 @@ const adminNavItems = computed(() => {
   const visibleRoutes = filterVisibleRoutes(
     adminRoute.children,
     userStore.menuPermKeys,
-    userStore.username === 'admin',
   )
   return visibleRoutes.map(r => ({
     name: r.name as string,

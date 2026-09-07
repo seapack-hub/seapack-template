@@ -6,6 +6,20 @@
   "description": "sea-pack-template",
   "glyphs": [
     {
+      "icon_id": "44108248",
+      "name": "button",
+      "font_class": "button",
+      "unicode": "e8df",
+      "unicode_decimal": 59615
+    },
+    {
+      "icon_id": "14656441",
+      "name": "contents",
+      "font_class": "contents",
+      "unicode": "e73e",
+      "unicode_decimal": 59198
+    },
+    {
       "icon_id": "1081796",
       "name": "dict",
       "font_class": "dict",

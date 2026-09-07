@@ -2,7 +2,7 @@
  * useRoutePermission —— 路由页面级权限校验组合式函数
  *
  * 基于 userStore.menuPermKeys（后端返回的已过滤菜单权限标识）判断当前用户
- * 是否有权访问某个路由页面。admin 用户默认放行，无 permKey 的路由视为公开。
+ * 是否有权访问某个路由页面。无 permKey 的路由视为公开。
  *
  * 适用于：
  *   - 工作台/仪表盘中的快捷入口点击前做权限拦截
@@ -22,9 +22,6 @@ export function useRoutePermission() {
    * @returns true 表示有权限，false 表示无权限
    */
   function hasRoutePermission(routeName: string): boolean {
-    // admin 拥有全量页面访问权限
-    if (userStore.username === 'admin') return true
-
     const resolved = router.resolve({ name: routeName })
     const permKey = String(resolved.meta?.permKey ?? '').trim()
 

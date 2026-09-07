@@ -24,7 +24,7 @@
       <!-- 工具栏 -->
       <div class="table-search">
         <div>
-          <el-button type="success" icon="plus" @click="openFormDialog()">新增部门</el-button>
+          <el-button v-permission="'systemManagement:baseInfo:dept:add'" type="success" icon="plus" @click="openFormDialog()">新增部门</el-button>
         </div>
       </div>
 

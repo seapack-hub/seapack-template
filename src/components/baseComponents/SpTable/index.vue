@@ -123,10 +123,9 @@
 import { ElTable } from 'element-plus'
 import { CSSProperties, PropType } from 'vue';
 import { columnsType } from './type';
-import { usePermission } from '@/hooks/usePermission'
+import useButtonPermission from '@/hooks/useButtonPermission'
 
-const { hasPermission } = usePermission()
-//刷新列表
+const { buttonHasPermission } = useButtonPermission()
 const refreshTable = ref(true);
 // 获取 el-table 实体
 const SpTableRef = ref<InstanceType<typeof ElTable>>()
@@ -182,10 +181,16 @@ const props = defineProps({
     default:true
   }
 });
-// 操作列显隐判断：如果列定义了 permission 字段，则校验当前用户是否有权看到整列
+// 操作列显隐判断：遍历 buttons，只要有一个按钮有权限就显示整列
 const showOperateButton = (item: any) => {
-  if (item.permission) return hasPermission(item.permission)
-  return true
+  const buttons = item.buttons
+  if (!buttons || buttons.length === 0) return false
+
+  // 只要有任意一个按钮的 buttonPermission 通过，或未配置 buttonPermission，就显示整列
+  return buttons.some((btn: any) => {
+    if (!btn.buttonPermission) return true  // 没配权限的按钮始终可见
+    return buttonHasPermission(btn.buttonPermission)
+  })
 };
 
 //在props.columns 变化时，将refreshTable从true变为false，马上改变refreshTable的值为true，从而重新渲染列表
