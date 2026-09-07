@@ -120,7 +120,6 @@
 </template>
 
 <script setup lang="ts">
-import { ElTable } from 'element-plus'
 import { CSSProperties, PropType } from 'vue';
 import { columnsType } from './type';
 import useButtonPermission from '@/hooks/useButtonPermission'
@@ -128,7 +127,7 @@ import useButtonPermission from '@/hooks/useButtonPermission'
 const { buttonHasPermission } = useButtonPermission()
 const refreshTable = ref(true);
 // 获取 el-table 实体
-const SpTableRef = ref<InstanceType<typeof ElTable>>()
+const SpTableRef = ref<Record<string, any>>()
 //传入参数
 const props = defineProps({
   //加载
