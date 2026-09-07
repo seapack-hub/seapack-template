@@ -14,6 +14,7 @@ const blogsManagementRoute: Array<RouterObject> = [
       description: '个人博客',
       icon: 'blog',
       permKey: 'blogsManagement',
+      showAiAssistant: false
     },
     children: [
       // 博客前台

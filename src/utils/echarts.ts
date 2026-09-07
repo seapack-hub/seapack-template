@@ -16,6 +16,8 @@ import {
 } from 'echarts/charts'
 import {
   // 项目当前用到的基础组件
+  DataZoomComponent,
+  DataZoomInsideComponent,
   GeoComponent,
   GridComponent,
   LegendComponent,
@@ -26,6 +28,8 @@ import { CanvasRenderer } from 'echarts/renderers'
 
 // 只注册实际使用到的模块，缩小构建产物体积
 echarts.use([
+  DataZoomComponent,
+  DataZoomInsideComponent,
   GridComponent,
   TooltipComponent,
   LegendComponent,

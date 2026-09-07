@@ -9,13 +9,17 @@ export const routerRecordRow: RouteRecordRaw[] = [
     path: '/login',
     component: () => import('@/views/login/index.vue'),
     meta: {
-      hidden: true
+      hidden: true,
+      showAiAssistant: false
     }
   },
   //主页-工作台
   {
     path: '/menuTab',
     component: () => import('@/views/common/workbench/index.vue'),
+    meta: {
+      showAiAssistant: false
+    }
   },
   {
     path: '/errorPage',
@@ -24,7 +28,8 @@ export const routerRecordRow: RouteRecordRaw[] = [
     redirect: { name: '401' },
     meta: {
       title: '错误界面',
-      icon: 'security'
+      icon: 'security',
+      showAiAssistant: false
     },
     children: [
       {

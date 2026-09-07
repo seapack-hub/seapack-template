@@ -74,8 +74,8 @@ function valueAxis(name?: string) {
  * - Tooltip 以列表展示8个品种
  */
 export function useTrendOption(trend: ShiborTrend | null): EChartsOption {
-  if (!trend) return {}
-  const { dates } = trend
+  if (!trend?.dates?.length) return {}
+  const { dates = [] } = trend
 
   return {
     tooltip: {
@@ -141,8 +141,8 @@ export function useTrendOption(trend: ShiborTrend | null): EChartsOption {
  * X轴: 8个期限品种，Y轴: 最新利率
  */
 export function useCurveOption(curve: ShiborCurve | null): EChartsOption {
-  if (!curve) return {}
-  const { labels, values } = curve
+  if (!curve?.values?.length) return {}
+  const { labels = [], values = [] } = curve
 
   return {
     tooltip: {
