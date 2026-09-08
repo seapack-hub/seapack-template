@@ -1,6 +1,7 @@
 import type { RouterPlugin } from './types'
 import { useUserStore } from '@/store/modules/user'
 import { useSceneBindingsStore } from '@/store/modules/sceneBindings'
+import { MODULE_DEFS, MODULE_ROUTE_NAMES } from '@/config/modules'
 
 // 白名单页面：不需要登录即可访问
 const WHITE_LIST = ['/login', '/blogs', '/errorPage/401', '/errorPage/403', '/errorPage/404', '/errorPage/500']
@@ -62,6 +63,22 @@ export const permissionPlugin: RouterPlugin = {
     const permKey = getValidPermKey(to.meta as Record<string, unknown>)
     if (permKey) {
       if (!userStore.menuPermKeys.includes(permKey)) {
+        // 4. 默认路由无权限时：在同模块内找到第一个有权限的子路由并重定向
+        const moduleName = to.matched.find(
+          r => r.name && MODULE_ROUTE_NAMES.includes(r.name as string)
+        )?.name as string | undefined
+
+        if (moduleName) {
+          const modDef = MODULE_DEFS.find(m => m.key === moduleName)
+          if (modDef?.entryRoutes?.length) {
+            const fallback = modDef.entryRoutes.find(
+              name => userStore.menuPermKeys.includes(name)
+            )
+            if (fallback) {
+              return { name: fallback }
+            }
+          }
+        }
         return '/errorPage/403'
       }
     }

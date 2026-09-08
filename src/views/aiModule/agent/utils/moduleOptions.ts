@@ -10,6 +10,7 @@ export const MODEL_OPTIONS = [
   { label: 'GPT-4o Mini', value: 'gpt-4o-mini' },
   { label: '通义千问', value: 'qwen-plus' },
   { label: 'GLM-4', value: 'glm-4' },
+  { label: 'Mimo-v2.5', value: 'mimo-v2.5' },
 ]
 
 /** 输出格式选项 */

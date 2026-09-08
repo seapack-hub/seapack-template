@@ -46,9 +46,11 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/modules/user'
 import { MODULE_DEFS } from '@/config/modules'
+import { useRoutePermission } from '@/hooks/useRoutePermission'
 
 const router = useRouter()
 const userStore = useUserStore()
+const { navigateWithPermission, hasRoutePermission } = useRoutePermission()
 
 const accessibleModules = computed(() => {
   return MODULE_DEFS.filter(m => !m.permKey || userStore.menuPermKeys.includes(m.permKey))
@@ -59,9 +61,23 @@ const TAB_MODULES = ['bigScreen', 'universalTemplate']
 function enterModule(mod: typeof MODULE_DEFS[number]) {
   if (TAB_MODULES.includes(mod.key)) {
     window.open(mod.path, '_blank')
-  } else {
-    router.push({ path: mod.path })
+    return
   }
+
+  // 有 entryRoutes 配置时，从列表中找第一个用户有权限的路由跳转
+  if (mod.entryRoutes?.length) {
+    const target = mod.entryRoutes.find(name => hasRoutePermission(name))
+    if (target) {
+      navigateWithPermission(target)
+      return
+    }
+    // entryRoutes 里全没权限，跳 403
+    router.push('/errorPage/403')
+    return
+  }
+
+  // 无 entryRoutes 的模块（如大屏），保持原有逻辑
+  router.push({ path: mod.path })
 }
 </script>
 
