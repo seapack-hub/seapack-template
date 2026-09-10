@@ -15,7 +15,7 @@
     <div class="flex-1 overflow-hidden flex flex-col">
       <el-carousel v-if="articleChunks.length > 0" height="100%" indicator-position="outside" arrow="always" class="flex-1">
         <el-carousel-item v-for="chunk in articleChunks" :key="chunk.key">
-          <div class="grid grid-cols-4 gap-16px h-full p-10 box-border content-start">
+          <div class="grid grid-cols-4 gap-16px p-10 box-border">
             <div
               v-for="item in chunk.items" :key="item.id"
               class="article-card bg-white cursor-pointer flex flex-col overflow-hidden"
@@ -24,13 +24,13 @@
               <div class="h-50px flex items-center justify-center flex-shrink-0" :style="{ background: item.coverBg }">
                 <div class="m-0 text-center text-16px font-600 color-white line-clamp-1 px-8px">{{ item.title }}</div>
               </div>
-              <div class="p-14px flex-1 flex flex-col min-h-0">
-                <div class="flex items-center gap-6px mb-6px">
+              <div class="p-14px flex flex-col min-h-0 overflow-hidden">
+                <div class="flex items-center gap-6px mb-6px flex-shrink-0">
                   <el-tag :type="item.tagType as any" size="small" effect="plain">{{ item.tag }}</el-tag>
                   <span class="text-12px color-#c0c4cc">{{ item.date }}</span>
                 </div>
-                <p class="m-0 h-80px text-13px color-#909399 line-clamp-4">{{ item.desc }}</p>
-                <div class="flex justify-between items-center flex-shrink-0 mt-8px">
+                <p class="m-0 h-90px overflow-y-auto text-13px color-#909399">{{ item.desc }}</p>
+                <div class="flex justify-between items-center flex-shrink-0 mt-8px pt-8px border-t border-t-solid border-t-#f0f0f0">
                   <span class="text-12px color-#c0c4cc flex items-center gap-3px"><el-icon :size="12"><View /></el-icon> {{ item.views }}</span>
                   <span class="text-12px color-#409eff flex items-center gap-3px font-500">阅读全文 <el-icon :size="12"><ArrowRight /></el-icon></span>
                 </div>
@@ -120,6 +120,7 @@ onMounted(async () => {
   border-radius: 10px;
   border: 1px solid #eee;
   box-sizing: border-box;
+  min-height: 220px;
   transition: all 0.25s ease;
   &:hover {
     transform: translateY(-4px);
@@ -134,7 +135,25 @@ onMounted(async () => {
   height: calc(100% - 32px) !important; 
   padding: 4px;
 }
-:deep(.el-carousel__item) { 
-  border-radius: 0; 
+:deep(.el-carousel__item) {
+  border-radius: 0;
+}
+/* 摘要区域滚动条美化 */
+.article-card :deep(.overflow-y-auto) {
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d4 transparent;
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #d4d4d4;
+    border-radius: 4px;
+    &:hover {
+      background: #b0b0b0;
+    }
+  }
 }
 </style>
