@@ -19,10 +19,7 @@
 
       <el-form-item label="标签" prop="tag">
         <el-select v-model="form.tag" placeholder="选择标签" style="width: 100%" clearable>
-          <el-option label="Vue3" value="Vue3" />
-          <el-option label="Java" value="Java" />
-          <el-option label="GIS" value="GIS" />
-          <el-option label="其他" value="其他" />
+          <el-option v-for="t in tags" :key="t.dictCode" :label="t.dictName" :value="t.dictCode" />
         </el-select>
       </el-form-item>
 
@@ -85,10 +82,12 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import type { FormInstance } from 'element-plus'
 import type { BlogCategory } from '@/api/blogs/category'
 import type { ArticleForm } from '../admin/ArticleEdit.vue'
+import type { DictItem } from '../utils/type'
+import { useDictionaryStore } from '@/store/modules/dictionary'
 
 const props = defineProps<{
   visible: boolean
@@ -102,10 +101,16 @@ const emit = defineEmits<{
 
 const formRef = ref<FormInstance>()
 const form = inject('articleForm') as ArticleForm
+const dictStore = useDictionaryStore()
+const tags = ref<DictItem[]>([])
 
 const drawerModel = computed({
   get: () => props.visible,
   set: (val: boolean) => emit('update:visible', val),
+})
+
+onMounted(async () => {
+  tags.value = await dictStore.getDictionaryList('blog_tag')
 })
 
 defineExpose({ formRef })
