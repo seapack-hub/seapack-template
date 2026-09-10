@@ -1,11 +1,14 @@
 <template>
   <div class="blog-renderer flex-1 min-w-0 overflow-y-auto h-full pr-1">
-    <p
+    <div
       v-if="summary"
-      class="text-15px color-[#606266] leading-[1.8] p-[18px_22px] bg-white rounded-10px border-l-4 border-l-[#409eff] m-0_0_22px_0 shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
+      class="summary-card m-b-22px rounded-10px p-[18px_22px] border border-solid border-[#d0d5f0] border-l-4 border-l-[#667eea] bg-[#eef0fb] shadow-[0_2px_8px_rgba(102,126,234,0.08)]"
     >
-      {{ summary }}
-    </p>
+      <div class="flex items-center gap-6px m-b-10px">
+        <span class="summary-label inline-block px-8px py-2px rounded-4px text-12px font-500 color-white bg-[#667eea]">摘要</span>
+      </div>
+      <p class="text-14px color-[#4a5568] leading-[1.8] m-0">{{ summary }}</p>
+    </div>
     <div
       ref="contentRef"
       class="content bg-white rounded-10px p-[20px_24px] text-15px leading-[1.9] color-[#303133] shadow-[0_1px_4px_rgba(0,0,0,0.04)]"

@@ -21,16 +21,15 @@
               class="article-card bg-white cursor-pointer flex flex-col overflow-hidden"
               @click="openDetail(item.id)"
             >
-              <div class="h-100px flex items-center justify-center flex-shrink-0" :style="{ background: item.coverBg }">
-                <span class="text-36px">{{ item.icon }}</span>
+              <div class="h-50px flex items-center justify-center flex-shrink-0" :style="{ background: item.coverBg }">
+                <div class="m-0 text-center text-16px font-600 color-white line-clamp-1 px-8px">{{ item.title }}</div>
               </div>
-              <div class="p-12px flex-1 flex flex-col min-h-0">
+              <div class="p-14px flex-1 flex flex-col min-h-0">
                 <div class="flex items-center gap-6px mb-6px">
                   <el-tag :type="item.tagType as any" size="small" effect="plain">{{ item.tag }}</el-tag>
                   <span class="text-12px color-#c0c4cc">{{ item.date }}</span>
                 </div>
-                <h3 class="m-0 mb-4px text-15px font-600 color-#1a1a2e line-clamp-1">{{ item.title }}</h3>
-                <p class="m-0 text-13px color-#909399 flex-1 line-clamp-2 lh-1.5">{{ item.desc }}</p>
+                <p class="m-0 h-80px text-13px color-#909399 line-clamp-4">{{ item.desc }}</p>
                 <div class="flex justify-between items-center flex-shrink-0 mt-8px">
                   <span class="text-12px color-#c0c4cc flex items-center gap-3px"><el-icon :size="12"><View /></el-icon> {{ item.views }}</span>
                   <span class="text-12px color-#409eff flex items-center gap-3px font-500">阅读全文 <el-icon :size="12"><ArrowRight /></el-icon></span>

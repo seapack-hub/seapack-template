@@ -145,6 +145,7 @@ async function save() {
     return
   }
   form.contentMd = editorCompRef.value?.getContentMd?.() || ''
+  form.contentHtml = editorCompRef.value?.editorRef?.getHtml?.() || form.contentHtml
   saving.value = true
   try {
     if (isEdit.value) {
