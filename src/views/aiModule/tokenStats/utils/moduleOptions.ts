@@ -16,6 +16,7 @@ export const MODEL_COST_MAP: Record<string, { input: number; output: number }> =
   'gpt-4o-mini': { input: 0.0015, output: 0.006 },
   'qwen-plus': { input: 0.004, output: 0.012 },
   'glm-4': { input: 0.1, output: 0.1 },
+  'embedding': { input: 0.0007, output: 0 },
 }
 
 /** 模型颜色映射 */
@@ -26,6 +27,7 @@ export const MODEL_COLOR_MAP: Record<string, string> = {
   'gpt-4o-mini': '#F56C6C',
   'qwen-plus': '#909399',
   'glm-4': '#b37feb',
+  'embedding': '#00b2a9',
 }
 
 /** 备用颜色列表（当模型不在颜色映射中时使用） */

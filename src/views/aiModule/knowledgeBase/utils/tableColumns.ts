@@ -11,26 +11,24 @@ export const KB_LIST_COLUMNS = [
   { prop: 'chunkCount', label: '分片数', minWidth: 80, align: 'center' as const },
   { prop: 'totalTokens', label: 'Token 总量', minWidth: 100, align: 'center' as const },
   { prop: 'createdAt', label: '创建时间', minWidth: 160 },
+  { slotName: 'status' },
 ]
 
-/** 文档列表列 */
+/** 文档列表列（不含操作列，操作列在组件中组装） */
 export const DOCUMENT_LIST_COLUMNS = [
   { prop: 'fileName', label: '文件名', minWidth: 200 },
   { prop: 'fileType', label: '类型', minWidth: 80, align: 'center' as const },
   { prop: 'fileSize', label: '大小', minWidth: 100, align: 'center' as const },
   { prop: 'chunkCount', label: '分片数', minWidth: 80, align: 'center' as const },
   { prop: 'tokenCount', label: 'Token 数', minWidth: 90, align: 'center' as const },
-  { prop: 'parseStatus', label: '解析状态', minWidth: 100, align: 'center' as const },
-  { prop: 'vectorStatus', label: '向量化状态', minWidth: 110, align: 'center' as const },
+  { slotName: 'parseStatus' },
+  { slotName: 'vectorStatus' },
   { prop: 'createdAt', label: '上传时间', minWidth: 160 },
+  { slotName: 'operate' },
 ]
 
 /** 分片列表列 */
 export const CHUNK_LIST_COLUMNS = [
-  { prop: 'chunkIndex', label: '序号', width: 70, align: 'center' as const },
-  { prop: 'content', label: '内容', minWidth: 400, showOverflowTooltip: true },
-  { prop: 'tokenCount', label: 'Token 数', minWidth: 90, align: 'center' as const },
-  { prop: 'sourcePage', label: '页码', minWidth: 70, align: 'center' as const },
-  { prop: 'sourceSection', label: '章节', minWidth: 120 },
+  { slotName: 'content' },
   { prop: 'createdAt', label: '创建时间', minWidth: 160 },
 ]

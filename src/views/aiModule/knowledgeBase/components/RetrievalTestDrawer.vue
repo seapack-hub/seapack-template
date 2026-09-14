@@ -8,51 +8,53 @@
     :title="`检索测试 — ${knowledgeName}`"
     size="700px"
   >
-    <!-- 查询输入 -->
-    <div class="query-section">
-      <el-input
-        v-model="queryText"
-        type="textarea"
-        :rows="3"
-        placeholder="输入查询文本，测试知识库检索效果..."
-        :disabled="searching"
-      />
-      <div class="flex items-center gap-8px mt-8px">
-        <span class="text-12px text-[var(--el-text-color-secondary)]">返回条数</span>
-        <el-input-number v-model="topK" :min="1" :max="20" size="small" style="width: 100px" />
-        <el-button type="primary" :loading="searching" :disabled="!queryText.trim()" @click="handleRetrieve">
-          <el-icon><Search /></el-icon> 检索
-        </el-button>
-      </div>
-    </div>
-
-    <!-- 结果列表 -->
-    <div class="mt-16px">
-      <div v-if="results.length > 0" class="flex items-center justify-between mb-12px">
-        <span class="text-14px font-600">检索结果</span>
-        <el-tag type="info" size="small">共 {{ results.length }} 条</el-tag>
+    <div class="retrieval-drawer">
+      <!-- 查询输入（固定高度） -->
+      <div class="query-section">
+        <el-input
+          v-model="queryText"
+          type="textarea"
+          :rows="3"
+          placeholder="输入查询文本，测试知识库检索效果..."
+          :disabled="searching"
+        />
+        <div class="flex items-center gap-8px mt-8px">
+          <span class="text-12px text-[var(--el-text-color-secondary)]">返回条数</span>
+          <el-input-number v-model="topK" :min="1" :max="20" size="small" style="width: 100px" />
+          <el-button type="primary" :loading="searching" :disabled="!queryText.trim()" @click="handleRetrieve">
+            <el-icon><Search /></el-icon> 检索
+          </el-button>
+        </div>
       </div>
 
-      <div v-if="searching" class="flex justify-center py-40">
-        <el-icon class="is-loading" :size="24"><Loading /></el-icon>
-      </div>
+      <!-- 结果列表（自适应剩余高度，内部滚动） -->
+      <div class="result-section">
+        <div v-if="results.length > 0" class="flex items-center justify-between mb-12px">
+          <span class="text-14px font-600">检索结果</span>
+          <el-tag type="info" size="small">共 {{ results.length }} 条</el-tag>
+        </div>
 
-      <div v-else-if="results.length === 0 && searched" class="py-40">
-        <el-empty description="未找到相关片段" :image-size="80" />
-      </div>
+        <div v-if="searching" class="flex justify-center py-40">
+          <el-icon class="is-loading" :size="24"><Loading /></el-icon>
+        </div>
 
-      <div v-else class="result-list">
-        <div v-for="(item, idx) in results" :key="idx" class="result-item">
-          <div class="result-header">
-            <span class="result-index">#{{ idx + 1 }}</span>
-            <el-tag size="small" :type="getScoreType(item.score)">
-              相似度 {{ (item.score * 100).toFixed(1) }}%
-            </el-tag>
-            <span v-if="item.documentName" class="text-12px text-[var(--el-text-color-secondary)]">
-              {{ item.documentName }}
-            </span>
+        <div v-else-if="results.length === 0 && searched" class="py-40">
+          <el-empty description="未找到相关片段" :image-size="80" />
+        </div>
+
+        <div v-else class="result-list">
+          <div v-for="(item, idx) in results" :key="idx" class="result-item">
+            <div class="result-header">
+              <span class="result-index">#{{ idx + 1 }}</span>
+              <el-tag size="small" :type="getScoreType(item.score)">
+                相似度 {{ (item.score * 100).toFixed(1) }}%
+              </el-tag>
+              <span v-if="item.documentName" class="text-12px text-[var(--el-text-color-secondary)]">
+                {{ item.documentName }}
+              </span>
+            </div>
+            <div class="result-content">{{ item.content }}</div>
           </div>
-          <div class="result-content">{{ item.content }}</div>
         </div>
       </div>
     </div>
@@ -93,7 +95,7 @@ async function handleRetrieve() {
   }
 }
 
-function getScoreType(score: number): string {
+function getScoreType(score: number): 'success' | 'warning' | 'info' {
   if (score >= 0.8) return 'success'
   if (score >= 0.6) return 'warning'
   return 'info'
@@ -101,10 +103,22 @@ function getScoreType(score: number): string {
 </script>
 
 <style scoped>
+.retrieval-drawer {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+}
 .query-section {
+  flex-shrink: 0;
   padding: 16px;
   background: var(--el-fill-color-lighter);
   border-radius: 8px;
+}
+.result-section {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-top: 16px;
 }
 .result-list {
   display: flex;

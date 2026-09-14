@@ -10,7 +10,7 @@
     @opened="onOpened"
   >
     <div class="flex items-center justify-between mb-12px">
-      <span class="text-13px text-[var(--el-text-color-secondary)]">
+      <span class="text-16px text-[var(--el-text-color-secondary)]">
         共 {{ chunkTotal }} 个分片
       </span>
       <el-button text type="primary" size="small" @click="fetchChunks">
@@ -24,6 +24,7 @@
       :columns="chunkColumns"
       :show-index="true"
       size="small"
+      class="chunk-table"
     >
       <template #content>
         <el-table-column label="内容" prop="content" min-width="400" slot-name="content">
@@ -82,6 +83,9 @@ async function fetchChunks() {
 </script>
 
 <style scoped>
+.chunk-table {
+  height: calc(100vh - 200px);
+}
 .chunk-content {
   font-size: 12px;
   line-height: 1.6;
