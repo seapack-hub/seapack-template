@@ -1,21 +1,27 @@
 <template>
   <div class="ai-layout">
-    <div class="panel panel-session">
+    <div class="panel panel-left">
       <SessionSidebar />
-    </div>
-    <div class="panel panel-knowledge">
-      <KnowledgeBase />
+      <div class="left-divider" />
+      <KnowledgeBaseList @select="onKnowledgeSelect" />
     </div>
     <div class="panel panel-chat">
-      <ChatInterface />
+      <ChatInterface :selected-knowledge-id="selectedKnowledgeId" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import SessionSidebar from './components/SessionSidebar.vue';
-import KnowledgeBase from './components/KnowledgeBase.vue';
+import KnowledgeBaseList from './components/KnowledgeBaseList.vue';
 import ChatInterface from './components/ChatInterface.vue';
+
+const selectedKnowledgeId = ref<number | null>(null);
+
+function onKnowledgeSelect(id: number | null) {
+  selectedKnowledgeId.value = id;
+}
 </script>
 
 <style scoped lang="scss">
@@ -32,16 +38,18 @@ import ChatInterface from './components/ChatInterface.vue';
   background: white;
 }
 
-.panel-session {
-  width: 260px;
+.panel-left {
+  width: 280px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
   border-right: 1px solid #e8e8e8;
 }
 
-.panel-knowledge {
-  width: 320px;
+.left-divider {
+  height: 1px;
+  background: #e8e8e8;
   flex-shrink: 0;
-  border-right: 1px solid #e8e8e8;
 }
 
 .panel-chat {

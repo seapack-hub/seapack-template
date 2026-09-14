@@ -135,6 +135,13 @@ export function useSpeechRecognition(options: SpeechRecognitionOptions = {}): Us
       errorMessage.value = msg;
       status.value = 'error';
       onError?.(msg);
+      // 错误状态 3 秒后自动重置，避免提示卡住
+      setTimeout(() => {
+        if (status.value === 'error') {
+          status.value = 'idle';
+          errorMessage.value = '';
+        }
+      }, 3000);
     };
 
     return recog;

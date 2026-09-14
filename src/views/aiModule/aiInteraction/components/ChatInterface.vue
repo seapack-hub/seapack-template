@@ -7,6 +7,10 @@
         <el-tag v-if="store.tokenCount > 0" size="small" type="info" effect="plain">
           {{ store.tokenCount }} tokens
         </el-tag>
+        <el-tag v-if="props.selectedKnowledgeId" size="small" type="success" effect="plain">
+          <el-icon :size="12"><Collection /></el-icon>
+          知识库检索中
+        </el-tag>
       </div>
       <div class="header-actions">
         <!-- 系统提示词设置 -->
@@ -96,7 +100,7 @@
           <el-tooltip :content="voiceTooltip" placement="top">
             <el-button
               v-if="voice.isSupported"
-              :type="voice.status === 'listening' ? 'danger' : 'default'"
+              :type="voice.status.value === 'listening' ? 'danger' : 'default'"
               :icon="Microphone"
               circle
               @click="voice.toggle"
@@ -113,18 +117,19 @@
     </el-footer>
 
     <VoiceInputTip
-      :status="voice.status as any"
-      :interim-text="voice.interimText as any"
-      :error-message="voice.errorMessage as any"
+      :status="voice.status.value"
+      :interim-text="voice.interimText.value"
+      :error-message="voice.errorMessage.value"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
-import { Delete, Setting, Promotion, Microphone, ChatLineSquare } from '@element-plus/icons-vue';
+import { Delete, Setting, Promotion, Microphone, ChatLineSquare, Collection } from '@element-plus/icons-vue';
 import { useChatStore } from '@/store/modules/chat';
 import { executeLlmStream } from '@/api/ai/chatExecute';
+import { KnowledgeBaseAPI } from '@/api/ai/knowledgeBase';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { useAutoScroll } from '@/hooks/useAutoScroll';
 import VoiceInputTip from './VoiceInputTip.vue';
@@ -132,6 +137,8 @@ import emitter from '@/utils/bus';
 // @ts-ignore
 import MarkdownIt from 'markdown-it';
 import { ElMessageBox, ElMessage } from 'element-plus';
+
+const props = defineProps<{ selectedKnowledgeId?: number | null }>();
 
 const store = useChatStore();
 
@@ -214,7 +221,33 @@ async function handleSend() {
   store.loading = true;
   store.addMessage({ role: 'assistant', content: '' });
 
-  const contextMessages = store.getContextMessages();
+  // 如果选中了知识库，先检索相关内容注入上下文
+  let contextMessages = store.getContextMessages();
+  if (props.selectedKnowledgeId) {
+    try {
+      const results = await KnowledgeBaseAPI.retrieve(props.selectedKnowledgeId, {
+        query: text,
+        topK: 5,
+      });
+      if (results && results.length > 0) {
+        const knowledgeContext = results
+          .map((r, i) => `[${i + 1}] ${r.content}`)
+          .join('\n\n');
+        // 在系统提示词后追加检索到的知识库内容
+        const kbPrompt = `\n\n--- 以下是知识库中检索到的相关内容，请基于这些内容回答用户问题 ---\n${knowledgeContext}\n--- 知识库内容结束 ---`;
+        if (contextMessages.length > 0 && contextMessages[0].role === 'system') {
+          contextMessages[0] = {
+            ...contextMessages[0],
+            content: contextMessages[0].content + kbPrompt,
+          };
+        } else {
+          contextMessages.unshift({ role: 'system', content: `你是一个智能助手。${kbPrompt}` });
+        }
+      }
+    } catch (err: any) {
+      console.warn('知识库检索失败，将直接与大模型对话:', err.message);
+    }
+  }
 
   await executeLlmStream(
     contextMessages,
@@ -291,22 +324,30 @@ onUnmounted(() => {
 .editor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
 .chat-messages { flex: 1; padding: 0; overflow: hidden; }
 .message-scrollbar { height: 100%; }
-.message-view { padding: 20px; }
-.message-list { max-width: 800px; margin: 0 auto; }
+.message-view { padding: 20px 24px; }
+.message-list { max-width: 100%; box-sizing: border-box; padding: 25px; }
 .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0; color: #909399; gap: 8px; }
 .empty-hint { font-size: 12px; color: #c0c4cc; }
 .message-item { margin-bottom: 16px; }
+.message-user { display: flex; justify-content: flex-start; padding-right: 80px; }
+.message-assistant { display: flex; justify-content: flex-end; }
+.message-user .card-user { max-width: 80%; }
+.message-assistant .card-assistant { max-width: 100%; }
 .message-header { display: flex; align-items: center; justify-content: space-between; }
 .role-tag { font-size: 13px; font-weight: 500; }
 .streaming-indicator { font-size: 12px; color: #409eff; animation: blink 1s step-end infinite; }
 @keyframes blink { 50% { opacity: 0.5; } }
-.card-user { border: 1px solid #e6f0ff; border-radius: 12px; :deep(.el-card__header) { background: #f5f9ff; border-bottom: none; padding: 10px 16px; } }
-.card-assistant { border: 1px solid #f0f0f0; border-radius: 12px; :deep(.el-card__header) { background: #fafafa; border-bottom: none; padding: 10px 16px; } }
+.card-user { border: 1px solid #e6f0ff; border-radius: 12px; background: #f0f7ff; overflow: hidden; :deep(.el-card__header) { background: #f5f9ff; border-bottom: none; padding: 10px 16px; } :deep(.el-card__body) { overflow-x: auto; } }
+.card-assistant { border: 1px solid #f0f0f0; border-radius: 12px; background: #fafbfc; overflow: hidden; :deep(.el-card__header) { background: #fafafa; border-bottom: none; padding: 10px 16px; } :deep(.el-card__body) { overflow-x: auto; } }
 :deep(.markdown-body) { font-size: 14px; line-height: 1.7; color: #303133;
   code { background-color: #f1f2f4; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 13px; }
   pre { background-color: #f6f8fa; padding: 16px; border-radius: 8px; overflow: auto; border: 1px solid #eaeaea; margin: 12px 0; code { background: none; padding: 0; } }
   p { margin: 8px 0; } ul, ol { padding-left: 20px; }
   blockquote { border-left: 4px solid #409eff; padding-left: 12px; color: #606266; margin: 12px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; display: block; overflow-x: auto; }
+  th, td { border: 1px solid #ebeef5; padding: 8px 12px; text-align: left; white-space: nowrap; }
+  th { background: #f5f7fa; font-weight: 600; }
+  tr:hover { background: #f5f7fa; }
 }
 .chat-footer { height: auto !important; padding: 12px 20px; border-top: 1px solid #e8e8e8; background: white; flex-shrink: 0; }
 .input-area { max-width: 800px; margin: 0 auto; }
