@@ -235,9 +235,8 @@ async function fetchDocuments() {
  */
 function subscribeProgress(taskToken: string, fileName: string) {
   const token = localStorage.getItem(CacheKey.TOKEN)
-  const baseUrl = import.meta.env.VITE_BASE_API || '/api'
   // 注意：后端参数名是 taskToken，不是 token
-  const url = `${baseUrl}/ai/knowledge/vector-progress?taskToken=${encodeURIComponent(taskToken)}`
+  const url = `/api/ai/knowledge/vector-progress?taskToken=${encodeURIComponent(taskToken)}`
 
   const controller = new AbortController()
   activeFetchControllers.value.push(controller)
