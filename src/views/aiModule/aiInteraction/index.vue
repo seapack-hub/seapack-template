@@ -1,11 +1,11 @@
 <template>
-  <div class="ai-layout">
-    <div class="panel panel-left">
+  <div class="h-full w-full flex overflow-hidden">
+    <div class="w-280px flex-shrink-0 flex flex-col h-full overflow-hidden bg-white border-r border-r-solid border-[#e8e8e8]">
       <SessionSidebar />
-      <div class="left-divider" />
+      <div class="h-1px bg-[#e8e8e8] flex-shrink-0" />
       <KnowledgeBaseList @select="onKnowledgeSelect" />
     </div>
-    <div class="panel panel-chat">
+    <div class="h-full overflow-hidden bg-white flex-1">
       <ChatInterface :selected-knowledge-id="selectedKnowledgeId" />
     </div>
   </div>

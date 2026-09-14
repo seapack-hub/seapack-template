@@ -7,7 +7,7 @@
       <span class="text-15px font-600 color-[var(--el-text-color-primary)]">模型 Token 占比</span>
     </div>
     <div class="p-10px">
-      <BaseCharts :options="chartOption" height="320px" />
+      <BaseCharts :options="chartOption" height="280px" />
     </div>
   </div>
 </template>

@@ -12,7 +12,7 @@
       </el-radio-group>
     </div>
     <div class="p-10px">
-      <BaseCharts :options="chartOption" height="320px" />
+      <BaseCharts :options="chartOption" height="280px" />
     </div>
   </div>
 </template>

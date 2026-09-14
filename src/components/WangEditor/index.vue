@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+import { ElMessage } from "element-plus";
 
 // API 引用
 import FileAPI from "@/api/file";
@@ -53,9 +54,17 @@ const editorConfig = ref({
     uploadImage: {
       // 自定义图片上传
       async customUpload(file: any, insertFn: any) {
-        FileAPI.upload(file).then((data) => {
-          insertFn(data.url);
-        });
+        try {
+          const data = await FileAPI.upload(file);
+          if (data?.url) {
+            insertFn(data.url, data.name || file.name, "");
+          } else {
+            ElMessage.error("上传成功但未返回图片地址");
+          }
+        } catch (err: any) {
+          console.error("[WangEditor] 图片上传失败:", err);
+          ElMessage.error("图片上传失败: " + (err?.message || "未知错误"));
+        }
       },
     },
   },

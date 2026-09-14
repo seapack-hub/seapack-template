@@ -96,9 +96,17 @@ const editorConfig = ref({
   MENU_CONF: {
     uploadImage: {
       async customUpload(file: File, insertFn: any) {
-        FileAPI.upload(file).then((data) => {
-          insertFn(data.url)
-        })
+        try {
+          const data = await FileAPI.upload(file)
+          if (data?.url) {
+            insertFn(data.url, data.name || file.name, '')
+          } else {
+            ElMessage.error('上传成功但未返回图片地址')
+          }
+        } catch (err: any) {
+          console.error('[ImportExportEditor] 图片上传失败:', err)
+          ElMessage.error('图片上传失败: ' + (err?.message || '未知错误'))
+        }
       },
     },
   },

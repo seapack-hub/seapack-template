@@ -16,38 +16,45 @@ import UnoCSS from 'unocss/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 //引入地图组件
 import cesium from 'vite-plugin-cesium'
-import eslint from 'vite-plugin-eslint';
 import { type ConfigEnv, loadEnv } from 'vite';
 
 //引入mock服务
 //import mockDevServerPlugin from 'vite-plugin-mock-dev-server'
 import { viteMockServe } from 'vite-plugin-mock';
-export default defineConfig(({mode}:ConfigEnv) => {
-  const viteEnv = loadEnv(mode,process.cwd());
+export default defineConfig(({ mode }: ConfigEnv) => {
+  const viteEnv = loadEnv(mode, process.cwd());
   const { VITE_PUBLIC_PATH, VITE_MOCK_DEV_SERVER, VITE_APP_API_URL } = viteEnv;
   const isDev = mode === 'development'
   const isProd = mode === 'production'
   return {
-    base:VITE_PUBLIC_PATH,
-    server:{
+    base: VITE_PUBLIC_PATH,
+    server: {
       /** 设置 host: true 才可以使用 Network 的形式，以 IP 访问项目 */
-      host:true,
+      host: true,
       /** 端口号 */
-      port:4444,
+      port: 4444,
       /** 是否自动打开浏览器 */
-      open:false,
+      open: false,
       /** 是否允许跨域 */
-      cors:true,
+      cors: true,
       /** 端口号被占用时，是否直接退出 */
-      strictPort:false,
+      strictPort: false,
       /** 接口代理 */
-      proxy:{
+      proxy: {
         "/api": {
           target: VITE_APP_API_URL,
           ws: true,
           /** 是否允许跨域 */
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+        "/files": {
+          target: VITE_APP_API_URL,
+          changeOrigin: true,
+        },
+        "/images": {
+          target: VITE_APP_API_URL,
+          changeOrigin: true,
         }
       }
     },
@@ -61,7 +68,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
         supportTs: true,       // 支持 TypeScript 文件
         logger: true,           // 控制台显示请求日志
         watchFiles: true,       // 监听 Mock 文件修改自动更新
-        injectCode: `import { setupProdMockServer } from '../mock/mockProdServer.ts'; setupProdMockServer();`, 
+        injectCode: `import { setupProdMockServer } from '../mock/mockProdServer.ts'; setupProdMockServer();`,
       }) : null,
       // 自动处理Cesium资源、Web Worker、Base URL
       cesium(),
@@ -69,7 +76,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
       ElementPlus({}),
       AutoImport({
         resolvers: [ElementPlusResolver()],
-        imports: ['vue','vue-router','@vueuse/core'], // 自动导入 Vue 相关函数
+        imports: ['vue', 'vue-router', '@vueuse/core'], // 自动导入 Vue 相关函数
         dts: './auto-imports.d.ts', // 生成类型声明文件的路径
         eslintrc: {
           enabled: false,  // 1、改为true用于生成eslint配置。2、生成后改回false，避免重复生成消耗
@@ -79,7 +86,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
       Components({
         resolvers: [ElementPlusResolver()],
         // 指定自动导入的组件位置，默认是 src/components
-        dirs:['src/components'],
+        dirs: ['src/components'],
       }),
       // SVG配置
       createSvgIconsPlugin({
@@ -98,9 +105,9 @@ export default defineConfig(({mode}:ConfigEnv) => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname,'src'),
-        '@p':path.resolve(__dirname,'public'),
-        '@ces':path.resolve(__dirname, 'src/views/worldData/cesium')
+        '@': path.resolve(__dirname, 'src'),
+        '@p': path.resolve(__dirname, 'public'),
+        '@ces': path.resolve(__dirname, 'src/views/worldData/cesium')
       },
     },
     define: {
@@ -109,7 +116,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
     },
     // 预加载项目必需的组件
     optimizeDeps: {
-      include:[
+      include: [
         "@wangeditor/editor",
         "@wangeditor/editor-for-vue",
       ]
@@ -118,7 +125,7 @@ export default defineConfig(({mode}:ConfigEnv) => {
       drop: ['console', 'debugger'],
     } : undefined,
     lintOnSave: false,
-    build:{
+    build: {
       target: 'es2020',
       rollupOptions: {
         output: {

@@ -1,9 +1,9 @@
 <template>
-  <div class="chat-interface">
+  <div class="h-full flex flex-col relative overflow-hidden">
     <!-- 头部 -->
-    <el-header class="chat-header">
-      <div class="header-left">
-        <h2 class="header-title">AI 大模型对话</h2>
+    <el-header class="border-b border-b-solid border-[#e8e8e8] flex items-center justify-between px-5 h-60px flex-shrink-0">
+      <div class="flex items-center gap-2.5">
+        <h2 class="text-16px font-600 color-[#303133] m-0">AI 大模型对话</h2>
         <el-tag v-if="store.tokenCount > 0" size="small" type="info" effect="plain">
           {{ store.tokenCount }} tokens
         </el-tag>
@@ -12,7 +12,7 @@
           知识库检索中
         </el-tag>
       </div>
-      <div class="header-actions">
+      <div class="flex items-center gap-2">
         <!-- 系统提示词设置 -->
         <el-popover placement="bottom-end" :width="400" trigger="click" @show="fetchSystemPrompt">
           <template #reference>
@@ -20,16 +20,16 @@
               {{ systemPromptShort }}
             </el-button>
           </template>
-          <div class="system-prompt-editor">
-            <h4 class="editor-title">系统提示词（System Prompt）</h4>
-            <p class="editor-desc">设置 AI 助手的角色和行为规则</p>
+          <div class="p-2">
+            <h4 class="m-0 mb-1 text-14px color-[#303133]">系统提示词（System Prompt）</h4>
+            <p class="m-0 mb-3 text-12px color-[#909399]">设置 AI 助手的角色和行为规则</p>
             <el-input
               v-model="editSystemPrompt"
               type="textarea"
               :rows="6"
               placeholder="例如：你是一个专业的前端开发工程师..."
             />
-            <div class="editor-actions">
+            <div class="flex justify-end gap-2 mt-3">
               <el-button @click="resetSystemPrompt">恢复默认</el-button>
               <el-button type="primary" @click="saveSystemPrompt">保存</el-button>
             </div>
@@ -40,78 +40,112 @@
     </el-header>
 
     <!-- 消息列表 -->
-    <el-main class="chat-messages">
-      <el-scrollbar ref="scrollbarRef" class="message-scrollbar" view-class="message-view">
-        <div class="message-list">
-          <div v-if="store.messages.length === 0" class="empty-state">
+    <el-main class="flex-1 p-0 overflow-hidden">
+      <el-scrollbar ref="scrollbarRef" class="h-full" view-class="p-5">
+        <div class="max-w-full box-border p-6">
+          <div v-if="store.messages.length === 0" class="flex flex-col items-center justify-center py-20 color-[#909399] gap-2">
             <el-icon :size="48" color="#dcdfe6"><ChatLineSquare /></el-icon>
-            <p>开始一段新对话</p>
-            <p class="empty-hint">输入问题后按 Enter 发送，或按 🎤 使用语音输入</p>
+            <p class="m-0">开始一段新对话</p>
+            <p class="m-0 text-12px color-[#c0c4cc]">输入问题后按 Enter 发送，或按 🎤 使用语音输入</p>
           </div>
 
           <div
             v-for="(msg, index) in store.messages"
             :key="index"
-            class="message-item"
-            :class="msg.role === 'user' ? 'message-user' : 'message-assistant'"
+            class="mb-20"
+            :class="msg.role === 'user' ? 'flex justify-end gap-2' : 'flex gap-2'"
           >
-            <el-card shadow="never" :class="msg.role === 'user' ? 'card-user' : 'card-assistant'">
-              <template #header>
-                <div class="message-header">
-                  <span class="role-tag">{{ msg.role === 'user' ? '👤 用户' : '🤖 AI 助手' }}</span>
-                  <span v-if="msg.role === 'assistant' && index === store.messages.length - 1 && store.loading" class="streaming-indicator">正在生成...</span>
-                </div>
-              </template>
-              <!-- eslint-disable-next-line vue/no-v-html -- MarkdownIt 已关闭 html 渲染，无 XSS 风险 -->
-              <div class="markdown-body" v-html="renderMarkdown(msg.content)" />
-            </el-card>
+            <!-- AI 头像 -->
+            <div v-if="msg.role === 'assistant'" class="w-32px h-32px rounded-full flex items-center justify-center shrink-0 mt-4px bg-[var(--el-color-success)] text-white">
+              <Icon name="robot" size="24" />
+            </div>
+
+            <div :class="msg.role === 'user' ? 'max-w-[70%]' : 'flex-1 min-w-0'">
+              <!-- 角色名称 -->
+              <div class="text-11px color-[#909399] mb-4px" :class="msg.role === 'user' ? 'text-right' : ''">
+                {{ msg.role === 'user' ? '用户' : 'AI 助手' }}
+              </div>
+
+              <!-- 消息气泡 -->
+              <div
+                v-if="msg.role === 'user'"
+                class="msg-bubble user text-13px leading-[1.7]"
+              >
+                {{ msg.content }}
+              </div>
+              <div
+                v-else
+                class="markdown-body msg-bubble assistant"
+                v-html="renderMarkdown(msg.content)"
+              />
+              <span v-if="msg.role === 'assistant' && index === store.messages.length - 1 && store.loading" class="streaming-indicator text-12px color-[#409eff]">正在生成...</span>
+            </div>
+
+            <!-- 用户头像 -->
+            <div v-if="msg.role === 'user'" class="w-32px h-32px rounded-full flex items-center justify-center shrink-0 mt-4px bg-[var(--el-color-primary)] text-white">
+              <Icon name="user" size="24" />
+            </div>
           </div>
 
-          <div v-if="store.loading && store.messages[store.messages.length - 1]?.role === 'user'" class="loading-skeleton">
-            <el-card shadow="never" class="card-assistant">
-              <template #header><span class="role-tag">🤖 AI 助手</span></template>
-              <el-skeleton animated>
-                <template #template>
-                  <el-skeleton-item variant="text" style="width: 60%" />
-                  <el-skeleton-item variant="text" style="width: 80%" />
-                  <el-skeleton-item variant="text" style="width: 40%" />
-                </template>
-              </el-skeleton>
-            </el-card>
+          <div v-if="store.loading && store.messages[store.messages.length - 1]?.role === 'user'" class="mb-4 flex gap-2">
+            <div class="w-32px h-32px rounded-full flex items-center justify-center shrink-0 mt-4px bg-[var(--el-color-success)] text-white">
+              <Icon name="robot" size="24" />
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-11px color-[#909399] mb-4px">AI 助手</div>
+              <el-card shadow="never" class="card-assistant">
+                <el-skeleton animated>
+                  <template #template>
+                    <el-skeleton-item variant="text" style="width: 60%" />
+                    <el-skeleton-item variant="text" style="width: 80%" />
+                    <el-skeleton-item variant="text" style="width: 40%" />
+                  </template>
+                </el-skeleton>
+              </el-card>
+            </div>
           </div>
         </div>
       </el-scrollbar>
     </el-main>
 
     <!-- 输入区域 -->
-    <el-footer class="chat-footer">
-      <div class="input-area">
-        <el-input
-          v-model="inputText"
-          class="chat-input"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入您的问题（Enter 发送，Shift+Enter 换行）..."
-          :disabled="store.loading"
-          resize="none"
-          @keyup.enter="handleEnter"
-        />
-        <div class="input-actions">
-          <el-tooltip :content="voiceTooltip" placement="top">
-            <el-button
-              v-if="voice.isSupported"
-              :type="voice.status.value === 'listening' ? 'danger' : 'default'"
-              :icon="Microphone"
-              circle
-              @click="voice.toggle"
-            />
-            <el-tooltip v-else content="当前浏览器不支持语音输入" placement="top">
-              <el-button :icon="Microphone" circle disabled />
+    <el-footer class="h-auto! px-5 pt-4 pb-5 border-t border-t-solid border-[#f0f0f0] bg-white flex-shrink-0">
+      <div class="max-w-960px mx-auto">
+        <div class="input-box m-t-20 h-[50px] flex items-end gap-2.5 bg-[#f7f8fa] border border-solid border-[#e4e7ed] rounded-xl p-3.5 px-4.5 transition-all duration-250 hover:border-[#c0c4cc]">
+          <el-input
+            v-model="inputText"
+            class="flex-1 chat-input"
+            type="textarea"
+            :rows="3"
+            :autosize="{ minRows: 2, maxRows: 8 }"
+            placeholder="请输入您的问题（Enter 发送，Shift+Enter 换行）..."
+            :disabled="store.loading"
+            resize="none"
+            @keyup.enter="handleEnter"
+          />
+          <div class="flex h-full items-center gap-1.5 flex-shrink-0 pb-0.5">
+            <el-tooltip :content="voiceTooltip" placement="top">
+              <el-button
+                v-if="voice.isSupported"
+                :class="[{ 'is-listening': voice.status.value === 'listening' }, 'voice-btn', 'action-btn']"
+                :type="voice.status.value === 'listening' ? 'danger' : 'default'"
+                :icon="Microphone"
+                circle
+                @click="voice.toggle"
+              />
+              <el-tooltip v-else content="当前浏览器不支持语音输入" placement="top">
+                <el-button class="action-btn voice-btn" :icon="Microphone" circle disabled />
+              </el-tooltip>
             </el-tooltip>
-          </el-tooltip>
-          <el-button type="primary" :loading="store.loading" :icon="Promotion" @click="handleSend">
-            {{ store.loading ? '生成中...' : '发送' }}
-          </el-button>
+            <el-button
+              class="action-btn"
+              type="primary"
+              :loading="store.loading"
+              :icon="Promotion"
+              circle
+              @click="handleSend"
+            />
+          </div>
         </div>
       </div>
     </el-footer>
@@ -133,6 +167,7 @@ import { KnowledgeBaseAPI } from '@/api/ai/knowledgeBase';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { useAutoScroll } from '@/hooks/useAutoScroll';
 import VoiceInputTip from './VoiceInputTip.vue';
+import Icon from '@/components/Icon/index.vue';
 import emitter from '@/utils/bus';
 // @ts-ignore
 import MarkdownIt from 'markdown-it';
@@ -312,46 +347,136 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
-.chat-interface { height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
-.chat-header { height: 60px !important; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; border-bottom: 1px solid #e8e8e8; flex-shrink: 0; }
-.header-left { display: flex; align-items: center; gap: 10px; }
-.header-title { font-size: 16px; font-weight: 600; color: #303133; margin: 0; }
-.header-actions { display: flex; align-items: center; gap: 8px; }
-.system-prompt-editor { padding: 8px; }
-.editor-title { margin: 0 0 4px; font-size: 14px; color: #303133; }
-.editor-desc { margin: 0 0 12px; font-size: 12px; color: #909399; }
-.editor-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
-.chat-messages { flex: 1; padding: 0; overflow: hidden; }
-.message-scrollbar { height: 100%; }
-.message-view { padding: 20px 24px; }
-.message-list { max-width: 100%; box-sizing: border-box; padding: 25px; }
-.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0; color: #909399; gap: 8px; }
-.empty-hint { font-size: 12px; color: #c0c4cc; }
-.message-item { margin-bottom: 16px; }
-.message-user { display: flex; justify-content: flex-start; padding-right: 80px; }
-.message-assistant { display: flex; justify-content: flex-end; }
-.message-user .card-user { max-width: 80%; }
-.message-assistant .card-assistant { max-width: 100%; }
-.message-header { display: flex; align-items: center; justify-content: space-between; }
-.role-tag { font-size: 13px; font-weight: 500; }
-.streaming-indicator { font-size: 12px; color: #409eff; animation: blink 1s step-end infinite; }
-@keyframes blink { 50% { opacity: 0.5; } }
-.card-user { border: 1px solid #e6f0ff; border-radius: 12px; background: #f0f7ff; overflow: hidden; :deep(.el-card__header) { background: #f5f9ff; border-bottom: none; padding: 10px 16px; } :deep(.el-card__body) { overflow-x: auto; } }
-.card-assistant { border: 1px solid #f0f0f0; border-radius: 12px; background: #fafbfc; overflow: hidden; :deep(.el-card__header) { background: #fafafa; border-bottom: none; padding: 10px 16px; } :deep(.el-card__body) { overflow-x: auto; } }
-:deep(.markdown-body) { font-size: 14px; line-height: 1.7; color: #303133;
-  code { background-color: #f1f2f4; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 13px; }
-  pre { background-color: #f6f8fa; padding: 16px; border-radius: 8px; overflow: auto; border: 1px solid #eaeaea; margin: 12px 0; code { background: none; padding: 0; } }
-  p { margin: 8px 0; } ul, ol { padding-left: 20px; }
-  blockquote { border-left: 4px solid #409eff; padding-left: 12px; color: #606266; margin: 12px 0; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; display: block; overflow-x: auto; }
-  th, td { border: 1px solid #ebeef5; padding: 8px 12px; text-align: left; white-space: nowrap; }
-  th { background: #f5f7fa; font-weight: 600; }
-  tr:hover { background: #f5f7fa; }
+<style scoped>
+@keyframes blink {
+  50% { opacity: 0.5; }
 }
-.chat-footer { height: auto !important; padding: 12px 20px; border-top: 1px solid #e8e8e8; background: white; flex-shrink: 0; }
-.input-area { max-width: 800px; margin: 0 auto; }
-.chat-input { :deep(textarea) { border-radius: 8px; resize: none; } }
-.input-actions { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 8px; }
-.loading-skeleton { margin-bottom: 16px; }
+
+.streaming-indicator {
+  animation: blink 1s step-end infinite;
+}
+
+.msg-bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.7;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.msg-bubble.user {
+  background: var(--el-color-primary-light-8);
+  color: var(--el-text-color-primary);
+  border-top-right-radius: 4px;
+}
+.msg-bubble.assistant {
+  background: #fff;
+  color: var(--el-text-color-primary);
+  border: 1px solid #f0f0f0;
+  border-top-left-radius: 4px;
+  width: 100%;
+  white-space: normal;
+}
+
+.card-assistant {
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  background: #fafbfc;
+  overflow: hidden;
+}
+.card-assistant :deep(.el-card__body) {
+  overflow-x: auto;
+}
+
+.markdown-body {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #303133;
+}
+.markdown-body :deep(code) {
+  background-color: #f1f2f4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+.markdown-body :deep(pre) {
+  background-color: #f6f8fa;
+  padding: 16px;
+  border-radius: 8px;
+  overflow: auto;
+  border: 1px solid #eaeaea;
+  margin: 12px 0;
+}
+.markdown-body :deep(pre code) {
+  background: none;
+  padding: 0;
+}
+.markdown-body :deep(p) { margin: 8px 0; }
+.markdown-body :deep(ul),
+.markdown-body :deep(ol) { padding-left: 20px; }
+.markdown-body :deep(blockquote) {
+  border-left: 4px solid #409eff;
+  padding-left: 12px;
+  color: #606266;
+  margin: 12px 0;
+}
+.markdown-body :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  display: block;
+  overflow-x: auto;
+}
+.markdown-body :deep(th),
+.markdown-body :deep(td) {
+  border: 1px solid #ebeef5;
+  padding: 8px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+.markdown-body :deep(th) {
+  background: #f5f7fa;
+  font-weight: 600;
+}
+.markdown-body :deep(tr:hover) {
+  background: #f5f7fa;
+}
+
+.input-box:focus-within {
+  border-color: #409eff;
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.12);
+}
+
+.chat-input :deep(textarea) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  line-height: 1.6;
+  font-size: 14px;
+}
+.chat-input :deep(textarea:focus) {
+  box-shadow: none;
+}
+.chat-input :deep(.el-textarea__inner) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+.chat-input :deep(.el-textarea__inner:focus) {
+  box-shadow: none;
+}
+
+.action-btn {
+  width: 34px;
+  height: 34px;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+.voice-btn:hover:not(.is-disabled) {
+  color: #409eff;
+  background: #ecf5ff;
+}
 </style>

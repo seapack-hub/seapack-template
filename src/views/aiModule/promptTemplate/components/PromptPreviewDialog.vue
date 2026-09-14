@@ -109,7 +109,7 @@
                   <el-icon><CopyDocument /></el-icon> 复制
                 </el-button>
               </div>
-              <pre class="m-0 px-16px py-14px text-13px leading-1.8 font-mono whitespace-pre-wrap break-all bg-[var(--el-bg-color)] color-[var(--el-text-color-primary)] max-h-400px overflow-auto"><code>{{ renderedPrompt || '点击「预览渲染」查看完整提示词' }}</code></pre>
+              <pre class="m-0 px-16px py-14px text-13px font-mono whitespace-pre-wrap break-all bg-[var(--el-bg-color)] color-[var(--el-text-color-primary)] max-h-400px overflow-auto"><code>{{ renderedPrompt || '点击「预览渲染」查看完整提示词' }}</code></pre>
             </div>
           </el-tab-pane>
           <el-tab-pane name="output">
@@ -184,7 +184,7 @@
                     <el-icon><CopyDocument /></el-icon> 复制
                   </el-button>
                 </div>
-                <pre class="m-0 px-16px py-14px text-13px leading-1.8 font-mono whitespace-pre-wrap break-all bg-[var(--el-bg-color)] color-[var(--el-text-color-primary)] max-h-400px overflow-auto"><code>{{ llmOutput }}</code></pre>
+                <pre class="m-0 px-16px py-14px text-13px font-mono whitespace-pre-wrap break-all bg-[var(--el-bg-color)] color-[var(--el-text-color-primary)] max-h-400px overflow-auto"><code>{{ llmOutput }}</code></pre>
               </div>
             </div>
           </el-tab-pane>

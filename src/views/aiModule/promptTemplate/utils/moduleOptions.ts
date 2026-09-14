@@ -40,6 +40,7 @@ export const VAR_TYPE_OPTIONS = [
   { label: '布尔', value: 'boolean' },
   { label: '下拉选择', value: 'select' },
   { label: '日期', value: 'date' },
+  { label: '纯文本', value: 'text' },
 ]
 
 /** 状态筛选选项 */

@@ -131,8 +131,8 @@ let mdInstance: any = null
 export async function createMarkdownIt(): Promise<any> {
   if (mdInstance) return mdInstance
   const [MarkdownIt, container] = await Promise.all([
-    import('markdown-it').then(m => m.default),
-    import('markdown-it-container').then(m => m.default),
+    import('markdown-it' as any).then(m => m.default),
+    import('markdown-it-container' as any).then(m => m.default),
   ])
   const md = new MarkdownIt({ html: true, linkify: true })
 
@@ -189,13 +189,30 @@ function unwrapMarkdownFromHtml(html: string): string {
 }
 
 /**
+ * 判断内容是否已经是 HTML（而非纯 Markdown）
+ * 检测常见的 HTML 块级/行内标签
+ */
+function isHtmlContent(str: string): boolean {
+  return /<(?:p|div|img|h[1-6]|ul|ol|li|table|pre|code|blockquote|strong|em|span|a)\b/i.test(str)
+}
+
+/**
  * 渲染管线（不含 sanitize）：预处理 → markdown-it → 标签还原
  * 用于目录提取等需要真实 HTML 但不需清洗的场景
  */
 export async function renderToHtml(content: string): Promise<string> {
   if (!content) return ''
 
-  const markdownReady = unwrapMarkdownFromHtml(preprocessMarkdown(content))
+  // 始终执行 preprocessMarkdown，处理 :::info 告示块和 **bold** 等语法
+  let s = preprocessMarkdown(content)
+
+  // 如果内容已经是 HTML（如 wangEditor 生成的），跳过 markdown-it 处理
+  // 避免 markdown-it 二次渲染破坏已有的 HTML 结构（如 <img> 标签）
+  if (isHtmlContent(content)) {
+    return s
+  }
+
+  const markdownReady = unwrapMarkdownFromHtml(s)
   const md = await createMarkdownIt()
   const rendered = md.render(markdownReady)
   return preprocessHtml(rendered)
@@ -210,7 +227,7 @@ export async function renderSafeHtml(contentHtml: string): Promise<string> {
 
   const [restoredHtml, sanitizeHtml] = await Promise.all([
     renderToHtml(contentHtml),
-    import('sanitize-html').then(m => m.default),
+    import('sanitize-html' as any).then(m => m.default),
   ])
 
   return sanitizeHtml(restoredHtml, sanitizeOptions)

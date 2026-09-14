@@ -68,7 +68,7 @@
                 </el-popconfirm>
               </template>
               <el-button v-if="selectedNode" v-permission="'systemManagement:permission:menu:edit'" type="primary" icon="edit" size="small" :disabled="selectedIds.length > 0" @click="openEdit(selectedNode)">编辑当前</el-button>
-              <el-button v-if="selectedNode && selectedNode.type !== 3" v-permission="'systemManagement:permission:menu:add'" type="success" icon="plus" size="small" :disabled="selectedIds.length > 0" @click="openAddChild()">新增子项</el-button>
+              <el-button v-if="selectedNode && selectedNode.type !== 3" v-permission="'systemManagement:permission:menu:addSubitem'" type="success" icon="plus" size="small" :disabled="selectedIds.length > 0" @click="openAddChild()">新增子项</el-button>
             </div>
           </div>
 
