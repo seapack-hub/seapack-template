@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col relative overflow-hidden">
     <!-- 头部 -->
-    <el-header class="border-b border-b-solid border-[#e8e8e8] flex items-center justify-between px-5 h-60px flex-shrink-0">
+    <el-header class="border-b border-b-solid border-[#e8e8e8] flex items-center justify-between px-5 h-[100px]">
       <div class="flex items-center gap-2.5">
         <h2 class="text-16px font-600 color-[#303133] m-0">AI 大模型对话</h2>
         <el-tag v-if="store.tokenCount > 0" size="small" type="info" effect="plain">
@@ -41,9 +41,9 @@
 
     <!-- 消息列表 -->
     <el-main class="flex-1 p-0 overflow-hidden">
-      <el-scrollbar ref="scrollbarRef" class="h-full" view-class="p-5">
-        <div class="max-w-full box-border p-6">
-          <div v-if="store.messages.length === 0" class="flex flex-col items-center justify-center py-20 color-[#909399] gap-2">
+      <el-scrollbar ref="scrollbarRef" class="h-full" view-class="p-5 overflow-x-hidden!">
+        <div class="max-w-full box-border p-6 overflow-hidden">
+          <div v-if="store.messages.length === 0" class="flex flex-col items-center justify-center color-[#909399] gap-2">
             <el-icon :size="48" color="#dcdfe6"><ChatLineSquare /></el-icon>
             <p class="m-0">开始一段新对话</p>
             <p class="m-0 text-12px color-[#c0c4cc]">输入问题后按 Enter 发送，或按 🎤 使用语音输入</p>
@@ -111,7 +111,7 @@
     <!-- 输入区域 -->
     <el-footer class="h-auto! px-5 pt-4 pb-5 border-t border-t-solid border-[#f0f0f0] bg-white flex-shrink-0">
       <div class="max-w-960px mx-auto">
-        <div class="input-box m-t-20 h-[50px] flex items-end gap-2.5 bg-[#f7f8fa] border border-solid border-[#e4e7ed] rounded-xl p-3.5 px-4.5 transition-all duration-250 hover:border-[#c0c4cc]">
+        <div class="input-box m-t-20 mb-20 h-[50px] flex items-end gap-2.5 bg-[#f7f8fa] border border-solid border-[#e4e7ed] rounded-xl p-3.5 px-4.5 transition-all duration-250 hover:border-[#c0c4cc]">
           <el-input
             v-model="inputText"
             class="flex-1 chat-input"
@@ -374,8 +374,10 @@ onUnmounted(() => {
   color: var(--el-text-color-primary);
   border: 1px solid #f0f0f0;
   border-top-left-radius: 4px;
+  box-sizing: border-box;
   width: 100%;
   white-space: normal;
+  overflow-x: hidden;
 }
 
 .card-assistant {
@@ -407,6 +409,8 @@ onUnmounted(() => {
   overflow: auto;
   border: 1px solid #eaeaea;
   margin: 12px 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .markdown-body :deep(pre code) {
   background: none;
@@ -427,6 +431,8 @@ onUnmounted(() => {
   margin: 12px 0;
   display: block;
   overflow-x: auto;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 .markdown-body :deep(th),
 .markdown-body :deep(td) {

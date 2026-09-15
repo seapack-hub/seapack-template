@@ -59,7 +59,7 @@ export const MODULE_DEFS: ModuleDef[] = [
     key: 'aiModule',
     path: '/aiModule/interaction/rag',
     title: 'AI交互',
-    icon: 'ai-interaction',
+    icon: 'robot',
     color: '#9C27B0',
     description: 'RAG知识库、智能体交互、图片生成',
     permKey: 'aiModule',

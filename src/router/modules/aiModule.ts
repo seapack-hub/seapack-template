@@ -13,7 +13,7 @@ const aiModuleRoute: Array<RouterObject> = [
     meta: {
       title: 'aiModule',
       description: 'AI交互',
-      icon: 'ai-interaction',
+      icon: 'robot',
       permKey: 'aiModule',
     },
     children: [
@@ -26,7 +26,7 @@ const aiModuleRoute: Array<RouterObject> = [
         meta: {
           title: 'aiInteraction',
           description: 'AI交互',
-          icon: 'ai-interaction',
+          icon: 'robot',
           permKey: 'aiInteraction',
         },
         children: [

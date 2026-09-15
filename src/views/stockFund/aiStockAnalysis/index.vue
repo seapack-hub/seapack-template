@@ -105,7 +105,6 @@ const reportTitle = computed(() => {
   gap: 12px;
   background: #f5f7fa;
   box-sizing: border-box;
-  padding: 12px;
   overflow: hidden;
 }
 

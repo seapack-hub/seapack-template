@@ -21,9 +21,9 @@
       :style="fabStyle"
       title="AI 助手"
       @mousedown="startDrag"
-      @click="drawerVisible = true"
+      @click="handleClick"
     >
-      <Icon name="ai-interaction" :size="24" color="#fff" />
+      <Icon name="robot" :size="24" color="#fff" />
       <span v-if="isSceneMode && currentSceneName" class="agent-badge pos-absolute l-1/2 -translate-x-1/2 whitespace-nowrap text-11px color-white px-6px py-2px rounded-4px" style="background: rgba(0,0,0,0.6); top: calc(100% + 4px)">
         {{ currentSceneName }}
       </span>
@@ -42,7 +42,7 @@
         <div class="assistant-header h-52px px-16px flex items-center justify-between flex-shrink-0" style="border-bottom: 1px solid var(--el-border-color-light); background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%)">
           <div class="flex items-center gap-8px">
             <div class="w-28px h-28px rounded-8px flex items-center justify-center" style="background: linear-gradient(135deg, #409eff, #337ecc)">
-              <Icon name="ai-interaction" :size="16" color="#fff" />
+              <Icon name="robot" :size="16" color="#fff" />
             </div>
             <span class="text-15px font-600 color-#303133">AI 助手</span>
           </div>
@@ -103,32 +103,99 @@ const isSceneMode = computed(() => chatStore.isSceneMode)
 const currentSceneName = computed(() => chatStore.currentSceneBinding?.sceneName || '')
 
 // ===== FAB 拖拽 =====
+const FAB_SIZE = 44
+const DRAG_THRESHOLD = 5 // 拖拽阈值，移动超过 5px 才算拖拽
+const STORAGE_KEY = 'ai-assistant-fab-position'
+
 const dragEl = ref<HTMLElement>()
 const position = ref({ x: 0, y: 0 })
+const isDragging = ref(false)
 let startPos = { x: 0, y: 0 }
 let mouseStart = { x: 0, y: 0 }
+
+// 从 localStorage 恢复位置
+function restorePosition() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      const { x, y } = JSON.parse(saved)
+      position.value = { x, y }
+    } else {
+      // 默认位置：右侧中间
+      position.value = { x: 0, y: Math.max(0, (window.innerHeight - FAB_SIZE) / 2 - 150) }
+    }
+  } catch {
+    position.value = { x: 0, y: 200 }
+  }
+}
+
+// 保存位置到 localStorage
+function savePosition() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(position.value))
+  } catch { /* ignore */ }
+}
+
+// 边界约束
+function clampPosition(x: number, y: number) {
+  const maxX = window.innerWidth - FAB_SIZE
+  const maxY = window.innerHeight - FAB_SIZE
+  return {
+    x: Math.max(0, Math.min(x, maxX)),
+    y: Math.max(0, Math.min(y, maxY)),
+  }
+}
 
 function startDrag(e: MouseEvent) {
   if (!dragEl.value) return
   mouseStart = { x: e.clientX, y: e.clientY }
   startPos = { ...position.value }
+  isDragging.value = false
   document.addEventListener('mousemove', onDrag)
   document.addEventListener('mouseup', stopDrag)
 }
 
 function onDrag(e: MouseEvent) {
-  position.value = {
-    x: startPos.x + e.clientX - mouseStart.x,
-    y: startPos.y + e.clientY - mouseStart.y,
+  const dx = e.clientX - mouseStart.x
+  const dy = e.clientY - mouseStart.y
+
+  // 超过阈值才算拖拽
+  if (!isDragging.value) {
+    if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+      isDragging.value = true
+    } else {
+      return
+    }
   }
+
+  const clamped = clampPosition(startPos.x + dx, startPos.y + dy)
+  position.value = clamped
 }
 
 function stopDrag() {
   document.removeEventListener('mousemove', onDrag)
   document.removeEventListener('mouseup', stopDrag)
+  if (isDragging.value) {
+    savePosition()
+  }
 }
 
-onBeforeUnmount(stopDrag)
+function handleClick() {
+  // 只有未拖拽时才打开抽屉
+  if (!isDragging.value) {
+    drawerVisible.value = true
+  }
+}
+
+onMounted(() => {
+  restorePosition()
+  window.addEventListener('resize', restorePosition)
+})
+
+onBeforeUnmount(() => {
+  stopDrag()
+  window.removeEventListener('resize', restorePosition)
+})
 
 function handleOpen() {
   chatStore.ensureSession()
@@ -213,10 +280,10 @@ async function handleViewTrace(requestId?: string) {
 
 const fabStyle = computed(() => ({
   background: isSceneMode.value ? 'linear-gradient(135deg, #67c23a, #529b2e)' : 'linear-gradient(135deg, #409eff, #337ecc)',
-  width: '44px',
-  height: '44px',
-  top: '300px',
-  right: '0',
+  width: `${FAB_SIZE}px`,
+  height: `${FAB_SIZE}px`,
+  top: `${position.value.y}px`,
+  right: `${position.value.x}px`,
   borderRadius: '8px 0 0 8px',
 }))
 </script>
@@ -224,6 +291,7 @@ const fabStyle = computed(() => ({
 <style scoped lang="scss">
 .ai-trigger {
   box-shadow: 0 4px 20px rgba(64, 158, 255, 0.4);
+  transition: box-shadow 0.3s, transform 0.3s;
   &:hover {
     box-shadow: 0 6px 28px rgba(64, 158, 255, 0.6);
     transform: translateX(-2px);

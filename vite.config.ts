@@ -16,6 +16,7 @@ import UnoCSS from 'unocss/vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 //引入地图组件
 import cesium from 'vite-plugin-cesium'
+import eslint from 'vite-plugin-eslint';
 import { type ConfigEnv, loadEnv } from 'vite';
 
 //引入mock服务
