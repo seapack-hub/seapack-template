@@ -2,49 +2,75 @@
   <div class="ai-analysis-result">
     <!-- 空状态 -->
     <div v-if="!content && !loading" class="empty-state">
-      <el-empty :image-size="120" description="输入股票代码，获取 AI 个股诊断报告" />
+      <el-empty :image-size="120" description="选择场景并输入股票代码，获取 AI 个股诊断报告" />
     </div>
 
-    <!-- 加载状态 -->
-    <div v-else-if="loading && !content" class="loading-state">
-      <el-skeleton animated :rows="10" />
-      <div class="loading-text">{{ loadingText }}</div>
-    </div>
+    <!-- 内容区（含步骤进度） -->
+    <template v-else>
+      <el-scrollbar class="result-scrollbar">
+        <!-- 步骤进度 -->
+        <StepProgressTimeline v-if="steps.length > 0" :steps="steps" class="step-section" />
 
-    <!-- 结果内容 -->
-    <el-scrollbar v-else class="result-scrollbar">
-      <div class="result-header">
-        <div class="result-title">
-          <el-icon :size="20" color="#409eff"><TrendCharts /></el-icon>
-          <span>{{ title }}</span>
+        <!-- Markdown 内容 -->
+        <template v-if="content">
+          <div class="result-header">
+            <div class="result-title">
+              <el-icon :size="20" color="#409eff"><TrendCharts /></el-icon>
+              <span>{{ title }}</span>
+            </div>
+            <div class="result-actions">
+              <el-button text :icon="DocumentCopy" @click="copyContent">复制</el-button>
+              <el-button text :icon="Download" @click="exportMarkdown">导出</el-button>
+              <el-button v-if="onRefresh" text :icon="RefreshRight" @click="onRefresh">重新分析</el-button>
+            </div>
+          </div>
+
+          <div class="markdown-body" v-html="renderedContent" />
+
+          <!-- 流式生成中指示器 -->
+          <div v-if="loading" class="streaming-indicator">
+            <el-icon class="is-loading"><Loading /></el-icon>
+            <span>AI 正在生成分析报告...</span>
+          </div>
+        </template>
+
+        <!-- 仅有步骤、尚无内容时的等待提示 -->
+        <div v-else-if="loading && !content" class="loading-wait">
+          <el-icon class="is-loading" :size="24"><Loading /></el-icon>
+          <span>{{ loadingText }}</span>
         </div>
-        <div class="result-actions">
-          <el-button text :icon="DocumentCopy" @click="copyContent">复制</el-button>
-          <el-button text :icon="Download" @click="exportMarkdown">导出</el-button>
-          <el-button v-if="onRefresh" text :icon="RefreshRight" @click="onRefresh">重新分析</el-button>
-        </div>
-      </div>
+      </el-scrollbar>
 
-      <div class="markdown-body" v-html="renderedContent" />
-
-      <div v-if="loading && content" class="streaming-indicator">
-        <el-icon class="is-loading"><Loading /></el-icon>
-        <span>继续生成中...</span>
+      <!-- 底部状态栏 -->
+      <div v-if="totalDurationMs || tokenUsage" class="result-footer">
+        <span v-if="totalDurationMs" class="footer-item">
+          <el-icon><Timer /></el-icon>
+          {{ formatDuration(totalDurationMs) }}
+        </span>
+        <span v-if="tokenUsage" class="footer-item">
+          <el-icon><Coin /></el-icon>
+          Tokens: {{ tokenUsage.prompt }} + {{ tokenUsage.completion }}
+        </span>
       </div>
-    </el-scrollbar>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { DocumentCopy, Download, RefreshRight, Loading, TrendCharts } from '@element-plus/icons-vue';
+import { DocumentCopy, Download, RefreshRight, Loading, TrendCharts, Timer, Coin } from '@element-plus/icons-vue';
 // @ts-ignore
 import MarkdownIt from 'markdown-it';
+import type { StepProgress } from './useStockAnalysis';
+import StepProgressTimeline from './StepProgressTimeline.vue';
 
 interface Props {
   content?: string;
   loading?: boolean;
   title?: string;
   loadingText?: string;
+  steps?: StepProgress[];
+  totalDurationMs?: number;
+  tokenUsage?: { prompt: number; completion: number } | null;
   onRefresh?: () => void;
 }
 
@@ -52,7 +78,10 @@ const props = withDefaults(defineProps<Props>(), {
   content: '',
   loading: false,
   title: 'AI 个股诊断报告',
-  loadingText: 'AI 正在分析行情、分红、K线等数据，请稍候...',
+  loadingText: '正在准备分析...',
+  steps: () => [],
+  totalDurationMs: 0,
+  tokenUsage: null,
 });
 
 const md = new MarkdownIt({
@@ -64,6 +93,11 @@ const md = new MarkdownIt({
 const renderedContent = computed(() => {
   return md.render(props.content || '');
 });
+
+function formatDuration(ms: number): string {
+  if (ms < 1000) return `${ms}ms`;
+  return `${(ms / 1000).toFixed(1)}s`;
+}
 
 function copyContent() {
   navigator.clipboard.writeText(props.content).then(() => {
@@ -97,8 +131,7 @@ function exportMarkdown() {
   overflow: hidden;
 }
 
-.empty-state,
-.loading-state {
+.empty-state {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -107,15 +140,26 @@ function exportMarkdown() {
   padding: 40px;
 }
 
-.loading-text {
-  margin-top: 16px;
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
-}
-
 .result-scrollbar {
   flex: 1;
   padding: 20px;
+}
+
+.step-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.loading-wait {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 0;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
 }
 
 .result-header {
@@ -149,6 +193,23 @@ function exportMarkdown() {
   padding: 12px;
   color: var(--el-color-primary);
   font-size: 13px;
+}
+
+.result-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 20px;
+  border-top: 1px solid var(--el-border-color-lighter);
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  background: #fafafa;
+}
+
+.footer-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 :deep(.markdown-body) {

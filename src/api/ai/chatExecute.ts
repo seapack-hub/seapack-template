@@ -228,7 +228,7 @@ export async function executeOrchestrationStream(
     `${BASE_URL}/ai/dialog/orchestration`,
     {
       mode: 'orchestration',
-      orchestrationId: req.orchestrationId,
+      ...(req.orchestrationId != null && { orchestrationId: req.orchestrationId }),
       question: req.message,
       history: req.history,
       context: req.context,

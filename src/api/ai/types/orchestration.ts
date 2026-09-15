@@ -78,7 +78,7 @@ export interface OrchestrationQuery {
 
 /** 编排执行请求 */
 export interface OrchestrationExecuteRequest {
-  orchestrationId: number
+  orchestrationId?: number
   /** 用户输入消息 */
   message: string
   /** 对话历史 */

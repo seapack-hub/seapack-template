@@ -7,6 +7,7 @@
       clearable
       maxlength="6"
       @keyup.enter="handleAnalyze"
+
     >
       <template #prepend>
         <el-select v-model="localExchange" class="exchange-select" @change="handleExchangeChange">
@@ -104,7 +105,6 @@ function selectStock(stock: QuickStock) {
     localExchange.value = stock.exchange;
   }
   emit('select', stock);
-  emit('analyze', stock.code);
 }
 </script>
 
