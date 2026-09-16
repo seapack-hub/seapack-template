@@ -71,6 +71,7 @@ import { EditPen, Connection, Collection, ChatDotRound } from '@element-plus/ico
 import { AgentAPI, type Agent } from '@/api/ai/agent'
 import { PromptTemplateAPI, type PromptTemplate } from '@/api/ai/promptTemplate'
 import { SkillAPI, type Skill } from '@/api/ai/skill'
+import { KnowledgeBaseAPI, type KnowledgeBase } from '@/api/ai/knowledgeBase'
 import AgentConfigPromptTab from './AgentConfigPromptTab.vue'
 import AgentConfigSkillTab from './AgentConfigSkillTab.vue'
 import AgentConfigKnowledgeTab from './AgentConfigKnowledgeTab.vue'
@@ -88,7 +89,7 @@ const agentDetail = ref<Agent>({ name: '', code: '', systemPrompt: '' })
 
 const allTemplates = ref<PromptTemplate[]>([])
 const allSkills = ref<Skill[]>([])
-const allKnowledge = ref<any[]>([])
+const allKnowledge = ref<KnowledgeBase[]>([])
 
 const promptTabRef = ref<InstanceType<typeof AgentConfigPromptTab>>()
 const skillTabRef = ref<InstanceType<typeof AgentConfigSkillTab>>()
@@ -99,6 +100,7 @@ async function onOpened() {
   await Promise.all([
     loadAllTemplates(),
     loadAllSkills(),
+    loadAllKnowledge(),
     promptTabRef.value?.loadPrompts?.(),
     skillTabRef.value?.loadSkills?.(),
     knowledgeTabRef.value?.loadKnowledge?.(),
@@ -110,5 +112,8 @@ async function loadAllTemplates() {
 }
 async function loadAllSkills() {
   allSkills.value = await SkillAPI.list() || []
+}
+async function loadAllKnowledge() {
+  allKnowledge.value = await KnowledgeBaseAPI.list() || []
 }
 </script>

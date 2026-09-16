@@ -135,7 +135,7 @@ const {
   handleDelete, handleCopy, onStatusChange,
 } = usePromptTemplate()
 
-const viewMode = ref<'card' | 'list'>('list')
+const viewMode = ref<'card' | 'list'>('card')
 
 const columns = [
   ...TEMPLATE_LIST_COLUMNS,

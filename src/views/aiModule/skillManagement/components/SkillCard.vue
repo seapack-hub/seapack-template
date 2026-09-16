@@ -20,7 +20,7 @@
         :active-value="1"
         :inactive-value="0"
         size="small"
-        @change="(val: number) => emit('statusChange', skill, val)"
+        @change="(val: string | number | boolean) => emit('statusChange', skill, val as number)"
       />
     </div>
 
@@ -31,7 +31,7 @@
 
     <!-- 元信息 -->
     <div class="skill-card__meta">
-      <span v-if="skill.version" class="skill-card__version">v{{ skill.version }}</span>
+      <span v-if="skill.version" class="skill-card__version">{{ skill.version }}</span>
       <span class="skill-card__usage">{{ skill.useCount || 0 }} 次使用</span>
     </div>
 
@@ -49,6 +49,11 @@
             <el-icon :size="14"><Setting /></el-icon>
           </button>
         </el-tooltip>
+        <el-tooltip content="调试" placement="top" :show-after="400">
+          <button class="skill-card__action" @click="emit('test', skill)">
+            <el-icon :size="14"><Promotion /></el-icon>
+          </button>
+        </el-tooltip>
         <div class="skill-card__divider" />
         <el-tooltip content="删除" placement="top" :show-after="400">
           <button class="skill-card__action skill-card__action--danger" @click="emit('delete', skill)">
@@ -62,7 +67,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Edit, Setting, Delete } from '@element-plus/icons-vue'
+import { Edit, Setting, Delete, Promotion } from '@element-plus/icons-vue'
 import type { Skill } from '@/api/ai/skill'
 import Icon from '@/components/Icon/index.vue'
 
@@ -71,17 +76,18 @@ const props = defineProps<{ skill: Skill }>()
 const emit = defineEmits<{
   edit: [skill: Skill]
   params: [skill: Skill]
+  test: [skill: Skill]
   delete: [skill: Skill]
   statusChange: [skill: Skill, val: number]
 }>()
 
 const SKILL_TYPE_MAP: Record<string, { label: string; type: string }> = {
-  tool: { label: '工具调用', type: 'info' },
+  http: { label: 'HTTP 接口', type: 'info' },
+  llm: { label: '大模型', type: 'success' },
+  script: { label: '脚本执行', type: 'warning' },
+  file_gen: { label: '文件生成', type: 'danger' },
   rag: { label: '知识检索', type: 'success' },
   hybrid: { label: '混合', type: 'warning' },
-  llm: { label: 'LLM', type: '' },
-  function: { label: '函数', type: 'info' },
-  workflow: { label: '工作流', type: 'success' },
 }
 
 const skillTypeLabel = computed(() => SKILL_TYPE_MAP[props.skill.skillType || '']?.label || props.skill.skillType || '')
@@ -90,12 +96,12 @@ const tagType = computed(() => (SKILL_TYPE_MAP[props.skill.skillType || '']?.typ
 /** 图标背景渐变 */
 const coverGradient = computed(() => {
   const colors: Record<string, string[]> = {
-    tool: ['#667eea', '#764ba2'],
-    rag: ['#f093fb', '#f5576c'],
-    hybrid: ['#4facfe', '#00f2fe'],
+    http: ['#667eea', '#764ba2'],
     llm: ['#43e97b', '#38f9d7'],
-    function: ['#fa709a', '#fee140'],
-    workflow: ['#a18cd1', '#fbc2eb'],
+    script: ['#fa709a', '#fee140'],
+    file_gen: ['#f093fb', '#f5576c'],
+    rag: ['#4facfe', '#00f2fe'],
+    hybrid: ['#a18cd1', '#fbc2eb'],
   }
   const pair = colors[props.skill.skillType || ''] || ['#667eea', '#764ba2']
   return `linear-gradient(135deg, ${pair[0]}, ${pair[1]})`

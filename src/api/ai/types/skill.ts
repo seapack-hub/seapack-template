@@ -21,10 +21,12 @@ export interface Skill {
   icon?: string
   /** 描述 */
   description?: string
-  /** 技能类型：tool/rag/hybrid */
+  /** 技能类型（执行器类型）：http/llm/script/file_gen/rag/hybrid */
   skillType?: string
   /** API 端点 */
   endpoint?: string
+  /** 输出类型：json/file/stream_text/markdown */
+  outputType?: string
   /** 超时时间（毫秒） */
   timeoutMs?: number
   /** 输入参数 JSON Schema */

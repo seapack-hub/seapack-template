@@ -120,6 +120,14 @@
               :value="opt.value"
             />
           </el-select>
+          <!-- text -->
+          <el-input
+            v-else-if="paramForm.paramType === 'text'"
+            v-model="paramForm.defaultValue"
+            placeholder="可选"
+            type="textarea"
+            :rows="3"
+          />
           <!-- json -->
           <JsonEditor v-else v-model="paramForm.defaultValue" height="240px" mode="code" />
         </el-form-item>

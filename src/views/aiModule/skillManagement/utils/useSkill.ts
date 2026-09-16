@@ -75,7 +75,7 @@ export function useSkill() {
   const skillDialogIsEdit = ref(false)
   const skillFormData = ref<Skill>({
     name: '', code: '', categoryId: undefined, description: '',
-    skillType: 'tool', inputSchema: '',
+    skillType: 'http', inputSchema: '',
     version: 'v1.0.0', sortOrder: 0, status: 1,
   })
 
@@ -87,7 +87,7 @@ export function useSkill() {
     } else {
       skillFormData.value = {
         name: '', code: '', categoryId: activeCategoryId.value, description: '',
-        skillType: 'tool', inputSchema: '',
+        skillType: 'http', inputSchema: '',
         version: 'v1.0.0', sortOrder: 0, status: 1,
       }
       skillDialogIsEdit.value = false

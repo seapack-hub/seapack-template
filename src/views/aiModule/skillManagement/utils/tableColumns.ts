@@ -6,9 +6,9 @@
 
 /** 技能列表表格列（不含操作列，操作列在各组件中组装） */
 export const SKILL_LIST_COLUMNS = [
-  { label: '技能名称', prop: 'name', minWidth: '140px' },
-  { label: '技能编码', prop: 'code', minWidth: '120px' },
-  { label: '所属分类', prop: 'categoryName', minWidth: '100px' },
+  { label: '技能名称', prop: 'name', minWidth: '160px' },
+  { label: '技能编码', prop: 'code', minWidth: '140px' },
+  { label: '所属分类', prop: 'categoryName', minWidth: '120px' },
   { label: '技能类型', prop: 'skillType', width: '90px', align: 'center', slotName: 'skillType' },
   { label: 'API端点', prop: 'endpoint', minWidth: '160px', showOverflowTooltip: true },
   { label: '状态', prop: 'status', width: '80px', align: 'center', slotName: 'status' },

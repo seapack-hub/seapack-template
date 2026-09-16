@@ -296,10 +296,11 @@ function getTemplateDetails(step: AgentTraceStep): TemplateDetail[] {
   return []
 }
 
-/** 获取除 templateDetails 外的其他元数据字段 */
+/** 获取除 templateDetails 和 knowledgeDetails 外的其他元数据字段 */
 function getOtherMetadata(step: AgentTraceStep): [string, any][] {
   if (!step.metadata) return []
-  return Object.entries(step.metadata).filter(([k]) => k !== 'templateDetails')
+  const excluded = new Set(['templateDetails', 'knowledgeDetails'])
+  return Object.entries(step.metadata).filter(([k]) => !excluded.has(k))
 }
 
 interface SkillResult {

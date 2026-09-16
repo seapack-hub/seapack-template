@@ -81,30 +81,6 @@ const aiModuleRoute: Array<RouterObject> = [
           permKey: 'aiConfig',
         },
         children: [
-          //Agent 管理
-          {
-            path: 'agentManage',
-            name: 'agentManage',
-            component: () => import('@/views/aiModule/agent/index.vue'),
-            meta: {
-              title: 'agentManage',
-              description: 'Agent 管理',
-              icon: 'agent-manage',
-              permKey: 'agentManage',
-            },
-          },
-          //场景管理
-          {
-            path: 'sceneManage',
-            name: 'sceneManage',
-            component: () => import('@/views/aiModule/scene/index.vue'),
-            meta: {
-              title: 'sceneManage',
-              description: '场景管理',
-              icon: 'scene-manage',
-              permKey: 'sceneManage',
-            },
-          },
           //AI技能管理
           {
             path: 'skills',
@@ -141,8 +117,31 @@ const aiModuleRoute: Array<RouterObject> = [
               permKey: 'knowledgeBase',
             },
           },
-
-        ],
+          //Agent 管理
+          {
+            path: 'agentManage',
+            name: 'agentManage',
+            component: () => import('@/views/aiModule/agent/index.vue'),
+            meta: {
+              title: 'agentManage',
+              description: 'Agent 管理',
+              icon: 'agent-manage',
+              permKey: 'agentManage',
+            },
+          },
+          //场景管理
+          {
+            path: 'sceneManage',
+            name: 'sceneManage',
+            component: () => import('@/views/aiModule/scene/index.vue'),
+            meta: {
+              title: 'sceneManage',
+              description: '场景管理',
+              icon: 'scene-manage',
+              permKey: 'sceneManage',
+            },
+          }
+        ]
       },
       // ==================== 数据管理 ====================
       {

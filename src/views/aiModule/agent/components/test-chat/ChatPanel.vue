@@ -83,6 +83,7 @@
  */
 import { ChatDotRound, Promotion, Monitor } from '@element-plus/icons-vue'
 import { type AgentTraceSnapshot, type AgentTestChatSSEEvent } from '@/api/ai/agent'
+import { cancelChatStream } from '@/api/ai/chatExecute'
 import CacheKey from '@/constants/cache-key'
 import MessageBubble from './MessageBubble.vue'
 import type { ChatMessage } from './MessageBubble.vue'
@@ -418,6 +419,8 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
 function cancelChat() {
   currentAbortController?.abort()
   currentAbortController = null
+  // 通知后端终止正在进行的 Agent 对话（cancelFlag 机制）
+  cancelChatStream()
 }
 
 /**

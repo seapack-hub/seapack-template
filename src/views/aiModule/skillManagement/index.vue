@@ -64,6 +64,7 @@
                 :skill="row"
                 @edit="openSkillDialog"
                 @params="openParamEditor"
+                @test="openTestDialog"
                 @delete="handleCardDelete"
                 @status-change="onStatusChange"
               />
@@ -122,6 +123,11 @@
       v-model:visible="paramEditorVisible"
       :skill-id="currentSkillId"
     />
+    <!-- 技能调试弹窗 -->
+    <SkillTestDialog
+      v-model:visible="testDialogVisible"
+      :skill="testTargetSkill"
+    />
   </div>
 </template>
 
@@ -130,10 +136,12 @@ import { ElMessageBox } from 'element-plus'
 import { SKILL_LIST_COLUMNS } from './utils'
 import { SKILL_STATUS_OPTIONS } from './utils/moduleOptions'
 import { useSkill } from './utils/useSkill'
+import type { Skill } from '@/api/ai/skill'
 import SkillCategoryTree from './components/SkillCategoryTree.vue'
 import SkillFormDialog from './components/SkillFormDialog.vue'
 import SkillParamEditor from './components/SkillParamEditor.vue'
 import SkillCard from './components/SkillCard.vue'
+import SkillTestDialog from './components/SkillTestDialog.vue'
 
 const {
   categories,
@@ -157,20 +165,32 @@ const {
   openParamEditor,
 } = useSkill()
 
-const viewMode = ref<'card' | 'list'>('list')
+// ===== 技能调试 =====
+const testDialogVisible = ref(false)
+const testTargetSkill = ref<Skill | null>(null)
+
+function openTestDialog(skill: Skill) {
+  testTargetSkill.value = skill
+  testDialogVisible.value = true
+}
+
+const viewMode = ref<'card' | 'list'>('card')
 
 const skillTypeLabelMap: Record<string, string> = {
-  tool: '工具调用',
+  http: 'HTTP 接口',
+  llm: '大模型',
+  script: '脚本执行',
+  file_gen: '文件生成',
   rag: '知识检索',
   hybrid: '混合',
-  llm: 'LLM',
-  function: '函数',
-  workflow: '工作流',
 }
 const skillTypeTagMap: Record<string, string> = {
-  tool: 'info',
+  http: 'success',
+  llm: 'warning',
+  script: 'warning',
+  file_gen: 'danger',
   rag: 'success',
-  hybrid: 'warning',
+  hybrid: 'info',
 }
 
 const columns = [
@@ -180,6 +200,7 @@ const columns = [
     buttons: [
       { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openSkillDialog(row) },
       { type: 'primary', label: '参数', size: 'small', renderType: 'link', click: ({ row }: any) => openParamEditor(row) },
+      { type: 'primary', label: '调试', size: 'small', renderType: 'link', click: ({ row }: any) => openTestDialog(row) },
       { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该技能吗？' }, click: ({ row }: any) => onDeleteSkill(row) },
     ],
   },

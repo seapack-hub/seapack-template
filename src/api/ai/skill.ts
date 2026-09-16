@@ -6,9 +6,103 @@
  */
 import { request } from '@/utils/axios';
 import { serializeOptions, deserializeOptions } from '@/utils/skillParam';
+import CacheKey from '@/constants/cache-key';
 import type { Skill, SkillQuery, SkillParam } from './types/skill';
 
 export type { Skill, SkillQuery, SkillParam }
+
+// ===== SSE 通用读取器（技能调试专用） =====
+
+let currentTestAbortController: AbortController | null = null
+
+/** 取消当前进行中的技能调试请求 */
+export function abortSkillTest() {
+  currentTestAbortController?.abort()
+  currentTestAbortController = null
+}
+
+/**
+ * SSE 流式读取器 —— 供技能调试使用
+ * 与 chatExecute.ts 中的 readSseStream 逻辑一致，但使用独立的 AbortController
+ */
+async function readSseStream(
+  url: string,
+  body: any,
+  onEvent: (json: any) => void,
+  signal?: AbortSignal,
+): Promise<void> {
+  currentTestAbortController?.abort()
+  currentTestAbortController = new AbortController()
+
+  // 如果外部传入了 signal，监听它来取消内部的 controller
+  if (signal) {
+    signal.addEventListener('abort', () => currentTestAbortController?.abort())
+  }
+
+  const token = localStorage.getItem(CacheKey.TOKEN)
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+    signal: currentTestAbortController.signal,
+  })
+
+  if (!response.ok) {
+    throw new Error(`请求失败: ${response.status}`)
+  }
+
+  const reader = response.body!.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop()!
+
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (trimmed.startsWith('data:')) {
+          const raw = trimmed.slice(5).trim()
+          if (!raw) continue
+          try { onEvent(JSON.parse(raw)) } catch { /* 忽略 */ }
+        }
+      }
+    }
+    // 处理 buffer 中剩余数据
+    if (buffer.startsWith('data:')) {
+      const raw = buffer.slice(5).trim()
+      if (raw) { try { onEvent(JSON.parse(raw)) } catch { /* 忽略 */ } }
+    }
+  } finally {
+    reader.releaseLock()
+    currentTestAbortController = null
+  }
+}
+
+/**
+ * 技能调试 SSE 流式执行
+ */
+async function testSkillStream(
+  skillId: number,
+  params: Record<string, any>,
+  onEvent: (event: { type: string; [key: string]: any }) => void,
+  signal?: AbortSignal,
+): Promise<void> {
+  await readSseStream(
+    `${BASE_URL}/ai/skills/test-stream`,
+    { skillId, params },
+    onEvent,
+    signal,
+  )
+}
 
 const BASE_URL = '/api';
 
@@ -103,5 +197,24 @@ export const SkillAPI = {
       url: `${BASE_URL}/ai/skills/${skillId}/delete-param/${paramId}`, 
       method: 'post' 
     });
+  },
+
+  // ===== 技能调试（SSE 流式） =====
+
+  /**
+   * 调试执行单个技能（SSE 流式）
+   *
+   * @param skillId  技能 ID
+   * @param params   用户填写的测试参数
+   * @param onEvent  SSE 事件回调
+   * @param signal   AbortSignal（用于取消请求）
+   */
+  testSkillStream(
+    skillId: number,
+    params: Record<string, any>,
+    onEvent: (event: { type: string; [key: string]: any }) => void,
+    signal?: AbortSignal,
+  ): Promise<void> {
+    return testSkillStream(skillId, params, onEvent, signal)
   },
 };

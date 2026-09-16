@@ -68,6 +68,20 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
+          <el-form-item label="输出类型" prop="outputType">
+            <el-select v-model="form.outputType" placeholder="选择输出类型" style="width: 100%">
+              <el-option
+                v-for="opt in OUTPUT_TYPE_OPTIONS"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20">
+        <el-col :span="12">
           <el-form-item label="超时时间(ms)" prop="timeoutMs">
             <el-input-number v-model="form.timeoutMs" :min="1000" :max="300000" :step="1000" style="width: 100%" />
           </el-form-item>
@@ -105,7 +119,7 @@
 <script setup lang="ts">
 import type { Skill } from '@/api/ai/skill';
 import type { SkillCategory } from '@/api/ai/skillCategory';
-import { SKILL_TYPE_OPTIONS } from '../utils/moduleOptions'
+import { SKILL_TYPE_OPTIONS, OUTPUT_TYPE_OPTIONS } from '../utils/moduleOptions'
 import JsonEditor from '@/components/JsonEditor/index.vue'
 
 const props = defineProps<{
@@ -123,8 +137,9 @@ const form = defineModel<Skill>('form', {
     categoryId: undefined,
     icon: '',
     description: '',
-    skillType: 'tool',
+    skillType: 'http',
     endpoint: '',
+    outputType: 'json',
     timeoutMs: 30000,
     inputSchema: '',
     version: 'v1.0.0',
