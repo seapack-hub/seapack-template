@@ -36,7 +36,7 @@
           <el-tag type="info" size="small" effect="plain">共 {{ total }} 条</el-tag>
         </div>
         <div class="toolbar-right">
-          <el-button type="primary" icon="plus" @click="createProject">新增项目</el-button>
+          <el-button v-permission="'blogsManagement:blogsAdmin:projectList:add'" type="primary" icon="plus" @click="createProject">新增项目</el-button>
           <el-button icon="refresh" circle @click="fetchData" />
         </div>
       </div>
@@ -98,8 +98,23 @@ const columns = reactive([
   {
     columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
     buttons: [
-      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => editProject(row.id) },
-      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确定删除该项目吗？' }, click: ({ row }: any) => deleteProject(row.id) },
+      { 
+        type: 'primary', 
+        label: '编辑', 
+        size: 'small', 
+        renderType: 'link', 
+        buttonPermission: 'blogsManagement:blogsAdmin:projectList:edit',
+        click: ({ row }: any) => editProject(row.id) 
+      },
+      { 
+        type: 'danger', 
+        label: '删除', 
+        size: 'small', 
+        renderType: 'link', 
+        buttonPermission: 'blogsManagement:blogsAdmin:projectList:delete',
+        popconfirm: { title: '确定删除该项目吗？' }, 
+        click: ({ row }: any) => deleteProject(row.id) 
+      },
     ],
   },
 ])

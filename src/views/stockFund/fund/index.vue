@@ -62,6 +62,9 @@
 import { FundBaseInfoAPI, FundPageQuery } from '@/api/stockFund/fund/fund.ts';
 import { ExportHeader,ExportRequest, exportExcel} from '@/api/system/export.ts';
 import { useRouter } from 'vue-router'
+import { usePagePermission } from '@/hooks/usePagePermission'
+
+usePagePermission('fundBaseInfo', '基金信息')
 
 const router = useRouter();
 

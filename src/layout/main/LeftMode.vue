@@ -34,5 +34,6 @@ const sidebarWidth = computed(() => {
 }
 .el-main{
   background-color: rgba(247, 249, 252, 1);
+  overflow: hidden;
 }
 </style>

@@ -146,6 +146,9 @@ import AiAnalysisResult from '@/views/stockFund/components/AiAnalysisResult.vue'
 import { useStockAnalysis } from '@/views/stockFund/components/useStockAnalysis';
 import { HOT_STOCKS, ANALYZE_DIMENSIONS } from '@/views/stockFund/components/stock';
 import type { Scene } from '@/api/ai/scene';
+import { usePagePermission } from '@/hooks/usePagePermission'
+
+usePagePermission('aiStockAnalysis', 'AI 个股诊断')
 
 const {
   // 场景

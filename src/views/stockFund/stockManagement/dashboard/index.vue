@@ -3,7 +3,7 @@
     <el-card shadow="never" class="flex-1 flex flex-col el-card-main">
       <div class="header">
         <span class="title">股票监控池</span>
-        <el-button type="primary" icon="plus" @click="addVisible = true">添加监控股票</el-button>
+        <el-button v-permission="'stockFund:stock:dashboardView:add'" type="primary" icon="plus" @click="addVisible = true">添加监控股票</el-button>
       </div>
 
       <div class="search-bar h-[50px]">
@@ -32,15 +32,15 @@
           <template #isActive>
             <el-table-column label="状态" min-width="80px" align="center" slot-name="isActive">
               <template #default="{ row }">
-                <el-switch :model-value="row.isActive === 1" @change="onToggle(row)" />
+                <el-switch :model-value="row.isActive === 1" :disabled="!visible" @change="onToggle(row as any)" />
               </template>
             </el-table-column>
           </template>
           <template #operate>
             <el-table-column label="操作" width="200px" align="center" slot-name="operate">
               <template #default="{ row }">
-                <el-button link type="primary" size="small" @click="onThreshold(row)">设置阈值</el-button>
-                <el-button link type="danger" size="small" @click="onDelete(row)">删除</el-button>
+                <el-button link type="primary" size="small" @click="onThreshold(row as any)">设置阈值</el-button>
+                <el-button v-permission="'stockFund:stock:dashboardView:delete'" link type="danger" size="small" @click="onDelete(row as any)">删除</el-button>
               </template>
             </el-table-column>
           </template>
@@ -64,7 +64,14 @@ import { UserStockMonitorAPI, type UserStockMonitorVO, type UserStockMonitorQuer
 import { useUserStore } from '@/store/modules/user'
 import AddStockDialog from './components/AddStockDialog.vue'
 import ThresholdDrawer from './components/ThresholdDrawer.vue'
+import useButtonPermission from '@/hooks/useButtonPermission'
+import { usePagePermission } from '@/hooks/usePagePermission'
 
+usePagePermission('dashboardView', '股票监控池')
+
+const { buttonHasPermission } = useButtonPermission()
+
+const visible = computed(() => buttonHasPermission('stockFund:stock:dashboardView:isDisable'))
 const userStore = useUserStore()
 
 const query = ref<UserStockMonitorQuery>({ userId: String(userStore.userInfo.id!), pageNum: 1, pageSize: 10, stockCode: '', stockName: '', isActive: undefined })

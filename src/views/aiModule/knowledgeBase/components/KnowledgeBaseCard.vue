@@ -16,7 +16,8 @@
         :active-value="1"
         :inactive-value="0"
         size="small"
-        @change="(val: number) => emit('statusChange', kb, val)"
+        :disabled="!visible"
+        @change="(val: string | number | boolean) => emit('statusChange', kb, val as number)"
       />
     </div>
 
@@ -52,9 +53,9 @@
     <div class="kb-card__footer">
       <span class="kb-card__type">Knowledge</span>
       <div class="kb-card__actions">
-        <el-tooltip content="编辑" placement="top" :show-after="400">
-          <button class="kb-card__action" @click="emit('edit', kb)">
-            <el-icon :size="14"><Edit /></el-icon>
+        <el-tooltip content="详情" placement="top" :show-after="400">
+          <button class="kb-card__action" @click="emit('view', kb)">
+            <el-icon :size="14"><View /></el-icon>
           </button>
         </el-tooltip>
         <el-tooltip content="文档" placement="top" :show-after="400">
@@ -63,23 +64,23 @@
           </button>
         </el-tooltip>
         <el-tooltip content="分片" placement="top" :show-after="400">
-          <button class="kb-card__action" @click="emit('chunks', kb)">
+          <button v-permission="'aiModule:aiConfig:knowledgeBase:splitting'" class="kb-card__action" @click="emit('chunks', kb)">
             <el-icon :size="14"><Grid /></el-icon>
           </button>
         </el-tooltip>
         <el-tooltip content="检索测试" placement="top" :show-after="400">
-          <button class="kb-card__action" @click="emit('retrieve', kb)">
+          <button v-permission="'aiModule:aiConfig:knowledgeBase:search'" class="kb-card__action" @click="emit('retrieve', kb)">
             <el-icon :size="14"><Search /></el-icon>
           </button>
         </el-tooltip>
         <el-tooltip content="复制" placement="top" :show-after="400">
-          <button class="kb-card__action" @click="emit('copy', kb)">
+          <button v-permission="'aiModule:aiConfig:knowledgeBase:copy'" class="kb-card__action" @click="emit('copy', kb)">
             <el-icon :size="14"><CopyDocument /></el-icon>
           </button>
         </el-tooltip>
         <div class="kb-card__divider" />
         <el-tooltip content="删除" placement="top" :show-after="400">
-          <button class="kb-card__action kb-card__action--danger" @click="emit('delete', kb)">
+          <button v-permission="'aiModule:aiConfig:knowledgeBase:delete'" class="kb-card__action kb-card__action--danger" @click="emit('delete', kb)">
             <el-icon :size="14"><Delete /></el-icon>
           </button>
         </el-tooltip>
@@ -89,14 +90,14 @@
 </template>
 
 <script setup lang="ts">
-import { Edit, Document, Grid, Search, CopyDocument, Delete } from '@element-plus/icons-vue'
+import { View, Document, Grid, Search, CopyDocument, Delete } from '@element-plus/icons-vue'
 import type { KnowledgeBase } from '@/api/ai/knowledgeBase'
 import Icon from '@/components/Icon/index.vue'
 
-defineProps<{ kb: KnowledgeBase }>()
+defineProps<{ kb: KnowledgeBase, visible: boolean }>()
 
 const emit = defineEmits<{
-  edit: [kb: KnowledgeBase]
+  view: [kb: KnowledgeBase]
   documents: [kb: KnowledgeBase]
   chunks: [kb: KnowledgeBase]
   retrieve: [kb: KnowledgeBase]

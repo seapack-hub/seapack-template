@@ -6,14 +6,8 @@ export interface FeatureItem {
   route: string
   color: string
   stat?: string
+  permKey?: string
 }
-
-export const marketData = [
-  { label: '上证指数', value: '3,215.68', change: 0.82 },
-  { label: '深证成指', value: '10,234.56', change: 1.23 },
-  { label: '创业板指', value: '2,156.42', change: -0.35 },
-  { label: '科创50', value: '968.25', change: 1.67 },
-]
 
 export const features: FeatureItem[] = [
   {
@@ -24,6 +18,7 @@ export const features: FeatureItem[] = [
     route: '/stockFund/stock/stockQuote',
     color: '#F44336',
     stat: '实时',
+    permKey: 'stockQuote',
   },
   {
     name: 'aiStockAnalysis',
@@ -33,6 +28,7 @@ export const features: FeatureItem[] = [
     route: '/stockFund/aiStockAnalysis',
     color: '#9C27B0',
     stat: 'AI',
+    permKey: 'aiStockAnalysis',
   },
   {
     name: 'stockPool',
@@ -42,6 +38,7 @@ export const features: FeatureItem[] = [
     route: '/stockFund/stock/stockPool',
     color: '#FF9800',
     stat: '管理',
+    permKey: 'stockPool',
   },
   {
     name: 'dividendData',
@@ -50,6 +47,7 @@ export const features: FeatureItem[] = [
     icon: 'Wallet',
     route: '/stockFund/stock/dividendData',
     color: '#4CAF50',
+    permKey: 'dividendData',
   },
   {
     name: 'dashboardView',
@@ -59,6 +57,7 @@ export const features: FeatureItem[] = [
     route: '/stockFund/stock/dashboardView',
     color: '#2196F3',
     stat: '监控',
+    permKey: 'dashboardView',
   },
   {
     name: 'alertHistory',
@@ -67,6 +66,7 @@ export const features: FeatureItem[] = [
     icon: 'Bell',
     route: '/stockFund/stock/alertHistory',
     color: '#E91E63',
+    permKey: 'alertHistory',
   },
   {
     name: 'fundBaseInfo',
@@ -76,5 +76,6 @@ export const features: FeatureItem[] = [
     route: '/stockFund/fund/fundBaseInfo',
     color: '#00BCD4',
     stat: '基金',
+    permKey: 'fundBaseInfo',
   },
 ]

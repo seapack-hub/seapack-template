@@ -10,7 +10,10 @@
     @opened="onOpened"
   >
     <!-- 上传区域 -->
-    <div class="upload-area">
+    <div v-if="!isAddDocx" class="no-permission-tip">
+      <el-alert title="暂无上传文档权限，请联系管理员开通" type="warning" show-icon :closable="false" />
+    </div>
+    <div v-else class="upload-area">
       <el-upload
         ref="uploadRef"
         class="upload-wrapper"
@@ -120,7 +123,7 @@
             <el-button link type="primary" size="small" :disabled="row.parseStatus === 1 || row.vectorStatus === 1" @click="handleReprocess(row as KnowledgeDocument)">
               重新处理
             </el-button>
-            <el-button link type="danger" size="small" @click="handleDeleteDoc(row as KnowledgeDocument)">删除</el-button>
+            <el-button v-permission="'aiModule:aiConfig:knowledgeBase:deleteDocx'" link type="danger" size="small" @click="handleDeleteDoc(row as KnowledgeDocument)">删除</el-button>
           </template>
         </el-table-column>
       </template>
@@ -143,6 +146,12 @@ import { ElMessageBox, type UploadInstance, type UploadProps } from 'element-plu
 import { KnowledgeBaseAPI, type KnowledgeDocument } from '@/api/ai/knowledgeBase'
 import { DOCUMENT_LIST_COLUMNS } from '../utils/tableColumns'
 import { PARSE_STATUS_MAP, VECTOR_STATUS_MAP } from '../utils/moduleOptions'
+
+import useButtonPermission from '@/hooks/useButtonPermission'
+
+const { buttonHasPermission } = useButtonPermission()
+
+const isAddDocx = computed(() => buttonHasPermission('aiModule:aiConfig:knowledgeBase:addDocx'))
 import CacheKey from '@/constants/cache-key'
 
 /** 单条日志条目 */
@@ -429,6 +438,9 @@ onUnmounted(() => {
   color: var(--el-text-color-secondary);
   text-align: center;
   margin-top: 4px;
+}
+.no-permission-tip {
+  margin-bottom: 8px;
 }
 
 .doc-table {

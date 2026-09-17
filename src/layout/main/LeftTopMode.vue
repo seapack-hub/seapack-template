@@ -91,5 +91,9 @@ const sidebarWidth = computed(() => {
   //设置平滑过渡效果，监听宽度变化，平滑5秒
   transition-property: width;
   transition-duration: 0.5s;
+  overflow: hidden;
+}
+.el-main {
+  overflow: hidden;
 }
 </style>

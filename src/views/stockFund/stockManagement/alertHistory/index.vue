@@ -31,6 +31,9 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { AlertLogAPI, type AlertLogDto } from '@/api/stockFund/stock/alertLog'
 import { useUserStore } from '@/store/modules/user'
+import { usePagePermission } from '@/hooks/usePagePermission'
+
+usePagePermission('alertHistory', '告警历史记录')
 
 const userStore = useUserStore()
 const queryFormRef = ref<any>(null)

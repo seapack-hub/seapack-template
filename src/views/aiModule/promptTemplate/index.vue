@@ -30,7 +30,9 @@
 
       <!-- 工具栏 -->
       <div class="toolbar">
-        <el-button type="success" icon="plus" @click="openAddDialog()">新增模板</el-button>
+        <div class="toolbar-left">
+          <el-button v-permission="'aiModule:aiConfig:promptTemplate:add'" type="success" icon="plus" @click="openAddDialog()">新增模板</el-button>
+        </div>
         <el-radio-group v-model="viewMode" class="view-switcher">
           <el-radio-button value="card">
             <el-icon><Grid /></el-icon>
@@ -58,8 +60,9 @@
             v-for="row in tableData"
             :key="row.id"
             :tpl="row"
-            @edit="openEditDialog"
-            @preview="openPreview"
+            :visible="visible"
+            @view="openViewDialog"
+            @tweak="openPreview"
             @copy="handleCardCopy"
             @delete="handleCardDelete"
             @status-change="onStatusChange"
@@ -83,6 +86,7 @@
                     :model-value="row.status"
                     :active-value="1"
                     :inactive-value="0"
+                    :disabled="!visible"
                     @change="(val) => onStatusChange(row as any, val as number)"
                   />
                 </template>
@@ -101,7 +105,7 @@
       </Transition>
     </el-card>
 
-    <!-- 新增/编辑弹窗 -->
+    <!-- 新增/详情弹窗 -->
     <PromptFormDialog
       v-model:visible="formVisible"
       v-model:is-edit="formIsEdit"
@@ -126,12 +130,16 @@ import { TEMPLATE_LIST_COLUMNS } from './utils/tableColumns'
 import PromptFormDialog from './components/PromptFormDialog.vue'
 import PromptPreviewDialog from './components/PromptPreviewDialog.vue'
 import PromptTemplateCard from './components/PromptTemplateCard.vue'
+import useButtonPermission from '@/hooks/useButtonPermission'
 
+const { buttonHasPermission } = useButtonPermission()
+
+const visible = computed(() => buttonHasPermission('aiModule:aiConfig:promptTemplate:isDisable'))
 const {
   queryParams, tableData, total, loading,
   handleQuery, handleReset,
   formVisible, formIsEdit, formLoading, formData,
-  openAddDialog, openEditDialog, onFormConfirm,
+  openAddDialog, openViewDialog, onFormConfirm,
   handleDelete, handleCopy, onStatusChange,
 } = usePromptTemplate()
 
@@ -142,10 +150,37 @@ const columns = [
   {
     columnType: 'operate', label: '操作', width: '170px', fixed: 'right',
     buttons: [
-      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openEditDialog(row) },
-      { type: 'primary', label: '预览', size: 'small', renderType: 'link', click: ({ row }: any) => openPreview(row) },
-      { type: 'primary', label: '复制', size: 'small', renderType: 'link', click: ({ row }: any) => handleCopy(row) },
-      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该模板吗？' }, click: ({ row }: any) => handleDelete(row) },
+      {
+        type: 'primary',
+        label: '详情',
+        size: 'small',
+        renderType: 'link',
+        click: ({ row }: any) => openViewDialog(row)
+      },
+      {
+        type: 'primary',
+        label: '调试',
+        size: 'small',
+        renderType: 'link',
+        buttonPermission: 'aiModule:aiConfig:promptTemplate:tweak',
+        click: ({ row }: any) => openPreview(row)
+      },
+      {
+        type: 'primary',
+        label: '复制',
+        size: 'small',
+        buttonPermission: 'aiModule:aiConfig:promptTemplate:copy',
+        renderType: 'link', click: ({ row }: any) => handleCopy(row)
+      },
+      {
+        type: 'danger',
+        label: '删除',
+        size: 'small',
+        renderType: 'link',
+        popconFirm: { title: '确认删除该模板吗？' },
+        buttonPermission: 'aiModule:aiConfig:promptTemplate:delete',
+        click: ({ row }: any) => handleDelete(row)
+      },
     ],
   },
 ]
@@ -195,6 +230,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.toolbar-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 .view-switcher {

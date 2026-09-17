@@ -43,7 +43,7 @@ export function useKnowledgeBase() {
     formVisible.value = true
   }
 
-  async function openEditDialog(row: KnowledgeBase) {
+  async function openViewDialog(row: KnowledgeBase) {
     formVisible.value = true
     formIsEdit.value = true
     try {
@@ -128,7 +128,7 @@ export function useKnowledgeBase() {
     formIsEdit,
     formData,
     openAddDialog,
-    openEditDialog,
+    openViewDialog,
     onFormConfirm,
     handleDelete,
     handleCopy,

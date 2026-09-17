@@ -1,19 +1,22 @@
 <template>
   <div class="page-container">
-    <!-- ===== 顶部大盘指数卡片 ===== -->
-    <!-- 6 个主要指数：上证、深证、创业板、科创50、沪深300、上证50 -->
-    <el-row :gutter="12" class="market-indices">
-      <el-col v-for="idx in marketIndices" :key="idx.code" :span="4">
-        <el-card shadow="never" :body-style="{ padding: '12px 16px' }" class="index-card">
-          <div class="index-name">{{ idx.name }}</div>
-          <div class="index-price" :class="changeClass(idx.change)">{{ idx.price.toFixed(2) }}</div>
-          <div class="index-change" :class="changeClass(idx.change)">
-            <template v-if="idx.change > 0">+</template>{{ idx.change.toFixed(2) }}
-            <span class="ml-4px">({{ idx.changePct > 0 ? '+' : '' }}{{ idx.changePct.toFixed(2) }}%)</span>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <!-- ===== 顶部大盘指数卡片（后端动态加载） ===== -->
+    <div class="market-indices flex gap-12px overflow-x-auto pb-8px">
+      <div
+        v-for="idx in marketIndices"
+        :key="idx.indexCode"
+        class="index-card flex-shrink-0 w-[150px] bg-white rounded-8px border border-solid border-[#e4e7ed] p-12px 16px transition-all-200"
+      >
+        <div class="text-13px color-[#606266] mb-6px truncate">{{ idx.indexName }}</div>
+        <div class="text-18px font-700 font-['DIN_Alternate',monospace] mb-4px" :class="changeClass(idx.changeAmt)">
+          {{ idx.latestPrice != null ? idx.latestPrice.toFixed(2) : '--' }}
+        </div>
+        <div class="text-12px" :class="changeClass(idx.changeAmt)">
+          <template v-if="idx.changeAmt != null && idx.changeAmt > 0">+</template>{{ idx.changeAmt?.toFixed(2) ?? '--' }}
+          <span class="ml-4px">({{ idx.changePct != null ? (idx.changePct > 0 ? '+' : '') + idx.changePct.toFixed(2) : '--' }}%)</span>
+        </div>
+      </div>
+    </div>
 
     <!-- ===== 左侧行业板块树 + 右侧行情表格 ===== -->
     <div class="flex-1 flex gap-10px overflow-hidden">
@@ -46,7 +49,7 @@
       <!-- 右侧行情表格面板 -->
       <el-card shadow="never" class="flex-1 flex flex-col overflow-hidden el-card-main">
         <!-- 搜索栏：股票代码/名称模糊搜索 + 交易所下拉筛选 -->
-        <div class="search-bar h-[50px]">
+        <div class="search-bar h-[40px]">
           <el-form :model="query" :inline="true">
             <el-form-item label="股票代码">
               <el-input v-model="query.stockCode" placeholder="模糊搜索" clearable style="width: 160px" @keyup.enter="handleSearch" />
@@ -135,10 +138,14 @@
 <script setup lang="ts">
 /* ========== API 和工具 ========== */
 import { StockMarketQuoteAPI, type StockMarketQuoteDto, type StockMarketQuoteQuery } from '@/api/stockFund/stock/stockMarketQuote.ts'
+import { IndexSpotAPI, type IndexSpot } from '@/api/stockFund/stock/indexSpot.ts'
 import { IndustrySectorAPI, type IndustrySector } from '@/api/system/baseInfo/industrySector.ts'
 import { useDictionaryStore } from '@/store/modules/dictionary'
 import { createStockQuoteColumns } from '../components/columns'
 import { yieldLevelClass } from '../components/shared'
+import { usePagePermission } from '@/hooks/usePagePermission'
+
+usePagePermission('stockQuote', '股票实时行情')
 
 const dictStore = useDictionaryStore()
 /* ========== 状态定义 ========== */
@@ -174,16 +181,15 @@ function changeClass(val: number | null | undefined): string {
   return 'zero'
 }
 
-/* ========== 大盘指数模拟数据 ========== */
-/** 六大核心指数展示（后续可对接后端实时接口） */
-const marketIndices = ref([
-  { code: '000001', name: '上证指数', price: 3158.68, change: 18.25, changePct: 0.58 },
-  { code: '399001', name: '深证成指', price: 10642.36, change: -12.47, changePct: -0.12 },
-  { code: '399006', name: '创业板指', price: 2158.42, change: 8.63, changePct: 0.40 },
-  { code: '000688', name: '科创50', price: 968.75, change: 5.82, changePct: 0.60 },
-  { code: '000300', name: '沪深300', price: 3685.24, change: 10.36, changePct: 0.28 },
-  { code: '000016', name: '上证50', price: 2516.48, change: 15.72, changePct: 0.63 },
-])
+/* ========== 大盘指数（后端动态加载） ========== */
+const marketIndices = ref<IndexSpot[]>([])
+
+/** 加载大盘指数 */
+async function loadMarketIndices() {
+  try {
+    marketIndices.value = await IndexSpotAPI.list()
+  } catch { /* 静默失败 */ }
+}
 
 /* ========== 行业树操作 ========== */
 /** 将后端 IndustrySector 树形数据转为 el-tree 所需格式 */
@@ -260,6 +266,7 @@ onMounted(async () => {
     exchangeOptions.value = await dictStore.getDictOptions('exchange_type')
   } catch { /* 降级为空 */ }
   loadIndustryTree()
+  loadMarketIndices()
   fetchData()
 })
 </script>

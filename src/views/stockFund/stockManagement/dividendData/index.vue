@@ -8,7 +8,7 @@
       <!-- 工具栏 -->
       <div class="table-toolbar h-[50px] flex items-center justify-between">
         <span class="text-15px font-bold">分红数据维护</span>
-        <el-button type="success" icon="plus" @click="openDialog()">新增分红</el-button>
+        <el-button v-permission="'stockFund:stock:dividendData:add'" type="success" icon="plus" @click="openDialog()">新增分红</el-button>
       </div>
       <!-- 表格 + 分页 -->
       <div class="flex-1 flex flex-col justify-between overflow-hidden border">
@@ -50,6 +50,9 @@ import { createDividendColumns } from '../components/columns'
 import { useDividendDict } from './components/useDividendDict'
 import DividendSearch from './components/DividendSearch.vue'
 import DividendFormDialog from './components/DividendFormDialog.vue'
+import { usePagePermission } from '@/hooks/usePagePermission'
+
+usePagePermission('dividendData', '分红数据维护')
 
 const { typeOpts, statusOpts, load, dictName } = useDividendDict()
 

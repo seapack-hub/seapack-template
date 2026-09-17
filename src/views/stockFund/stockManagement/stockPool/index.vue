@@ -49,8 +49,8 @@
         <!-- 工具栏 -->
         <div class="table-toolbar h-[50px] flex items-center">
           <div>
-            <el-button type="success" icon="plus" @click="openFormDialog()">新增</el-button>
-            <el-button icon="upload-filled" @click="batchVisible = true">批量导入</el-button>
+            <el-button v-permission="'stockFund:stock:stockPool:add'" type="success" icon="plus" @click="openFormDialog()">新增</el-button>
+            <el-button v-permission="'stockFund:stock:stockPool:batchImport'" icon="upload-filled" @click="batchVisible = true">批量导入</el-button>
           </div>
         </div>
         <!-- 表格主体 + 分页 -->
@@ -86,6 +86,9 @@ import { useDictionaryStore } from '@/store/modules/dictionary'
 import { createStockPoolColumns } from '../components/columns'
 import StockPoolFormDialog from './components/StockPoolFormDialog.vue'
 import StockPoolBatchDialog from './components/StockPoolBatchDialog.vue'
+import { usePagePermission } from '@/hooks/usePagePermission'
+
+usePagePermission('stockPool', '股票池管理')
 
 const dictStore = useDictionaryStore()
 /* ========== 交易所字典 ========== */

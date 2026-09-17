@@ -1,11 +1,13 @@
 <!--
-  提示词模板新增/编辑弹框
-  包含基本信息、模板正文、变量管理、模型参数、版本状态
+  提示词模板 详情/编辑 弹框
+  - 新增模式：直接进入编辑态
+  - 编辑模式：默认详情只读，点击「编辑」按钮后切换为可编辑
+  - 详情态：模板正文可滚动查看，变量表格完整展示
 -->
 <template>
   <el-dialog
     v-model="visible"
-    :title="isEdit ? '编辑模板' : '新增模板'"
+    :title="dialogTitle"
     width="1050px"
     top="5vh"
     @closed="onClosed"
@@ -14,19 +16,19 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="模板名称" prop="name">
-            <el-input v-model="form.name" placeholder="如 股票技术分析模板" />
+            <el-input v-model="form.name" placeholder="如 股票技术分析模板" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="模板编码" prop="code">
-            <el-input v-model="form.code" placeholder="如 stock_tech_analysis" :disabled="isEdit" />
+            <el-input v-model="form.code" placeholder="如 stock_tech_analysis" :disabled="isReadonly || isEdit" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="分类" prop="category">
-            <el-select v-model="form.category" placeholder="选择分类" style="width: 100%">
+            <el-select v-model="form.category" placeholder="选择分类" style="width: 100%" :disabled="isReadonly">
               <el-option
                 v-for="opt in TEMPLATE_CATEGORY_OPTIONS.filter(o => o.value)"
                 :key="opt.value"
@@ -38,7 +40,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="输出格式" prop="outputFormat">
-            <el-select v-model="form.outputFormat" style="width: 100%">
+            <el-select v-model="form.outputFormat" style="width: 100%" :disabled="isReadonly">
               <el-option
                 v-for="opt in OUTPUT_FORMAT_OPTIONS"
                 :key="opt.value"
@@ -50,19 +52,24 @@
         </el-col>
       </el-row>
       <el-form-item label="描述" prop="description">
-        <el-input v-model="form.description" type="textarea" :rows="2" placeholder="模板用途说明" />
+        <el-input v-model="form.description" type="textarea" :rows="2" placeholder="模板用途说明" :disabled="isReadonly" />
       </el-form-item>
 
       <!-- 模板正文 -->
       <el-form-item label="模板正文" prop="content">
-        <el-input
-          v-model="form.content"
-          type="textarea"
-          :rows="8"
-          placeholder="输入提示词模板，使用 {{变量名}} 标记可替换内容"
-        />
-        <div class="mt-4 text-12px text-[var(--el-text-color-secondary)]">
-          使用 <code class="bg-[var(--el-fill-color-light)] px-1 rounded">{{ '变量名' }}</code> 语法定义变量，变量将在下方"变量管理"中自动识别
+        <div v-if="isReadonly" class="content-readonly">
+          <pre class="content-pre">{{ form.content || '暂无内容' }}</pre>
+        </div>
+        <div v-else class="w-full">
+          <el-input
+            v-model="form.content"
+            type="textarea"
+            :rows="8"
+            placeholder="输入提示词模板，使用 {{变量名}} 标记可替换内容"
+          />
+          <div class="mt-4 text-12px text-[var(--el-text-color-secondary)]">
+            使用 <code class="bg-[var(--el-fill-color-light)] px-1 rounded">{{ '变量名' }}</code> 语法定义变量，变量将在下方"变量管理"中自动识别
+          </div>
         </div>
       </el-form-item>
 
@@ -73,50 +80,51 @@
             <span class="text-13px text-[var(--el-text-color-secondary)]">
               已识别 <strong>{{ detectedVars.length }}</strong> 个变量
             </span>
-            <el-button type="primary" size="small" icon="plus" @click="openVarForm()">新增变量</el-button>
+            <el-button v-if="!isReadonly" type="primary" size="small" icon="plus" @click="openVarForm()">新增变量</el-button>
           </div>
-          <SpTable
-            :data="form.variables || []"
-            :columns="varColumns"
-            :show-index="true"
-            size="small"
-            max-height="240"
-          >
-            <template #varType>
-              <el-table-column label="类型" prop="varType" width="90" align="center" slot-name="varType">
-                <template #default="{ row }">
-                  <el-tag :type="varTypeTag(row.varType) as any" size="small">{{ varTypeLabel(row.varType) }}</el-tag>
-                </template>
-              </el-table-column>
-            </template>
-            <template #required>
-              <el-table-column label="必填" prop="required" width="60" align="center" slot-name="required">
-                <template #default="{ row }">
-                  <el-tag :type="row.required === 1 ? 'danger' : 'info'" size="small">{{ row.required === 1 ? '是' : '否' }}</el-tag>
-                </template>
-              </el-table-column>
-            </template>
-            <template #operate>
-              <el-table-column label="操作" width="120" align="center" fixed="right">
-                <template #default="{ row, $index }">
-                  <el-button link type="primary" size="small" @click="openVarForm(row as any, $index)">编辑</el-button>
-                  <el-button link type="danger" size="small" @click="removeVar($index)">删除</el-button>
-                </template>
-              </el-table-column>
-            </template>
-          </SpTable>
+          <div class="variables-wrapper">
+            <SpTable
+              :data="form.variables || []"
+              :columns="currentVarColumns"
+              :show-index="true"
+              size="small"
+            >
+              <template #varType>
+                <el-table-column label="类型" prop="varType" width="90" align="center" slot-name="varType">
+                  <template #default="{ row }">
+                    <el-tag :type="varTypeTag(row.varType) as any" size="small">{{ varTypeLabel(row.varType) }}</el-tag>
+                  </template>
+                </el-table-column>
+              </template>
+              <template #required>
+                <el-table-column label="必填" prop="required" width="60" align="center" slot-name="required">
+                  <template #default="{ row }">
+                    <el-tag :type="row.required === 1 ? 'danger' : 'info'" size="small">{{ row.required === 1 ? '是' : '否' }}</el-tag>
+                  </template>
+                </el-table-column>
+              </template>
+              <template v-if="!isReadonly" #operate>
+                <el-table-column label="操作" width="120" align="center" fixed="right">
+                  <template #default="{ row, $index }">
+                    <el-button link type="primary" size="small" @click="openVarForm(row as any, $index)">编辑</el-button>
+                    <el-button link type="danger" size="small" @click="removeVar($index)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </template>
+            </SpTable>
+          </div>
         </div>
       </el-form-item>
 
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="版本号">
-            <el-input v-model="form.version" placeholder="v1.0.0" />
+            <el-input v-model="form.version" placeholder="v1.0.0" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="状态">
-            <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" />
+            <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -189,8 +197,10 @@
     </el-dialog>
 
     <template #footer>
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" :loading="submitting || ($attrs.loading as boolean)" @click="onSubmit">确认</el-button>
+      <el-button v-if="isReadonly" @click="visible = false">关闭</el-button>
+      <el-button v-if="isReadonly" v-permission="'aiModule:aiConfig:promptTemplate:edit'" type="primary" @click="enterEditMode">编辑</el-button>
+      <el-button v-if="!isReadonly" @click="visible = false">取消</el-button>
+      <el-button v-if="!isReadonly" type="primary" :loading="submitting || ($attrs.loading as boolean)" @click="onSubmit">确认</el-button>
     </template>
   </el-dialog>
 </template>
@@ -206,14 +216,14 @@ const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
 const form = defineModel<PromptTemplate>('form', {
   default: () => ({
-    name: '', 
-    code: '', 
-    category: 'general', 
-    content: '', 
-    variables: [], 
-    description: '', 
-    outputFormat: 'markdown', 
-    version: 'v1.0.0', 
+    name: '',
+    code: '',
+    category: 'general',
+    content: '',
+    variables: [],
+    description: '',
+    outputFormat: 'markdown',
+    version: 'v1.0.0',
     status: 1,
   }),
 })
@@ -221,6 +231,22 @@ const form = defineModel<PromptTemplate>('form', {
 const emit = defineEmits<{ confirm: [formData: PromptTemplate, isEdit: boolean] }>()
 
 defineProps<{ loading?: boolean }>()
+
+// ===== 详情/编辑模式 =====
+const isEditing = ref(false)
+
+/** 是否为只读状态：已有模板 + 未点击编辑 */
+const isReadonly = computed(() => isEdit.value && !isEditing.value)
+
+const dialogTitle = computed(() => {
+  if (!isEdit.value) return '新增模板'
+  return isEditing.value ? '编辑模板' : '模板详情'
+})
+
+/** 进入编辑模式 */
+function enterEditMode() {
+  isEditing.value = true
+}
 
 const formRules = {
   name: [{ required: true, message: '请输入模板名称', trigger: 'blur' }],
@@ -239,7 +265,11 @@ const detectedVars = computed(() => {
 })
 
 // ===== 变量管理 =====
-const varColumns = [
+/** 详情态：无操作列 */
+const varColumnsReadonly = [...VARIABLE_LIST_COLUMNS]
+
+/** 编辑态：含操作列 */
+const varColumnsEditable = [
   ...VARIABLE_LIST_COLUMNS,
   {
     columnType: 'operate' as const, label: '操作', width: 120, align: 'center' as const, fixed: 'right' as const,
@@ -249,6 +279,8 @@ const varColumns = [
     ],
   },
 ]
+
+const currentVarColumns = computed(() => isReadonly.value ? varColumnsReadonly : varColumnsEditable)
 
 const varFormVisible = ref(false)
 const varFormIsEdit = ref(false)
@@ -315,23 +347,51 @@ async function onVarSubmit() {
     form.value.variables = vars
     varFormVisible.value = false
     ElMessage.success(varFormIsEdit.value ? '更新成功' : '新增成功')
-  } finally { 
-    varSubmitting.value = false 
+  } finally {
+    varSubmitting.value = false
   }
 }
 
 function onClosed() {
   isEdit.value = false
+  isEditing.value = false
   formRef.value?.resetFields()
 }
 
 async function onSubmit() {
   await formRef.value?.validate()
   submitting.value = true
-  try { 
-    emit('confirm', form.value, isEdit.value) 
-  }finally { 
-    submitting.value = false 
+  try {
+    emit('confirm', form.value, isEdit.value)
+  } finally {
+    submitting.value = false
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.content-readonly {
+  width: 100%;
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+  background: var(--el-fill-color-blank);
+}
+
+.content-pre {
+  margin: 0;
+  padding: 12px 16px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--el-text-color-primary);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.variables-wrapper {
+  max-height: 300px;
+  overflow-y: auto;
+}
+</style>

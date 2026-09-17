@@ -19,6 +19,7 @@
         :active-value="1"
         :inactive-value="0"
         size="small"
+        :disabled="!visible"
         @change="(val: number) => emit('statusChange', tpl, val)"
       />
     </div>
@@ -39,24 +40,24 @@
     <div class="tpl-card__footer">
       <span class="tpl-card__type">Template</span>
       <div class="tpl-card__actions">
-        <el-tooltip content="编辑" placement="top" :show-after="400">
-          <button class="tpl-card__action" @click="emit('edit', tpl)">
-            <el-icon :size="14"><Edit /></el-icon>
-          </button>
-        </el-tooltip>
-        <el-tooltip content="预览" placement="top" :show-after="400">
-          <button class="tpl-card__action" @click="emit('preview', tpl)">
+        <el-tooltip content="详情" placement="top" :show-after="400">
+          <button class="tpl-card__action" @click="emit('view', tpl)">
             <el-icon :size="14"><View /></el-icon>
           </button>
         </el-tooltip>
+        <el-tooltip content="调试" placement="top" :show-after="400">
+          <button v-permission="'aiModule:aiConfig:promptTemplate:tweak'" class="tpl-card__action" @click="emit('tweak', tpl)">
+            <el-icon :size="14"><Promotion /></el-icon>
+          </button>
+        </el-tooltip>
         <el-tooltip content="复制" placement="top" :show-after="400">
-          <button class="tpl-card__action" @click="emit('copy', tpl)">
+          <button v-permission="'aiModule:aiConfig:promptTemplate:copy'" class="tpl-card__action" @click="emit('copy', tpl)">
             <el-icon :size="14"><CopyDocument /></el-icon>
           </button>
         </el-tooltip>
         <div class="tpl-card__divider" />
         <el-tooltip content="删除" placement="top" :show-after="400">
-          <button class="tpl-card__action tpl-card__action--danger" @click="emit('delete', tpl)">
+          <button v-permission="'aiModule:aiConfig:promptTemplate:delete'" class="tpl-card__action tpl-card__action--danger" @click="emit('delete', tpl)">
             <el-icon :size="14"><Delete /></el-icon>
           </button>
         </el-tooltip>
@@ -67,15 +68,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Document, Edit, View, CopyDocument, Delete } from '@element-plus/icons-vue'
+import { Document, View, CopyDocument, Delete, Promotion } from '@element-plus/icons-vue';
 import type { PromptTemplate } from '@/api/ai/promptTemplate'
 import { categoryLabel, categoryTagType } from '../utils/moduleOptions'
 
-const props = defineProps<{ tpl: PromptTemplate }>()
+const props = defineProps<{ tpl: PromptTemplate, visible: boolean }>()
 
 const emit = defineEmits<{
-  edit: [tpl: PromptTemplate]
-  preview: [tpl: PromptTemplate]
+  view: [tpl: PromptTemplate]
+  tweak: [tpl: PromptTemplate]
   copy: [tpl: PromptTemplate]
   delete: [tpl: PromptTemplate]
   statusChange: [tpl: PromptTemplate, val: number]

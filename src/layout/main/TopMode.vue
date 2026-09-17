@@ -57,4 +57,7 @@ const basePath = computed(() => {
     flex: 1;
   }
 }
+.el-main {
+  overflow: hidden;
+}
 </style>

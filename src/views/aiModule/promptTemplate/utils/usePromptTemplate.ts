@@ -70,8 +70,8 @@ export function usePromptTemplate() {
     formVisible.value = true
   }
 
-  /** 打开编辑弹窗（调用详情接口获取完整数据） */
-  async function openEditDialog(row: PromptTemplate) {
+  /** 打开详情弹窗（默认只读模式） */
+  async function openViewDialog(row: PromptTemplate) {
     formVisible.value = true
     formIsEdit.value = true
     formLoading.value = true
@@ -132,7 +132,7 @@ export function usePromptTemplate() {
     formLoading,
     formData,
     openAddDialog,
-    openEditDialog,
+    openViewDialog,
     onFormConfirm,
     handleDelete,
     handleCopy,

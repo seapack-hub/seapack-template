@@ -25,7 +25,9 @@
 
       <!-- 工具栏 -->
       <div class="toolbar">
-        <el-button type="success" icon="plus" @click="openAddDialog()">新增知识库</el-button>
+        <div class="toolbar-left">
+          <el-button v-permission="'aiModule:aiConfig:knowledgeBase:add'" type="success" icon="plus" @click="openAddDialog()">新增知识库</el-button>
+        </div>
         <el-radio-group v-model="viewMode" class="view-switcher">
           <el-radio-button value="card">
             <el-icon><Grid /></el-icon>
@@ -54,7 +56,8 @@
             v-for="row in tableData"
             :key="row.id"
             :kb="row"
-            @edit="openEditDialog"
+            :visible="visible"
+            @view="openViewDialog"
             @documents="openDocDrawer"
             @chunks="openChunkDrawer"
             @retrieve="openRetrieveDrawer"
@@ -74,6 +77,7 @@
                     :model-value="row.status"
                     :active-value="1"
                     :inactive-value="0"
+                    :disabled="!visible"
                     size="small"
                     @change="(val) => onStatusChange(row as any, val as any)"
                   />
@@ -135,12 +139,17 @@ import KnowledgeBaseFormDialog from './components/KnowledgeBaseFormDialog.vue'
 import DocumentListDrawer from './components/DocumentListDrawer.vue'
 import ChunkPreviewDrawer from './components/ChunkPreviewDrawer.vue'
 import RetrievalTestDrawer from './components/RetrievalTestDrawer.vue'
+import useButtonPermission from '@/hooks/useButtonPermission'
+
+const { buttonHasPermission } = useButtonPermission()
+
+const visible = computed(() => buttonHasPermission('aiModule:aiConfig:knowledgeBase:isDisable'))
 
 const {
   queryParams, tableData, total, loading,
   handleQuery, handleReset,
   formVisible, formIsEdit, formData,
-  openAddDialog, openEditDialog, onFormConfirm,
+  openAddDialog, openViewDialog, onFormConfirm,
   handleDelete, handleCopy, onStatusChange,
   docDrawerVisible, currentKBId, currentKBName, openDocDrawer,
   chunkDrawerVisible, openChunkDrawer,
@@ -154,12 +163,12 @@ const columns = [
   {
     columnType: 'operate', label: '操作', width: '170px', fixed: 'right',
     buttons: [
-      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openEditDialog(row) },
+      { type: 'primary', label: '详情', size: 'small', renderType: 'link', click: ({ row }: any) => openViewDialog(row) },
       { type: 'primary', label: '文档', size: 'small', renderType: 'link', click: ({ row }: any) => openDocDrawer(row) },
-      { type: 'primary', label: '分片', size: 'small', renderType: 'link', click: ({ row }: any) => openChunkDrawer(row) },
-      { type: 'primary', label: '检索', size: 'small', renderType: 'link', click: ({ row }: any) => openRetrieveDrawer(row) },
-      { type: 'primary', label: '复制', size: 'small', renderType: 'link', click: ({ row }: any) => handleCopy(row) },
-      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该知识库吗？' }, click: ({ row }: any) => handleDelete(row) },
+      { type: 'primary', label: '分片', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiConfig:knowledgeBase:splitting', click: ({ row }: any) => openChunkDrawer(row) },
+      { type: 'primary', label: '检索', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiConfig:knowledgeBase:search', click: ({ row }: any) => openRetrieveDrawer(row) },
+      { type: 'primary', label: '复制', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiConfig:knowledgeBase:copy', click: ({ row }: any) => handleCopy(row) },
+      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该知识库吗？' }, buttonPermission: 'aiModule:aiConfig:knowledgeBase:delete', click: ({ row }: any) => handleDelete(row) },
     ],
   },
 ]
@@ -190,6 +199,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
 }
 
 .view-switcher {

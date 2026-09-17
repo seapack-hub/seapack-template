@@ -40,9 +40,30 @@ export function createStockPoolColumns(handlers: ColumnHandlers) {
     {
       columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
       buttons: [
-        { type: 'primary', label: '详情', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onDetail?.(row) },
-        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
-        { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该股票吗？' }, click: ({ row }: any) => handlers.onDelete?.(row) },
+        { 
+          type: 'primary', 
+          label: '详情', 
+          size: 'small', 
+          renderType: 'link', 
+          click: ({ row }: any) => handlers.onDetail?.(row) 
+        },
+        { 
+          type: 'primary', 
+          label: '编辑', 
+          size: 'small', 
+          renderType: 'link',
+          buttonPermission: 'stockFund:stock:stockPool:edit', 
+          click: ({ row }: any) => handlers.onEdit(row) 
+        },
+        { 
+          type: 'danger', 
+          label: '删除', 
+          size: 'small', 
+          renderType: 'link', 
+          popconfirm: { title: '确认删除该股票吗？' }, 
+          buttonPermission: 'stockFund:stock:stockPool:delete', 
+          click: ({ row }: any) => handlers.onDelete?.(row) 
+        },
       ],
     },
   ]
@@ -69,8 +90,23 @@ export function createDividendColumns(handlers: ColumnHandlers) {
       width: '110px',
       fixed: 'right',
       buttons: [
-        { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => handlers.onEdit(row) },
-        { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该记录吗？' }, click: ({ row }: any) => handlers.onDelete?.(row) },
+        {
+          type: 'primary',
+          label: '编辑',
+          size: 'small',
+          renderType: 'link',
+          buttonPermission: 'stockFund:stock:dividendData:edit',
+          click: ({ row }: any) => handlers.onEdit(row)
+        },
+        {
+          type: 'danger',
+          label: '删除',
+          size: 'small',
+          renderType: 'link',
+          buttonPermission: 'stockFund:stock:dividendData:delete',
+          popconFirm: { title: '确认删除该记录吗？' },
+          click: ({ row }: any) => handlers.onDelete?.(row)
+        },
       ],
     },
   ]
