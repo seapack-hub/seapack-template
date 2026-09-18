@@ -11,7 +11,7 @@
         <span class="text-16px text-[var(--el-text-color-primary)]">技能分类</span>
         <div class="flex items-center gap-3px">
           <el-button type="" icon="refresh" :loading="loading" circle size="small" @click="handleRefresh" />
-          <el-button type="" icon="plus" circle size="small" @click="openCategoryDialog()" />
+          <el-button v-permission="'aiModule:aiConfig:skillManagement:addCategory'" type="" icon="plus" circle size="small" @click="openCategoryDialog()" />
         </div>
       </div>
     </template>

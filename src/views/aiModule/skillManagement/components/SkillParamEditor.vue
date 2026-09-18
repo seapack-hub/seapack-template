@@ -10,7 +10,7 @@
       <span class="text-13px text-[var(--el-text-color-secondary)]">
         为技能定义输入参数，参数名对应提示词模板中的 <code>{<!-- -->{variable}}</code> 插值变量
       </span>
-      <el-button type="primary" size="small" icon="plus" @click="openParamForm()">新增参数</el-button>
+      <el-button v-permission="'aiModule:aiConfig:skillManagement:addParams'" type="primary" size="small" icon="plus" @click="openParamForm()">新增参数</el-button>
     </div>
     <!-- 参数列表 -->
     <SpTable
@@ -39,31 +39,31 @@
       </template>
     </SpTable>
 
-    <!-- 参数新增/编辑对话框（内嵌） -->
+    <!-- 参数新增/编辑/详情对话框（内嵌） -->
     <el-dialog
       v-model="paramFormVisible"
-      :title="paramFormIsEdit ? '编辑参数' : '新增参数'"
+      :title="paramFormTitle"
       width="700px"
       append-to-body
-      @closed="paramFormRef?.resetFields()"
+      @closed="onParamFormClosed"
     >
       <el-form ref="paramFormRef" :model="paramForm" :rules="paramFormRules" label-width="100px">
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="参数名" prop="paramName">
-              <el-input v-model="paramForm.paramName" placeholder="如 topic" :disabled="paramFormIsEdit" />
+              <el-input v-model="paramForm.paramName" placeholder="如 topic" :disabled="paramFormIsEdit || paramFormReadonly" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="标签" prop="label">
-              <el-input v-model="paramForm.label" placeholder="如 文章主题" />
+              <el-input v-model="paramForm.label" placeholder="如 文章主题" :disabled="paramFormReadonly" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="类型" prop="paramType">
-              <el-select v-model="paramForm.paramType" style="width: 100%">
+              <el-select v-model="paramForm.paramType" style="width: 100%" :disabled="paramFormReadonly">
                 <el-option
                   v-for="opt in PARAM_TYPE_OPTIONS"
                   :key="opt.value"
@@ -75,7 +75,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="必填" prop="required">
-              <el-switch v-model="paramForm.required" :active-value="1" :inactive-value="0" />
+              <el-switch v-model="paramForm.required" :active-value="1" :inactive-value="0" :disabled="paramFormReadonly" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -86,6 +86,7 @@
             v-if="paramForm.paramType === 'string'"
             v-model="paramForm.defaultValue"
             placeholder="可选"
+            :disabled="paramFormReadonly"
           />
           <!-- number -->
           <el-input-number
@@ -94,6 +95,7 @@
             :precision="0"
             controls-position="right"
             style="width: 100%"
+            :disabled="paramFormReadonly"
           />
           <!-- boolean -->
           <el-select
@@ -101,6 +103,7 @@
             v-model="paramForm.defaultValue"
             placeholder="选择默认值"
             style="width: 100%"
+            :disabled="paramFormReadonly"
           >
             <el-option label="true" value="true" />
             <el-option label="false" value="false" />
@@ -112,6 +115,7 @@
             placeholder="选择默认选项"
             clearable
             style="width: 100%"
+            :disabled="paramFormReadonly"
           >
             <el-option
               v-for="opt in selectOptions"
@@ -127,31 +131,38 @@
             placeholder="可选"
             type="textarea"
             :rows="3"
+            :disabled="paramFormReadonly"
           />
           <!-- json -->
-          <JsonEditor v-else v-model="paramForm.defaultValue" height="240px" mode="code" />
+          <JsonEditor v-else v-model="paramForm.defaultValue" height="240px" mode="code" :read-only="paramFormReadonly" />
         </el-form-item>
         <el-form-item v-if="paramForm.paramType !== 'json'" label="提示文字" prop="placeholder">
-          <el-input v-model="paramForm.placeholder" placeholder="输入框占位提示" />
+          <el-input v-model="paramForm.placeholder" placeholder="输入框占位提示" :disabled="paramFormReadonly" />
         </el-form-item>
         <!-- select 类型：选项列表编辑 -->
         <el-form-item v-if="paramForm.paramType === 'select'" label="选项列表" prop="options">
           <div class="w-100%">
             <div v-for="(opt, idx) in selectOptions" :key="idx" class="flex items-center gap-8px mb-5px">
-              <el-input v-model="opt.label" placeholder="显示文本" style="width: 40%" />
-              <el-input v-model="opt.value" placeholder="选项值" style="width: 40%" />
-              <el-button type="info" icon="delete" circle @click="removeSelectOption(idx)" />
+              <el-input v-model="opt.label" placeholder="显示文本" style="width: 40%" :disabled="paramFormReadonly" />
+              <el-input v-model="opt.value" placeholder="选项值" style="width: 40%" :disabled="paramFormReadonly" />
+              <el-button v-if="!paramFormReadonly" type="info" icon="delete" circle @click="removeSelectOption(idx)" />
             </div>
-            <el-button type="primary" link icon="plus" @click="addSelectOption">添加选项</el-button>
+            <el-button v-if="!paramFormReadonly" type="primary" link icon="plus" @click="addSelectOption">添加选项</el-button>
           </div>
         </el-form-item>
         <el-form-item label="排序号" prop="sortOrder">
-          <el-input-number v-model="paramForm.sortOrder" :min="0" :max="999" style="width: 100%" />
+          <el-input-number v-model="paramForm.sortOrder" :min="0" :max="999" style="width: 100%" :disabled="paramFormReadonly" />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="paramFormVisible = false">取消</el-button>
-        <el-button type="primary" :loading="paramSubmitting" @click="onParamSubmit">确认</el-button>
+        <template v-if="paramFormReadonly">
+          <el-button @click="paramFormVisible = false">关闭</el-button>
+          <el-button v-permission="'aiModule:aiConfig:skillManagement:addParams'" type="primary" @click="enterParamEditMode">编辑</el-button>
+        </template>
+        <template v-else>
+          <el-button @click="paramFormVisible = false">取消</el-button>
+          <el-button type="primary" :loading="paramSubmitting" @click="onParamSubmit">确认</el-button>
+        </template>
       </template>
     </el-dialog>
   </el-dialog>
@@ -193,10 +204,11 @@ const typeLabelMap: Record<string, string> = {
 const columns = [
   ...PARAM_LIST_COLUMNS,
   {
-    columnType: 'operate', label: '操作', width: 120, fixed: 'right', align: 'center',
+    columnType: 'operate', label: '操作', width: 160, fixed: 'right', align: 'center',
     buttons: [
-      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openParamForm(row) },
-      { type: 'danger', label: '删除', size: 'small', renderType: 'link', click: ({ row }: any) => onDelete(row) },
+      { type: 'primary', label: '详情', size: 'small', renderType: 'link', click: ({ row }: any) => openParamView(row) },
+      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiConfig:skillManagement:addParams', click: ({ row }: any) => openParamForm(row) },
+      { type: 'danger', label: '删除', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiConfig:skillManagement:addParams', click: ({ row }: any) => onDelete(row) },
     ],
   },
 ]
@@ -219,9 +231,24 @@ function onClosed() {
 // ===== 参数新增/编辑 =====
 const paramFormVisible = ref(false)
 const paramFormIsEdit = ref(false)
+const paramFormReadonly = ref(false)
 const paramForm = ref<SkillParam>({ paramName: '', label: '', paramType: 'string', required: 1, defaultValue: '', placeholder: '', sortOrder: 0, options: [] })
 const paramEditingId = ref<number | undefined>()
 const paramSubmitting = ref(false)
+
+const paramFormTitle = computed(() => {
+  if (paramFormReadonly.value) return '参数详情'
+  return paramFormIsEdit.value ? '编辑参数' : '新增参数'
+})
+
+function enterParamEditMode() {
+  paramFormReadonly.value = false
+}
+
+function onParamFormClosed() {
+  paramFormReadonly.value = false
+  paramFormRef.value?.resetFields()
+}
 
 /** select 类型的选项列表（双向同步到 paramForm.options） */
 const selectOptions = computed({
@@ -256,6 +283,18 @@ function removeSelectOption(idx: number) {
   const copy = [...selectOptions.value]
   copy.splice(idx, 1)
   selectOptions.value = copy
+}
+
+function openParamView(row: SkillParam) {
+  paramFormIsEdit.value = true
+  paramFormReadonly.value = true
+  paramEditingId.value = row.id
+  const opts = row.options
+  paramForm.value = {
+    ...row,
+    options: Array.isArray(opts) ? [...opts] : [],
+  }
+  paramFormVisible.value = true
 }
 
 function openParamForm(row?: SkillParam) {

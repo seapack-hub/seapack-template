@@ -16,7 +16,8 @@
         :active-value="1"
         :inactive-value="0"
         size="small"
-        @change="(val: number) => emit('statusChange', agent, val)"
+        :disabled="!visible"
+        @change="(val: string | number | boolean) => emit('statusChange', agent, val as number)"
       />
     </div>
 
@@ -36,9 +37,9 @@
     <div class="agent-card__footer">
       <span class="agent-card__type">Agent</span>
       <div class="agent-card__actions">
-        <el-tooltip content="编辑" placement="top" :show-after="400">
-          <button class="agent-card__action" @click="emit('edit', agent)">
-            <el-icon :size="14"><Edit /></el-icon>
+        <el-tooltip content="详情" placement="top" :show-after="400">
+          <button class="agent-card__action" @click="emit('view', agent)">
+            <el-icon :size="14"><View /></el-icon>
           </button>
         </el-tooltip>
         <el-tooltip content="配置" placement="top" :show-after="400">
@@ -52,13 +53,13 @@
           </button>
         </el-tooltip>
         <el-tooltip content="复制" placement="top" :show-after="400">
-          <button class="agent-card__action" @click="emit('copy', agent)">
+          <button v-permission="'aiModule:aiConfig:agentManage:copy'" class="agent-card__action" @click="emit('copy', agent)">
             <el-icon :size="14"><CopyDocument /></el-icon>
           </button>
         </el-tooltip>
-        <div class="agent-card__divider" />
+        <div class="skill-card__divider" />
         <el-tooltip content="删除" placement="top" :show-after="400">
-          <button class="agent-card__action agent-card__action--danger" @click="emit('delete', agent)">
+          <button v-permission="'aiModule:aiConfig:agentManage:delete'" class="agent-card__action agent-card__action--danger" @click="emit('delete', agent)">
             <el-icon :size="14"><Delete /></el-icon>
           </button>
         </el-tooltip>
@@ -68,14 +69,14 @@
 </template>
 
 <script setup lang="ts">
-import { Edit, Setting, Promotion, CopyDocument, Delete } from '@element-plus/icons-vue'
+import { View, Setting, Promotion, CopyDocument, Delete } from '@element-plus/icons-vue'
 import type { Agent } from '@/api/ai/agent'
 import Icon from '@/components/Icon/index.vue'
 
-defineProps<{ agent: Agent }>()
+defineProps<{ agent: Agent; visible: boolean }>()
 
 const emit = defineEmits<{
-  edit: [agent: Agent]
+  view: [agent: Agent]
   config: [agent: Agent]
   test: [agent: Agent]
   copy: [agent: Agent]

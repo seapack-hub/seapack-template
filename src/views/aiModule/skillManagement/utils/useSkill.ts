@@ -79,19 +79,21 @@ export function useSkill() {
     version: 'v1.0.0', sortOrder: 0, status: 1,
   })
 
-  /** 打开技能弹窗，编辑时回填、新增时自动选中当前分类 */
-  function openSkillDialog(row?: Skill) {
-    if (row) {
-      skillFormData.value = { ...row }
-      skillDialogIsEdit.value = true
-    } else {
-      skillFormData.value = {
-        name: '', code: '', categoryId: activeCategoryId.value, description: '',
-        skillType: 'http', inputSchema: '',
-        version: 'v1.0.0', sortOrder: 0, status: 1,
-      }
-      skillDialogIsEdit.value = false
+  /** 打开新增技能弹窗 */
+  function openAddDialog() {
+    skillFormData.value = {
+      name: '', code: '', categoryId: activeCategoryId.value, description: '',
+      skillType: 'http', inputSchema: '',
+      version: 'v1.0.0', sortOrder: 0, status: 1,
     }
+    skillDialogIsEdit.value = false
+    skillDialogVisible.value = true
+  }
+
+  /** 打开技能详情弹窗（只读模式） */
+  function openViewDialog(row: Skill) {
+    skillFormData.value = { ...row }
+    skillDialogIsEdit.value = true
     skillDialogVisible.value = true
   }
 
@@ -146,7 +148,8 @@ export function useSkill() {
     skillDialogVisible,
     skillDialogIsEdit,
     skillFormData,
-    openSkillDialog,
+    openAddDialog,
+    openViewDialog,
     onSkillFormConfirm,
     onDeleteSkill,
     onStatusChange,

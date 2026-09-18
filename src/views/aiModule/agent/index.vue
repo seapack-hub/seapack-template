@@ -25,7 +25,9 @@
 
       <!-- 工具栏 -->
       <div class="toolbar">
-        <el-button type="success" icon="plus" @click="openAddDialog()">新增 Agent</el-button>
+        <div class="toolbar-left">
+          <el-button v-permission="'aiModule:aiConfig:agentManage:add'" type="success" icon="plus" @click="openAddDialog()">新增 Agent</el-button>
+        </div>
         <el-radio-group v-model="viewMode" class="view-switcher">
           <el-radio-button value="card">
             <el-icon><Grid /></el-icon>
@@ -53,7 +55,8 @@
           <div v-for="row in tableData" :key="row.id">
             <AgentCard
               :agent="row"
-              @edit="openEditDialog"
+              :visible="visible"
+              @view="openViewDialog"
               @config="openConfigDrawer"
               @test="openTestDrawer"
               @copy="handleCopy"
@@ -74,6 +77,7 @@
                     :active-value="1"
                     :inactive-value="0"
                     size="small"
+                    :disabled="!visible"
                     @change="(val) => onStatusChange(row as any, val as any)"
                   />
                 </template>
@@ -122,6 +126,7 @@ import { type Agent } from '@/api/ai/agent'
 import { AGENT_STATUS_OPTIONS } from './utils/moduleOptions'
 import { AGENT_LIST_COLUMNS } from './utils/tableColumns'
 import { useAgent } from './utils/useAgent'
+import useButtonPermission from '@/hooks/useButtonPermission'
 import AgentFormDialog from './components/AgentFormDialog.vue'
 import AgentConfigDrawer from './components/AgentConfigDrawer.vue'
 import AgentTestDrawer from './components/AgentTestDrawer.vue'
@@ -138,7 +143,7 @@ const {
   formIsEdit, 
   formData,
   openAddDialog, 
-  openEditDialog, 
+  openViewDialog, 
   onFormConfirm,
   handleDelete, 
   handleCopy, 
@@ -148,17 +153,19 @@ const {
 } = useAgent()
 
 const viewMode = ref<'card' | 'list'>('card')
+const { buttonHasPermission } = useButtonPermission()
+const visible = computed(() => buttonHasPermission('aiModule:aiConfig:agentManage:isDisable'))
 
 const columns = [
   ...AGENT_LIST_COLUMNS,
   {
-    columnType: 'operate', label: '操作', width: '160px', fixed: 'right',
+    columnType: 'operate', label: '操作', width: '200px', fixed: 'right',
     buttons: [
-      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openEditDialog(row) },
+      { type: 'primary', label: '详情', size: 'small', renderType: 'link', click: ({ row }: any) => openViewDialog(row) },
       { type: 'primary', label: '配置', size: 'small', renderType: 'link', click: ({ row }: any) => openConfigDrawer(row) },
       { type: 'primary', label: '测试', size: 'small', renderType: 'link', click: ({ row }: any) => openTestDrawer(row) },
-      { type: 'primary', label: '复制', size: 'small', renderType: 'link', click: ({ row }: any) => handleCopy(row) },
-      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该 Agent 吗？' }, click: ({ row }: any) => handleDelete(row) },
+      { type: 'primary', label: '复制', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiConfig:agentManage:copy', click: ({ row }: any) => handleCopy(row) },
+      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该 Agent 吗？' }, buttonPermission: 'aiModule:aiConfig:agentManage:delete', click: ({ row }: any) => handleDelete(row) },
     ],
   },
 ]
@@ -185,6 +192,10 @@ async function handleCardDelete(row: Agent) {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.toolbar-left {
+  flex: 1;
 }
 
 .view-switcher {

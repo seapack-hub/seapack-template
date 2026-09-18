@@ -43,7 +43,7 @@ export function useAgent() {
     formVisible.value = true
   }
 
-  async function openEditDialog(row: Agent) {
+  async function openViewDialog(row: Agent) {
     formVisible.value = true
     formIsEdit.value = true
     try {
@@ -119,7 +119,7 @@ export function useAgent() {
     formIsEdit,
     formData,
     openAddDialog,
-    openEditDialog,
+    openViewDialog,
     onFormConfirm,
     handleDelete,
     handleCopy,

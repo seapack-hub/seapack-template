@@ -16,7 +16,7 @@
       </el-row>
     </el-form>
     <div class="mt-12px flex justify-end">
-      <el-button type="primary" :loading="savingMemory" @click="saveMemory">保存记忆设置</el-button>
+      <el-button v-permission="'aiModule:aiConfig:agentManage:saveMemorySet'" type="primary" :loading="savingMemory" @click="saveMemory">保存记忆设置</el-button>
     </div>
   </div>
 </template>

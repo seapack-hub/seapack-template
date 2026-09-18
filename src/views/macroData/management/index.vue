@@ -23,7 +23,7 @@
 
       <el-button type="primary" :icon="Search" @click="handleQuery">查询</el-button>
       <el-button :icon="RefreshRight" @click="handleReset">重置</el-button>
-      <el-button type="success" :icon="Plus" @click="openAddDialog">新增</el-button>
+      <el-button v-permission="'macroData:macroDataManagement:add'" type="success" :icon="Plus" @click="openAddDialog">新增</el-button>
     </div>
 
     <!-- 数据表格 -->
@@ -79,10 +79,10 @@
         <template #operate>
           <el-table-column label="操作" width="140" fixed="right" align="left" slot-name="operate">
             <template #default="{ row }">
-              <el-button type="primary" link size="small" @click="openEditDialog(row)">编辑</el-button>
+              <el-button v-permission="'macroData:macroDataManagement:edit'" type="primary" link size="small" @click="openEditDialog(row)">编辑</el-button>
               <el-popconfirm title="确认删除该条记录？" @confirm="handleDelete(row)">
                 <template #reference>
-                  <el-button type="danger" link size="small">删除</el-button>
+                  <el-button v-permission="'macroData:macroDataManagement:delete'" type="danger" link size="small">删除</el-button>
                 </template>
               </el-popconfirm>
             </template>

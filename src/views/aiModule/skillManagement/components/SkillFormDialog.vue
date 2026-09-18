@@ -1,7 +1,12 @@
+<!--
+  技能 详情/编辑 弹框
+  - 新增模式：直接进入编辑态
+  - 编辑模式：默认详情只读，点击「编辑」按钮后切换为可编辑
+-->
 <template>
   <el-dialog
     v-model="visible"
-    :title="isEdit ? '编辑技能' : '新增技能'"
+    :title="dialogTitle"
     width="900px"
     top="10vh"
     @closed="onClosed"
@@ -10,12 +15,12 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="技能名称" prop="name">
-            <el-input v-model="form.name" placeholder="如 文章AI写作助手" />
+            <el-input v-model="form.name" placeholder="如 文章AI写作助手" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="技能编码" prop="code">
-            <el-input v-model="form.code" placeholder="如 blog-writing" :disabled="isEdit" />
+            <el-input v-model="form.code" placeholder="如 blog-writing" :disabled="isReadonly || isEdit" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -26,7 +31,7 @@
               v-model="form.categoryId"
               placeholder="选择分类"
               clearable
-              :disabled="categoryDisabled"
+              :disabled="isReadonly || categoryDisabled"
               style="width: 100%"
             >
               <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.id as any" />
@@ -35,7 +40,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="技能类型" prop="skillType">
-            <el-select v-model="form.skillType" placeholder="选择类型" style="width: 100%">
+            <el-select v-model="form.skillType" placeholder="选择类型" style="width: 100%" :disabled="isReadonly">
               <el-option
                 v-for="opt in SKILL_TYPE_OPTIONS"
                 :key="opt.value"
@@ -54,22 +59,22 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="版本号" prop="version">
-            <el-input v-model="form.version" placeholder="v1.0.0" />
+            <el-input v-model="form.version" placeholder="v1.0.0" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="描述" prop="description">
-        <el-input v-model="form.description" type="textarea" :rows="2" placeholder="技能功能描述" />
+        <el-input v-model="form.description" type="textarea" :rows="2" placeholder="技能功能描述" :disabled="isReadonly" />
       </el-form-item>
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="API 端点" prop="endpoint">
-            <el-input v-model="form.endpoint" placeholder="/stockInfo/page" />
+            <el-input v-model="form.endpoint" placeholder="/stockInfo/page" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="输出类型" prop="outputType">
-            <el-select v-model="form.outputType" placeholder="选择输出类型" style="width: 100%">
+            <el-select v-model="form.outputType" placeholder="选择输出类型" style="width: 100%" :disabled="isReadonly">
               <el-option
                 v-for="opt in OUTPUT_TYPE_OPTIONS"
                 :key="opt.value"
@@ -83,22 +88,22 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="超时时间(ms)" prop="timeoutMs">
-            <el-input-number v-model="form.timeoutMs" :min="1000" :max="300000" :step="1000" style="width: 100%" />
+            <el-input-number v-model="form.timeoutMs" :min="1000" :max="300000" :step="1000" style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-form-item label="输入 Schema" prop="inputSchema">
-        <JsonEditor v-model="inputSchemaJson" height="300px" mode="code" />
+        <JsonEditor v-model="inputSchemaJson" height="300px" mode="code" :read-only="isReadonly" />
       </el-form-item>
       <el-row :gutter="20">
         <el-col :span="8">
           <el-form-item label="排序号" prop="sortOrder">
-            <el-input-number v-model="form.sortOrder" :min="0" :max="999" style="width: 100%" />
+            <el-input-number v-model="form.sortOrder" :min="0" :max="999" style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="状态">
-            <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" />
+            <el-switch v-model="form.status" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
         <el-col v-if="isEdit" :span="8">
@@ -110,8 +115,10 @@
     </el-form>
 
     <template #footer>
-      <el-button @click="visible = false">取消</el-button>
-      <el-button type="primary" :loading="submitting" @click="onSubmit">确认</el-button>
+      <el-button v-if="isReadonly" @click="visible = false">关闭</el-button>
+      <el-button v-if="isReadonly" v-permission="'aiModule:aiConfig:skillManagement:edit'" type="primary" @click="enterEditMode">编辑</el-button>
+      <el-button v-if="!isReadonly" @click="visible = false">取消</el-button>
+      <el-button v-if="!isReadonly" type="primary" :loading="submitting" @click="onSubmit">确认</el-button>
     </template>
   </el-dialog>
 </template>
@@ -153,6 +160,19 @@ const categoryDisabled = computed(() => props.activeCategoryId !== undefined)
 
 const emit = defineEmits<{ confirm: [formData: Skill, isEdit: boolean] }>()
 
+const isEditing = ref(false)
+
+const isReadonly = computed(() => isEdit.value && !isEditing.value)
+
+const dialogTitle = computed(() => {
+  if (!isEdit.value) return '新增技能'
+  return isEditing.value ? '编辑技能' : '技能详情'
+})
+
+function enterEditMode() {
+  isEditing.value = true
+}
+
 const formRules = {
   name: [{ required: true, message: '请输入技能名称', trigger: 'blur' }],
   code: [{ required: true, message: '请输入技能编码', trigger: 'blur' }],
@@ -174,6 +194,7 @@ const inputSchemaJson = computed({
 })
 
 function onClosed() {
+  isEditing.value = false
   isEdit.value = false
   formRef.value?.resetFields()
 }

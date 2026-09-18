@@ -34,7 +34,9 @@
           </div>
           <!-- 工具栏 -->
           <div class="toolbar">
-            <el-button type="success" icon="plus" @click="openSkillDialog()">新增技能</el-button>
+            <div class="toolbar-left">
+              <el-button v-permission="'aiModule:aiConfig:skillManagement:addSkill'" type="success" icon="plus" @click="openAddDialog()">新增技能</el-button>
+            </div>
             <el-radio-group v-model="viewMode" class="view-switcher">
               <el-radio-button value="card">
                 <el-icon><Grid /></el-icon>
@@ -62,7 +64,8 @@
                 v-for="row in tableData"
                 :key="row.id"
                 :skill="row"
-                @edit="openSkillDialog"
+                :visible="visible"
+                @view="openViewDialog"
                 @params="openParamEditor"
                 @test="openTestDialog"
                 @delete="handleCardDelete"
@@ -89,6 +92,7 @@
                         :model-value="row.status"
                         :active-value="1"
                         :inactive-value="0"
+                        :disabled="!visible"
                         @change="(val) => onStatusChange(row as any, val as number)"
                       />
                     </template>
@@ -142,6 +146,11 @@ import SkillFormDialog from './components/SkillFormDialog.vue'
 import SkillParamEditor from './components/SkillParamEditor.vue'
 import SkillCard from './components/SkillCard.vue'
 import SkillTestDialog from './components/SkillTestDialog.vue'
+import useButtonPermission from '@/hooks/useButtonPermission'
+
+const { buttonHasPermission } = useButtonPermission()
+
+const visible = computed(() => buttonHasPermission('aiModule:aiConfig:skillManagement:isDisable'))
 
 const {
   categories,
@@ -156,7 +165,7 @@ const {
   skillDialogVisible,
   skillDialogIsEdit,
   skillFormData,
-  openSkillDialog,
+  openAddDialog, openViewDialog,
   onSkillFormConfirm,
   onDeleteSkill,
   onStatusChange,
@@ -198,10 +207,10 @@ const columns = [
   {
     columnType: 'operate', label: '操作', width: '150px', fixed: 'right',
     buttons: [
-      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openSkillDialog(row) },
+      { type: 'primary', label: '详情', size: 'small', renderType: 'link', click: ({ row }: any) => openViewDialog(row) },
       { type: 'primary', label: '参数', size: 'small', renderType: 'link', click: ({ row }: any) => openParamEditor(row) },
       { type: 'primary', label: '调试', size: 'small', renderType: 'link', click: ({ row }: any) => openTestDialog(row) },
-      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该技能吗？' }, click: ({ row }: any) => onDeleteSkill(row) },
+      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该技能吗？' }, buttonPermission: 'aiModule:aiConfig:skillManagement:delete', click: ({ row }: any) => onDeleteSkill(row) },
     ],
   },
 ]
@@ -228,6 +237,13 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
 }
 
 .view-switcher {

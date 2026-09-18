@@ -7,13 +7,13 @@
       placeholder="定义助手的角色和行为规则，支持 {{变量名}} 语法"
     />
     <div class="mt-12px flex justify-end">
-      <el-button type="primary" :loading="savingPrompt" @click="saveSystemPrompt">保存提示词</el-button>
+      <el-button v-permission="'aiModule:aiConfig:agentManage:savePrompt'" type="primary" :loading="savingPrompt" @click="saveSystemPrompt">保存提示词</el-button>
     </div>
 
     <el-divider />
     <div class="flex items-center justify-between mb-8px">
       <span class="text-14px font-600">关联提示词模板</span>
-      <el-button type="primary" size="small" @click="openAddPrompt">添加模板</el-button>
+      <el-button v-permission="'aiModule:aiConfig:agentManage:addTemplate'" type="primary" size="small" @click="openAddPrompt">添加模板</el-button>
     </div>
     <SpTable :data="prompts" :columns="promptColumns" :show-index="true" size="small">
       <template #isPrimary>
@@ -26,15 +26,15 @@
       <template #enabled>
         <el-table-column label="状态" prop="enabled" width="70" align="center" slot-name="enabled">
           <template #default="{ row }">
-            <el-switch :model-value="row.enabled" :active-value="1" :inactive-value="0" size="small" @change="(val: number) => togglePromptEnabled(row, val)" />
+            <el-switch :model-value="row.enabled" :active-value="1" :inactive-value="0" size="small" @change="(val: string | number | boolean) => togglePromptEnabled(row, val as number)" />
           </template>
         </el-table-column>
       </template>
       <template #operate>
         <el-table-column label="操作" width="120" align="center" fixed="right">
           <template #default="{ row, $index }">
-            <el-button link type="primary" size="small" @click="editPrompt(row, $index)">编辑</el-button>
-            <el-button link type="danger" size="small" @click="removePrompt(row)">删除</el-button>
+            <el-button v-permission="'aiModule:aiConfig:agentManage:addTemplate'" link type="primary" size="small" @click="editPrompt(row, $index)">编辑</el-button>
+            <el-button v-permission="'aiModule:aiConfig:agentManage:addTemplate'" link type="danger" size="small" @click="removePrompt(row)">删除</el-button>
           </template>
         </el-table-column>
       </template>

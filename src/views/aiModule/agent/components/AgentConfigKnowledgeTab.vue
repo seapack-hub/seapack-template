@@ -2,21 +2,21 @@
   <div class="min-h-300px">
     <div class="flex items-center justify-between mb-8px">
       <span class="text-14px font-600">关联知识库</span>
-      <el-button type="primary" size="small" @click="openAddKnowledge">添加知识库</el-button>
+      <el-button v-permission="'aiModule:aiConfig:agentManage:relatedKnowledgeBase'" type="primary" size="small" @click="openAddKnowledge">添加知识库</el-button>
     </div>
     <SpTable :data="knowledgeList" :columns="knowledgeColumns" :show-index="true" size="small">
       <template #enabled>
         <el-table-column label="状态" prop="enabled" width="70" align="center" slot-name="enabled">
           <template #default="{ row }">
-            <el-switch :model-value="row.enabled" :active-value="1" :inactive-value="0" size="small" @change="(val: number) => toggleKnowledgeEnabled(row, val)" />
+            <el-switch :model-value="row.enabled" :active-value="1" :inactive-value="0" size="small" @change="(val: string | number | boolean) => toggleKnowledgeEnabled(row, val as number)" />
           </template>
         </el-table-column>
       </template>
       <template #operate>
         <el-table-column label="操作" width="120" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" size="small" @click="editKnowledge(row)">编辑</el-button>
-            <el-button link type="danger" size="small" @click="removeKnowledge(row)">删除</el-button>
+            <el-button v-permission="'aiModule:aiConfig:agentManage:relatedKnowledgeBase'" link type="primary" size="small" @click="editKnowledge(row)">编辑</el-button>
+            <el-button v-permission="'aiModule:aiConfig:agentManage:relatedKnowledgeBase'" link type="danger" size="small" @click="removeKnowledge(row)">删除</el-button>
           </template>
         </el-table-column>
       </template>

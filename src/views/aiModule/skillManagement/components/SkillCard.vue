@@ -20,6 +20,7 @@
         :active-value="1"
         :inactive-value="0"
         size="small"
+        :disabled="!visible"
         @change="(val: string | number | boolean) => emit('statusChange', skill, val as number)"
       />
     </div>
@@ -39,9 +40,9 @@
     <div class="skill-card__footer">
       <span class="skill-card__type">Skill</span>
       <div class="skill-card__actions">
-        <el-tooltip content="编辑" placement="top" :show-after="400">
-          <button class="skill-card__action" @click="emit('edit', skill)">
-            <el-icon :size="14"><Edit /></el-icon>
+        <el-tooltip content="详情" placement="top" :show-after="400">
+          <button class="skill-card__action" @click="emit('view', skill)">
+            <el-icon :size="14"><View /></el-icon>
           </button>
         </el-tooltip>
         <el-tooltip content="参数" placement="top" :show-after="400">
@@ -56,7 +57,7 @@
         </el-tooltip>
         <div class="skill-card__divider" />
         <el-tooltip content="删除" placement="top" :show-after="400">
-          <button class="skill-card__action skill-card__action--danger" @click="emit('delete', skill)">
+          <button v-permission="'aiModule:aiConfig:skillManagement:delete'" class="skill-card__action skill-card__action--danger" @click="emit('delete', skill)">
             <el-icon :size="14"><Delete /></el-icon>
           </button>
         </el-tooltip>
@@ -67,14 +68,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Edit, Setting, Delete, Promotion } from '@element-plus/icons-vue'
+import { View, Setting, Delete, Promotion } from '@element-plus/icons-vue'
 import type { Skill } from '@/api/ai/skill'
 import Icon from '@/components/Icon/index.vue'
 
-const props = defineProps<{ skill: Skill }>()
+const props = defineProps<{ skill: Skill, visible: boolean }>()
 
 const emit = defineEmits<{
-  edit: [skill: Skill]
+  view: [skill: Skill]
   params: [skill: Skill]
   test: [skill: Skill]
   delete: [skill: Skill]

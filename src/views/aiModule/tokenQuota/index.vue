@@ -53,7 +53,7 @@
 
       <!-- 工具栏 -->
       <div class="toolbar">
-        <el-button type="success" icon="plus" @click="openAddDialog()">新增额度配置</el-button>
+        <el-button v-permission="'aiModule:aiData:tokenQuota:addQuota'" type="success" icon="plus" @click="openAddDialog()">新增额度配置</el-button>
       </div>
 
       <!-- 表格 -->
@@ -223,11 +223,11 @@ const columns = [
     width: '160px',
     fixed: 'right',
     buttons: [
-      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openEditDialog(row) },
-      { type: 'primary', label: '重置', size: 'small', renderType: 'link', click: ({ row }: any) => handleResetQuota(row) },
-      { type: 'warning', label: '启用', size: 'small', renderType: 'link', click: ({ row }: any) => handleToggle(row, true), vIFHandler: ({ row }: any) => !row.isEnabled },
-      { type: 'info', label: '禁用', size: 'small', renderType: 'link', click: ({ row }: any) => handleToggle(row, false), vIFHandler: ({ row }: any) => row.isEnabled },
-      { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该额度配置吗？' }, click: ({ row }: any) => handleDelete(row) },
+      { type: 'primary', label: '编辑', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiData:tokenQuota:edit', click: ({ row }: any) => openEditDialog(row) },
+      { type: 'primary', label: '重置', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiData:tokenQuota:resetQuota', click: ({ row }: any) => handleResetQuota(row) },
+      { type: 'warning', label: '启用', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiData:tokenQuota:isDisabled', click: ({ row }: any) => handleToggle(row, true), vIFHandler: ({ row }: any) => !row.isEnabled },
+      { type: 'info', label: '禁用', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiData:tokenQuota:isDisabled', click: ({ row }: any) => handleToggle(row, false), vIFHandler: ({ row }: any) => row.isEnabled },
+      { type: 'danger', label: '删除', size: 'small', renderType: 'link', buttonPermission: 'aiModule:aiData:tokenQuota:delete', popconFirm: { title: '确认删除该额度配置吗？' }, click: ({ row }: any) => handleDelete(row) },
     ],
   },
 ]
