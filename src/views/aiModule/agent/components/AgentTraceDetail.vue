@@ -87,8 +87,44 @@
             <!-- 展开详情 -->
             <Transition name="expand">
               <div v-if="expandedSteps.has(idx)" class="step-detail">
+                <!-- 意图规划 - 特殊处理 -->
+                <template v-if="step.stepType === 'plan'">
+                  <div v-if="step.metadata" class="plan-summary">
+                    <div v-if="step.metadata.strategy" class="plan-summary-item">
+                      <span class="plan-summary-label">分析策略</span>
+                      <el-tag size="small" effect="plain">
+                        {{ step.metadata.strategy }}
+                      </el-tag>
+                    </div>
+                    <div class="plan-summary-item">
+                      <span class="plan-summary-label">意图类型</span>
+                      <el-tag :type="getIntentTag(step.metadata.intent as string) as any" size="small" effect="plain">
+                        {{ getIntentLabel(step.metadata.intent as string) }}
+                      </el-tag>
+                    </div>
+                    <div v-if="step.metadata.reason" class="plan-summary-item">
+                      <span class="plan-summary-label">判定原因</span>
+                      <span class="plan-summary-value">{{ step.metadata.reason }}</span>
+                    </div>
+                    <div v-if="step.metadata.plannedSteps" class="plan-summary-item">
+                      <span class="plan-summary-label">执行计划</span>
+                      <div class="plan-steps-list">
+                        <el-tag
+                          v-for="(s, sIdx) in (step.metadata.plannedSteps as string[])"
+                          :key="sIdx"
+                          size="small"
+                          effect="plain"
+                          class="plan-step-tag"
+                        >
+                          {{ getStepTypeLabel(s) }}
+                        </el-tag>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+            
                 <!-- 技能调用 - 特殊处理 -->
-                <template v-if="step.stepType === 'skill_execution'">
+                <template v-else-if="step.stepType === 'skill_execution'">
                   <!-- 技能汇总信息 -->
                   <div v-if="step.metadata" class="skill-summary">
                     <div class="skill-summary-item">
@@ -466,6 +502,7 @@ function getExecutedCount(step: AgentTraceStep): number {
 
 function getStepTypeTag(type: string): string {
   const map: Record<string, string> = {
+    plan: 'info',
     prompt_assembly: 'primary',
     knowledge_retrieval: 'success',
     skill_execution: 'warning',
@@ -476,12 +513,31 @@ function getStepTypeTag(type: string): string {
 
 function getStepTypeLabel(type: string): string {
   const map: Record<string, string> = {
+    plan: '规划',
     prompt_assembly: '提示词',
     knowledge_retrieval: '知识库',
     skill_execution: '技能',
     llm_call: 'LLM',
   }
   return map[type] || type
+}
+
+function getIntentTag(intent?: string): string {
+  const map: Record<string, string> = {
+    chat: 'info',
+    business: 'warning',
+    knowledge: 'success',
+  }
+  return map[intent || ''] || 'info'
+}
+
+function getIntentLabel(intent?: string): string {
+  const map: Record<string, string> = {
+    chat: '闲聊',
+    business: '业务',
+    knowledge: '知识',
+  }
+  return map[intent || ''] || intent || '未知'
 }
 
 function getRouteLabel(route?: string): string {
@@ -842,6 +898,37 @@ function formatMetadataValue(val: any): string {
   max-height: 0;
   padding-top: 0;
   padding-bottom: 0;
+}
+
+/* 意图规划 */
+.plan-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.plan-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.plan-summary-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  min-width: 60px;
+  flex-shrink: 0;
+}
+.plan-summary-value {
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+}
+.plan-steps-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.plan-step-tag {
+  font-size: 12px;
 }
 
 /* 参数/结果展示（复用于子步骤） */

@@ -333,6 +333,15 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
         if (step) {
           if (!step.progressList) step.progressList = []
           step.progressList.push(event.message || '')
+          // 捕获 plan 步骤的元数据（intent、reason、plannedSteps、strategy）
+          if (event.stepType === 'plan' && !step.metadata) {
+            const meta: Record<string, any> = {}
+            if (event.intent) meta.intent = event.intent
+            if (event.reason) meta.reason = event.reason
+            if (event.plannedSteps) meta.plannedSteps = event.plannedSteps
+            if (event.strategy) meta.strategy = event.strategy
+            if (Object.keys(meta).length > 0) step.metadata = meta
+          }
         }
         scrollToBottom()
         break
@@ -340,7 +349,7 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
 
       // 步骤执行详情（技能参数、结果等，可多条）
       case 'step_detail': {
-        const step = findStep(event.stepIndex, event.detailType === 'skill_params' || event.detailType === 'skill_result' ? 'skill_execution' : undefined)
+        const step = findStep(event.stepIndex, event.stepType || (event.detailType === 'skill_params' || event.detailType === 'skill_result' ? 'skill_execution' : undefined))
         if (step) {
           if (!step.detailList) step.detailList = []
           // 收集所有非标准字段到 data

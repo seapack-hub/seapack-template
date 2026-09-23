@@ -121,6 +121,7 @@ export interface StepProgress {
   durationMs?: number
   progressList?: string[]
   detailList?: StepDetailItem[]
+  metadata?: Record<string, any>
 }
 
 defineProps<{
