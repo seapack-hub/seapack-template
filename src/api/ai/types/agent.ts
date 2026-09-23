@@ -248,8 +248,9 @@ export interface StepDetail {
    * - agent_prompt: Agent 基础提示词
    * - template_loaded: 加载的提示词模板
    * - knowledge_result: 知识库检索结果
-   * - skill_params: 技能调用参数
-   * - skill_result: 技能调用结果
+   * - skill_params: 技能调用参数（Function Calling 模式）
+   * - skill_result: 技能调用结果（Function Calling 模式，含 httpMethod/url）
+   * - function_calls: Function Calling 批量调用汇总（含 functionName/arguments/result）
    */
   detailType: string
   /** 详情数据（根据 detailType 结构不同） */

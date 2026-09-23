@@ -152,6 +152,41 @@
 
                 <!-- 非技能步骤 - 普通展示 -->
                 <template v-else>
+                  <!-- Function Calling 调用列表 -->
+                  <div v-if="getFunctionCalls(step).length > 0" class="detail-section">
+                    <div class="detail-label">Function Calls</div>
+                    <div class="fc-list">
+                      <div
+                        v-for="(fc, fcIdx) in getFunctionCalls(step)"
+                        :key="fcIdx"
+                        class="fc-card"
+                      >
+                        <div class="fc-card-header" @click.stop="toggleFcExpand(idx, fcIdx)">
+                          <div class="flex items-center gap-8px flex-1 min-w-0">
+                            <el-icon :size="14" class="text-[var(--el-color-primary)]"><Connection /></el-icon>
+                            <span class="text-13px font-600 color-[var(--el-text-color-primary)]">{{ fc.functionName }}</span>
+                            <el-tag size="small" type="info" effect="plain">Round {{ fc.round }}</el-tag>
+                          </div>
+                          <div class="flex items-center gap-8px">
+                            <el-icon class="expand-icon" :class="{ 'is-expanded': isFcExpanded(idx, fcIdx) }"><ArrowDown /></el-icon>
+                          </div>
+                        </div>
+                        <Transition name="expand">
+                          <div v-if="isFcExpanded(idx, fcIdx)" class="fc-card-body">
+                            <div v-if="fc.arguments" class="fc-meta">
+                              <span class="fc-meta-label">参数</span>
+                              <pre class="fc-meta-value fc-meta-code">{{ formatJsonOrText(fc.arguments) }}</pre>
+                            </div>
+                            <div v-if="fc.result" class="fc-meta">
+                              <span class="fc-meta-label">返回结果</span>
+                              <pre class="fc-meta-value fc-meta-code">{{ formatJsonOrText(fc.result) }}</pre>
+                            </div>
+                          </div>
+                        </Transition>
+                      </div>
+                    </div>
+                  </div>
+
                   <div v-if="step.input" class="detail-section">
                     <div class="detail-label">输入</div>
                     <pre class="detail-code">{{ formatJsonOrText(step.input) }}</pre>
@@ -240,6 +275,7 @@ defineProps<{
 const expandedSteps = ref(new Set<number>())
 const expandedSkills = ref(new Map<string, Set<number>>())
 const expandedTemplates = ref(new Map<string, Set<number>>())
+const expandedFunctions = ref(new Map<string, Set<number>>())
 
 function toggleExpand(idx: number) {
   const s = new Set(expandedSteps.value)
@@ -277,6 +313,31 @@ function isTemplateExpanded(stepType: string | undefined, idx: number): boolean 
   return expandedTemplates.value.get(key)?.has(idx) || false
 }
 
+function toggleFcExpand(stepIdx: number, fcIdx: number) {
+  const key = `${stepIdx}`
+  const map = new Map(expandedFunctions.value)
+  if (!map.has(key)) map.set(key, new Set())
+  const set = map.get(key)!
+  if (set.has(fcIdx)) set.delete(fcIdx)
+  else set.add(fcIdx)
+  expandedFunctions.value = map
+}
+
+function isFcExpanded(stepIdx: number, fcIdx: number): boolean {
+  return expandedFunctions.value.get(`${stepIdx}`)?.has(fcIdx) || false
+}
+
+/** 从 step.metadata.functionCalls 中提取 function call 列表 */
+function getFunctionCalls(step: AgentTraceStep): Array<{ round: number; functionName: string; arguments: string; result: string }> {
+  const raw = step.metadata?.functionCalls
+  if (!raw) return []
+  if (Array.isArray(raw)) return raw
+  if (typeof raw === 'string') {
+    try { return JSON.parse(raw) } catch { return [] }
+  }
+  return []
+}
+
 interface TemplateDetail {
   templateId?: number | string
   templateName?: string
@@ -296,11 +357,19 @@ function getTemplateDetails(step: AgentTraceStep): TemplateDetail[] {
   return []
 }
 
-/** 获取除 templateDetails 和 knowledgeDetails 外的其他元数据字段 */
+/** 获取除 templateDetails 和 knowledgeDetails 外的其他元数据字段，functionCalls 转为精简摘要 */
 function getOtherMetadata(step: AgentTraceStep): [string, any][] {
   if (!step.metadata) return []
   const excluded = new Set(['templateDetails', 'knowledgeDetails'])
-  return Object.entries(step.metadata).filter(([k]) => !excluded.has(k))
+  return Object.entries(step.metadata)
+    .filter(([k]) => !excluded.has(k))
+    .map(([k, v]) => {
+      if (k === 'functionCalls' && Array.isArray(v)) {
+        const names = v.map((fc: any) => fc.functionName || '?').join(', ')
+        return [k, `${v.length} 次调用 (${names})`]
+      }
+      return [k, v]
+    })
 }
 
 interface SkillResult {
@@ -778,6 +847,70 @@ function formatMetadataValue(val: any): string {
   max-height: 0;
   padding-top: 0;
   padding-bottom: 0;
+}
+
+/* Function Call 卡片 */
+.fc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.fc-card {
+  border: 1px solid var(--el-border-color-extra-light);
+  border-radius: 8px;
+  overflow: hidden;
+  border-left: 3px solid var(--el-color-primary);
+  transition: border-color 0.15s;
+}
+.fc-card:hover {
+  border-color: var(--el-border-color-light);
+}
+.fc-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.fc-card-header:hover {
+  background: var(--el-fill-color-lighter);
+}
+.fc-card-body {
+  padding: 0 12px 10px;
+  overflow: hidden;
+}
+.fc-meta {
+  margin-bottom: 8px;
+}
+.fc-meta:last-child {
+  margin-bottom: 0;
+}
+.fc-meta-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.fc-meta-value {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--el-text-color-primary);
+  background: var(--el-fill-color);
+  border: 1px solid var(--el-border-color-extra-light);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: 0;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+.fc-meta-code {
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .tabular-nums {
