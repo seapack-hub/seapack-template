@@ -152,34 +152,38 @@
 
                 <!-- 非技能步骤 - 普通展示 -->
                 <template v-else>
-                  <!-- Function Calling 调用列表 -->
-                  <div v-if="getFunctionCalls(step).length > 0" class="detail-section">
-                    <div class="detail-label">Function Calls</div>
-                    <div class="fc-list">
+                  <!-- 子步骤：技能执行详情（结构化链路追踪） -->
+                  <div v-if="step.children?.length" class="detail-section">
+                    <div class="detail-label">执行步骤</div>
+                    <div class="child-steps">
                       <div
-                        v-for="(fc, fcIdx) in getFunctionCalls(step)"
-                        :key="fcIdx"
-                        class="fc-card"
+                        v-for="(child, cIdx) in step.children"
+                        :key="cIdx"
+                        class="child-step-card"
                       >
-                        <div class="fc-card-header" @click.stop="toggleFcExpand(idx, fcIdx)">
+                        <div class="child-step-header" @click.stop="toggleChildExpand(idx, cIdx)">
                           <div class="flex items-center gap-8px flex-1 min-w-0">
-                            <el-icon :size="14" class="text-[var(--el-color-primary)]"><Connection /></el-icon>
-                            <span class="text-13px font-600 color-[var(--el-text-color-primary)]">{{ fc.functionName }}</span>
-                            <el-tag size="small" type="info" effect="plain">Round {{ fc.round }}</el-tag>
+                            <el-icon v-if="child.status === 'success'" :size="14" class="text-[var(--el-color-success)]"><CircleCheckFilled /></el-icon>
+                            <el-icon v-else-if="child.status === 'fail'" :size="14" class="text-[var(--el-color-danger)]"><CircleCloseFilled /></el-icon>
+                            <span class="text-13px font-600 color-[var(--el-text-color-primary)]">{{ child.stepName }}</span>
+                            <el-tag v-if="child.metadata?.round" size="small" type="info" effect="plain">Round {{ child.metadata.round }}</el-tag>
                           </div>
                           <div class="flex items-center gap-8px">
-                            <el-icon class="expand-icon" :class="{ 'is-expanded': isFcExpanded(idx, fcIdx) }"><ArrowDown /></el-icon>
+                            <el-tag :type="child.status === 'success' ? 'success' : 'danger'" size="small" effect="plain">
+                              {{ child.status === 'success' ? '成功' : '失败' }}
+                            </el-tag>
+                            <el-icon class="expand-icon" :class="{ 'is-expanded': isChildExpanded(idx, cIdx) }"><ArrowDown /></el-icon>
                           </div>
                         </div>
                         <Transition name="expand">
-                          <div v-if="isFcExpanded(idx, fcIdx)" class="fc-card-body">
-                            <div v-if="fc.arguments" class="fc-meta">
+                          <div v-if="isChildExpanded(idx, cIdx)" class="child-step-body">
+                            <div v-if="child.input" class="fc-meta">
                               <span class="fc-meta-label">参数</span>
-                              <pre class="fc-meta-value fc-meta-code">{{ formatJsonOrText(fc.arguments) }}</pre>
+                              <pre class="fc-meta-value fc-meta-code">{{ formatJsonOrText(child.input) }}</pre>
                             </div>
-                            <div v-if="fc.result" class="fc-meta">
+                            <div v-if="child.output" class="fc-meta">
                               <span class="fc-meta-label">返回结果</span>
-                              <pre class="fc-meta-value fc-meta-code">{{ formatJsonOrText(fc.result) }}</pre>
+                              <pre class="fc-meta-value fc-meta-code">{{ formatJsonOrText(child.output) }}</pre>
                             </div>
                           </div>
                         </Transition>
@@ -275,7 +279,6 @@ defineProps<{
 const expandedSteps = ref(new Set<number>())
 const expandedSkills = ref(new Map<string, Set<number>>())
 const expandedTemplates = ref(new Map<string, Set<number>>())
-const expandedFunctions = ref(new Map<string, Set<number>>())
 
 function toggleExpand(idx: number) {
   const s = new Set(expandedSteps.value)
@@ -313,29 +316,21 @@ function isTemplateExpanded(stepType: string | undefined, idx: number): boolean 
   return expandedTemplates.value.get(key)?.has(idx) || false
 }
 
-function toggleFcExpand(stepIdx: number, fcIdx: number) {
+// ===== 子步骤展开状态 =====
+const expandedChildSteps = ref(new Map<string, Set<number>>())
+
+function toggleChildExpand(stepIdx: number, childIdx: number) {
   const key = `${stepIdx}`
-  const map = new Map(expandedFunctions.value)
+  const map = new Map(expandedChildSteps.value)
   if (!map.has(key)) map.set(key, new Set())
   const set = map.get(key)!
-  if (set.has(fcIdx)) set.delete(fcIdx)
-  else set.add(fcIdx)
-  expandedFunctions.value = map
+  if (set.has(childIdx)) set.delete(childIdx)
+  else set.add(childIdx)
+  expandedChildSteps.value = map
 }
 
-function isFcExpanded(stepIdx: number, fcIdx: number): boolean {
-  return expandedFunctions.value.get(`${stepIdx}`)?.has(fcIdx) || false
-}
-
-/** 从 step.metadata.functionCalls 中提取 function call 列表 */
-function getFunctionCalls(step: AgentTraceStep): Array<{ round: number; functionName: string; arguments: string; result: string }> {
-  const raw = step.metadata?.functionCalls
-  if (!raw) return []
-  if (Array.isArray(raw)) return raw
-  if (typeof raw === 'string') {
-    try { return JSON.parse(raw) } catch { return [] }
-  }
-  return []
+function isChildExpanded(stepIdx: number, childIdx: number): boolean {
+  return expandedChildSteps.value.get(`${stepIdx}`)?.has(childIdx) || false
 }
 
 interface TemplateDetail {
@@ -849,37 +844,7 @@ function formatMetadataValue(val: any): string {
   padding-bottom: 0;
 }
 
-/* Function Call 卡片 */
-.fc-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.fc-card {
-  border: 1px solid var(--el-border-color-extra-light);
-  border-radius: 8px;
-  overflow: hidden;
-  border-left: 3px solid var(--el-color-primary);
-  transition: border-color 0.15s;
-}
-.fc-card:hover {
-  border-color: var(--el-border-color-light);
-}
-.fc-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.fc-card-header:hover {
-  background: var(--el-fill-color-lighter);
-}
-.fc-card-body {
-  padding: 0 12px 10px;
-  overflow: hidden;
-}
+/* 参数/结果展示（复用于子步骤） */
 .fc-meta {
   margin-bottom: 8px;
 }
@@ -915,5 +880,37 @@ function formatMetadataValue(val: any): string {
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* 子步骤样式 */
+.child-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.child-step-card {
+  border: 1px solid var(--el-border-color-extra-light);
+  border-radius: 8px;
+  overflow: hidden;
+  border-left: 3px solid var(--el-color-success);
+  transition: border-color 0.15s;
+}
+.child-step-card:hover {
+  border-color: var(--el-border-color-light);
+}
+.child-step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.child-step-header:hover {
+  background: var(--el-fill-color-lighter);
+}
+.child-step-body {
+  padding: 0 12px 10px;
+  overflow: hidden;
 }
 </style>

@@ -125,9 +125,11 @@ export interface AgentTraceStep {
   stepName: string
   status: 'success' | 'fail' | 'skip' | string
   durationMs: number
-  input?: string
-  output?: string | string[]
+  input?: string | Record<string, any>
+  output?: string | string[] | Record<string, any>
   metadata?: Record<string, any>
+  /** 子步骤列表（如 llm_call 内部的多次技能执行） */
+  children?: AgentTraceStep[]
   /** 编排步骤：关联 Agent ID */
   agentId?: number
   /** 编排步骤：Agent 名称 */
