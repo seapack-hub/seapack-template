@@ -333,15 +333,6 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
         if (step) {
           if (!step.progressList) step.progressList = []
           step.progressList.push(event.message || '')
-          // 捕获 plan 步骤的元数据（intent、reason、plannedSteps、strategy）
-          if (event.stepType === 'plan' && !step.metadata) {
-            const meta: Record<string, any> = {}
-            if (event.intent) meta.intent = event.intent
-            if (event.reason) meta.reason = event.reason
-            if (event.plannedSteps) meta.plannedSteps = event.plannedSteps
-            if (event.strategy) meta.strategy = event.strategy
-            if (Object.keys(meta).length > 0) step.metadata = meta
-          }
         }
         scrollToBottom()
         break
@@ -349,7 +340,16 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
 
       // 步骤执行详情（技能参数、结果等，可多条）
       case 'step_detail': {
-        const step = findStep(event.stepIndex, event.stepType || (event.detailType === 'skill_params' || event.detailType === 'skill_result' ? 'skill_execution' : undefined))
+        // 根据 detailType 判断所属步骤类型
+        const skillDetailTypes = new Set(['skill_params', 'skill_result'])
+        const toolDetailTypes = new Set(['tool_list', 'tool_round', 'tool_start', 'tool_done', 'tool_summary'])
+        let detailStepType: string | undefined
+        if (skillDetailTypes.has(event.detailType)) {
+          detailStepType = 'skill_execution'
+        } else if (toolDetailTypes.has(event.detailType)) {
+          detailStepType = 'skill_execution'
+        }
+        const step = findStep(event.stepIndex, event.stepType || detailStepType)
         if (step) {
           if (!step.detailList) step.detailList = []
           // 收集所有非标准字段到 data

@@ -87,57 +87,48 @@
             <!-- 展开详情 -->
             <Transition name="expand">
               <div v-if="expandedSteps.has(idx)" class="step-detail">
-                <!-- 意图规划 - 特殊处理 -->
-                <template v-if="step.stepType === 'plan'">
-                  <div v-if="step.metadata" class="plan-summary">
-                    <div v-if="step.metadata.strategy" class="plan-summary-item">
-                      <span class="plan-summary-label">分析策略</span>
-                      <el-tag size="small" effect="plain">
-                        {{ step.metadata.strategy }}
-                      </el-tag>
-                    </div>
-                    <div class="plan-summary-item">
-                      <span class="plan-summary-label">意图类型</span>
-                      <el-tag :type="getIntentTag(step.metadata.intent as string) as any" size="small" effect="plain">
-                        {{ getIntentLabel(step.metadata.intent as string) }}
-                      </el-tag>
-                    </div>
-                    <div v-if="step.metadata.reason" class="plan-summary-item">
-                      <span class="plan-summary-label">判定原因</span>
-                      <span class="plan-summary-value">{{ step.metadata.reason }}</span>
-                    </div>
-                    <div v-if="step.metadata.plannedSteps" class="plan-summary-item">
-                      <span class="plan-summary-label">执行计划</span>
-                      <div class="plan-steps-list">
-                        <el-tag
-                          v-for="(s, sIdx) in (step.metadata.plannedSteps as string[])"
-                          :key="sIdx"
-                          size="small"
-                          effect="plain"
-                          class="plan-step-tag"
-                        >
-                          {{ getStepTypeLabel(s) }}
-                        </el-tag>
+                <!-- 技能调用 - 特殊处理 -->
+                <template v-if="step.stepType === 'skill_execution'">
+                  <!-- 子步骤：从 children 渲染（extraSteps 方式构建的工具步骤） -->
+                  <div v-if="step.children?.length" class="detail-section">
+                    <div class="detail-label">执行步骤</div>
+                    <div class="child-steps">
+                      <div
+                        v-for="(child, cIdx) in step.children"
+                        :key="cIdx"
+                        class="child-step-card"
+                      >
+                        <div class="child-step-header" @click.stop="toggleChildExpand(idx, cIdx)">
+                          <div class="flex items-center gap-8px flex-1 min-w-0">
+                            <el-icon v-if="child.status === 'success'" :size="14" class="text-[var(--el-color-success)]"><CircleCheckFilled /></el-icon>
+                            <el-icon v-else-if="child.status === 'fail'" :size="14" class="text-[var(--el-color-danger)]"><CircleCloseFilled /></el-icon>
+                            <span class="text-13px font-600 color-[var(--el-text-color-primary)]">{{ child.stepName }}</span>
+                            <el-tag v-if="child.metadata?.round" size="small" type="info" effect="plain">Round {{ child.metadata.round }}</el-tag>
+                          </div>
+                          <div class="flex items-center gap-8px">
+                            <el-tag :type="child.status === 'success' ? 'success' : 'danger'" size="small" effect="plain">
+                              {{ child.status === 'success' ? '成功' : '失败' }}
+                            </el-tag>
+                            <el-icon class="expand-icon" :class="{ 'is-expanded': isChildExpanded(idx, cIdx) }"><ArrowDown /></el-icon>
+                          </div>
+                        </div>
+                        <Transition name="expand">
+                          <div v-if="isChildExpanded(idx, cIdx)" class="child-step-body">
+                            <div v-if="child.input" class="fc-meta">
+                              <span class="fc-meta-label">参数</span>
+                              <pre class="fc-meta-value fc-meta-code">{{ formatJsonOrText(child.input) }}</pre>
+                            </div>
+                            <div v-if="child.output" class="fc-meta">
+                              <span class="fc-meta-label">返回结果</span>
+                              <pre class="fc-meta-value fc-meta-code">{{ formatJsonOrText(child.output) }}</pre>
+                            </div>
+                          </div>
+                        </Transition>
                       </div>
                     </div>
                   </div>
-                </template>
-            
-                <!-- 技能调用 - 特殊处理 -->
-                <template v-else-if="step.stepType === 'skill_execution'">
-                  <!-- 技能汇总信息 -->
-                  <div v-if="step.metadata" class="skill-summary">
-                    <div class="skill-summary-item">
-                      <span class="skill-summary-label">技能总数</span>
-                      <span class="skill-summary-value tabular-nums">{{ getSkillCount(step) }}</span>
-                    </div>
-                    <div class="skill-summary-item">
-                      <span class="skill-summary-label">执行成功</span>
-                      <span class="skill-summary-value tabular-nums text-[var(--el-color-success)]">{{ getExecutedCount(step) }}</span>
-                    </div>
-                  </div>
-                  <!-- 解析后的技能列表 -->
-                  <div v-if="parseSkillResults(step.output as string).length > 0" class="skill-list">
+                  <!-- 兼容旧方式：从 step.output 解析技能列表 -->
+                  <div v-else-if="parseSkillResults(step.output as string).length > 0" class="skill-list">
                     <div
                       v-for="(skill, sIdx) in parseSkillResults(step.output as string)"
                       :key="sIdx"
@@ -502,7 +493,6 @@ function getExecutedCount(step: AgentTraceStep): number {
 
 function getStepTypeTag(type: string): string {
   const map: Record<string, string> = {
-    plan: 'info',
     prompt_assembly: 'primary',
     knowledge_retrieval: 'success',
     skill_execution: 'warning',
@@ -513,31 +503,12 @@ function getStepTypeTag(type: string): string {
 
 function getStepTypeLabel(type: string): string {
   const map: Record<string, string> = {
-    plan: '规划',
     prompt_assembly: '提示词',
     knowledge_retrieval: '知识库',
     skill_execution: '技能',
     llm_call: 'LLM',
   }
   return map[type] || type
-}
-
-function getIntentTag(intent?: string): string {
-  const map: Record<string, string> = {
-    chat: 'info',
-    business: 'warning',
-    knowledge: 'success',
-  }
-  return map[intent || ''] || 'info'
-}
-
-function getIntentLabel(intent?: string): string {
-  const map: Record<string, string> = {
-    chat: '闲聊',
-    business: '业务',
-    knowledge: '知识',
-  }
-  return map[intent || ''] || intent || '未知'
 }
 
 function getRouteLabel(route?: string): string {

@@ -319,12 +319,4 @@ export interface AgentTestChatSSEEvent {
   tokensCompletion?: number
   /** done：总耗时 ms */
   totalDurationMs?: number
-  /** step_progress (plan)：意图类型 */
-  intent?: string
-  /** step_progress (plan)：规划原因 */
-  reason?: string
-  /** step_progress (plan)：计划执行步骤列表 */
-  plannedSteps?: string[]
-  /** step_progress (plan)：策略类型（本地规则匹配 / LLM 智能分析） */
-  strategy?: string
 }

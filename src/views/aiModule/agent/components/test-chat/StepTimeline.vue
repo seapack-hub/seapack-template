@@ -90,6 +90,34 @@
                 <div class="detail-error">{{ detail.data?.errorMessage }}</div>
               </template>
 
+              <template v-else-if="detail.detailType === 'tool_list' || detail.detailType === 'tool_round'">
+                <div class="detail-header">
+                  <el-tag size="small" type="primary" effect="plain">工具清单</el-tag>
+                </div>
+                <div class="tool-message">{{ detail.data?.message }}</div>
+              </template>
+
+              <template v-else-if="detail.detailType === 'tool_start'">
+                <div class="detail-header">
+                  <el-tag size="small" type="warning" effect="plain">调用中</el-tag>
+                  <span class="detail-sub">{{ detail.data?.message }}</span>
+                </div>
+              </template>
+
+              <template v-else-if="detail.detailType === 'tool_done'">
+                <div class="detail-header">
+                  <el-tag size="small" type="success" effect="plain">完成</el-tag>
+                  <span class="detail-sub">{{ detail.data?.message }}</span>
+                </div>
+              </template>
+
+              <template v-else-if="detail.detailType === 'tool_summary'">
+                <div class="detail-header">
+                  <el-tag size="small" type="info" effect="plain">汇总</el-tag>
+                </div>
+                <div class="tool-message">{{ detail.data?.message }}</div>
+              </template>
+
               <template v-else>
                 <div class="detail-header">
                   <el-tag size="small" effect="plain">{{ detail.detailType }}</el-tag>
@@ -247,6 +275,7 @@ function formatJson(data: any): string {
   max-height: 150px; overflow-y: auto;
 }
 .detail-error { margin-top: 4px; font-size: 12px; color: var(--el-color-danger); line-height: 1.5; }
+.tool-message { font-size: 12px; color: var(--el-text-color-regular); line-height: 1.6; margin-top: 4px; }
 
 .knowledge-chunks { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
 .knowledge-chunk {
