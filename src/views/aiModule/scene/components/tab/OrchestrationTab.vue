@@ -1,7 +1,7 @@
 <!--
   场景配置 — 编排管理 Tab
   管理场景下的编排（orchestration）列表，每个编排包含多个步骤（step）。
-  支持四种执行策略：sequential / parallel / llm_tool / auto
+  支持五种执行策略：sequential / parallel / supervisor / crew / dynamic
 -->
 <template>
   <div class="min-h-300px pt-4px">
@@ -109,6 +109,7 @@ const form = ref<Partial<Orchestration>>({
   code: '',
   strategy: 'sequential' as OrchestrationStrategy,
   description: '',
+  maxRounds: 5,
   sortOrder: 0,
 })
 
@@ -126,8 +127,9 @@ function strategyTagType(strategy: OrchestrationStrategy): string {
   const map: Record<string, string> = {
     sequential: 'primary',
     parallel: 'success',
-    llm_tool: 'warning',
-    auto: 'info',
+    supervisor: 'danger',
+    crew: 'warning',
+    dynamic: 'info',
   }
   return map[strategy] || 'info'
 }
@@ -146,6 +148,7 @@ function openAdd() {
     code: '',
     strategy: 'sequential',
     description: '',
+    maxRounds: 5,
     status: 1,
     sortOrder: 0,
   }

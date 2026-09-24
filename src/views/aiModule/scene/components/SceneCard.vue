@@ -64,6 +64,11 @@
             <el-icon :size="14"><CopyDocument /></el-icon>
           </button>
         </el-tooltip>
+        <el-tooltip content="测试" placement="top" :show-after="400">
+          <button class="scene-card__action" @click="emit('test', scene)">
+            <el-icon :size="14"><ChatDotRound /></el-icon>
+          </button>
+        </el-tooltip>
         <div class="scene-card__divider" />
         <el-tooltip content="删除" placement="top" :show-after="400">
           <button class="scene-card__action scene-card__action--danger" @click="emit('delete', scene)">
@@ -77,7 +82,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { View, Edit, Setting, CopyDocument, Delete } from '@element-plus/icons-vue'
+import { View, Edit, Setting, CopyDocument, Delete, ChatDotRound } from '@element-plus/icons-vue'
 import type { Scene } from '@/api/ai/scene'
 import { MODULE_DEFS } from '@/config/modules'
 import Icon from '@/components/Icon/index.vue'
@@ -89,6 +94,7 @@ const emit = defineEmits<{
   config: [scene: Scene]
   copy: [scene: Scene]
   delete: [scene: Scene]
+  test: [scene: Scene]
   statusChange: [scene: Scene, val: number]
 }>()
 

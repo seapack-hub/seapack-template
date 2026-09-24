@@ -13,7 +13,7 @@
     <div class="drawer-overview">
       <div class="drawer-overview__item">
         <span class="drawer-overview__value">{{ tabStats.agents }}</span>
-        <span class="drawer-overview__label">关联助手</span>
+        <span class="drawer-overview__label">关联agents</span>
       </div>
       <div class="drawer-overview__item">
         <span class="drawer-overview__value">{{ tabStats.knowledge }}</span>
@@ -36,7 +36,7 @@
     <el-tabs v-model="activeTab" class="config-tabs" stretch>
       <!-- Tab 1: 关联 Agent -->
       <el-tab-pane name="agent">
-        <template #label><span class="config-tab-label"><el-icon><User /></el-icon> 关联助手</span></template>
+        <template #label><span class="config-tab-label"><el-icon><User /></el-icon> 关联agents</span></template>
         <AgentTab ref="agentTabRef" :scene-id="sceneId" @update="tabStats.agents = $event" />
       </el-tab-pane>
 

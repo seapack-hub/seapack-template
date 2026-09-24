@@ -118,6 +118,28 @@
                 <div class="tool-message">{{ detail.data?.message }}</div>
               </template>
 
+              <template v-else-if="detail.detailType === 'condition_eval'">
+                <div class="detail-header">
+                  <el-tag size="small" :type="detail.data?.result === 'true' ? 'success' : 'warning'" effect="plain">条件分支</el-tag>
+                  <span class="detail-name">{{ detail.data?.result === 'true' ? '条件为真' : '条件为假' }}</span>
+                </div>
+                <div class="condition-info">
+                  <div class="condition-row"><span class="condition-label">表达式:</span> <code>{{ detail.data?.rawCondition }}</code></div>
+                  <div class="condition-row"><span class="condition-label">跳转:</span> {{ detail.data?.result === 'true' ? '步骤 ' + detail.data?.branchTrueStep : '步骤 ' + detail.data?.branchFalseStep }}</div>
+                  <div v-if="detail.data?.message" class="condition-row detail-sub">{{ detail.data?.message }}</div>
+                </div>
+              </template>
+
+              <template v-else-if="detail.detailType === 'input_resolved'">
+                <div class="detail-header">
+                  <el-tag size="small" type="info" effect="plain">输入解析</el-tag>
+                  <span class="detail-name">{{ detail.data?.inputMode || 'user_input' }}</span>
+                </div>
+                <div class="condition-row"><span class="condition-label">解析结果:</span></div>
+                <pre class="detail-code">{{ truncateText(detail.data?.resolvedInput, 500) }}</pre>
+                <div v-if="detail.data?.message" class="detail-sub" style="margin-top: 4px;">{{ detail.data?.message }}</div>
+              </template>
+
               <template v-else>
                 <div class="detail-header">
                   <el-tag size="small" effect="plain">{{ detail.detailType }}</el-tag>
@@ -163,20 +185,36 @@ function stepKey(step: StepProgress, index: number): string {
 
 function getStepTypeTag(type: string): '' | 'success' | 'warning' | 'danger' | 'info' {
   const map: Record<string, '' | 'success' | 'warning' | 'danger' | 'info'> = {
+    orchestration_start: 'info',
     prompt_assembly: '',
     knowledge_retrieval: 'success',
     skill_execution: 'warning',
     llm_call: 'danger',
+    condition: 'warning',
+    aggregate: 'success',
+    plan_generation: 'info',
+    dynamic_execution: '',
+    supervisor_round: 'warning',
+    crew_execution: 'danger',
+    step_error: 'danger',
   }
   return map[type] || 'info'
 }
 
 function getStepTypeLabel(type: string): string {
   const map: Record<string, string> = {
+    orchestration_start: '编排',
     prompt_assembly: '提示词',
     knowledge_retrieval: '知识库',
     skill_execution: '技能',
     llm_call: 'LLM',
+    condition: '条件分支',
+    aggregate: '汇总',
+    plan_generation: '计划生成',
+    dynamic_execution: '动态执行',
+    supervisor_round: '总控轮次',
+    crew_execution: '协作执行',
+    step_error: '异常',
   }
   return map[type] || type
 }
@@ -276,6 +314,14 @@ function formatJson(data: any): string {
 }
 .detail-error { margin-top: 4px; font-size: 12px; color: var(--el-color-danger); line-height: 1.5; }
 .tool-message { font-size: 12px; color: var(--el-text-color-regular); line-height: 1.6; margin-top: 4px; }
+
+.condition-info { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+.condition-row { font-size: 12px; color: var(--el-text-color-regular); line-height: 1.6; }
+.condition-label { font-weight: 500; color: var(--el-text-color-secondary); margin-right: 4px; }
+.condition-row code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 11px; background: var(--el-fill-color); padding: 1px 4px; border-radius: 3px;
+}
 
 .knowledge-chunks { margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
 .knowledge-chunk {

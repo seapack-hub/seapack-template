@@ -290,10 +290,10 @@ export interface LlmTestChatSSEEvent {
 
 /** 测试对话 SSE 流式事件 */
 export interface AgentTestChatSSEEvent {
-  type: 'step_start' | 'step_progress' | 'step_detail' | 'step_done' | 'content' | 'done' | 'error' | 'stop'
+  type: 'step_start' | 'step_progress' | 'step_detail' | 'step_done' | 'step_error' | 'content' | 'done' | 'error' | 'stop' | 'orchestration_start'
   /** 步骤索引 */
   stepIndex?: number
-  /** step_start / step_done：步骤类型（prompt_assembly / knowledge_retrieval / skill_execution / llm_call） */
+  /** step_start / step_done：步骤类型（prompt_assembly / knowledge_retrieval / skill_execution / llm_call / orchestration_start） */
   stepType?: string
   /** step_start / step_done：步骤名称 */
   stepName?: string
@@ -319,4 +319,16 @@ export interface AgentTestChatSSEEvent {
   tokensCompletion?: number
   /** done：总耗时 ms */
   totalDurationMs?: number
+  /** orchestration_start：编排 ID */
+  orchestrationId?: number
+  /** orchestration_start：编排名称 */
+  orchestrationName?: string
+  /** orchestration_start：执行策略 */
+  strategy?: string
+  /** orchestration_start：总步骤数 */
+  totalSteps?: number
+  /** orchestration_start：AI 提供商 */
+  provider?: string
+  /** orchestration_start：聊天模型 */
+  chatModel?: string
 }

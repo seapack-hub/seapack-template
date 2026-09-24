@@ -57,6 +57,7 @@
             @config="openConfigDrawer"
             @copy="handleCopyCard"
             @delete="handleCardDelete"
+            @test="openTestDrawer"
             @status-change="onStatusChange"
           />
         </CardGrid>
@@ -104,6 +105,13 @@
       :scene-id="currentSceneId"
       :scene-name="currentSceneName"
     />
+
+    <!-- 测试抽屉 -->
+    <SceneTestDrawer
+      v-model:visible="testDrawerVisible"
+      :scene-id="testSceneId"
+      :scene-name="testSceneName"
+    />
   </div>
 </template>
 
@@ -116,6 +124,7 @@ import { useScene } from './utils/useScene'
 import SceneCard from './components/SceneCard.vue'
 import SceneFormDialog from './components/SceneFormDialog.vue'
 import SceneConfigDrawer from './components/SceneConfigDrawer.vue'
+import SceneTestDrawer from './components/SceneTestDrawer.vue'
 
 const {
   queryParams, tableData, total, loading,
@@ -128,6 +137,17 @@ const {
 
 const viewMode = ref<'card' | 'list'>('card')
 
+// ===== 场景测试抽屉 =====
+const testDrawerVisible = ref(false)
+const testSceneId = ref(0)
+const testSceneName = ref('')
+
+function openTestDrawer(scene: Scene) {
+  testSceneId.value = scene.id!
+  testSceneName.value = scene.name
+  testDrawerVisible.value = true
+}
+
 const columns = [
   ...SCENE_LIST_COLUMNS,
   {
@@ -135,6 +155,7 @@ const columns = [
     buttons: [
       { type: 'primary', label: '编辑', size: 'small', renderType: 'link', click: ({ row }: any) => openEditDialog(row) },
       { type: 'primary', label: '配置', size: 'small', renderType: 'link', click: ({ row }: any) => openConfigDrawer(row) },
+      { type: 'primary', label: '测试', size: 'small', renderType: 'link', click: ({ row }: any) => openTestDrawer(row) },
       { type: 'primary', label: '复制', size: 'small', renderType: 'link', click: ({ row }: any) => handleCopy(row) },
       { type: 'danger', label: '删除', size: 'small', renderType: 'link', popconFirm: { title: '确认删除该场景吗？' }, click: ({ row }: any) => handleDelete(row) },
     ],

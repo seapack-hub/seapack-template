@@ -75,8 +75,11 @@
  * 4. 提供取消对话、清空消息等操作
  *
  * SSE 事件类型：
+ * - orchestration_start: 编排开始执行（含编排名称、策略、步骤数等）
  * - step_start: 后端开始执行某个步骤（提示词组装/知识库检索/技能调用/LLM调用）
+ * - step_progress / step_detail: 步骤执行过程中的进度/详情
  * - step_done:  某个步骤执行完成，包含状态和耗时
+ * - step_error: 某个步骤执行出错
  * - content:    LLM 流式输出的文本片段
  * - done:       对话完成，包含 token 统计和链路追踪快照
  * - error:      执行出错
@@ -89,9 +92,11 @@ import MessageBubble from './MessageBubble.vue'
 import type { ChatMessage } from './MessageBubble.vue'
 import type { StepProgress } from './StepTimeline.vue'
 
-/** 父组件传入的 Agent ID */
+/** 父组件传入的参数：Agent 模式传 agentId，编排模式传 orchestrationId + sceneId */
 const props = defineProps<{
-  agentId: number
+  agentId?: number
+  orchestrationId?: number
+  sceneId?: number
 }>()
 
 /** 向父组件发射的事件 */
@@ -184,11 +189,17 @@ async function sendMessage() {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' }
     if (token) headers['Authorization'] = `Bearer ${token}`
 
-    // 发起 POST 请求，后端返回 SSE 流
-    const response = await fetch('/api/ai/dialog/agent-stream', {
+    // 发起 POST 请求，后端返回 SSE 流（根据模式选择不同端点）
+    const isOrchestration = !!props.orchestrationId
+    const url = isOrchestration ? '/api/ai/dialog/orchestration' : '/api/ai/dialog/agent-stream'
+    const body = isOrchestration
+      ? { mode: 'orchestration', orchestrationId: props.orchestrationId, question: msg, history, sceneId: props.sceneId }
+      : { mode: 'agent_stream', agentId: props.agentId, question: msg, history }
+
+    const response = await fetch(url, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ mode: 'agent_stream', agentId: props.agentId, question: msg, history }),
+      body: JSON.stringify(body),
       signal: currentAbortController.signal,
     })
 
@@ -316,6 +327,24 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
     }
 
     switch (event.type) {
+      // 编排开始执行：记录编排元信息到步骤列表第一条
+      case 'orchestration_start':
+        steps.value.push({
+          stepName: event.orchestrationName ? `编排「${event.orchestrationName}」开始` : '编排开始',
+          stepType: 'orchestration_start',
+          status: 'success',
+          metadata: {
+            orchestrationId: event.orchestrationId,
+            orchestrationName: event.orchestrationName,
+            strategy: event.strategy,
+            totalSteps: event.totalSteps,
+            provider: event.provider,
+            chatModel: event.chatModel,
+          },
+        })
+        scrollToBottom()
+        break
+
       // 后端开始执行某个步骤
       case 'step_start':
         steps.value.push({
@@ -344,9 +373,9 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
         const skillDetailTypes = new Set(['skill_params', 'skill_result'])
         const toolDetailTypes = new Set(['tool_list', 'tool_round', 'tool_start', 'tool_done', 'tool_summary'])
         let detailStepType: string | undefined
-        if (skillDetailTypes.has(event.detailType)) {
+        if (event.detailType && skillDetailTypes.has(event.detailType)) {
           detailStepType = 'skill_execution'
-        } else if (toolDetailTypes.has(event.detailType)) {
+        } else if (event.detailType && toolDetailTypes.has(event.detailType)) {
           detailStepType = 'skill_execution'
         }
         const step = findStep(event.stepIndex, event.stepType || detailStepType)
@@ -362,6 +391,19 @@ function handleSSEEvent(event: AgentTestChatSSEEvent) {
             detailType: event.detailType || 'unknown',
             data,
           })
+        }
+        scrollToBottom()
+        break
+      }
+
+      // 某个步骤执行出错
+      case 'step_error': {
+        const errorStep = findStep(event.stepIndex, event.stepType)
+        if (errorStep) {
+          errorStep.status = 'fail'
+          errorStep.durationMs = event.durationMs
+          if (!errorStep.progressList) errorStep.progressList = []
+          errorStep.progressList.push(`错误: ${event.message || '未知错误'}`)
         }
         scrollToBottom()
         break
