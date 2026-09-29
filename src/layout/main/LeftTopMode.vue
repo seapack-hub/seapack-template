@@ -94,6 +94,6 @@ const sidebarWidth = computed(() => {
   overflow: hidden;
 }
 .el-main {
-  overflow: hidden;
+  overflow: auto;
 }
 </style>

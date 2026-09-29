@@ -58,6 +58,6 @@ const basePath = computed(() => {
   }
 }
 .el-main {
-  overflow: hidden;
+  overflow: auto;
 }
 </style>
