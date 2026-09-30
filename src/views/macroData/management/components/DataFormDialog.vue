@@ -11,9 +11,7 @@
         />
       </el-form-item>
       <el-form-item v-if="mode === 'add'" label="频率">
-        <el-select :model-value="frequency" disabled style="width: 100%">
-          <el-option v-for="opt in FREQUENCY_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-        </el-select>
+        <SpSelect :model-value="frequency" dict-type="data_frequency" disabled style="width: 100%" />
       </el-form-item>
       <el-form-item label="指标编码">
         <el-select v-model="localForm.indicatorCode" filterable style="width: 100%" :disabled="mode === 'edit'">
@@ -42,7 +40,6 @@
 
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
-import { FREQUENCY_OPTIONS } from '../utils'
 import type { MacroIndicatorMeta } from '@/api/macroData/types'
 
 const props = defineProps<{

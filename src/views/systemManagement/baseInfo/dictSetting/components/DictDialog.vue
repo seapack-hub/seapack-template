@@ -2,7 +2,25 @@
   <el-dialog v-model="visible" :title="isEdit ? '编辑字典' : '新增字典'" width="500px" @closed="onClosed">
     <el-form ref="formRef" :model="form" :rules="formRules" label-width="100px">
       <el-form-item label="字典类型" prop="dictType">
-        <el-input v-model="form.dictType" placeholder="如 fund_type" :disabled="isEdit" />
+        <!-- 已选中类型：锁定显示 -->
+        <el-input v-if="typeLocked" v-model="form.dictType" disabled />
+        <!-- 全部类型（新增）：下拉选择 -->
+        <el-select
+          v-else-if="typeOptions?.length"
+          v-model="form.dictType"
+          filterable
+          placeholder="请选择字典类型"
+          style="width: 100%"
+        >
+          <el-option
+            v-for="item in typeOptions"
+            :key="item.dictType"
+            :label="item.dictName"
+            :value="item.dictType"
+          />
+        </el-select>
+        <!-- 编辑模式（兜底） -->
+        <el-input v-else v-model="form.dictType" placeholder="如 fund_type" disabled />
       </el-form-item>
       <el-form-item label="字典编码" prop="dictCode">
         <el-input v-model="form.dictCode" placeholder="如 SH" :disabled="isEdit" />
@@ -25,14 +43,23 @@
 </template>
 
 <script setup lang="ts">
+import type { DictTypeInfo } from '@/api/system/baseInfo/dict.ts'
+
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
 const form = defineModel<any>('form', { default: () => ({ dictType: '', dictCode: '', dictName: '', orderNum: 0, remark: '' }) })
 
+const props = defineProps<{
+  typeOptions?: DictTypeInfo[]
+}>()
+
 const emit = defineEmits<{ confirm: [formData: any, isEdit: boolean] }>()
 
+// 当从左侧面板选中类型后新增，dictType 已自动填充，锁定不可编辑
+const typeLocked = computed(() => !isEdit.value && !!form.value.dictType)
+
 const formRules = {
-  dictType: [{ required: true, message: '请输入字典类型' }],
+  dictType: [{ required: true, message: '请选择字典类型' }],
   dictCode: [{ required: true, message: '请输入字典编码' }],
   dictName: [{ required: true, message: '请输入字典名称' }],
 }

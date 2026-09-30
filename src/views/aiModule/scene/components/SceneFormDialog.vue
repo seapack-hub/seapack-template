@@ -53,9 +53,7 @@
       <el-row :gutter="20">
         <el-col :span="8">
           <el-form-item label="可见性">
-            <el-select v-model="form.isPublic" style="width: 100%">
-              <el-option v-for="opt in SCENE_PUBLIC_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-            </el-select>
+            <SpSelect v-model="form.isPublic" dict-type="project_visibility" value-type="number" style="width: 100%" />
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -81,7 +79,7 @@
 import type { Scene } from '@/api/ai/scene'
 import IconPicker from '@/components/IconPicker/index.vue'
 import Icon from '@/components/Icon/index.vue'
-import { PREDEFINE_COLORS, SCENE_PUBLIC_OPTIONS } from '../utils/moduleOptions'
+import { PREDEFINE_COLORS } from '../utils/moduleOptions'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })

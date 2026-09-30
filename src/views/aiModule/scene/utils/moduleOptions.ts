@@ -1,18 +1,9 @@
 /**
  * 场景管理 — 常量定义
+ * 注：原硬编码选项已迁移至字典管理（sys_dict）
+ * - common_status: 通用状态（启用/禁用）
+ * - project_visibility: 项目可见性（公开/私有）
  */
-
-/** 状态选项 */
-export const SCENE_STATUS_OPTIONS = [
-  { label: '启用', value: 1 },
-  { label: '禁用', value: 0 },
-]
-
-/** 可见性选项 */
-export const SCENE_PUBLIC_OPTIONS = [
-  { label: '公开', value: 1 },
-  { label: '私有', value: 0 },
-]
 
 /** el-color-picker 预定义色块 */
 export const PREDEFINE_COLORS = [

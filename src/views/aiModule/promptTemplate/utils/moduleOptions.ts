@@ -1,5 +1,16 @@
 /**
  * 提示词模板管理 — 常量选项定义
+ * 注：原硬编码选项已迁移至字典管理（sys_dict）
+ * - template_category: 提示词模板分类
+ * - template_type: 提示词模板类型
+ * - template_var_type: 模板变量类型
+ * - ai_output_format: AI输出格式
+ */
+
+
+
+/**
+ * 提示词模板管理 — 常量选项定义
  */
 
 /** 模块选项（从 MODULE_DEFS 派生） */

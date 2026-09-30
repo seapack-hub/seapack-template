@@ -32,9 +32,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="向量模型" prop="embeddingModel">
-            <el-select v-model="form.embeddingModel" style="width: 100%" :disabled="isReadonly">
-              <el-option v-for="opt in EMBEDDING_MODEL_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-            </el-select>
+            <SpSelect v-model="form.embeddingModel" dict-type="embedding_model" filterable style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -58,9 +56,7 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="分隔符">
-            <el-select v-model="form.separator" style="width: 100%" :disabled="isReadonly">
-              <el-option v-for="opt in SEPARATOR_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-            </el-select>
+            <SpSelect v-model="form.separator" dict-type="chunk_separator" filterable style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -79,7 +75,6 @@
 
 <script setup lang="ts">
 import type { KnowledgeBase } from '@/api/ai/knowledgeBase'
-import { EMBEDDING_MODEL_OPTIONS, SEPARATOR_OPTIONS } from '../utils/moduleOptions'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })

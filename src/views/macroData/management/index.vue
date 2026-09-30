@@ -4,9 +4,7 @@
     <div class="flex flex-wrap items-end gap-16px box-border p-x-15 p-y-12 rounded-12px bg-white border border-[var(--el-border-color-lighter)] shadow-sm">
       <div class="flex flex-col gap-4px">
         <span class="text-13px color-[var(--el-text-color-secondary)]">频率</span>
-        <el-select v-model="frequency" style="width: 140px" @change="onFrequencyChange">
-          <el-option v-for="opt in FREQUENCY_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-        </el-select>
+        <SpSelect v-model="frequency" dict-type="data_frequency" style="width: 140px" @change="onFrequencyChange" />
       </div>
 
       <div class="flex flex-col gap-4px">
@@ -122,7 +120,7 @@
 import { Search, RefreshRight, Plus } from '@element-plus/icons-vue'
 import SpTable from '@/components/baseComponents/SpTable/index.vue'
 import DataFormDialog from './components/DataFormDialog.vue'
-import { useMacroDataMgmt, FREQUENCY_OPTIONS } from './utils'
+import { useMacroDataMgmt } from './utils'
 
 const {
   frequency,

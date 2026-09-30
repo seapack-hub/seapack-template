@@ -12,14 +12,10 @@
             <el-input v-model="queryParams.keyword" placeholder="名称/编码模糊搜索" clearable style="width: 200px" @keyup.enter="handleQuery" />
           </el-form-item>
           <el-form-item label="分类">
-            <el-select v-model="queryParams.category" placeholder="全部" clearable style="width: 140px">
-              <el-option v-for="opt in TEMPLATE_CATEGORY_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-            </el-select>
+            <SpSelect v-model="queryParams.category" dict-type="template_category" placeholder="全部" clearable style="width: 140px" />
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="queryParams.status" placeholder="全部" clearable style="width: 120px">
-              <el-option v-for="opt in STATUS_OPTIONS" :key="String(opt.value)" :label="opt.label" :value="opt.value" />
-            </el-select>
+            <SpSelect v-model="queryParams.status" dict-type="common_status" value-type="number" placeholder="全部" clearable style="width: 120px" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="search" @click="handleQuery">搜索</el-button>
@@ -125,7 +121,7 @@ import type { PromptTemplate } from '@/api/ai/promptTemplate'
 import { PromptTemplateAPI } from '@/api/ai/promptTemplate'
 import { ElMessage } from 'element-plus'
 import { usePromptTemplate } from './utils/usePromptTemplate'
-import { TEMPLATE_CATEGORY_OPTIONS, STATUS_OPTIONS, categoryLabel, categoryTagType } from './utils/moduleOptions'
+import { categoryLabel, categoryTagType } from './utils/moduleOptions'
 import { TEMPLATE_LIST_COLUMNS } from './utils/tableColumns'
 import PromptFormDialog from './components/PromptFormDialog.vue'
 import PromptPreviewDialog from './components/PromptPreviewDialog.vue'

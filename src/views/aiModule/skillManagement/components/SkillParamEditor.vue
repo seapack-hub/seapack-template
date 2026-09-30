@@ -63,14 +63,7 @@
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="类型" prop="paramType">
-              <el-select v-model="paramForm.paramType" style="width: 100%" :disabled="paramFormReadonly">
-                <el-option
-                  v-for="opt in PARAM_TYPE_OPTIONS"
-                  :key="opt.value"
-                  :label="opt.label"
-                  :value="opt.value"
-                />
-              </el-select>
+              <SpSelect v-model="paramForm.paramType" dict-type="skill_param_type" filterable style="width: 100%" :disabled="paramFormReadonly" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -172,7 +165,6 @@
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { SkillAPI, type SkillParam } from '@/api/ai/skill';
 import { PARAM_LIST_COLUMNS } from '../utils';
-import { PARAM_TYPE_OPTIONS } from '../utils/moduleOptions'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const props = defineProps<{ skillId: number }>()

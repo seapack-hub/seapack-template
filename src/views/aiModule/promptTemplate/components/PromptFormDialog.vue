@@ -28,26 +28,12 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="分类" prop="category">
-            <el-select v-model="form.category" placeholder="选择分类" style="width: 100%" :disabled="isReadonly">
-              <el-option
-                v-for="opt in TEMPLATE_CATEGORY_OPTIONS.filter(o => o.value)"
-                :key="opt.value"
-                :label="opt.label"
-                :value="opt.value"
-              />
-            </el-select>
+            <SpSelect v-model="form.category" dict-type="template_category" filterable style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="输出格式" prop="outputFormat">
-            <el-select v-model="form.outputFormat" style="width: 100%" :disabled="isReadonly">
-              <el-option
-                v-for="opt in OUTPUT_FORMAT_OPTIONS"
-                :key="opt.value"
-                :label="opt.label"
-                :value="opt.value"
-              />
-            </el-select>
+            <SpSelect v-model="form.outputFormat" dict-type="ai_output_format" filterable style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -154,9 +140,7 @@
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="类型" prop="varType">
-              <el-select v-model="varForm.varType" style="width: 100%">
-                <el-option v-for="opt in VAR_TYPE_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-              </el-select>
+              <SpSelect v-model="varForm.varType" dict-type="template_var_type" filterable style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -209,8 +193,8 @@
 import { ElMessage } from 'element-plus'
 import { Delete } from '@element-plus/icons-vue'
 import type { PromptTemplate, TemplateVariable } from '@/api/ai/promptTemplate'
-import { TEMPLATE_CATEGORY_OPTIONS, OUTPUT_FORMAT_OPTIONS, VAR_TYPE_OPTIONS } from '../utils/moduleOptions'
 import { VARIABLE_LIST_COLUMNS } from '../utils/tableColumns'
+import { useDictionaryStore } from '@/store/modules/dictionary'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
@@ -298,12 +282,19 @@ const varFormRules = {
   varType: [{ required: true, message: '请选择类型', trigger: 'change' }],
 }
 
+const dictStore = useDictionaryStore()
+
 function varTypeTag(type: string) {
   return ({ string: '', number: 'warning', boolean: 'success', select: 'info', date: 'info' } as Record<string, string>)[type] || ''
 }
 
 function varTypeLabel(type: string) {
-  return VAR_TYPE_OPTIONS.find(o => o.value === type)?.label || type
+  const cached = dictStore.cache.get('template_var_type')
+  if (cached) {
+    const found = cached.find((item: any) => item.value === type)
+    if (found) return found.label
+  }
+  return type
 }
 
 function openVarForm(row?: TemplateVariable, idx?: number) {

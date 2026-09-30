@@ -40,14 +40,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="技能类型" prop="skillType">
-            <el-select v-model="form.skillType" placeholder="选择类型" style="width: 100%" :disabled="isReadonly">
-              <el-option
-                v-for="opt in SKILL_TYPE_OPTIONS"
-                :key="opt.value"
-                :label="opt.label"
-                :value="opt.value"
-              />
-            </el-select>
+            <SpSelect v-model="form.skillType" dict-type="skill_executor_type" placeholder="选择类型" filterable style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -74,14 +67,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="输出类型" prop="outputType">
-            <el-select v-model="form.outputType" placeholder="选择输出类型" style="width: 100%" :disabled="isReadonly">
-              <el-option
-                v-for="opt in OUTPUT_TYPE_OPTIONS"
-                :key="opt.value"
-                :label="opt.label"
-                :value="opt.value"
-              />
-            </el-select>
+            <SpSelect v-model="form.outputType" dict-type="skill_output_type" placeholder="选择输出类型" filterable style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -126,7 +112,6 @@
 <script setup lang="ts">
 import type { Skill } from '@/api/ai/skill';
 import type { SkillCategory } from '@/api/ai/skillCategory';
-import { SKILL_TYPE_OPTIONS, OUTPUT_TYPE_OPTIONS } from '../utils/moduleOptions'
 import JsonEditor from '@/components/JsonEditor/index.vue'
 
 const props = defineProps<{

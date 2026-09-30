@@ -31,9 +31,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="模型">
-            <el-select v-model="form.modelCode" style="width: 100%" :disabled="isReadonly">
-              <el-option v-for="opt in MODEL_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-            </el-select>
+            <SpSelect v-model="form.modelCode" dict-type="ai_model" filterable style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -61,9 +59,7 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="输出格式">
-            <el-select v-model="form.outputFormat" style="width: 100%" :disabled="isReadonly">
-              <el-option v-for="opt in OUTPUT_FORMAT_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-            </el-select>
+            <SpSelect v-model="form.outputFormat" dict-type="ai_output_format" filterable style="width: 100%" :disabled="isReadonly" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -100,7 +96,6 @@
 
 <script setup lang="ts">
 import type { Agent } from '@/api/ai/agent'
-import { MODEL_OPTIONS, OUTPUT_FORMAT_OPTIONS } from '../utils/moduleOptions'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })

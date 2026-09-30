@@ -335,9 +335,9 @@
 <script setup lang="ts">
 import { CopyDocument, Setting, Promotion, Document, InfoFilled, CircleCheckFilled, CircleCloseFilled, Loading, VideoPause, Download } from '@element-plus/icons-vue'
 import { useSkillTest } from '../utils/useSkillTest'
-import { OUTPUT_TYPE_OPTIONS } from '../utils/moduleOptions'
 import { SkillAPI } from '@/api/ai/skill'
 import type { Skill } from '@/api/ai/skill'
+import { useDictionaryStore } from '@/store/modules/dictionary'
 import JsonEditor from '@/components/JsonEditor/index.vue'
 import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer.vue'
 
@@ -401,10 +401,18 @@ const completedPhaseItems = computed(() => {
 })
 
 // ===== 结果类型相关 =====
+const dictStore = useDictionaryStore()
 const isHttpResult = computed(() => props.skill?.skillType === 'http')
 const outputTypeLabel = computed(() => {
   const t = testResult.value?.outputType
-  return OUTPUT_TYPE_OPTIONS.find(o => o.value === t)?.label || t || '-'
+  if (!t) return '-'
+  // 从字典获取中文名
+  const cached = dictStore.cache.get('skill_output_type')
+  if (cached) {
+    const found = cached.find((item: any) => item.value === t)
+    if (found) return found.label
+  }
+  return t
 })
 
 /** 从 body 中提取文件信息（支持 string URL 或 {url, fileName, fileSize} 对象） */

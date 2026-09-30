@@ -1,5 +1,15 @@
 /**
  * 知识库管理 — 常量定义
+ * 注：原硬编码选项已迁移至字典管理（sys_dict）
+ * - common_status: 通用状态（启用/禁用）
+ * - embedding_model: 向量模型
+ * - chunk_separator: 文档分块方式
+ * - kb_parse_status: 文档解析状态
+ * - kb_vector_status: 文档向量化状态
+ */
+
+/**
+ * 知识库管理 — 常量定义
  */
 
 /** 状态选项 */

@@ -18,9 +18,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="调度类型" prop="scheduleType">
-        <el-select v-model="form.scheduleType" style="width: 100%">
-          <el-option v-for="opt in SCHEDULE_TYPE_OPTIONS" :key="opt.value" :label="opt.label" :value="opt.value" />
-        </el-select>
+        <SpSelect v-model="form.scheduleType" dict-type="schedule_type" filterable style="width: 100%" />
       </el-form-item>
       <el-form-item v-if="form.scheduleType === 'cron'" label="Cron表达式" prop="cronExpression">
         <el-input v-model="form.cronExpression" placeholder="例: 0 0/30 * * * ?" />
@@ -44,7 +42,6 @@
 
 <script setup lang="ts">
 import type { WorkflowSchedule } from '@/api/workflow/types'
-import { SCHEDULE_TYPE_OPTIONS } from '../utils/moduleOptions'
 
 const visible = defineModel<boolean>('visible', { required: true })
 const isEdit = defineModel<boolean>('isEdit', { default: false })
