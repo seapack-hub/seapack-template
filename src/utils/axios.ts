@@ -139,7 +139,15 @@ function createAxios() {
           handleTokenExpired(message);
           break;
         case 403:
-          message = '拒绝访问';
+          // 403 可能是权限不足，也可能是 token 过期导致的认证失败
+          // 如果本地有 token，可能是 token 问题，尝试跳转登录
+          const hasToken = !!localStorage.getItem(CacheKey.TOKEN)
+          if (hasToken) {
+            // 本地有 token 但请求返回 403，可能是 token 过期或无效
+            handleTokenExpired('权限验证失败，请重新登录');
+          } else {
+            message = '拒绝访问';
+          }
           break;
         case 404:
           message = '请求地址出错';

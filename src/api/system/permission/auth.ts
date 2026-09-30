@@ -20,4 +20,9 @@ export const AuthAPI = {
   getButtons() {
     return request<any, string[]>({ url: `${BASE_URL}/buttons`, method: 'get' })
   },
+
+  /** 验证 Token 有效性（轻量级接口，仅验证签名和过期时间） */
+  checkToken() {
+    return request<any, void>({ url: `${BASE_URL}/check`, method: 'get' })
+  },
 }

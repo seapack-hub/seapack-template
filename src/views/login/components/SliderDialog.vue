@@ -65,8 +65,8 @@ const onCaptchaSuccess = async ()=>{
     const userInfo = await UserAPI.getUserInfo(String(loginRes.userId))
     userStore.setUserInfo(userInfo);
 
-    // 3. 调用接口，获取用户权限信息并赋值
-    userStore.fetchAuthPerms(String(loginRes.userId))
+    // 3. 调用接口，获取用户权限信息并赋值（必须 await，确保 saveAuthToCache 执行）
+    await userStore.fetchAuthPerms(String(loginRes.userId))
     
     // 4. 加载 AI 场景绑定数据（低频变动，全量缓存供全局使用）
     useSceneBindingsStore().fetchAllBindings()

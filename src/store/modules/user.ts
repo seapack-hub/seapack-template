@@ -219,27 +219,39 @@ export const useUserStore = defineStore('user', {
 
     //从后端获取用户角色权限
     async fetchAuthPerms(userId: string) {
-      //获取用户权限数据（仅目录和菜单的 permKey）
-      const authInfo = await AuthAPI.getUserInfo(userId);
-      //赋值
-      this.roles = authInfo.roles;
-      this.perms = authInfo.perms;
+      try {
+        //获取用户权限数据（仅目录和菜单的 permKey）
+        const authInfo = await AuthAPI.getUserInfo(userId);
+        //赋值
+        this.roles = authInfo.roles;
+        this.perms = authInfo.perms;
 
-      //获取用户按钮权限（完整路径，如 sys:dept:add）
-      const buttonPerms = await AuthAPI.getButtons();
-      this.buttonPerms = buttonPerms;
+        //获取用户按钮权限（完整路径，如 sys:dept:add）
+        const buttonPerms = await AuthAPI.getButtons();
+        this.buttonPerms = buttonPerms;
 
-      //获取用户权限菜单（已过滤的菜单树）
-      const menu = await AuthAPI.getMenus(userId);
-      this.menuTree = menu;
-      
-      // 缓存到 sessionStorage，下次页面刷新直接恢复
-      this.authLoaded = true
-      this.saveAuthToCache()
+        //获取用户权限菜单（已过滤的菜单树）
+        const menu = await AuthAPI.getMenus(userId);
+        this.menuTree = menu;
+        
+        // 缓存到 sessionStorage，下次页面刷新直接恢复
+        this.authLoaded = true
+        this.saveAuthToCache()
 
-      // 重新收集路由，恢复 dynamicRoutesLoaded，刷新侧边栏
-      const permissionStore = usePermissionStore()
-      permissionStore.collectRoutes()
+        // 重新收集路由，恢复 dynamicRoutesLoaded，刷新侧边栏
+        const permissionStore = usePermissionStore()
+        permissionStore.collectRoutes()
+      } catch (error: any) {
+        // 如果是 403 错误，清除状态后重新抛出，让路由守卫处理跳转
+        if (error?.message?.includes('登录状态已过期') || error?.response?.status === 403) {
+          this.clearToken()
+          this.clearUserInfo()
+          this.clearAuth()
+          throw error
+        }
+        // 其他错误也抛出
+        throw error
+      }
     },
 
     /**
